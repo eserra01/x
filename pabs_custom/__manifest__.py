@@ -15,11 +15,11 @@
     'hr'],
   'data': [
     'data/ir_sequence.xml',
-    'security/arching_security.xml',
+    #'security/arching_security.xml',
     'security/ir.model.access.csv',
     'reports/closing_transfer_report.xml',
     'views/pabs_office_view.xml',
-    'views/pabs_arching_view.xml',
+    #'views/pabs_arching_view.xml',
     'views/hr_employee_view.xml',
     'views/payment_scheme_view.xml',
     'views/recluitment_origin_view.xml',

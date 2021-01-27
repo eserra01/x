@@ -4,8 +4,8 @@ from . import type_company
 from . import res_locality
 from . import colonias
 from . import pabs_office
-from . import pabs_arching
-from . import pabs_arching_line
+#from . import pabs_arching
+#from . import pabs_arching_line
 from . import pabs_payment_scheme
 from . import pabs_recluitment_origin
 from . import pabs_recluitment_induction
