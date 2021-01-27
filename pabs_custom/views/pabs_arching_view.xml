@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  
+  <record id="pabs_arching_tree_view" model="ir.ui.view">
+    <field name="name">Arqueos</field>
+    <field name="type">tree</field>
+    <field name="model">pabs.arching</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="code"/>
+        <field name="employee_id"/>
+        <field name="office_code"/>
+        <field name="office_id"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="pabs_arching_form_view" model="ir.ui.view">
+    <field name="name">Arqueos</field>
+    <field name="type">form</field>
+    <field name="model">pabs.arching</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="close_arching" string="Cerrar Arqueo" type="object" class="o_btn_validate" attrs="{'invisible' : [('state','!=','draft')]}"/>
+          <button name="print_report" string="Imprimir" type="object" class="o_btn_validate" attrs="{'invisible' : [('state','!=','done')]}"/>
+          <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <h1>
+              <field name="name" readonly="1"/>
+            </h1>
+          </div>
+          <group>
+            <group>
+              <field name="code" attrs="{'readonly': [('state', '=', 'done')]}"/>
+              <field name="office_code" />
+            </group>
+            <group>
+              <field name="employee_id"/>
+              <field name="office_id"/>
+            </group>
+          </group>
+          <field name="line_ids" attrs="{'readonly': [('state', '=', 'done')]}">
+            <tree editable="top">
+              <field name="company"/>
+              <field name="product_id"/>
+              <field name="lot_id" domain="[('product_id','=',product_id)]"/>
+            </tree>
+          </field>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="pabs_arching_action" model="ir.actions.act_window">
+    <field name="name">Arqueos</field>
+    <field name="res_model">pabs.arching</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+</odoo>

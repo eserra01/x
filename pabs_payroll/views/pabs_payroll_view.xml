@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="pabs_payroll_form_view" model="ir.ui.view">
+    <field name="name">pabs.payroll.form.view</field>
+    <field name="model">pabs.payroll</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="validate" class="btn-primary" string="Validar" type="object" attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+          <field name="state" widget="statusbar" statusbar_visible="draft,to review,done"/>
+        </header>
+        <sheet>
+          <div class="oe_title">
+            <span class="o_form_label" attrs="{'invisible': [('state','in',('draft'))]}">Nómina n°</span>
+            <h1>
+              <field name="name" readonly="1"/>
+            </h1>
+        </div>
+          <group>
+            <group>
+              <field name="warehouse_id" attrs="{'readonly' : [('state','!=','draft')]}"/>
+              <field name="user_id" readonly="1"/>
+            </group>
+            <group>
+              <field name="week_number" attrs="{'readonly' : [('state','!=','draft')]}"/>
+              <label for="first_date" string="Rango de fechas"/>
+              <div class="o_row">
+                <field name="first_date" readonly="1"/> Al 
+                <field name="end_date" readonly="1"/>
+              </div>
+            </group>
+          </group>
+          <notebook>
+            <page string="Apoyos">
+              <field name="support_ids" attrs="{'readonly' : [('state','!=','draft')]}">
+                <tree editable="top">
+                  <field name="employee_id" domain="[('job_id','=','Asistente Social'),('warehouse_id','=',parent.warehouse_id)]"/>
+                  <field name="new_entry" widget="monetary"/>
+                  <field name="pantry_support" widget="monetary"/>
+                  <field name="salary" widget="monetary"/>
+                  <field name="investment_bonus" widget="monetary"/>
+                  <field name="warranty" widget="monetary"/>
+                  <field name="absences" widget="monetary"/>
+                  <field name="total" widget="monetary"/>
+                </tree>
+              </field>
+            </page>
+            <page string="Bonos por recomendaciones">
+              <field name="referral_id" attrs="{'readonly' : [('state','!=','draft')]}">
+                <tree editable="top">
+                  <field name="employee_rec_id"/>
+                  <field name="employe_id"/>
+                  <field name="bonus" widget="monetary"/>
+                </tree>
+              </field>
+            </page>
+            <page string="Reafiliaciones">
+              <field name="reaffiliation_ids" attrs="{'readonly' : [('state','!=','draft')]}">
+                <tree editable="top">
+                  <field name="last_contract_id" domain="[('state','=','contract')]"/>
+                  <field name="contract_id" domain="[('state','=','contract')]"/>
+                  <field name="partner_name" readonly="1"/>
+                  <field name="employee_id" domain="[('job_id','=','Asistente Social'),('warehouse_id','=',parent.warehouse_id)]"/>
+                  <field name="amount"/>
+                  <field name="number_reaffiliations"/>
+                </tree>
+              </field>
+            </page>
+            <page string='Cambios de Funeraria'>
+              <field name="changes_ids" attrs="{'readonly' : [('state','!=','draft')]}">
+                <tree editable="top">
+                  <field name="contract_id" domain="[('state','=','contract')]"/>
+                  <field name="partner_name"/>
+                  <field name="employee_id" domain="[('job_id','=','Asistente Social'),('warehouse_id','=',parent.warehouse_id)]"/>
+                  <field name="amount"/>
+                  <field name="funeral_changes"/>
+                </tree>
+              </field>
+            </page>
+            <page string="Notas">
+              <field name="note_ids" attrs="{'readonly' : [('state','!=','draft')]}">
+                <tree editable="top">
+                  <field name="description"/>
+                  <field name="employee_id" domain="[('job_id','=','Asistente Social'),('warehouse_id','=',parent.warehouse_id)]"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="pabs_payroll_tree_view" model="ir.ui.view">
+    <field name="name">pabs.payroll.tree.view</field>
+    <field name="model">pabs.payroll</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="warehouse_id"/>
+        <field name="user_id"/>
+        <field name="week_number"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="pabs_payroll_form_action" model="ir.actions.act_window">
+    <field name="name">Crear Incidencia</field>
+    <field name="res_model">pabs.payroll</field>
+    <field name="view_mode">form</field>
+  </record>
+
+  <record id="pabs_payroll_consult_action" model="ir.actions.act_window">
+    <field name="name">Consultar Incidencias</field>
+    <field name="res_model">pabs.payroll</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+</odoo>

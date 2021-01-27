@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="inherit_view_move_form_view" model="ir.ui.view">
+    <field name="name">inherit.view.move.form.view</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_move_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='ref']" position="attributes">
+        <attribute name="required">True</attribute>
+      </xpath>
+
+      <xpath expr="//group[1]" position="after">
+        <group string="Salida de comisiones" attrs="{'invisible' : [('type','!=','out_refund')]}">
+          <field name="comission_output_ids" nolabel="1"/>
+        </group>
+      </xpath>
+    </field>
+   </record>
+</odoo>

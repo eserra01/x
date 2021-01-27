@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista de formulario -->
+    <record id="comission_template_of_templates_form_view" model="ir.ui.view">
+        <field name="name">comission.template.of.templates.form.view</field>
+        <field name="model">pabs.comission.template.of.templates</field>
+        <field name="arch" type="xml">
+            <form string="Comission form">
+                <sheet>
+                    <group>
+                        <field name="plan_id" />
+                        <field name="pay_order" />
+                        <field name="job_id" />
+                        <field name="active" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de lista -->
+    <record id="comission_template_of_templates_tree_view" model="ir.ui.view">
+        <field name="name">comission.template.of.templates.tree.view</field>
+        <field name="model">pabs.comission.template.of.templates</field>
+        <field name="arch" type="xml">
+            <tree string="Comission Tree" editable="bottom" default_order="plan_id, pay_order" expand="True">
+                <field name="plan_id" />
+                <field name="pay_order" />
+                <field name="job_id" />
+                <field name="active" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="comission_template_of_templates_action" model="ir.actions.act_window" >
+        <field name="name">Plantilla_de_plantillas</field>
+        <field name="res_model">pabs.comission.template.of.templates</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'group_by': ('plan_id')}</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Menú principal  PABS-->
+  <menuitem id="service_menu_root" name="PABS" web_icon="pabs_custom,static/description/icon.png" groups="pabs_custom.group_contracts_user" sequence="6"/>
+
+  <!-- Submenú de activaciones en servicios -->
+  <menuitem id="activation_main_menu" name="Activaciones" parent="service_menu_root" groups="pabs_custom.group_contracts_user" action="activation_action" sequence="1"/>
+
+  <!-- Submenú de precontrato en servicios -->
+  <menuitem id="precontract_menu" name="Pre-Contratos" parent="service_menu_root" groups="pabs_custom.group_contracts_user" action="precontract_action" sequence="2"/>
+
+  <!-- menú de contratos en servicios -->
+  <menuitem id="main_contract_menu" parent="service_menu_root" groups="pabs_custom.group_contracts_user" name="Contratos" sequence="3"/>
+
+  <!-- submenú de contratos para busqueda en singular -->
+  <menuitem id="single_contract_menu" parent="main_contract_menu" groups="pabs_custom.group_contracts_user" action="action_single_contract" sequence="1"/>
+
+  <!-- Submenú de contratos para busqueda en general -->
+  <menuitem id="many_contract_menu" parent="main_contract_menu" groups="pabs_custom.group_contracts_user" action="action_many_contracts" sequence="2"/>
+
+  <!-- Submenú de arqueos -->
+  <menuitem id="menu_arching" name="Arqueos" groups="arching_group_user" parent="stock.menu_stock_root" action="pabs_arching_action" sequence="20"/>
+
+  <!-- Submenú de Oficinas -->
+  <menuitem id="menu_offices" name="Oficinas" groups="arching_group_user" parent="hr.menu_hr_root" action="pabs_office_action" sequence="20"/>
+
+  <!-- Submenú esquema de pagos -->
+  <menuitem id="menu_view_payment_scheme" action="payment_scheme_action" parent="hr.menu_human_resources_configuration" sequence="0"/>
+
+  <!-- Submenú personal de inducción -->
+  <menuitem id="menu_view_recluitment_induction" action="recluitment_induction_action" parent="hr.menu_human_resources_configuration" sequence="0"/>
+
+  <!-- Submenú origen de reclutamiento -->
+  <menuitem id="menu_view_recluitment_origin" action="recluitment_origin_action" parent="hr.menu_human_resources_configuration" sequence="0"/>
+
+  <!-- Menú principal Acciones con solicitudes -->
+  <menuitem id="menu_action_request" name="Solicitudes" groups="pabs_custom.group_contracts_user" parent="stock.menu_stock_root" sequence="2"/>
+
+  <!-- Submenú de administración de bonos pabs -->
+  <menuitem id="menu_bonus_pabs" name="Administración de bonos PABS" groups="sales_team.group_sale_manager" action="pabs_bonus_action" parent="sale.menu_sale_config" sequence="1"/>
+
+  <!-- SubMenú Cortes -->
+  <menuitem id="menu_closing" name="Corte" groups="pabs_custom.group_contracts_user" action="action_closing_transfers" parent="menu_action_request" sequence="1"/>
+  
+
+  <!-- SubMenú corrección de solicitudes -->
+  <menuitem id="menu_fix_stock_move" name="Corrección a solicitud" groups="pabs_custom.group_contracts_manager" action="action_fix_stock_move" parent="menu_action_request" sequence="2"/>
+  
+  <menuitem id="menu_stock_move" name="Buscar Solciitud" groups="pabs_custom.group_contracts_manager" action="status_stock_action" parent="menu_action_request" sequence="3"/>
+  
+  <!-- Administración de cortes de solicitudes -->
+  <menuitem id="closing_transfer_management" name="Administración de cortes" parent="stock.menu_warehouse_config" groups="stock.group_stock_manager" action="closing_transfer_management_action" sequence="1"/>
+
+<!-- COMISIONES -->
+  <!-- Menu comisiones -->
+  <menuitem id="comission_menu" name="Comisiones" parent="service_menu_root" groups="pabs_custom.group_contracts_user" sequence="5"/>
+
+  <!-- Submenu plantillas de plantillas de árboles-->
+  <menuitem id="comission_template_of_templates" name="Plantilla de plantillas" parent="comission_menu" groups="pabs_custom.group_contracts_user" action="comission_template_of_templates_action" sequence="1"/>
+
+  <!-- Submenu plantillas de árbol de comision por asistente-->
+  <menuitem id="comission_template" name="Plantillas de asistentes" parent="comission_menu" groups="pabs_custom.group_contracts_user" action="comission_template_action" sequence="2"/>
+
+  <!-- Submenu arbol de comisiones de contratos -->
+  <menuitem id="comission_per_contract" name="Árboles de contratos" parent="comission_menu" groups="pabs_custom.group_contracts_user" action="comission_tree_action" sequence="3"/>
+  
+  <!-- Submenu comisiones de cobradores -->
+  <menuitem id="comission_debt_collector" name="Comisiones de cobradores" parent="comission_menu" groups="pabs_custom.group_contracts_user" action="comission_debt_collector_action" sequence="4"/>
+  
+<!-- SALIDA DE COMISIONES -->
+  <menuitem id="comission_output" name="Salida de comisiones" parent="account.menu_finance_receivables" groups ="pabs_custom.group_contracts_user" action="comission_output_action" sequence="111"/>
+
+<!-- ESTATUS DE CONTRATOS Y MOTIVOS DE ESTATUS-->
+  <!-- Menu Estatus -->
+  <menuitem id="contract_status_menu" name="Estatus" parent="service_menu_root" groups="pabs_custom.group_contracts_user" sequence="6"/>
+
+  <!-- Submenú Estatus -->
+  <menuitem id="contract_status" name="Estatus existentes" parent="contract_status_menu" groups="pabs_custom.group_contracts_user" action="contract_status_action" sequence="1"/>
+
+  <!-- Submenú Motivos de estatus -->
+  <menuitem id="contract_status_reason" name="Motivos de estatus" parent="contract_status_menu" groups="pabs_custom.group_contracts_user" action="contract_status_reason_action" sequence="2"/>
+</odoo>

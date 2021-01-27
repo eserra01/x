@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pabs_payroll,pabs.payroll,pabs_payroll.model_pabs_payroll,base.group_user,1,1,1,1
+access_week_number_config,week.number.config,pabs_payroll.model_week_number_config,base.group_user,1,1,1,1
+access_week_year,week.year,pabs_payroll.model_week_year,base.group_user,1,1,1,1
+access_pabs_payroll_support,payroll.support,pabs_payroll.model_pabs_payroll_support,base.group_user,1,1,1,1
+access_pabs_referral_bonuses,referral.bonuses,pabs_payroll.model_pabs_referral_bonuses,base.group_user,1,1,1,1
+access_pabs_payroll_reaffiliations,pabs.payroll.reaffiliations,pabs_payroll.model_pabs_payroll_reaffiliations,base.group_user,1,1,1,1
+access_pabs_funeral_changes,pabs.funeral.changes,pabs_payroll.model_pabs_funeral_changes,base.group_user,1,1,1,1
+access_pabs_payroll_notes,pabs.payroll.notes,pabs_payroll.model_pabs_payroll_notes,base.group_user,1,1,1,1

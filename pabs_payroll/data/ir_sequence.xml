@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <record id="seq_pabs_payroll" model="ir.sequence">
+      <field name="name">Secuencia de Nóminas PABS</field>
+      <field name="code">pabs.payroll</field>
+      <field name="prefix">NOM-</field>
+      <field name="padding">6</field>
+      <field name="number_increment">1</field>
+    </record>
+  </data>
+  
+</odoo>

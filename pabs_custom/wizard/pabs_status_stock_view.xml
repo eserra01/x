@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="pabs_stock_status_form_view" model="ir.ui.view">
+    <field name="name">pabs.stock.status.form.view</field>
+    <field name="type">form</field>
+    <field name="model">pabs.status.stock</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          
+        </header>
+        <sheet>
+          <group>
+            <group>
+              <field name="request"/>
+            </group>
+            <group>
+            <field name="date_emission" readonly="1" attrs="{'invisible' : [('request','=',False)]}"/>
+            <field name ="code" readonly="1" attrs="{'invisible' : [('request','=',False)]}"/>
+            <field name="promoter" readonly="1" attrs="{'invisible' : [('request','=',False)]}" />
+            <field name="warehouse" readonly="1" attrs="{'invisible' : [('request','=',False)]}"/>
+            <field name="status_sol" readonly="1" attrs="{'invisible' : [('request','=',False)]}"/>
+            <field name="description" readonly="1" attrs="{'invisible' : [('request','=',False)]}" />
+            </group>
+          </group>      
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  
+  
+  <record  model="ir.actions.act_window" id="status_stock_action" >
+    <field name="name">Busqueda Solciitud</field>
+    <field name="res_model">pabs.status.stock</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+
+
+</odoo>

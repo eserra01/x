@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_hr_employee_form_view" model="ir.ui.view">
+    <field name="name">Agregar Oficinas</field>
+    <field name="type">form</field>
+    <field name="model">hr.employee</field>
+    <field name="inherit_id" ref="hr.view_employee_form"/>
+    <field name="arch" type="xml">
+
+      <xpath expr="//div[@class='oe_title']" position="before">
+        <label for="code" string="Código de Empleado"/>
+      </xpath>
+
+      <xpath expr="//field[@name='name']" position="before">
+        <field name="id" invisible="1"/>
+        <field name="barcode" required="True" class="oe_inline" attrs="{'readonly' : [('id','!=',False)]}"/>
+        <br/>
+      </xpath>
+
+      <xpath expr="//label[@for='barcode']" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </xpath>
+
+      <xpath expr="//div[@class='o_row']" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </xpath>
+
+      <xpath expr="//field[@name='name']" position="replace">
+        <field name="first_name" placeholder="Nombre"/>
+        <label for="last_name" string=" "/>
+        <field name="last_name" placeholder="Apellido"/>
+        <field name="name" invisible="1"/>
+      </xpath>
+
+      <xpath expr="//field[@name='job_id']" position="replace">
+        <field name="job_id" string="Puesto Laboral"/>
+        <field name="date_of_admission" required="True"/>
+        <field name="payment_scheme" attrs="{'required' : [('job_title','in',('Coordinador', 'Gerente de Oficina', 'Asistente Social'))]}"/>
+        <field name="first_payment"/>
+      </xpath>
+
+      <xpath expr="//field[@name='job_title']" position="replace">
+        <field name="job_title" invisible="1"/>
+      </xpath>
+
+      <xpath expr="//field[@name='category_ids']" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </xpath>
+
+      <xpath expr="//field[@name='work_location']" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </xpath>
+
+      <xpath expr="//field[@name='parent_id']" position="attributes">
+        <attribute name="invisible">True</attribute>
+      </xpath>
+
+      <xpath expr="//page[@name='public']" position="replace">
+        <page name="public" string="Ubicaciones">
+          <div id="o_work_employee_container"> <!-- These two div are used to position org_chart -->
+            <group>
+              <group string="Oficina de ventas">
+                <field name="warehouse_id" attrs="{'required' : [('job_title','in',('Coordinador','Gerente de Oficina','Asistente Social'))]}" nolabel="1"/>
+                <field name="view_location_id" invisible="1"/>
+              </group>
+              <group string="Ubicaciones">
+                <field name="local_location_id"/>
+                <!--<field name="office_location_id" domain="[('location_id','=',view_location_id),('office_location','=',True)]"/>-->
+                <field name="request_location_id" domain="[('location_id','=',view_location_id),('office_location','=',True)]"/>
+                <field name="contract_location_id" domain="[('contract_location','=',True)]"/>
+              </group>
+            </group>
+          </div>
+        </page>
+      </xpath>
+
+      <xpath expr="//page[@name='personal_information']" position="replace">
+        <page name="personal_information" string="Información Personal" groups="hr.group_hr_user">
+          <group>
+            <group string="Dirección de Casa">
+              <field name="street"/>
+              <field name="number"/>
+              <field name="zip"/>
+              <field name="state_id"/>
+              <field name="city"/>
+              <field name="municipality_id"/>
+              <field name="neighborhood_id" domain="[('municipality_id','=',municipality_id)]"/>
+              <field name="country_id"/>
+            </group>
+            <group string='Información Personal'>
+              <field name="gender" widget="radio"/>
+              <field name="birthday"/>
+              <field name="country_of_birth"/>
+              <field name="marital"/>
+              <field name="children"/>
+            </group>
+          </group>
+          <group string="Beneficiarios">
+            <group string="Primero">
+              <field name="fist_beneficiary"/>
+              <field name="first_beneficiary_birthdate"/>
+              <field name="fist_beneficiary_relationship"/>
+            </group>
+            <group string="Segundo">
+              <field name="second_beneficiary"/>
+              <field name="second_beneficiary_birthdate"/>
+              <field name="second_beneficiary_relationship"/>
+            </group>
+          </group>
+        </page>
+      </xpath>
+
+      <xpath expr="//page[@name='hr_settings']" position="replace">
+        <page name="hr_settings" string="Información de Ingreso" groups="hr.group_hr_user">
+          <field name="user_id" invisible="1"/>
+          <group string='Documentación' col="6">
+            <group>
+              <field name="request" widget="radio"/>
+              <field name="birth_certificate" widget="radio"/>
+              <field name="identification" widget="radio"/>
+              <field name="photos" widget="radio"/>
+              <field name="proof_address" widget="radio"/>
+              <field name="letter_recomendation" widget="radio"/>
+              <field name="criminal_record" widget="radio"/>
+              <field name="individual_contract" widget="radio"/>
+            </group>
+            <group>
+              <field name="confidentiality_contract" widget="radio"/>
+              <field name="responsive_letter" widget="radio"/>
+              <field name="promissory_note" widget="radio"/>
+              <field name="voluntary_resignation" widget="radio"/>
+              <field name="new_voluntary_resignation" widget="radio"/>
+              <field name="address_sheet" widget="radio"/>
+              <field name="worker_card" widget="radio"/>
+            </group>
+            <group>
+              <field name="nss" class="oe_inline"/>
+              <field name="curp" class="oe_inline"/>
+              <field name="rfc" class="oe_inline"/>
+              <field name="notice_privacy" widget="radio"/>
+              <field name="no_debit_letter" widget="radio"/>
+              <field name="welcome" widget="radio"/>
+              <field name="category" class="oe_inline"/>
+              <field name="recluitment_id" class="oe_inline"/>
+              <field name="induction_id" class="oe_inline"/>
+            </group>
+          </group>
+          <group string="Comentarios">
+            <field name="comment"/>
+          </group>
+        </page>
+      </xpath>
+
+      <xpath expr="//field[@name='work_email']" position="after">
+        <field name="employee_status"/>
+      </xpath>
+
+    </field>
+  </record>
+
+  <record id="hr_employee_tree_view_inherit" model="ir.ui.view">
+    <field name="name">hr.employe.tree.view.inherit</field>
+    <field name="model">hr.employee</field>
+    <field name="inherit_id" ref="hr.view_employee_tree"/>
+    <field name="arch" type="xml">
+      <xpath expr="//tree" position="replace">
+        <tree>
+          <field name="barcode" string="Código de empleado" optional="show"/>
+          <field name="name" optional="show"/>
+          <field name="department_id" optional="hide"/>
+          <field name="job_id" optional="hide"/>
+          <field name="payment_scheme" optional="hide"/>
+          <field name="warehouse_id" optional="show"/>
+          <field name="work_email" optional="hide"/>
+          <field name="mobile_phone" optional="show"/>
+          <field name="street" optional="hide"/>
+          <field name="number" optional="hide"/>
+          <field name="neighborhood_id" optional="hide"/>
+          <field name="city" optional="hide"/>
+          <field name="state_id" optional="hide"/>
+          <field name="municipality_id" optional="hide"/>
+          <field name="zip" optional="hide"/>
+          <field name="gender" optional="show"/>
+          <field name="birthday" optional="show"/>
+          <field name="marital" optional="hide"/>
+          <field name="children" optional="hide"/>
+          <field name="nss" optional="show"/>
+          <field name="curp" optional="show"/>
+          <field name="rfc" optional="show"/>
+          <field name="recluitment_id" optional="hide"/>
+          <field name="induction_id" optional="hide"/>
+          <field name="comment" optional="hide"/>
+        </tree>
+      </xpath>
+    </field>
+  </record>
+  
+</odoo>
