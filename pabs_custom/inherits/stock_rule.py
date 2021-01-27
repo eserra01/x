@@ -54,7 +54,6 @@ class StockRule(models.Model):
       'description_picking': product_id._get_description(self.picking_type_id),
       'priority': values.get('priority', "1"),
       'delay_alert': self.delay_alert,
-      'series': sale_order.application_number
     }
 
     print('move_values2222', move_values)
