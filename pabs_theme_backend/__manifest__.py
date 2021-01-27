@@ -12,6 +12,7 @@
 
 	'depends': [
   		'base',
+  		'web',
 	],
 
 	'data': [
