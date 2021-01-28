@@ -222,18 +222,18 @@ class StockMove(models.Model):
           raise ValidationError((
             "No se encontró la ubicación de recibidos"))
 
+  ### Método de xmarts limpiado
   def _update_reserved_quantity(self,need,available_quantity,
     location_id,lot_id=None,package_id=None,owner_id=None,strict=True):
-    print("_update_reserved_quantity      moveeeeeeeeeeeeeeeeeeeee")
     self.delete()
     for rec in self:
       series_start = ''
-      if rec.picking_id.type_transfer == 'sucursal':
+      if rec.picking_id.type_transfer == 'ac-ov':
         if rec.series_start:
           series_start = rec.series_start
         else:
           raise ValidationError(_('Es necesario agregar una serie de inicio en el producto %s.') % (rec.product_id.name))
-      elif rec.picking_id.type_transfer == 'asistente' or rec.picking_id.type_transfer == 'regreso_solicitudes' or rec.picking_id.type_transfer == 'ventas':
+      elif rec.picking_id.type_transfer == 'ov-as' or rec.picking_id.type_transfer == 'as-ov' or rec.picking_id.type_transfer == 'as-cont':
         series_start = rec.series
       if series_start != '':
         self.env['transf.operaciones'].create({

@@ -20,7 +20,7 @@
           <field name="date_receipt" attrs="{'invisible' : [('payment_type','=','outbound')], 'required' : [('payment_type','=','inbound')]}"/>
           <field name="reference" attrs="{'invisible' : [('payment_type','=','outbound')], 'required' : [('payment_type','=','inbound')]}"/>
           <field name="Ecobro_receipt" attrs="{'invisible' : [('payment_type','=','outbound')], 'required' : [('payment_type','=','inbound')]}"/>
-          <field name="debt_collector_code" domain="[('job_id.name','=','Cobrador')]"/>
+          <field name="debt_collector_code" attrs="{'invisible' : [('payment_type','=','outbound')], 'required' : [('payment_type','=','inbound')]}" domain="[('job_id.name','=','Cobrador')]"/>
         </xpath>
 
         <xpath expr="//field[@name='journal_id']" position="before">

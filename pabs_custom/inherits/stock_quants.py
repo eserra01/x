@@ -13,18 +13,14 @@ class StockQuants(models.Model):
     self = self.sudo()
     rounding = product_id.uom_id.rounding
     quants = self._gather(product_id, location_id, lot_id=lot_id, package_id=package_id, owner_id=owner_id, strict=strict)
-    # print("_update_reserved_quantityyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy ", quants.lot_id.name, "  quantity= ", quants.quantity, "  reserved_quantity= ", quants.reserved_quantity)
-    # raise ValidationError(_('hola javi'))
     lista = quants
     transf_oper = self.env['transf.operaciones'].search([('id_user', '=', self.env.user.id)])
     series_start = ''
     trasfe_id = 0
     type_transfer = ''
     for tras in transf_oper:
-      # print("transf_operrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr ", tras.id_producto.name)
       if product_id.id == tras.id_producto.id:
         series_start = tras.serie_start
-        # print("111111111111111111111111111111111111111 ", series_start)
     if str(series_start) != '' and str(series_start) != 'False':
       cont = 0
       for lot in quants:
@@ -38,7 +34,7 @@ class StockQuants(models.Model):
     for trasfe in transf_oper:
       if product_id.id == trasfe.id_producto.id and str(trasfe.serie_start) == str(series_start):
         count = 0
-        if trasfe.type_transfer == 'sucursal':
+        if trasfe.type_transfer == 'ov-ac':
           while int(count) < int(trasfe.demanda):
             if '-' in series_start:
               letter = series_start.split('-')[0]
@@ -58,7 +54,7 @@ class StockQuants(models.Model):
                   if float_compare(max_quantity_on_qua, 0, precision_rounding=rounding) <= 0:
                     raise ValidationError(_('Ya ha sido utilizada la serie %s en el producto %s.') % (new_serie, product_id.name))
               count += 1
-        if trasfe.type_transfer == 'sucursal':
+        if trasfe.type_transfer == 'ov-ac':
           contad = 0
           while int(contad) < int(trasfe.demanda):
             trasfe_id = trasfe.id
@@ -75,11 +71,10 @@ class StockQuants(models.Model):
               contad += 1
               self.env['det.operaciones'].create({
                 'transf_operaciones': trasfe.id,
-                'serie': new_seri})
+                'serie': new_seri})ov-acov-acv
         else:
           trasfe_id = trasfe.id
           type_transfer = trasfe.type_transfer
-          # print("333333333333333333333333333333333333333333333 ", series_start, "  id= ", trasfe_id)
           self.env['det.operaciones'].create({
             'transf_operaciones': trasfe.id,
             'serie': series_start})
@@ -104,7 +99,6 @@ class StockQuants(models.Model):
       for re in buscar_serie:
         reserved_quants.append((re['lot_'], re['max_quantity_on_quan']))
     if len(det_oper) == 0:
-      print("lllllllllllllllllllllllllllll")
       for quant in quants:
         if float_compare(quantity, 0, precision_rounding=rounding) > 0:
           max_quantity_on_quant = quant.quantity - quant.reserved_quantity
@@ -128,8 +122,6 @@ class StockQuants(models.Model):
     return reserved_quants
 
   def buscar_serie(self, lista, serie, quantity, rounding, available_quantity, type_transfer):
-    raise ValidationError((
-      "lot_id: {}".format(lot_id)))
     reserved_quants = []
     for lot_ in lista:
       if str(lot_.lot_id.name) == str(serie):
@@ -139,12 +131,10 @@ class StockQuants(models.Model):
             continue
           max_quantity_on_quan = min(max_quantity_on_quan, quantity)
           lot_.reserved_quantity += max_quantity_on_quan
-          print("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj ", lot_.reserved_quantity)
           reserved_quants.append({'lot_': lot_, 'max_quantity_on_quan': max_quantity_on_quan})
           quantity -= max_quantity_on_quan
           available_quantity -= max_quantity_on_quan
         else:
-          print("oooooooooooooooooooooooo ", lot_.reserved_quantity)
           max_quantity_on_quan = min(lot_.reserved_quantity, abs(quantity))
           lot_.reserved_quantity -= max_quantity_on_quan
           reserved_quants.append(({'lot_': lot_, 'max_quantity_on_quan': -max_quantity_on_quan}))
