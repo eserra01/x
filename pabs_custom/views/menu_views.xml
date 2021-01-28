@@ -19,10 +19,10 @@
   <menuitem id="many_contract_menu" parent="main_contract_menu" groups="pabs_custom.group_contracts_user" action="action_many_contracts" sequence="2"/>
 
   <!-- Submenú de arqueos -->
-  <!--<menuitem id="menu_arching" name="Arqueos" groups="arching_group_user" parent="stock.menu_stock_root" action="pabs_arching_action" sequence="20"/>-->
+  <menuitem id="menu_arching" name="Arqueos" groups="arching_group_user" parent="stock.menu_stock_root" action="pabs_arching_action" sequence="20"/>
 
   <!-- Submenú de Oficinas -->
-  <menuitem id="menu_offices" name="Oficinas" parent="hr.menu_hr_root" action="pabs_office_action" sequence="20"/>
+  <menuitem id="menu_offices" name="Oficinas" groups="arching_group_user" parent="hr.menu_hr_root" action="pabs_office_action" sequence="20"/>
 
   <!-- Submenú esquema de pagos -->
   <menuitem id="menu_view_payment_scheme" action="payment_scheme_action" parent="hr.menu_human_resources_configuration" sequence="0"/>
