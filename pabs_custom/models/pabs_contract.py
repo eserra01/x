@@ -63,7 +63,6 @@ class PABSContracts(models.Model):
   phone = fields.Char(string='Teléfono', required=True)
   street = fields.Char(string='Calle / Número', required=True)
   name_service = fields.Many2one(comodel_name = 'product.product', related="lot_id.product_id", string='Servicio')
-  street = fields.Char(string='Calle / Número', required=True)
   street_toll = fields.Char(string = 'Calle')
   between_streets_toll = fields.Char(string ='Entre calles')
   vat = fields.Char(string='RFC', compute='_calc_rfc')
