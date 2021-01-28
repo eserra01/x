@@ -71,7 +71,7 @@ class StockQuants(models.Model):
               contad += 1
               self.env['det.operaciones'].create({
                 'transf_operaciones': trasfe.id,
-                'serie': new_seri})ov-acov-acv
+                'serie': new_seri})
         else:
           trasfe_id = trasfe.id
           type_transfer = trasfe.type_transfer
