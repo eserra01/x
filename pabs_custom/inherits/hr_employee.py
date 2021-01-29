@@ -68,7 +68,7 @@ class HrEmployee(models.Model):
     tracking=True,
     string='´País')
 
-  municipality_id = fields.Many2one(comodel_name='l10n_mx_edi.res.locality',
+  municipality_id = fields.Many2one(comodel_name='res.locality',
     string='Municipio',
     tracking=True)
 
