@@ -74,6 +74,14 @@ class account_Payment(models.Model):
             CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
             EsExcedente=False)
       return res
+
+
+    @api.onchange('contract')
+    def calc_partner_id(self):
+      for rec in self:
+        if rec.contract:
+          rec.partner_id = rec.contract.partner_id.id
+          
     #Fields mortuary
 
     binnacle =fields.Many2one(comodel_name = 'pabs.mortuary',string= "Número de bitácora")
@@ -87,4 +95,6 @@ class account_Payment(models.Model):
     place_of_death = fields.Char(string = "Lugar de fallecimiento")
 
     additional = fields.Char(string ="Adicionales")
+
+    made_the_pay = fields.Char(string='Persona que realizó el pago')
     
