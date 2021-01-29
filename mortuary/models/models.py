@@ -390,6 +390,13 @@ class Mortuary(models.Model):
                     contract_id.service_detail = 'made_receivable'
                 else:
                     contract_id.service_detail = 'realized'
+            else:
+                if vals.get('tc_no_contrato'):
+                    contract_id = contract_obj.browse(vals.get('tc_no_contrato'))
+                else:
+                    contract_id = self.tc_no_contrato
+                contract_id.service_detail = 'unrealized'
+
         return super(Mortuary, self).write(vals)
 
 
