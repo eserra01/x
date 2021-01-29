@@ -376,6 +376,23 @@ class Mortuary(models.Model):
         result = super(Mortuary, self).create(vals)
         return result
 
+    def write(self, vals):
+        contract_obj = self.env['pabs.contract']
+        servicio_obj = self.env['ii.servicio']
+        if vals.get('ii_servicio'):
+            servicio = servicio_obj.browse(vals.get('ii_servicio'))
+            if servicio.name.upper() == 'TERMINADO':
+                if vals.get('tc_no_contrato'):
+                    contract_id = contract_obj.browse(vals.get('tc_no_contrato'))
+                else:
+                    contract_id = self.tc_no_contrato
+                if contract_id.balance > 0:
+                    contract_id.service_detail = 'made_receivable'
+                else:
+                    contract_id.service_detail = 'realized'
+        return super(Mortuary, self).write(vals)
+
+
     def btn_edo_cuenta(self):
         return {
             'type': 'ir.actions.report',
