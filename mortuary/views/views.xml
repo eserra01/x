@@ -214,7 +214,7 @@
                   />
               </group>
               <group string="Titular de contrato" priority="5">
-                <field name="tc_no_contrato" />
+                <field name="tc_no_contrato" domain="[('state','=','contract')]"/>
                 <field name="tc_nomb_titular" />
               </group>
               </group>
