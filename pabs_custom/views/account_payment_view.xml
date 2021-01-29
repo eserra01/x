@@ -23,8 +23,9 @@
           <field name="debt_collector_code" attrs="{'invisible' : [('payment_type','=','outbound')], 'required' : [('payment_type','=','inbound')]}" domain="[('job_id.name','=','Cobrador')]"/>
         </xpath>
 
-        <xpath expr="//field[@name='journal_id']" position="before">
-          <field name="contract" attrs="{'invisible' : [('payment_type','=','outbound')], 'required' : [('payment_type','=','inbound')]}"/>
+        <xpath expr="//field[@name='partner_id']" position="replace">
+          <field name="contract" attrs="{'invisible' : [('payment_type','=','outbound')], 'required' : [('payment_type','=','inbound')]}" domain="[('state','=','contract')]"/>
+          <field name="partner_id" invisible="1"/>
         </xpath>
 
         <xpath expr="//field[@name='journal_id']" position="after">
@@ -73,6 +74,7 @@
           <field name="payment_date"/>
 
           <field name="way_to_pay"/>
+          <field name="made_the_pay"/>
           <field name="type_card_payment" attrs="{'invisible' : [('way_to_pay','!=','credit_card')], 'required' :  [('way_to_pay','=','credit_card')]}"/>
           <field name="card_number" attrs="{'invisible' : [('way_to_pay','!=','credit_card')], 'required' :  [('way_to_pay','=','credit_card')]}"/>
           <field name="card_expiration_date" attrs="{'invisible' : [('way_to_pay','!=','credit_card')], 'required' :  [('way_to_pay','=','credit_card')]}"/>
@@ -95,11 +97,6 @@
        <xpath expr="//field[@name='payment_date']" position="attributes">
           <attribute name="string">Fecha Cobranza</attribute>
       </xpath>
-
-      <xpath expr="//field[@name='journal_id']" position="attributes">
-        <attribute name="invisible">True</attribute>
-      </xpath>
-
 
       </field>  
     </record>
