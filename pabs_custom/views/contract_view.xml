@@ -285,7 +285,7 @@
               <!-- Comentarios -->
               <field name="comments" readonly="1"/>
               <field name= "new_comment" />
-              <button name="save_comment" string="Agregar" type="action" class="btn btn-primary" style="margin-rigth: 10px"/>
+              <button name="save_comment" string="Agregar" type="action" class="btn btn-primary oe_edit_only" style="margin-rigth: 10px"/>
               <!-- Fin comentarios -->
             </group>
           </group>
