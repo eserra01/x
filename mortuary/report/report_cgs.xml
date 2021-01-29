@@ -1,0 +1,591 @@
+<odoo>
+
+  <record id="paperformat_report_cgs" model="report.paperformat">
+    <field name="name">Report CGS</field>
+    <field name="default" eval="True"/>
+    <field name="format">Letter</field>
+    <field name="page_height">0</field>
+    <field name="page_width">0</field>
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">15</field>
+    <field name="margin_left">13</field>
+    <field name="margin_right">10</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">130</field>
+  </record>
+
+  <report
+    id="mortuary_report_cgs"
+    model="mortuary"
+    string="CGS"
+    report_type="qweb-pdf"
+    name="mortuary.cgs"
+    file="mortuary.cgs"
+    paperformat="mortuary.paperformat_report_cgs"
+    menu="False"/>
+
+  <template id="my_template_cgs">
+    <t t-if="not o" t-set="o" t-value="doc" />
+    <t t-if="not company">
+      <t t-if="company_id">
+        <t t-set="company" t-value="company_id" />
+      </t>
+      <t t-elif="o and 'company_id' in o">
+        <t t-set="company" t-value="o.company_id.sudo()" />
+      </t>
+      <t t-else="else">
+        <t t-set="company" t-value="res_company" />
+      </t>
+    </t>
+    <t t-call="mortuary.header_cgs" />
+    <div class="article">
+      <t t-raw="0"/>
+    </div>
+    <t t-call="mortuary.footer_cgs" />
+  </template>
+
+<template id="cgs">
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="doc">
+      <t t-call="mortuary.my_template_cgs">
+        <div class="page">
+          <style type="text/css">
+            .border_btn_abj_white {border-bottom: 1px solid #fff;}
+
+            .borders1px {border: 1px solid black;}
+            .borders2px {border: 2px solid black;}
+            .borders3px {border: 3px solid black;}
+            .espac3pt {word-spacing: 3pt;}
+            .espac4pt {word-spacing: 4pt;}
+            .espac5pt {word-spacing: 5pt;}
+            .espac6pt {word-spacing: 6pt;}
+            .espac7pt {word-spacing: 7pt;}
+            .espac8pt {word-spacing: 8pt;}
+            .espac9pt {word-spacing: 9pt;}
+            .espac10pt {word-spacing: 10pt;}
+            .espac15pt {word-spacing: 15pt;}
+            .espac20pt {word-spacing: 20pt;}
+            .espac23pt {word-spacing: 23pt;}
+            .espac26pt {word-spacing: 26pt;}
+            .espac30pt {word-spacing: 30pt;}
+            .border_btn_abj {border-bottom: 1px solid black;}
+            .border_btn_arr {border-top: 1px solid black;}
+            .red {background: red;}
+            .white {background: white;}
+            .color_white {color: white;}
+            .blue {background: blue;}
+            .tex_negrit {font-weight: bold;}
+
+            <!-- table, th, td {
+              border: 1px solid black;
+            } -->
+          </style>
+          <br/><br/><br/><br/><br/>
+
+          <div class="row">
+
+            <div class="col-7">
+                <table width="100%" style="border-collapse:separate; border-spacing:0 5px;">
+                  <colgroup>
+                    <col style="width: 5%" />
+                    <col style="width: 20%" />
+                    <col style="width: 30%" />
+                    <col style="width: 45%" />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <td class=""><strong>Fecha:</strong></td>
+                      <td class="border_btn_abj" colspan="2">
+                        <span t-esc="doc.ii_fecha_creacion.strftime('%d')"/> DE
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '01' ">ENERO</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '02' ">FEBRERO</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '03' ">MARZO</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '04' ">ABRIL</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '05' ">MAYO</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '06' ">JUNIO</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '07' ">JULIO</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '08' ">AGOSTO</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '09' ">SEPTIEMBRE</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '10' ">OCTUBRE</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '11' ">NOVIEMBRE</span>
+                        <span t-if="doc.ii_fecha_creacion.strftime('%m') == '12' ">DICIEMBRE</span>
+                        DEL <span t-esc="doc.ii_fecha_creacion.strftime('%Y')"/>
+                      </td>
+                      <td class="border_btn_abj_white"></td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="" colspan="2"><strong>Nombre del Finado:</strong><br/></td>
+                      <td class="border_btn_abj" colspan="2"><span t-field="doc.ii_finado"/></td>
+                    </tr>
+                    <tr>
+                      <td class="" colspan="2"><strong>Nombre del Titular</strong><br/></td>
+                      <td class="border_btn_abj" colspan="2"><span t-field="doc.tc_nomb_titular"/></td>
+                    </tr>
+                    <tr>
+                      <td class="" colspan="2"><strong>Nombre del Contacto:</strong><br/></td>
+                      <td class="border_btn_abj" colspan="2"><span t-field="doc.contact_1_nomb"/></td>
+                    </tr>
+                  </tbody>
+                </table>
+            </div>
+
+            <div class="col-5" style="padding-right:50px;">
+              <div class="text-right" width="100%" >
+                <span style="margin-right:10px;"><strong>Presento Documento:</strong></span>
+              </div>
+
+              <table width="30%" align="right">
+                <tr>
+                  <td width="30%">Contrato</td>
+                  <td class="borders1px" width="15%"></td>
+                </tr>
+                <tr>
+                  <td width="30%">Titulo</td>
+                  <td class="borders1px" width="15%"></td>
+                </tr>
+                <tr>
+                  <td width="30%">Solicitud</td>
+                  <td class="borders1px" width="15%"></td>
+                </tr>
+                <tr>
+                  <td width="30%">Responsiva</td>
+                  <td class="borders1px" width="15%"></td>
+                </tr>
+              </table>
+              <div class="clearfix"></div>
+
+              <table width="100%">
+                <tr>
+                  <td class="text-center"><strong>Relación Finado:</strong></td>
+                  <td width="60%" class="text-center border_btn_abj"><span t-field="doc.podp_relacion_confinad"/></td>
+                </tr>
+              </table>
+
+            </div>
+
+          </div><br/>
+
+          <div class="col-12 text-center">
+            <h5><strong>DATOS DE ATENCIÓN</strong></h5>
+          </div>
+
+          <table width="100%">
+            <tr>
+              <td width="20%"><strong>Servicio Atendido Por:</strong></td>
+              <td width="40%" class="border_btn_abj"><span t-field="doc.ds_atiende_servicio"/></td>
+              <td width="10%" class="text-center"><strong>Saldo PABS:</strong></td>
+              <td width="10%" class="border_btn_abj text-center"><span t-field="doc.psa_saldo_PABS"/></td>
+              <td width="3%"></td>
+              <td width="17%" class="border_btn_abj text-center">&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+              &amp;nbsp;&amp;nbsp;&amp;nbsp;</td>
+            </tr>
+          </table>
+
+          <table width="100%" style="margin-top:10px">
+            <tr>
+              <td width="10%" class="text-center"><strong>Tipo de Plan:</strong></td>
+              <td width="10%" class="border_btn_abj text-center"><span t-field="doc.ds_tipo_de_servicio"/></td>
+              <td class="text-center"><strong>Costo de paquete:</strong></td>
+              <td class="border_btn_abj text-center"><span t-field="doc.psa_costo_paquete"/></td>
+              <td class="text-center"><strong>Contrato:</strong></td>
+              <td class="border_btn_abj text-center"><span t-field="doc.tc_no_contrato"/></td>
+              <td class="text-center"><strong>Solicitud:</strong></td>
+              <td class="border_btn_abj text-center">&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+              &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;</td>
+            </tr>
+          </table>
+
+          <table width="100%" style="margin-top:10px">
+            <tr>
+              <td width="10%" class="text-center"><strong>Telefonos:</strong></td>
+              <td width="40%" class="border_btn_abj text-center"></td>
+              <td class="text-center"><strong>BENEFICIOS INCLUIDOS EN CONTRATO</strong></td>
+            </tr>
+          </table><br/>
+
+          <div class="row" style="width:100%;">
+            <div style="width:4%;"></div>
+            <div style="width:48%;">
+              <table width="95%">
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="27%">Ataùd o cambio</td>
+                  <td width="13%"></td>
+                  <td class="text-right border_btn_abj" width="48%"><span t-field="doc.psa_ataud_o_cambio"/></td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center"></td>
+                  <td></td>
+                  <td>Embalsamado</td>
+                  <td></td>
+                  <td class="text-right border_btn_abj"><span t-field="doc.psa_embalsamado"/></td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center"></td>
+                  <td></td>
+                  <td>Certificado</td>
+                  <td></td>
+                  <td class="text-right border_btn_abj"><span t-field="doc.psa_certificado"/></td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center"></td>
+                  <td></td>
+                  <td>Cremaciòn</td>
+                  <td></td>
+                  <td class="text-right border_btn_abj"><span t-field="doc.psa_cremacion"/></td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center"></td>
+                  <td></td>
+                  <td>Capilla domicilio</td>
+                  <td></td>
+                  <td class="text-right border_btn_abj"><span t-field="doc.psa_capilla_domicilio"/></td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center"></td>
+                  <td></td>
+                  <td>Capilla recinto</td>
+                  <td></td>
+                  <td class="text-right border_btn_abj"><span t-field="doc.psa_capilla_recinto"/></td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center"></td>
+                  <td></td>
+                  <td>Cafeterìa</td>
+                  <td></td>
+                  <td class="text-right border_btn_abj"><span t-field="doc.psa_cafeteria"/></td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center"></td>
+                  <td></td>
+                  <td>Traslado</td>
+                  <td></td>
+                  <td class="text-right border_btn_abj"><span t-field="doc.psa_traslado"/></td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center"></td>
+                  <td></td>
+                  <td>Tràmites</td>
+                  <td></td>
+                  <td class="text-right border_btn_abj"><span t-field="doc.psa_tramites"/></td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center"></td>
+                  <td></td>
+                  <td>Camiòn</td>
+                  <td></td>
+                  <td class="text-right border_btn_abj"><span t-field="doc.psa_camion"/></td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center"></td>
+                  <td></td>
+                  <td>Otros</td>
+                  <td></td>
+                  <td class="text-right border_btn_abj"><span t-esc="'{0:.2f}'.format(doc.psa_otros)"/></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td><br/><br/><strong>Total</strong></td>
+                  <t t-set="total" t-value="doc.psa_saldo_PABS + doc.psa_ataud_o_cambio + doc.psa_embalsamado + doc.psa_certificado + doc.psa_cremacion + doc.psa_capilla_domicilio + doc.psa_capilla_recinto + doc.psa_cafeteria + doc.psa_traslado + doc.psa_tramites + doc.psa_camion + doc.psa_otros"/>
+                  <td class="text-right border_btn_abj"><br/><br/><span t-esc="'{0:.2f}'.format(total)"/></td>
+                </tr>
+              </table>
+            </div>
+
+            <div style="width:4%"></div>
+            <div style="width:44%;">
+              <table width="100%">
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Traslado de la persona fallecida zona metropolitana</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Velación en capillas</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Velación en domicilio</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Carroza para traslado de cortejo zona metropolitana</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Asesoría en trámite de certificado y acta de defunción</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">100 esquelas, crucifijos y tratamiento terapeutico</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Servicio de cafetería ilimitada en capilla</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Servicio de cafetería básico en domicilio</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Servicio de cremación</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Préstamo de ataúd para velación</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Urna para cenizas</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Arreglo estético de cuerpo</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Ataud para inhumación</td>
+                </tr>
+                <tr>
+                  <td class="borders1px text-center" width="10%"></td>
+                  <td width="2%"></td>
+                  <td width="88%">Libro de registro, rosario y guía de rosario</td>
+                </tr>
+              </table>
+            </div>
+          </div><br/>
+
+          <table width="100%" style="border-collapse:separate; border-spacing:0 10px;">
+            <tr>
+              <td width="11%"></td>
+              <td width="14%"><strong>Detalle de ataúd</strong></td>
+              <td width="40%" class="border_btn_abj"><span t-field="doc.ds_ataud"/></td>
+              <td class="text-right"><strong>Velación en</strong></td>
+              <td width="1%"></td>
+              <td class="border_btn_abj text-center"><span t-field="doc.iv_lugar_de_velacion"/></td>
+              <td width="11%"></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td><strong>Detalle de urna</strong></td>
+              <td class="border_btn_abj"><span t-field="doc.ds_urna"/></td>
+              <td class="text-right"><strong>Capilla</strong></td>
+              <td></td>
+              <td class="border_btn_abj text-center"><span t-field="doc.ds_capilla"/></td>
+              <td></td>
+            </tr>
+          </table><br/>
+
+          <div class="col-12 text-center">
+            <h5><strong>DOMICILIO DE VELACIÓN O TRASLADO</strong></h5>
+          </div>
+
+          <table width="100%">
+            <tr>
+              <td width="4%"></td>
+              <td width="5%"><strong>Domicilio</strong></td>
+              <td width="20%" class="border_btn_abj"><span t-field="doc.iv_direccion"/></td>
+              <td width="5%" class="text-center"><strong>Colonia</strong></td>
+              <td width="20%" class="border_btn_abj"></td>
+              <td width="5%" class="text-center"><strong>Municipio</strong></td>
+              <td width="20%" class="border_btn_abj"></td>
+            </tr>
+          </table><br/>
+
+
+          <table width="100%">
+            <tr>
+              <td>
+                <strong>Las personas autorizadas para recibir documentación, solicitar facturas y según sea el caso cenizas son:</strong>
+              </td>
+            </tr>
+            <tr>
+              <td class="border_btn_abj"><span t-field="doc.ds_personas_autorizadas"/></td>
+            </tr>
+          </table>
+
+          <table width="100%" style="font-size:14px; border-collapse:separate; border-spacing:0 10px;">
+            <tr>
+              <td width="38%">
+                La documentación y/o cenizas serán entregadas en nuestra sucursal de
+              </td>
+        <field name="ds_sucursal_q_entreg_cenizas" />
+              <td width="23%"><strong><span t-field="doc.ds_sucursal_q_entreg_cenizas"/></strong></td>
+              <td width="7%">en la fecha</td>
+              <td width="8%"><strong><span t-field="doc.ds_fecha_entrega_cenizas"/></strong></td>
+              <td width="24%">
+                En caso de requerir factura, solicitarla
+              </td>
+            </tr>
+            <tr>
+              <td colspan="5">
+                en el mes en curso de su servicio, o más tardar el día 10 del siguiente mes, lo anterior por disposición fiscal del SAT.
+              </td>
+            </tr>
+            <tr>
+              <td colspan="5">
+                El horario para recoger documentos es el Lunes a Viernes de 9:0 am a 6:00 pm y Sábados de 9:00 am a 1:00 pm con identificación oficial (IFE, Cédula Profesional o Pasaporte vigente).
+              </td>
+            </tr>
+            <tr>
+              <td colspan="5">
+                La entrega de cenizas serán las 24 horas de los 7 días de la semana con identificación  oficial (IFE, Cédula Profesional o Pasaporte vigente).
+              </td>
+            </tr>
+          </table>
+
+          <table width="100%" style="margin-top:5px;">
+            <tr>
+              <td>
+                <strong>Los servicios adicionales que podrán ser contratados son los siguientes:</strong>
+              </td>
+            </tr>
+            <tr>
+              <td class="border_btn_abj"><span t-field="doc.psa_servi_adicionals"/></td>
+            </tr>
+          </table>
+
+          <table width="100%" style="margin-top:10px;">
+            <tr>
+              <td width="12%"><strong>Observaciones</strong></td>
+              <td class="border_btn_abj"></td>
+            </tr>
+          </table><br/><br/><br/>
+
+          <table width="100%">
+            <tr>
+              <td width="10%"></td>
+              <td width="35%" class="border_btn_arr text-center">Nombre</td>
+              <td width="10%"></td>
+              <td width="35%" class="border_btn_arr text-center">Firma</td>
+              <td width="10%"></td>
+            </tr>
+          </table><br/>
+
+          <h5><strong>Recepción de documentos</strong></h5> <br/>
+
+          <table width="100%">
+            <tr>
+              <td width="13%"><strong>Acta de defunción</strong></td>
+              <td width="27%" class="border_btn_abj"></td>
+              <td width="2%"></td>
+              <td width="18%" class="border_btn_abj"></td>
+              <td width="2%"></td>
+              <td width="18%" class="border_btn_abj"></td>
+              <td width="2%"></td>
+              <td width="18%" class="border_btn_abj"></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td class="text-center">Nombre</td>
+              <td></td>
+              <td class="text-center">Firma</td>
+              <td></td>
+              <td class="text-center">Fecha</td>
+              <td></td>
+              <td class="text-center">Entregó</td>
+            </tr>
+          </table><br/>
+
+          <table width="100%">
+            <tr>
+              <td width="7%"><strong>Pagaré</strong></td>
+              <td width="4%" class="borders1px"></td>
+              <td width="2%"></td>
+              <td width="27%" class="border_btn_abj"></td>
+              <td width="2%"></td>
+              <td width="18%" class="border_btn_abj"></td>
+              <td width="2%"></td>
+              <td width="18%" class="border_btn_abj"></td>
+              <td width="2%"></td>
+              <td width="18%" class="border_btn_abj"></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td class="text-center">Nombre</td>
+              <td></td>
+              <td class="text-center">Firma</td>
+              <td></td>
+              <td class="text-center">Fecha</td>
+              <td></td>
+              <td class="text-center">Entregó</td>
+            </tr>
+          </table>
+
+
+        </div>
+      </t>
+    </t>
+  </t>
+</template>
+
+<template id="header_cgs">
+  <div class="header">
+
+    <style type="text/css">
+      .borders1px {border: 1px solid black;}
+      .espac9pt {word-spacing: 9pt;}
+    </style>
+
+    <table width="100%" cellspacing="0" cellpadding="0">
+      <tr>
+        <td width="20%" rowspan="2" aling="top">
+          <img class="img" t-att-src="image_data_uri(company.logo)" style="width:250px; max-height: 105px;" alt="Logo"/>
+        </td>
+        <td  class="text-center" aling="top">
+          <h3><strong><br/>CONDICIONES GENERALES DEL SERVICIO</strong></h3>
+        </td>
+        <td width="20%" rowspan="2" aling="top">
+        </td>
+      </tr>
+    </table>
+
+    <div class="row">
+      <div class="col-12 text-center">
+        <span class="espac9pt">
+          <strong>BITACORA</strong>
+        </span>
+        <label class="borders1px" style="width:15%; height:20%;"><strong><span t-field="doc.name"/></strong></label>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+  <template id="footer_cgs">
+    <div class="footer">
+      <div class="text-center" style="border-top: 1px solid black;">
+        <ul class="list-inline">
+          Page:
+          <span class="page" />
+          /
+          <span class="topage" />
+        </ul>
+      </div>
+    </div>
+  </template>
+
+</odoo>

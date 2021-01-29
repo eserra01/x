@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="mortuary.estado_cuenta2">
+        <t t-call="web.html_container">
+          <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+              <div class="page">
+
+                <table width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="20%" rowspan="2" aling="top">
+                      <img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="width:250px;"/>
+                      <!-- <img src="mortuary/static/description/image.png" style="width:250px;" /> -->
+                    </td>
+                    <td  class="text-center" aling="top">
+                      <h3><strong>PABS - Programa de Apoyo De Beneficio Social <br/><br/>ESTADO DE CUENTA</strong></h3>
+                    </td>
+                    <td width="20%" rowspan="2" aling="top">
+                    </td>
+                  </tr>
+                </table><br/>
+
+                <table width="100%">
+                  <tr>
+                    <td width="7%"><ins><strong>Contrato:</strong></ins></td>
+                    <td><span t-field="doc.tc_no_contrato"/></td>
+                    <td class="text-right" width="20%"><ins><strong>Fecha contrato:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
+                    <td>27/07/2019</td>
+                    <td class="text-right" width="20%"><ins><strong>Solicitud:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
+                    <td>020405024716</td>
+                    <td class="text-right" width="20%"><ins><strong>Costo:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
+                    <td>21,900.00</td>
+                    <td class="text-right" width="20%"><ins><strong>Saldo:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
+                    <td>20,900.00</td>
+                  </tr>
+                </table>
+
+                <table width="100%">
+                  <tr>
+                    <td width="7%"><ins><strong>Cliente:</strong></ins></td>
+                    <td width="40%">RICAARDO RIZO LOPEZ</td>
+                    <td width="7%"><ins><strong>Telefono:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
+                    <td width="5%">1234567891</td>
+                  </tr>
+                  <tr>
+                    <td><ins><strong>Colonia:</strong></ins></td>
+                    <td>ZALATITAN</td>
+                    <td><ins><strong>Localidad:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
+                    <td>Tonala</td>
+                  </tr>
+                  <tr>
+                    <td><ins><strong>Domicilio:</strong></ins></td>
+                    <td>AV CONSTITUCIÓN 50 B</td>
+                    <td colspan="2"><ins><strong>Importe de Pago Actual:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
+                    <td>100:00</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"></td>
+                    <td colspan="2"><ins><strong>Código Activación:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
+                    <td>C00019998</td>
+                  </tr>
+                </table><br/>
+
+                <table width="100%">
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="width: 20%; border: none; border-bottom: 1px solid black;">Fecha de recibo</th>
+                      <th class="text-center" style="width: 15%; border: none; border-bottom: 1px solid black;">Recibo</th>
+                      <th class="text-center" style="width: 20%; border: none; border-bottom: 1px solid black;">Importe</th>
+                      <th class="text-center" style="width: 25%; border: none; border-bottom: 1px solid black;">Cobrador</th>
+                      <th class="text-center" style="width: 20%; border: none; border-bottom: 1px solid black;">Movimiento</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span/>27/07/2019</td>
+                      <td><span/>100219125</td>
+                      <td><span>100.00</span></td>
+                      <td><span/>FRANCISCO BUENROSTRO LOPEZ</td>
+                      <td><span>INVERSIÓN INICIAL</span></td>
+                    </tr>
+                    <tr>
+                      <td><span/>27/07/2019</td>
+                      <td><span/>120236</td>
+                      <td><span>100.00</span></td>
+                      <td><span/>ALBERTO CHAVEZ MANZANO</td>
+                      <td><span>ABONO</span></td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td>Total</td>
+                      <td><strong>1,000.00</strong></td>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table><br/>
+
+                <table width="60%">
+                  <tr>
+                    <td width="20%"><strong>Días sin Abonar:</strong></td>
+                    <td>391</td>
+                    <td><strong>Estatus:</strong></td>
+                    <td>INACTIVO</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Monto Atrasado:</strong></td>
+                    <td>6300</td>
+                    <td><strong>Motivo:</strong></td>
+                    <td>SUSPENSIÓN PARA CANCELAR</td>
+                  </tr>
+                </table>
+
+                <table width="60%">
+                  <tr>
+                    <td width="10%"><strong>Servicio:</strong></td>
+                    <td>2CJ PREMIUM</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ataud:</strong></td>
+                    <td>PREMIUM</td>
+                  </tr>
+                </table>
+
+              </div>
+            </t>
+          </t>
+        </t>
+    	</template>
+
+  </data>
+
+	<record id="paperformat_estado_cuenta2" model="report.paperformat">
+    <field name="name">PF Sale Order Portrait</field>
+    <field name="default" eval="True"/>
+    <field name="format">A4</field>
+    <field name="page_height">0</field>
+    <field name="page_width">0</field>
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">15</field>
+    <field name="margin_left">7</field>
+    <field name="margin_right">7</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">130</field>
+ </record>
+
+	<report
+    string="Estado de cuenta"
+    id="id_estado_cuenta2"
+    model='mortuary'
+    name="mortuary.estado_cuenta2"
+    file="mortuary.estado_cuenta2"
+    report_type="qweb-pdf"
+    print_report_name="'Estado de cuenta'"
+    paperformat="mortuary.paperformat_estado_cuenta2"
+    menu="False"
+  />
+
+</odoo>

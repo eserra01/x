@@ -1,0 +1,40 @@
+<odoo>
+  <data>
+
+    <record id="ii_causa_fallecim_form_view" model="ir.ui.view">
+      <field name="name">ii.causa.fallecim.form.view</field>
+      <field name="model">ii.causa.fallecim</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+
+              <group>
+                <field name="name" />
+              </group>
+
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="ii_causa_fallecim_tree_view" model="ir.ui.view">
+      <field name="name">ii.causa.fallecim.tree.view</field>
+      <field name="model">ii.causa.fallecim</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_ii_causa_fallecim" model="ir.actions.act_window">
+      <field name="name">Causas de fallecimiento</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">ii.causa.fallecim</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+  </data>
+</odoo>
