@@ -43,6 +43,7 @@ class PABSContracts(models.Model):
 
   type_view = fields.Selection(selection=TYPE, string='Tipo de vista')
   agent_id = fields.Char(string='Agente', required=True)#, default=lambda self: self.env.user.name)
+  street = fields.Char(string='Calle / número')
   captured = fields.Boolean(string='Capturado previamente')
   activation_code = fields.Char(string='Número de activación', tracking=True)
   street_toll = fields.Char(string ='Calle')
