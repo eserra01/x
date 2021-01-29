@@ -1,0 +1,337 @@
+<odoo>
+
+  <record id="paperformat_report_agreement" model="report.paperformat">
+    <field name="name">Report agreement</field>
+    <field name="default" eval="True"/>
+    <field name="format">Legal</field>
+    <field name="page_height">0</field>
+    <field name="page_width">0</field>
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">15</field>
+    <field name="margin_left">13</field>
+    <field name="margin_right">10</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">130</field>
+  </record>
+
+  <report
+    id="mortuary_report_agreement"
+    model="mortuary"
+    string="Convenio de pago"
+    report_type="qweb-pdf"
+    name="mortuary.agreement"
+    file="mortuary.agreement"
+    paperformat="mortuary.paperformat_report_agreement"
+    menu="False" />
+
+  <template id="my_template_agreement">
+    <t t-if="not o" t-set="o" t-value="doc" />
+    <t t-if="not company">
+      <t t-if="company_id">
+        <t t-set="company" t-value="company_id" />
+      </t>
+      <t t-elif="o and 'company_id' in o">
+        <t t-set="company" t-value="o.company_id.sudo()" />
+      </t>
+      <t t-else="else">
+        <t t-set="company" t-value="res_company" />
+      </t>
+    </t>
+    <t t-call="mortuary.header_agreement" />
+    <div class="article">
+      <t t-raw="0"/>
+    </div>
+    <t t-call="mortuary.footer_agreement" />
+  </template>
+
+<template id="agreement">
+  <t t-call="web.html_container">
+    <t t-foreach="docs" t-as="doc">
+      <t t-call="mortuary.my_template_agreement">
+        <div class="page">
+          <style type="text/css">
+            .border_btn_abj_white {border-bottom: 1px solid #fff;}
+
+            .borders1px {border: 1px solid black;}
+            .borders2px {border: 2px solid black;}
+            .borders3px {border: 3px solid black;}
+            .espac3pt {word-spacing: 3pt;}
+            .espac4pt {word-spacing: 4pt;}
+            .espac5pt {word-spacing: 5pt;}
+            .espac6pt {word-spacing: 6pt;}
+            .espac7pt {word-spacing: 7pt;}
+            .espac8pt {word-spacing: 8pt;}
+            .espac9pt {word-spacing: 9pt;}
+            .espac10pt {word-spacing: 10pt;}
+            .espac15pt {word-spacing: 15pt;}
+            .espac20pt {word-spacing: 20pt;}
+            .espac23pt {word-spacing: 23pt;}
+            .espac26pt {word-spacing: 26pt;}
+            .espac30pt {word-spacing: 30pt;}
+            .border_btn_abj {border-bottom: 1px solid black;}
+            .border_btn_arr {border-top: 1px solid black;}
+            .red {background: red;}
+            .white {background: white;}
+            .color_white {color: white;}
+            .blue {background: blue;}
+            .tex_negrit {font-weight: bold;}
+
+            <!-- table, th, td {
+              border: 1px solid black;
+            } -->
+          </style>
+
+          <br/><br/><br/><br/><br/><br/><br/>
+          <t t-set="total" t-value="0"/>
+          <t t-foreach="doc.get_convenio_pagos()" t-as="pag">
+            <t t-set="total" t-value="total+pag.monto"/>
+          </t>
+          <div class="" style="width:90%; margin:auto; font-size:17px;">
+            <div class="" style="width:100%; text-align:justify; text-justify: inter-word;">
+              Que realizan por una parte LATINOAMERICANA RECINTO FUNERAL, y por otra parte <strong><span t-field="doc.cs_cliente_confir" /></strong> para
+              cubrir el importe de <strong><span t-esc="'{:,.2f}'.format(float(total))"/></strong> pesos, mismo que deriva del saldo pendiente de pago por el servicio funerario realizado el
+              día
+              <strong><span t-esc="doc.ii_fecha_creacion.strftime('%d')"/> DEL MES DE
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '01' ">ENE</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '02' ">FEBRERO</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '03' ">MARZO</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '04' ">ABRIL</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '05' ">MAYO</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '06' ">JUNIO</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '07' ">JULIO</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '08' ">AGOSTO</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '09' ">SEPTIEMBRE</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '10' ">OCTUBRE</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '11' ">NOVIEMBRE</span>
+                  <span t-if="doc.ii_fecha_creacion.strftime('%m') == '12' ">DICIEMBRE</span>
+                  DEL <span t-esc="doc.ii_fecha_creacion.strftime('%Y')"/></strong>, otorgado a quien en vida llevó el nombre de <strong><span t-field="doc.ii_finado" /></strong> y que me comprometo a pagar de la siguiente forma:
+            </div><br/>
+
+            <table width="100%">
+              <tr>
+                <th width="15%" class="">FECHA DE PAGO</th>
+                <th width="2%"></th>
+                <th width="15%" class="text-center">IMPORTE</th>
+                <th width="2%"></th>
+                <th width="32%" class="">CONCEPTO</th>
+                <th width="2%"></th>
+                <th width="15%" class="text-center">No. DE RECIBO</th>
+                <th width="2%"></th>
+                <th width="15%" class="text-center">IMPORTE PAGADO</th>
+              </tr>
+                <tr t-foreach="doc.get_convenio_pagos()" t-as="pag">
+                  <td class="text-center border_btn_abj">
+                    <span t-esc="pag.fecha.strftime('%d')"/>-
+                    <span t-if="pag.fecha.strftime('%m') == '01' ">ene-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '02' ">feb-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '03' ">mar-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '04' ">abr-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '05' ">may-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '06' ">jun-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '07' ">jul-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '08' ">ago-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '09' ">sep-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '10' ">oct-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '11' ">nov-</span>
+                    <span t-if="pag.fecha.strftime('%m') == '12' ">dic-</span>
+                    <span t-esc="pag.fecha.strftime('%Y')"/>
+                  </td>
+                  <td></td>
+                  <td class="text-center border_btn_abj">$<span t-esc="'{:,.2f}'.format(float(pag.monto))"/></td>
+                  <td></td>
+                  <td class="border_btn_abj"><t t-esc="pag.concepto" /></td>
+                  <td></td>
+                  <td class="text-center border_btn_abj"></td>
+                  <td></td>
+                  <td class="text-center border_btn_abj"></td>
+                </tr>
+            </table><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+
+            <table width="100%">
+              <tr>
+                <td width="7%"></td>
+                <td width="38%" class="border_btn_arr text-center">DAVID GONZALES VALENVIA</td>
+                <td width="10%"></td>
+                <td width="38%" class="border_btn_arr text-center">OCTAVIO FABIAN ZUÑIGA CARRILLO</td>
+                <td width="7%"></td>
+              </tr>
+            </table><br/><br/>
+
+            <span><strong>Observaciones:</strong></span><br/><br/>
+
+            <hr style="margin-left:10%; margin-right:10%; margin-bottom:20px" class="border_btn_abj" />
+            <hr style="margin-left:10%; margin-right:10%; margin-bottom:20px" class="border_btn_abj" />
+            <hr style="margin-left:10%; margin-right:10%; margin-bottom:20px" class="border_btn_abj" />
+            <hr style="margin-left:10%; margin-right:10%;" class="border_btn_abj" /><br/><br/>
+
+            <hr style="border: 2px dotted gray;"/>
+
+            <div class="borders1px" style="width:100%;"><br/>
+              <table width="100%">
+                <tr>
+                  <td width="10%" class="text-center"><strong>PAGARE</strong></td>
+                  <td></td>
+                  <td width="40%" class="text-right"><strong>BUENO POR $<span t-esc="'{:,.2f}'.format(float(total))"/> pesos  &amp;nbsp;&amp;nbsp;</strong></td>
+                </tr>
+              </table><br/><br/>
+
+              <div style="width:92%; margin:auto; text-align:justify; text-justify: inter-word; font-size:17px;">
+                Por el presente pagaré reconocemos deber y nos oblígamos a pagar  en esta Ciudad a la orden de ABELARDO AHUMADA RANGEL
+                el día &amp;nbsp;&amp;nbsp;
+                <ins>
+                  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                </ins>&amp;nbsp;&amp;nbsp;
+                de
+                &amp;nbsp;&amp;nbsp;
+                <ins>
+                  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                  &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                </ins>&amp;nbsp;&amp;nbsp;
+                de 20
+                <ins>&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;</ins>
+
+                &amp;nbsp;&amp;nbsp;
+                la cantidad de
+               &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                (
+                  <ins>
+                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                  </ins>
+                )
+              </div>
+
+              <div style="width:92%; margin:auto; text-align:justify; text-justify: inter-word; font-size:17px;">
+                Valor recibido a nuestra entera satisfacción. Este pagaré se liquidará de acuerdo al calendario de pagos programador e insertos
+                en la parte superior del mismo y está sujeto a la condición de que, al no pagarse cualquiera de ellos a su vencimiento, serán
+                exigibles todos los pagos que le sigan en número, además de los ya vencidos. De no realizarce el pago de la cantidad que se
+                detalla en el vencimiento del calendario de pagos, causará intereses moratorios a razón de 2% mensual desde la fecha de
+                vencimiento hasta la fecha de su liquidación.
+              </div><br/><br/>
+
+              <div class="col-12 text-center">
+                <h6><strong>ACEPTAMOS</strong></h6>
+              </div><br/>
+
+              <div style="width:92%; margin:auto;">
+                <table width="100%">
+                  <tr>
+                    <td width="10%">Firma</td>
+                    <td width="28%" class="border_btn_abj text-center"></td>
+                    <td width="15%"></td>
+                    <td width="10%">Firma</td>
+                    <td width="28%" class="border_btn_abj text-center"></td>
+                    <td width="9%"></td>
+                  </tr>
+                  <tr>
+                    <td>Nombre</td>
+                    <td class="border_btn_abj text-center"></td>
+                    <td></td>
+                    <td>Nombre</td>
+                    <td class="border_btn_abj text-center"></td>
+                    <td></td>
+                  </tr>
+
+                  <tr>
+                    <td>Domicilio</td>
+                    <td class="border_btn_abj text-center"></td>
+                    <td></td>
+                    <td>Domicilio</td>
+                    <td class="border_btn_abj text-center"></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>Colonia</td>
+                    <td class="border_btn_abj text-center"></td>
+                    <td></td>
+                    <td>Colonia</td>
+                    <td class="border_btn_abj text-center"></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>Ciudad</td>
+                    <td class="border_btn_abj text-center"></td>
+                    <td></td>
+                    <td>Ciudad</td>
+                    <td class="border_btn_abj text-center"></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td>Teléfonos</td>
+                    <td class="border_btn_abj text-center"></td>
+                    <td></td>
+                    <td>Teléfonos</td>
+                    <td class="border_btn_abj text-center"></td>
+                    <td></td>
+                  </tr>
+                </table><br/><br/>
+
+                <div class="text-right" style="width:100%;">
+                  <strong>Bitácora: <span t-field="doc.name"/></strong>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </t>
+    </t>
+  </t>
+</template>
+
+<template id="header_agreement">
+  <div class="header">
+
+    <style type="text/css">
+      .borders1px {border: 1px solid black;}
+      .espac9pt {word-spacing: 9pt;}
+    </style>
+
+    <div class="" style="width:75%; margin:auto;">
+      <table width="100%" cellspacing="0" cellpadding="0">
+        <tr>
+          <td width="30%" rowspan="2" aling="top"></td>
+          <td width="40%" class="text-center" rowspan="2" aling="top">
+            <!-- <img class="img" t-att-src="image_data_uri(company.logo)" style="width:270px;" alt="Logo"/><br/><br/> -->
+            <img class="img" t-att-src="image_data_uri(company.logo)" style="width:270px; max-height: 105px;" alt="Logo"/><br/><br/>
+            <h5><strong>CONVENIO DE PAGO</strong></h5>
+          </td>
+          <td width="30%" class="text-right" aling="top">
+            <span><strong><br/><br/>Bitácora: <span t-field="doc.name"/></strong></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+</template>
+
+  <template id="footer_agreement">
+    <div class="footer">
+      <div class="text-center" style="border-top: 1px solid black;">
+        <ul class="list-inline">
+          Page:
+          <span class="page" />
+          /
+          <span class="topage" />
+        </ul>
+      </div>
+    </div>
+  </template>
+
+</odoo>

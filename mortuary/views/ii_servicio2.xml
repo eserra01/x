@@ -1,0 +1,40 @@
+<odoo>
+  <data>
+
+    <record id="ii_servicio2_form_view" model="ir.ui.view">
+      <field name="name">ii.servicio2.form.view</field>
+      <field name="model">ii.servicio2</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+
+              <group>
+                <field name="name" />
+              </group>
+
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="ii_servicio2_tree_view" model="ir.ui.view">
+      <field name="name">ii.servicio2.tree.view</field>
+      <field name="model">ii.servicio2</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_ii_servicio2" model="ir.actions.act_window">
+      <field name="name">Servicios2</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">ii.servicio2</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+  </data>
+</odoo>

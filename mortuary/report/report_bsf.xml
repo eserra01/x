@@ -1,0 +1,934 @@
+<odoo>
+    <record id="paperformat_report_bsf" model="report.paperformat">
+        <field name="name">Report BSF</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">15</field>
+        <field name="margin_left">13</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">3</field>
+        <field name="dpi">130</field>
+    </record>
+    <report
+        id="mortuary_report_bsf"
+        model="mortuary"
+        string="BSF"
+        report_type="qweb-pdf"
+        name="mortuary.bsf"
+        file="mortuary.bsf"
+        paperformat="mortuary.paperformat_report_bsf"
+        menu="False" />
+
+    <template id="my_template">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+        <t t-if="not company">
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="else">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+        <t t-call="mortuary.header" />
+        <div class="article">
+          <t t-raw="0"/>
+        </div>
+        <t t-call="mortuary.footer" />
+    </template>
+    <template id="bsf">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="mortuary.my_template">
+                    <div class="page">
+                        <style type="text/css">
+                            .borders1px {border: 1px solid black;}
+                            .borders2px {border: 2px solid black;}
+                            .borders3px {border: 3px solid black;}
+                            .espac3pt {word-spacing: 3pt;}
+                            .espac4pt {word-spacing: 4pt;}
+                            .espac5pt {word-spacing: 5pt;}
+                            .espac6pt {word-spacing: 6pt;}
+                            .espac7pt {word-spacing: 7pt;}
+                            .espac8pt {word-spacing: 8pt;}
+                            .espac9pt {word-spacing: 9pt;}
+                            .espac10pt {word-spacing: 10pt;}
+                            .espac15pt {word-spacing: 15pt;}
+                            .espac20pt {word-spacing: 20pt;}
+                            .espac23pt {word-spacing: 23pt;}
+                            .espac26pt {word-spacing: 26pt;}
+                            .espac30pt {word-spacing: 30pt;}
+                            .border_btn_abj {border-bottom: 1px solid black;}
+                            .red {background: red;}
+                            .white {background: white;}
+                            .color_white {color: white;}
+                            .blue {background: blue;}
+                            .tex_negrit {font-weight: bold;}
+                        </style>
+                        <br/><br/><br/><br/><br/><br/><br/><br/>
+                        <div class="borders3px" style="width:100%;">
+                            <br/>
+                            <h5 class="text-center tex_negrit"><strong>FORMA DE CONTRATO</strong></h5>
+                            <div class="row text-center" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:23%">
+                                    <span class="espac20pt">
+                                        <strong>LLAMADA</strong>
+                                        <span class="espac20pt"></span>
+                                        <label class="borders1px text-center" style="width:25%; height:12%;">
+                                            <t t-if="doc.ii_llamada">
+                                                <span t-field="doc.ii_llamada"/>
+                                            </t>
+                                            <t t-else="">
+                                              <span class="color_white">.</span>
+                                            </t>
+                                        </label>
+                                    </span>
+                                </div>
+                                <div style="width:23%">
+                                    <strong>VISTA</strong>
+                                    <span class="espac20pt">
+                                        <strong>PERSONAL</strong>
+                                        <span class="espac20pt"></span>
+                                        <label class="borders1px text-center" style="width:25%; height:12%;">
+                                            <t t-if="doc.ii_vista_personal">
+                                                <span t-field="doc.ii_vista_personal"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span class="color_white">.</span>
+                                            </t>
+                                        </label>
+                                    </span>
+                                </div>
+                                <div style="width:50%">
+                                    <strong>TOMO LOS</strong>
+                                    <span class="espac20pt">
+                                        <strong>DATOS</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:72%"><span t-field="doc.ds_atiende_servicio"/></label>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:3%">
+                                </div>
+                                <div style="width:57%;">
+                                    <strong>NOMBRE DEL</strong>
+                                    <span class="espac20pt">
+                                        <strong>FINADO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:70%"><span t-field="doc.ii_finado"/></label>
+                                </div>
+                                <div style="width:40%;">
+                                    <strong>FECHA DE</strong>
+                                    <span class="espac20pt">
+                                        <strong>NACIMIENTO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:58%">1997</label>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:3%">
+                                </div>
+                                <div style="width:57%;">
+                                    <strong>NOMBRE DEL</strong>
+                                    <span class="espac20pt">
+                                        <strong>TITULAR</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="border_btn_abj" style="width:70%"><span t-field="doc.tc_nomb_titular"/></label>
+                                </div>
+                                <div style="width:40%;">
+                                    <span class="espac20pt">
+                                        <strong>CONTRATO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:76%"><span t-field="doc.tc_no_contrato"/></label>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:3%">
+                                </div>
+                                <div style="width:52%;">
+                                    <strong>NOMBRE DEL</strong>
+                                    <span class="espac20pt">
+                                        <strong>CONTACTO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="border_btn_abj" style="width:65%"><span t-field="doc.contact_1_nomb"/></label>
+                                </div>
+                                <div style="width:45%;">
+                                    <span class="espac20pt">
+                                        <strong>TELEFONOS</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:25%"><span t-field="doc.contact_1_tel"/></label>
+                                    <label class="text-center border_btn_abj" style="width:25%"><span class="color_white">.</span></label>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:3%">
+                                </div>
+                                <div style="width:97%;">
+                                    <strong>LUGAR DE</strong>
+                                    <span class="espac20pt">
+                                        <strong>FALLECIMIENTO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:81%"><span t-field="doc.ii_lugar_fallec"/></label>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:3%">
+                                </div>
+                                <div style="width:97%;">
+                                    <strong>DIRECCION DE FALLECIMIENTO</strong>
+                                    <p><label class="text-center border_btn_abj" style="width:99%"><span t-field="doc.ii_direcc_fallecimiento"/></label></p>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:3%">
+                                </div>
+                                <div style="width:48%;">
+                                    <strong>CONTACTO</strong>
+                                    <span class="espac20pt">
+                                        <strong>"B"</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:75%"><span t-field="doc.contact_2_nomb"/></label>
+                                </div>
+                                <div style="width:48%;">
+                                    <span class="espac20pt">
+                                        <strong>CARACTERISTICAS</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:72%"><span class="color_white">.</span></label>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:3%">
+                                </div>
+                                <div style="width:48%;">
+                                    <span class="espac20pt">
+                                        <strong>TELEFONO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:80%"><span t-field="doc.contact_2_tel"/></label>
+                                </div>
+                                <div style="width:48%;">
+                                    <span class="espac20pt">
+                                        <strong>CELULAR</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:84%"><span class="color_white">.</span></label>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:3%">
+                                </div>
+                                <div style="width:36%">
+                                    <strong>HORA DE</strong>
+                                    <span class="espac20pt">
+                                        <strong>CONOCIMIENTO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:50%"><span class="color_white">.</span></label>
+                                </div>
+                                <div style="width:36%">
+                                    <strong>HORA DE CONTACTO</strong>
+                                    <span class="espac20pt">
+                                        <strong>PERSONAL</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:40%"><span class="color_white">.</span></label>
+                                </div>
+                                <div style="width:25%">
+                                    <span class="espac20pt">
+                                        <strong>OPERATIVO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:57%"><span class="color_white">.</span></label>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:3%">
+                                </div>
+                                <div style="width:36%">
+                                    <strong>HORA DE RECOGER EL</strong>
+                                    <span class="espac20pt">
+                                        <strong>CUERPO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:40%"><span class="color_white">.</span></label>
+                                </div>
+                                <div style="width:36%">
+                                    <strong>HORA LLEGADA A</strong>
+                                    <span class="espac20pt">
+                                        <strong>RECINTO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:48%"><span class="color_white">.</span></label>
+                                </div>
+                                <div style="width:25%">
+                                    <span class="espac20pt">
+                                        <strong>INSTALO</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj" style="width:67%"><span class="color_white">.</span></label>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row" style="width:100%;">
+                            <div style="width:3.50%">
+                            </div>
+                            <div class="borders3px" style="width:47%">
+                                <div style="width:100%">
+                                    <h4 class="text-center tex_negrit"><strong>RECEPCION DE DOCUMENTOS</strong></h4>
+                                    <div class="text-center" style="width:2%;">
+                                    </div>
+                                    <div style="width:98%">
+                                        <table class="text-center" border="1" style="width:100%;">
+                                            <tr>
+                                              <th class="borders1px">DOCUMENTO</th>
+                                              <th class="borders1px">SI</th>
+                                              <th class="borders1px">NO</th>
+                                              <th class="borders1px">DOCUMENTO</th>
+                                              <th class="borders1px">SI</th>
+                                              <th class="borders1px">NO</th>
+                                            </tr>
+                                            <tr>
+                                              <td class="borders1px">CONTRATO</td>
+                                              <td class="borders1px"></td>
+                                              <td class="borders1px"></td>
+                                              <td class="borders1px">SOLICITUD</td>
+                                              <td class="borders1px"></td>
+                                              <td class="borders1px"></td>
+                                            </tr>
+                                            <tr>
+                                              <td class="borders1px">TITULO</td>
+                                              <td class="borders1px"></td>
+                                              <td class="borders1px"></td>
+                                              <td class="borders1px">RECIBOS</td>
+                                              <td class="borders1px"></td>
+                                              <td class="borders1px"></td>
+                                            </tr>
+                                        </table>
+                                        <br/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="width:2%">
+                            </div>
+                            <div class="borders3px" style="width:47.50%">
+                                <div style="width:100%">
+                                    <h5 class="text-center"><strong>RECIBI ESQUELAS, LIBRO DE REGISTRO Y TRIPTICO DE DUELO</strong></h5>
+                                    <span class="espac20pt">
+                                        <strong>NOMBRE</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj color_white">&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;</label>
+                                    <br/>
+                                    <span class="espac20pt">
+                                        <strong>FIRMA</strong>
+                                        <span class="espac20pt"></span>
+                                    </span>
+                                    <label class="text-center border_btn_abj">&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                                    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;</label>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="borders3px" style="width:100%;">
+                            <br/>
+                            <h5 class="text-center tex_negrit"><strong>CONDICIONES GENERALES DE SERVICIO</strong></h5>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:17%">
+                                    <strong>SERVICIO ATENDIDO POR</strong>
+                                </div>
+                                <div style="width:44%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:15%">
+                                    <span class="espac20pt">
+                                        <strong>INHUMACION</strong>
+                                        <span class="espac20pt"></span>
+                                        <label class="borders1px text-center color_white" style="width:25%; height:12%;">.</label>
+                                    </span>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:15%">
+                                    <span class="espac20pt">
+                                        <strong>CREMACION</strong>
+                                        <span class="espac20pt"></span>
+                                        <label class="borders1px text-center color_white" style="width:25%; height:12%;">.</label>
+                                    </span>
+                                </div>
+                                <div style="width:1%">
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:12%;">
+                                    <span class="espac3pt">
+                                        <strong>DIRECTO</strong>
+                                        <span class="espac3pt"></span>
+                                        <label class="borders1px text-center color_white" style="width:40%; height:12%;">.</label>
+                                    </span>
+                                </div>
+                                <div style="width:10%;">
+                                    <span class="espac3pt">
+                                        <strong>PLAN</strong>
+                                        <span class="espac3pt"></span>
+                                        <label class="borders1px text-center color_white" style="width:40%; height:12%;">.</label>
+                                    </span>
+                                </div>
+                                <div style="width:16%;">
+                                    <label class="border_btn_abj" style="width:100%; height:12%;">$</label>
+                                </div>
+                                <div style="width:10%;">
+                                    <span class="espac3pt">
+                                        <strong>PAGADO</strong>
+                                        <span class="espac3pt"></span>
+                                        <label class="borders1px text-center color_white" style="width:35%; height:12%;">.</label>
+                                    </span>
+                                </div>
+                                <div style="width:6%;">
+                                    <strong>SALDO</strong>$
+                                </div>
+                                <div style="width:16%;">
+                                    <label class="border_btn_abj text-center color_white" style="width:100%; height:12%;">.</label>
+                                </div>
+                                <div style="width:11%;">
+                                    <strong>VALOR DIRECTO</strong>
+                                </div>
+                                <div style="width:16%;">
+                                    <label class="border_btn_abj text-center color_white" style="width:100%; height:12%;">.</label>
+                                </div>
+                                <div style="width:15%;">
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:5%">
+                                </div>
+                                <h5><strong>INCLUYE</strong></h5>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%;">
+                                </div>
+                                <div style="width:48%;">
+                                    <table>
+                                        <tr>
+                                            <th class="borders1px text-center" width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%">Ataùd o cambio</th>
+                                            <th width="19%"></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="borders1px text-center" width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%">Embalsamado</th>
+                                            <th width="19%"></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="borders1px text-center" width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%">Cremaciòn</th>
+                                            <th width="19%"></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="borders1px text-center" width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%">Capilla domicilio</th>
+                                            <th width="19%"></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="borders1px text-center" width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%">Capilla recinto</th>
+                                            <th width="19%"></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="borders1px text-center" width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%">Cafeterìa</th>
+                                            <th width="19%"></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="borders1px text-center" width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%">Traslado</th>
+                                            <th width="19%"></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="borders1px text-center" width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%">Tràmites</th>
+                                            <th width="19%"></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="borders1px text-center" width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%">Camiòn</th>
+                                            <th width="19%"></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="borders1px text-center" width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%">Otros</th>
+                                            <th width="19%"></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                        <tr>
+                                            <th width="10%"></th>
+                                            <th width="2%"></th>
+                                            <th width="19%"></th>
+                                            <th width="19%"><strong>Total</strong></th>
+                                            <th class="border_btn_abj" width="50%">$</th>
+                                        </tr>
+                                    </table>
+                                    <br/>
+                                </div>
+                                <div style="width:6%">
+                                </div>
+                                <div style="width:40%;">
+                                    <br/>
+                                    <br/>
+                                    <h5 class="text-center">
+                                        <strong>AUTORIZO CAMBIO DE ATAUD CON EL 33% DE DESCUENTO ESPECIFICADO EN EL CONTRATO</strong>
+                                    </h5>
+                                    <br/>
+                                    <div class="row" style="width:100%;">
+                                        <div style="width:20%">
+                                            <strong>NOMBRE</strong>
+                                        </div>
+                                        <div style="width:80%">
+                                            <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="width:100%;">
+                                        <div style="width:20%">
+                                            <strong>FIRMA</strong>
+                                        </div>
+                                        <div style="width:80%">
+                                            <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="width:100%;">
+                                        <div style="width:20%">
+                                            <strong>DESCRIBA</strong>
+                                        </div>
+                                        <div style="width:80%">
+                                            <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:10%">
+                                    <strong>ATAUD CLASE</strong>
+                                </div>
+                                <div style="width:20%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:8%">
+                                    <strong>MATERIAL</strong>
+                                </div>
+                                <div style="width:22%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:6%">
+                                    <strong>COLOR</strong>
+                                </div>
+                                <div style="width:24%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:10%">
+                                    <strong>URNA CLASE</strong>
+                                </div>
+                                <div style="width:20%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:8%">
+                                    <strong>MATERIAL</strong>
+                                </div>
+                                <div style="width:22%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:6%">
+                                    <strong>COLOR</strong>
+                                </div>
+                                <div style="width:24%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:15%">
+                                    <strong>VELACION EN CAPILLA</strong>
+                                </div>
+                                <div style="width:47%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:15%">
+                                    <span class="espac30pt">
+                                        <strong>DOMICILIO</strong>
+                                        <span class="espac30pt"></span>
+                                        <label class="borders1px text-center color_white" style="width:25%; height:12%;">.</label>
+                                    </span>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:15%">
+                                    <span class="espac20pt">
+                                        <strong>TRASLADO</strong>
+                                        <span class="espac20pt"></span>
+                                        <label class="borders1px text-center color_white" style="width:25%; height:12%;">.</label>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:96%">
+                                    <strong>DOMICILIO DE VELACION O TRASLADO</strong>
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:5%">
+                                    <strong>CALLE</strong>
+                                </div>
+                                <div style="width:25%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:4%">
+                                    <strong>No.</strong>
+                                </div>
+                                <div style="width:6%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:6%">
+                                    <strong>ENTRE</strong>
+                                </div>
+                                <div style="width:19%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:3%">
+                                    <strong>Y</strong>
+                                </div>
+                                <div style="width:20%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:7%">
+                                    <strong>COLONIA</strong>
+                                </div>
+                                <div style="width:38%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:8%">
+                                    <strong>MUNICIPIO</strong>
+                                </div>
+                                <div style="width:39%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:6%">
+                                    <strong>ESTADO</strong>
+                                </div>
+                                <div style="width:39%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:8%">
+                                    <strong>TEL / LADA</strong>
+                                </div>
+                                <div style="width:39%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="borders3px" style="width:100%;">
+                            <br/>
+                            <h5 class="text-center tex_negrit"><strong>DOCUMENTOS Y TRAMITES</strong></h5>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <table width="94%">
+                                    <tr>
+                                        <th class="borders1px text-center" width="34%">DOCUMENTOS DEL FINADO</th>
+                                        <th class="borders1px text-center" width="3%">SI</th>
+                                        <th class="borders1px text-center" width="3%">NO</th>
+                                        <th class="borders1px text-center" width="60%">OBSERVACIONES</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="borders1px" width="34%">ACTA DE NACIMIENTO</th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="60%"></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="borders1px" width="34%">CERTIFICADO DE DEFUNCION</th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="60%"></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="borders1px" width="34%">COMPLEMENTO DE DATOS</th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="60%"></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="borders1px" width="34%">ACTA DE DEFUNCION</th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="60%"></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="borders1px" width="34%">PERMISO DE INHUMACION</th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="60%"></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="borders1px" width="34%">PERMISO DE CREMACION</th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="60%"></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="borders1px" width="34%">PERMISO DE EXHUMACION</th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="60%"></th>
+                                    </tr>
+                                    <tr>
+                                        <th class="borders1px" width="34%">PERMISO DE TRASLADO</th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="3%"></th>
+                                        <th class="borders1px" width="60%"></th>
+                                    </tr>
+                                </table>
+                                <div style="width:2%">
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:18%">
+                                    <strong>TRAMITADOR RESPONSABLE</strong>
+                                </div>
+                                <div style="width:30%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:14%">
+                                    <strong>LUGAR DE TRAMITES</strong>
+                                </div>
+                                <div style="width:30%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:16%">
+                                    <strong>CITA CON FAMILIARES EN</strong>
+                                </div>
+                                <div style="width:48%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:10%">
+                                    <strong>HORA DE CITA</strong>
+                                </div>
+                                <div style="width:18%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                            </div>
+                            <div class="row" style="width:100%;">
+                                <div style="width:4%">
+                                </div>
+                                <div style="width:15%">
+                                    <strong>FUIMOS PUNTUALES</strong>
+                                </div>
+                                <div style="width:2%">
+                                    <strong>SI</strong>
+                                </div>
+                                <div style="width:6%">
+                                    <label class="borders1px text-center color_white" style="width:100%; height:12%;">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:2%">
+                                    <strong>NO</strong>
+                                </div>
+                                <div style="width:1%">
+                                </div>
+                                <div style="width:6%">
+                                    <label class="borders1px text-center color_white" style="width:100%; height:12%;">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                                <div style="width:7%">
+                                    <strong>¿PORQUE?</strong>
+                                </div>
+                                <div style="width:51%">
+                                    <label class="text-center border_btn_abj color_white" style="width:100%">.</label>
+                                </div>
+                                <div style="width:2%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    <template id="header">
+        <div class="header">
+            <style type="text/css">
+                .borders1px {border: 1px solid black;}
+                .espac9pt {word-spacing: 9pt;}
+                .border_btn_abj {border-bottom: 1px solid black;}
+                .tex_negrita {font-weight: bold;}
+                .caj {
+                    position: relative;
+                    top:  20px;
+                }
+                .img {
+                    position: absolute;
+                    top:  0px;
+                    left: 450px;
+                }
+            </style>
+            <div class="caj">
+                <div class="caj" style="border-top: double; border-top-width: 20px;">
+                </div>
+                <img class="img" t-att-src="image_data_uri(company.logo)" style="max-height: 65px; width: 285px;" alt="Logo"/>
+            </div>
+            <br/><br/><br/>
+            <div class="text-center">
+                <h4 class="tex_negrita"><strong>BITACORA DE SERVICIOS FUNERARIOS</strong></h4>
+            </div>
+            <br/>
+            <div class="row" style="width:100%">
+                <div class="col-6 text-center" style="width:50%">
+                    <span class="espac9pt"><strong>FECHA</strong> </span>
+                    <label class="border_btn_abj text-left" style="width:60%">
+                        <strong>
+                            <span t-esc="doc.ii_fecha_creacion.strftime('%d')"/> DEL MES DE
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '01' ">ENERO</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '02' ">FEBRERO</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '03' ">MARZO</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '04' ">ABRIL</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '05' ">MAYO</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '06' ">JUNIO</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '07' ">JULIO</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '08' ">AGOSTO</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '09' ">SEPTIEMBRE</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '10' ">OCTUBRE</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '11' ">NOVIEMBRE</span>
+                            <span t-if="doc.ii_fecha_creacion.strftime('%m') == '12' ">DICIEMBRE</span>
+                        </strong>
+                    </label>
+                </div>
+                <div class="col-6 text-center" style="width:50%">
+                    <span class="espac9pt"><strong>BITACORA</strong> </span>
+                    <label class="borders1px" style="width:40%; height:12%;"><span t-field="doc.name"/></label>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="footer">
+        <div class="footer">
+            <div class="text-center" style="border-top: 1px solid black;">
+                <ul class="list-inline">
+                    Page: <span class="page"/> / <span class="topage"/>
+                </ul>
+            </div>
+        </div>
+    </template>
+</odoo>

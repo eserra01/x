@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mortuary.wizard_view_form" model="ir.ui.view">
+        <field name="name">View form convenio</field>
+        <field name="model">convenio</field>
+        <field name="arch" type="xml">
+            <form string="CONVENIO">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="bitacora_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                      <page name="Tabla de pagos" string="Desglose de pagos">
+                        <field name="pagos_line_ids">
+                          <tree editable="bottom">
+                            <field name="bitacor_id" invisible="1"/>
+                            <field name="fecha" />
+                            <field name="monto" />
+                            <field name="concepto" />
+                          </tree>
+                        </field>
+                      </page>
+                    </notebook>
+                    <button name="btn_convenio_pagos" string="Imprimir" type="object" class="oe_highlight" />
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="mortuary.wizard_convenio_act_window" model="ir.actions.act_window">
+            <field name="name">Act window convenio</field>
+            <field name="res_model">convenio</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="mortuary.wizard_view_form"/>
+            <field name="target">new</field>
+    </record>
+
+</odoo>
