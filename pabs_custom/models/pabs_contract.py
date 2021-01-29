@@ -61,7 +61,6 @@ class PABSContracts(models.Model):
   partner_mname = fields.Char(string='Apellido materno', required=True)
   birthdate = fields.Date(string='Fecha de nacimiento', default=fields.Date.today(), required=True)
   phone = fields.Char(string='Teléfono', required=True)
-  street = fields.Char(string='Calle / Número', required=True)
   name_service = fields.Many2one(comodel_name = 'product.product', related="lot_id.product_id", string='Servicio')
   street_toll = fields.Char(string = 'Calle')
   between_streets_toll = fields.Char(string ='Entre calles')
