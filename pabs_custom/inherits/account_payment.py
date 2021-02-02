@@ -19,7 +19,7 @@ class account_Payment(models.Model):
 
     date_receipt = fields.Date(string="Fecha Recibo")
 
-    reference = fields.Selection(selection  = REFERENCE, string="Referencia")
+    reference = fields.Selection(selection  = REFERENCE, string="Referencia",required = True)
 
     Ecobro_receipt = fields.Char(string="Recibo Ecobro")
 
@@ -28,7 +28,8 @@ class account_Payment(models.Model):
     contract = fields.Many2one(comodel_name = 'pabs.contract',string= "Contrato")
 
     way_to_pay =  fields.Selection(selection=WAY_TO_PAY,
-      string = 'Forma de pago')
+      string = 'Forma de pago',
+      required = True)
 
     payment_date = fields.Date(string="Fecha Cobranza")
 
@@ -53,35 +54,26 @@ class account_Payment(models.Model):
     def post(self):
       comission_tree_obj = self.env['pabs.comission.tree']
       res = super(account_Payment, self).post()
-      if self.payment_type == 'inbound':
-        context = self._context
-        IdPago = self.id
-        CodigoCobrador = self.debt_collector_code.barcode
-        NumeroContrato = self.contract.name
-        MontoPago = self.amount or 0
-        if context.get('stationery'):
-          comission_tree_obj.CrearSalidasEnganche(
-            IdPago=IdPago, NumeroContrato=NumeroContrato, 
-            MontoPago=MontoPago, TipoPago='Papeleria')
-        elif context.get('excedent'):
-          comission_tree_obj.CrearSalidas(
-            IdPago=IdPago, NumeroContrato=NumeroContrato,
-            CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
-            EsExcedente=True)
-        else:
-          comission_tree_obj.CrearSalidas(
-            IdPago=IdPago, NumeroContrato=NumeroContrato,
-            CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
-            EsExcedente=False)
+      context = self._context
+      IdPago = self.id
+      CodigoCobrador = self.debt_collector_code.barcode
+      NumeroContrato = self.contract.name
+      MontoPago = self.amount or 0
+      if context.get('stationery'):
+        comission_tree_obj.CrearSalidasEnganche(
+          IdPago=IdPago, NumeroContrato=NumeroContrato, 
+          MontoPago=MontoPago, TipoPago='Papeleria')
+      elif context.get('excedent'):
+        comission_tree_obj.CrearSalidas(
+          IdPago=IdPago, NumeroContrato=NumeroContrato,
+          CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
+          EsExcedente=True)
+      else:
+        comission_tree_obj.CrearSalidas(
+          IdPago=IdPago, NumeroContrato=NumeroContrato,
+          CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
+          EsExcedente=False)
       return res
-
-
-    @api.onchange('contract')
-    def calc_partner_id(self):
-      for rec in self:
-        if rec.contract:
-          rec.partner_id = rec.contract.partner_id.id
-          
     #Fields mortuary
 
     binnacle =fields.Many2one(comodel_name = 'pabs.mortuary',string= "Número de bitácora")
@@ -96,5 +88,5 @@ class account_Payment(models.Model):
 
     additional = fields.Char(string ="Adicionales")
 
-    made_the_pay = fields.Char(string='Persona que realizó el pago')
+    payment_person = fields.Char(string='Cliente que realizó el pago')
     

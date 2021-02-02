@@ -21,6 +21,8 @@ class StockPicking(models.Model):
 
   salary = fields.Boolean(related='employee_id.payment_scheme.allow_all')
 
+  find_serie = fields.Char(String='Buscar Serie')
+
   ### Campos XMARTS
   type_transfer = fields.Selection([
     ('ac-ov', 'Almacén Central -> Oficina de Ventas'),
@@ -147,3 +149,26 @@ class StockPicking(models.Model):
           self.employee_id = employee_id.id
         else:
           self.employee_id = False
+
+  @api.onchange('find_serie')
+  def search_serie(self):
+    lot_obj = self.env['stock.production.lot']
+    if self.find_serie:
+      serie = self.find_serie
+      lot_id = lot_obj.search([
+        ('name','=',serie)])
+      if not lot_id:
+        raise ValidationError((
+          "No se encontró el número de serie en el sistema"))
+      serie_data = {
+        'product_id' : lot_id.product_id.id,
+        'series' : serie,
+        'product_uom' : lot_id.product_id.uom_id.id,
+        'product_uom_qty' : 1,
+
+      }
+      self.move_ids_without_package = [(0, 0, serie_data)]
+      self.find_serie = False
+      return {
+        'move_ids_without_package' : [(0, 0, serie_data)]
+      }      

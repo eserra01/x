@@ -182,6 +182,7 @@ class StockMove(models.Model):
   def onchange_series(self):
     move_obj = self.env['stock.move']
     quant_obj = self.env['stock.quant']
+    contract_obj = self.env['pabs.contract']
     location_id = False
     
     for rec in self:
@@ -192,7 +193,7 @@ class StockMove(models.Model):
         raise ValidationError((
           "La solicitud {} no puede ser ingresada por que está {}".format(rec.series,dict(rec._fields['origen_solicitud'].selection).get(rec.origen_solicitud))))
       mode_prod = self.env['stock.production.lot'].search(
-        [('name', '=', str(rec.series))], limit=1)
+        [('name', '=', str(rec.series))], limit=1)        
       if rec.series and rec.picking_id.type_transfer == 'ov-as':
         if rec.picking_id.location_dest_id.consignment_location:
           for prodc in mode_prod:
@@ -218,6 +219,13 @@ class StockMove(models.Model):
                   "La solicitud {} no se encuentra asignada al A.S {}, se encuentra en {}".format(rec.series, rec.picking_id.employee_id.name, quant_id.location_id.name)))
             rec.product_id = prodc.product_id
             rec.product_uom_qty = 1
+            ### VALIDAR SI ESTA ACTIVADA LA SOLICITUD
+            contract_id = contract_obj.search([
+              ('lot_id','=',mode_prod.id),
+              ('activation_code','!=',False)])
+            if not contract_id:
+              raise ValidationError((
+                "La solicitud {} no se encuentra con una activación previa".format(rec.series)))
         else:
           raise ValidationError((
             "No se encontró la ubicación de recibidos"))

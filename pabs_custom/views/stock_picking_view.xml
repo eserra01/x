@@ -30,6 +30,10 @@
         }"/>
       </xpath>
 
+      <xpath expr="//field[@name='location_dest_id']" position="after">
+        <field name="find_serie" attrs="{'invisible' : [('type_transfer','not in',('ov-as'))]}"/>
+      </xpath>
+
       <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
         <field name="series_start"
           attrs="{'column_invisible': [('parent.type_transfer','!=','ac-ov')],

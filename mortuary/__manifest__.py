@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'mail', 'hr', 'pabs_custom'],
+    'depends': ['base', 'mail', 'hr', 'pabs_custom','account','contacts'],
 
     # always loaded
     'data': [
@@ -50,6 +50,7 @@
         'views/ig_templo.xml',
         'views/ig_panteon.xml',
         'views/menus.xml',
+        'views/account_move_view.xml',
         'data/data.xml',
         'report/report_bsf.xml',
         'report/report_cgs.xml',
