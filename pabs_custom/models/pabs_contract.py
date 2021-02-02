@@ -43,7 +43,6 @@ class PABSContracts(models.Model):
 
   type_view = fields.Selection(selection=TYPE, string='Tipo de vista')
   agent_id = fields.Char(string='Agente', required=True)#, default=lambda self: self.env.user.name)
-  street = fields.Char(string='Calle / número')
   captured = fields.Boolean(string='Capturado previamente')
   activation_code = fields.Char(string='Número de activación', tracking=True)
   street_toll = fields.Char(string ='Calle')
@@ -62,6 +61,7 @@ class PABSContracts(models.Model):
   partner_mname = fields.Char(string='Apellido materno', required=True)
   birthdate = fields.Date(string='Fecha de nacimiento', default=fields.Date.today(), required=True)
   phone = fields.Char(string='Teléfono', required=True)
+  street = fields.Char(string='Calle / Número', required=True)
   name_service = fields.Many2one(comodel_name = 'product.product', related="lot_id.product_id", string='Servicio')
   street_toll = fields.Char(string = 'Calle')
   between_streets_toll = fields.Char(string ='Entre calles')

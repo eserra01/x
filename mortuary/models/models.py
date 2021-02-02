@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from odoo import models, fields, api
+from datetime import timedelta
 # from odoo.exceptions import ValidationError
 
 
@@ -244,11 +245,8 @@ class Mortuary(models.Model):
     cs_observacions = fields.Text(string="Observaciones", compute="get_comentarios")
     cs_nuevo_comentario = fields.Text(string="Nuevo comentario")
 
-    ### Campos modificados por PABS
-    tc_no_contrato = fields.Many2one(comodel_name='pabs.contract',
-        string="Nùmero de contrato")
-    tc_nomb_titular = fields.Char(related="tc_no_contrato.full_name",
-        string="Nombre de titular")
+    tc_no_contrato = fields.Char(string="Nùmero de contrato")
+    tc_nomb_titular = fields.Char(string="Nombre de titular")
 
     ds_atiende_servicio = fields.Many2one(
         "ds.atiende.servicio", string="Atiende servicio")
@@ -354,6 +352,9 @@ class Mortuary(models.Model):
 
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     revisado = fields.Many2one("ii.llamada", string="Llamada")
+    partner_id = fields.Many2one(comodel_name='res.partner',
+        string='Finado')
+    balance = fields.Float(string="Saldo", compute="_calc_balance")
 
     revisado_admin = fields.Selection([
         ('si', 'SI'),
@@ -366,39 +367,18 @@ class Mortuary(models.Model):
         'hr.employee',
         string='Cobrador',
         domain=[
-            ('job_id', '=', 4),
+            ('job_id.name', '=ilike', 'cobrador'),
         ]
     )
 
     @api.model
     def create(self, vals):
-        vals['ii_hora_creacion'] = "{}:{}".format(datetime.now().hour - 6, datetime.now().minute)
+        today = fields.Datetime.now() - timedelta(hours=6)
+        hours = today.hour
+        minutes = today.minute
+        vals['ii_hora_creacion'] = "{}:{}".format(hours,minutes)
         result = super(Mortuary, self).create(vals)
         return result
-
-    def write(self, vals):
-        contract_obj = self.env['pabs.contract']
-        servicio_obj = self.env['ii.servicio']
-        if vals.get('ii_servicio'):
-            servicio = servicio_obj.browse(vals.get('ii_servicio'))
-            if servicio.name.upper() == 'TERMINADO':
-                if vals.get('tc_no_contrato'):
-                    contract_id = contract_obj.browse(vals.get('tc_no_contrato'))
-                else:
-                    contract_id = self.tc_no_contrato
-                if contract_id.balance > 0:
-                    contract_id.service_detail = 'made_receivable'
-                else:
-                    contract_id.service_detail = 'realized'
-            else:
-                if vals.get('tc_no_contrato'):
-                    contract_id = contract_obj.browse(vals.get('tc_no_contrato'))
-                else:
-                    contract_id = self.tc_no_contrato
-                contract_id.service_detail = 'unrealized'
-
-        return super(Mortuary, self).write(vals)
-
 
     def btn_edo_cuenta(self):
         return {
@@ -528,6 +508,19 @@ class Mortuary(models.Model):
             rec.cs_observacions = comentarios
 
     def btn_create_facturas(self):
+        partner_obj = self.env['res.partner']
+        account_obj = self.env['account.move']
+        bitacora_name = self.name
+        partner_prev = partner_obj.search([
+            ('name','=',bitacora_name)])
+        if partner_prev:
+            partner_id = partner_prev
+        else:
+            partner_id = partner_obj.create({
+                'name' : bitacora_name,
+                'ref' : self.ii_finado,
+                })
+        self.partner_id = partner_id.id
         return {
             'name': 'Crear Factura',
             'type': 'ir.actions.act_window',
@@ -536,6 +529,9 @@ class Mortuary(models.Model):
             'view_id': self.env.ref('account.view_move_form').id,
             'context': {
                 'default_type': 'out_invoice',
+                'default_ref' : self.ii_finado,
+                'default_bitacora_id' : self.id,
+                'default_partner_id' : partner_id.id,
             }
         }
 
@@ -550,6 +546,14 @@ class Mortuary(models.Model):
                 'default_payment_type': 'inbound',
             }
         }
+
+    #Obtiene el saldo del contrato sumando el monto pendiente de las facturas
+    def _calc_balance(self):
+        invoice_obj = self.env['account.move']
+        for rec in self:
+            invoice_ids = invoice_obj.search([('type','=','out_invoice'),('bitacora_id','=',rec.id)])
+            result = sum(invoice_ids.mapped('amount_residual'))
+            rec.balance = result
 
 
 class Observaciones(models.Model):
@@ -568,3 +572,9 @@ class Observaciones(models.Model):
         tracking=True,
         readonly=True,
         copy=False)
+
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+
+    bitacora_id = fields.Many2one(comodel_name='mortuary',
+        string='Bitacora')

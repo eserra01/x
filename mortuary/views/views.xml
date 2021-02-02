@@ -44,6 +44,7 @@
       <field name="arch" type="xml">
         <form string="form_mortuary">
           <header>
+            <field name="partner_id" invisible="1"/>
               <button string='Edo. Cuenta' name='btn_edo_cuenta' type='object' class="btn-primary"
                 attrs="{'invisible':[('id','==',0)]}" />
               <button string='Tarjeta' name='btn_tarjeta' type='object' class="btn-primary"
@@ -214,9 +215,11 @@
                   />
               </group>
               <group string="Titular de contrato" priority="5">
-                <field name="tc_no_contrato" domain="[('state','=','contract')]"/>
+                <field name="tc_no_contrato" />
                 <field name="tc_nomb_titular" />
               </group>
+              <group string="Saldo de bitacora" priority="6">
+                <field name="balance"/>
               </group>
               <notebook>
                 <page name="Condiciones generales del servicio" string="Condiciones generales del servicio"
