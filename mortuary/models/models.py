@@ -245,8 +245,10 @@ class Mortuary(models.Model):
     cs_observacions = fields.Text(string="Observaciones", compute="get_comentarios")
     cs_nuevo_comentario = fields.Text(string="Nuevo comentario")
 
-    tc_no_contrato = fields.Char(string="Nùmero de contrato")
-    tc_nomb_titular = fields.Char(string="Nombre de titular")
+    tc_no_contrato = fields.Many2one(comodel_name='pabs.contract',
+        string="Nùmero de contrato")
+    tc_nomb_titular = fields.Char(string="Nombre de titular",
+        related="tc_no_contrato.full_name")
 
     ds_atiende_servicio = fields.Many2one(
         "ds.atiende.servicio", string="Atiende servicio")
