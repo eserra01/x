@@ -21,7 +21,7 @@
       </xpath>
 
       <xpath expr="//field[@name='partner_id']" position="after">
-          <field name="contract" invisible="1"/>
+          <field name="contract" invisible="1" options="{'no_create': True, 'no_create_edit':True}"/>
       </xpath>
 
       <xpath expr="//field[@name='payment_date']" position="after">
@@ -32,7 +32,7 @@
         </xpath>
 
         <xpath expr="//field[@name='journal_id']" position="before">
-          <field name="contract"/>
+          <field name="contract" options="{'no_create': True, 'no_create_edit':True}"/>
         </xpath>
 
         <xpath expr="//field[@name='journal_id']" position="after">

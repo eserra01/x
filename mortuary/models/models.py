@@ -2,7 +2,7 @@
 from datetime import datetime
 from odoo import models, fields, api
 from datetime import timedelta
-# from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError
 
 
 class IiServicio(models.Model):
@@ -357,6 +357,8 @@ class Mortuary(models.Model):
     partner_id = fields.Many2one(comodel_name='res.partner',
         string='Finado')
     balance = fields.Float(string="Saldo", compute="_calc_balance")
+    invoices = fields.Integer(string='Cantidad de Facturas',
+        compute='count_invoices')
 
     revisado_admin = fields.Selection([
         ('si', 'SI'),
@@ -372,6 +374,32 @@ class Mortuary(models.Model):
             ('job_id.name', '=ilike', 'cobrador'),
         ]
     )
+
+    def action_get_invoices(self):
+        account_obj = self.env['account.move']
+        invoice_id = account_obj.search([
+            ('type','=', 'out_invoice'),
+            ('bitacora_id','=',self.id)])
+        context = dict(self.env.context or {})
+        context.update(create=False)
+        return {
+            'name': 'Facturas de convenio {}'.format(self.name),
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'account.move',
+            'view_id': self.env.ref('account.view_invoice_tree').id,
+            'domain' : "[('id','in',{})]".format(invoice_id.ids),
+            'context': context,
+        }
+
+    def count_invoices(self):
+        account_obj = self.env['account.move']
+        for rec in self:
+            val = account_obj.search_count([
+                ('type','=','out_invoice'),
+                ('bitacora_id','=',rec.id)])
+            rec.invoices = val
+
 
     @api.model
     def create(self, vals):

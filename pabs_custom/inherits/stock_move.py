@@ -186,6 +186,15 @@ class StockMove(models.Model):
     location_id = False
     
     for rec in self:
+      cont = 0
+      ### Validar que no se esté duplicando la linea que se está capturando
+      if rec.series:
+        for obj_line in rec.picking_id.move_ids_without_package:
+          if rec.series == obj_line.series:
+            cont+=1
+            if cont > 2:
+              raise ValidationError((
+                "No se puede agregar la línea por que ya fue agregada previamente"))
       line = move_obj.search([
         ('series','=',rec.series),
         ('origen_solicitud','in',('cancelada','extravio'))],limit=1)
