@@ -10,8 +10,8 @@
                 <table width="100%" cellspacing="0" cellpadding="0">
                   <tr>
                     <td width="20%" rowspan="2" aling="top">
-                      <img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="width:250px;"/>
-                      <!-- <img src="mortuary/static/description/image.png" style="width:250px;" /> -->
+                      <!--<img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="width:250px;"/>-->
+                      <img src="mortuary/static/description/img/latinoamericana.png" style="width:250px;" />
                     </td>
                     <td  class="text-center" aling="top">
                       <h3><strong>PABS - Programa de Apoyo De Beneficio Social <br/><br/>ESTADO DE CUENTA</strong></h3>
