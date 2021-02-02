@@ -221,6 +221,7 @@
               <group string="Saldo de bitacora" priority="6">
                 <field name="balance"/>
               </group>
+            </group>
               <notebook>
                 <page name="Condiciones generales del servicio" string="Condiciones generales del servicio"
                  >
