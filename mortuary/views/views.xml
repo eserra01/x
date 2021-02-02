@@ -61,6 +61,16 @@
               <button string='Crear pagos' name='btn_create_pagos' type='object' class="btn-primary" />
           </header>
           <sheet>
+            <div class="oe_button_box" name="button_box">
+              <button type="object" class="oe_stat_button" icon="fa-pencil-square-o" name="action_get_invoices" context="{'default_bitacora_id': active_id}" attrs="{'invisible' : [('invoices','=',False)]}">
+                <div class="o_form_field o_stat_info">
+                  <span class="o_stat_value">
+                    <field name="invoices"/>
+                  </span>
+                  <span class="o_stat_text">Facturas</span>
+                </div>
+              </button>
+            </div>
             <group>
               <group string="Información inicial" priority="1">
                 <div class="o_row">
