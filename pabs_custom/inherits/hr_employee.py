@@ -299,7 +299,7 @@ class HrEmployee(models.Model):
             newEmployee = super(HrEmployee, self).create(vals)
 
             #Solo crear plantilla cuando el empleado es del departamento de ventas
-            sales_dept_id = self.env['hr.department'].search([('name','=','Ventas')], limit = 1)
+            sales_dept_id = self.env['hr.department'].search([('name','=','VENTAS')], limit = 1)
             if newEmployee['department_id'] == sales_dept_id:
               self.env['pabs.comission.template'].create_comission_template(newEmployee['id'])
         elif vals.get('job_id') == deb_collector.id:
