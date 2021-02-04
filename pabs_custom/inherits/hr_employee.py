@@ -381,8 +381,8 @@ class HrEmployee(models.Model):
     ### Sí el campo modificado hace referencia a ventas, debe crear arbol de comisiones
     if vals.get('job_id'):
       job_ids = self.env['hr.job'].search([
-        '|',('name','=','ASISTENTE SOCIAL')
-        ('name','=','COORDINADOR')
+        '|',('name','=','ASISTENTE SOCIAL'),
+        ('name','=','COORDINADOR'),
         ('name','=','GERENTE DE OFICINA')])
       raise ValidationError((
         "Valores retornados: {}".format(job_ids.ids)))
