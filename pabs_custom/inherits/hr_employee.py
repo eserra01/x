@@ -383,7 +383,7 @@ class HrEmployee(models.Model):
       job_ids = self.env['hr.job'].search([
         ('name','=','ASISTENTE SOCIAL'),'|',
         ('name','=','COORDINADOR'),'|',
-        ('name','=','GERENTE DE OFICINA')], limit = 1)
+        ('name','=','GERENTE DE OFICINA')])
       raise ValidationError((
         "Valores retornados: {}".format(job_ids.ids)))
       if vals.get('job_id') in job_ids.ids:
