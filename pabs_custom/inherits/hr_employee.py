@@ -300,10 +300,9 @@ class HrEmployee(models.Model):
 
             #Solo crear plantilla cuando el empleado pertenece a asistente social, coordinador o gerente de oficina
             job_ids = self.env['hr.job'].search([
-              '|',('name','=','ASISTENTE SOCIAL'),
-              ('name','=','COORDINADOR'),
-              ('name','=','GERENTE DE OFICINA')], limit = 1)
-            if newEmployee['job_id'] in job_ids.ids:
+              ('name','in',('ASISTENTE SOCIAL','COORDINADOR','GERENTE DE OFICINA'))])
+            ids = job_ids.mapped('ids')
+            if newEmployee['job_id'] in ids:
               self.env['pabs.comission.template'].create_comission_template(newEmployee['id'])
         elif vals.get('job_id') == deb_collector.id:
           newEmployee = super(HrEmployee, self).create(vals)
