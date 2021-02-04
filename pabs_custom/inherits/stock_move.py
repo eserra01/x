@@ -379,6 +379,16 @@ class StockMove(models.Model):
 
   @api.model
   def create(self, vals):
+    product_obj = self.env['product.product']
+    pricelist_item_obj = self.env['product.pricelist.item']
+    if vals.get('inversion_inicial') > 0:
+      if vals.get('product_id'):
+        product_id = product_obj.browse(vals.get('product_id'))
+        if product_id.tracking == 'serial':
+          item_id = pricelist_item_obj.search([('product_id','=',product_id.id)],
+            order="create_date desc",limit=1)
+          if item_id:
+            vals['papeleria'] = item_id.stationery
     res = super(StockMove, self).create(vals)
     picking_obj = self.env['stock.picking']
     move_line_obj = self.env['stock.move.line']
