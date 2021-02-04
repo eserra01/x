@@ -382,9 +382,10 @@ class HrEmployee(models.Model):
     if vals.get('job_id'):
       job_ids = self.env['hr.job'].search([
         ('name','in',('ASISTENTE SOCIAL','COORDINADOR','GERENTE DE OFICINA'))])
+      ids = job_ids.mapped('id')
+      raise ValidationError((
+          "Valores retornados: {}".format(ids)))
       if vals.get('job_id') in job_ids.ids:
-        raise ValidationError((
-          "Valores retornados: {}".format(job_ids)))
         comission_template_id = self.env['pabs.comission.template'].search([
           ('employee_id','=',self.id)])
         if not comission_template_id:
