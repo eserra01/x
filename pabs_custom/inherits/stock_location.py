@@ -20,11 +20,11 @@ class StockLocation(models.Model):
   ### Desactivar una ubicación
   def inactivate_location(self):
     picking_type_obj = self.env['stock.picking.type']
-    self.active = False
     operation_ids = picking_type_obj.search([
       ('default_location_src_id', '=', self.id),
       '|',
       ('default_location_dest_id','=',self.id)])
+    self.active = False
     for operation in operation_ids:
       operation.active = False
 

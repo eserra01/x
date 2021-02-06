@@ -298,11 +298,9 @@ class HrEmployee(models.Model):
             #Insertar registro de empleado
             newEmployee = super(HrEmployee, self).create(vals)
 
-            #Solo crear plantilla cuando el empleado pertenece a asistente social, coordinador o gerente de oficina
-            job_ids = self.env['hr.job'].search([
-              ('name','in',('ASISTENTE SOCIAL','COORDINADOR','GERENTE DE OFICINA'))])
-            ids = job_ids.mapped('ids')
-            if newEmployee['job_id'] in ids:
+            #Solo crear plantilla cuando el empleado es del departamento de ventas
+            sales_dept_id = self.env['hr.department'].search([('name','=','Ventas')], limit = 1)
+            if newEmployee['department_id'] == sales_dept_id:
               self.env['pabs.comission.template'].create_comission_template(newEmployee['id'])
         elif vals.get('job_id') == deb_collector.id:
           newEmployee = super(HrEmployee, self).create(vals)
@@ -377,17 +375,6 @@ class HrEmployee(models.Model):
         ### Sí no, enviará un mensaje de error al usuario para configurar correctamente el almacén
         raise ValidationError((
           "No se encontró ninguna ubicación de contratos, favor de contactar a sistemas"))
-    ### Sí el campo modificado hace referencia a ventas, debe crear arbol de comisiones
-    if vals.get('job_id'):
-      job_ids = self.env['hr.job'].search([
-        ('name','in',('ASISTENTE SOCIAL','COORDINADOR','GERENTE DE OFICINA'))])
-      ids = job_ids.mapped('id')
-      if vals.get('job_id') in ids:
-        comission_template_id = self.env['pabs.comission.template'].search([
-          ('employee_id','=',self.id)])
-        if not comission_template_id:
-          self.env['pabs.comission.template'].create_comission_template(self.id)
-
     ### Retorno del método original con el diccionario modificado
     return super(HrEmployee, self).write(vals)
 

@@ -15,8 +15,6 @@
     'hr'],
   'data': [
     'data/ir_sequence.xml',
-    'security/arching_security.xml',
-    'security/ir.model.access.csv',
     'reports/closing_transfer_report.xml',
     'views/pabs_office_view.xml',
     'views/pabs_arching_view.xml',
@@ -48,6 +46,8 @@
     'wizard/fix_stock_move_wizard_view.xml',
     'wizard/pabs_single_contract_wizard_view.xml',
     'views/menu_views.xml',
+    'security/security.xml',
+    #'security/ir.model.access.csv',
     ],
   'installable': True,
   'auto_install': False,

@@ -203,7 +203,7 @@ class StockMove(models.Model):
           "La solicitud {} no puede ser ingresada por que está {}".format(rec.series,dict(rec._fields['origen_solicitud'].selection).get(rec.origen_solicitud))))
       mode_prod = self.env['stock.production.lot'].search(
         [('name', '=', str(rec.series))], limit=1)        
-      if rec.series and rec.picking_id.type_transfer in ('ov-as','cont-ov'):
+      if rec.series and rec.picking_id.type_transfer == 'ov-as':
         if rec.picking_id.location_dest_id.consignment_location:
           for prodc in mode_prod:
             quant_id = quant_obj.search([
@@ -379,16 +379,6 @@ class StockMove(models.Model):
 
   @api.model
   def create(self, vals):
-    product_obj = self.env['product.product']
-    pricelist_item_obj = self.env['product.pricelist.item']
-    if vals.get('inversion_inicial') > 0:
-      if vals.get('product_id'):
-        product_id = product_obj.browse(vals.get('product_id'))
-        if product_id.tracking == 'serial':
-          item_id = pricelist_item_obj.search([('product_id','=',product_id.id)],
-            order="create_date desc",limit=1)
-          if item_id:
-            vals['papeleria'] = item_id.stationery
     res = super(StockMove, self).create(vals)
     picking_obj = self.env['stock.picking']
     move_line_obj = self.env['stock.move.line']

@@ -45,7 +45,7 @@ class ComissionTemplate(models.Model):
             #Obtener el nombre del cargo
             job_name = self.env['hr.job'].search([('id', '=', row['job_id'].id)]).name
 
-            if job_name == "PAPELERIA":
+            if job_name == "Papeleria":
                 #Obtener el monto de papeleria
                 stationery = self.env['product.pricelist.item'].search([('id', '=', row['plan_id'].id)]).stationery
                 #Obtener el id del empleado asignado como "Papeleria"
@@ -54,7 +54,7 @@ class ComissionTemplate(models.Model):
                 new_comission = {'employee_id' : myEmployee_id, 'plan_id' : row['plan_id'].id, 'pay_order' : row['pay_order'], 'job_id' : row['job_id'].id, 'comission_agent_id' : employee_id, 'comission_amount' : stationery}
                 comission_list.append(new_comission)
 
-            elif job_name == "FIDEICOMISO":
+            elif job_name == "Fideicomiso":
                 #Calcular el monto del fideicomiso = costo - papeleria
                 pricelist = self.env['product.pricelist.item'].search([('id', '=', row['plan_id'].id)])
                 stationery = pricelist.stationery
@@ -67,7 +67,7 @@ class ComissionTemplate(models.Model):
                 new_comission = {'employee_id' : myEmployee_id, 'plan_id' : row['plan_id'].id, 'pay_order' : row['pay_order'], 'job_id' : row['job_id'].id, 'comission_agent_id' : employee_id, 'comission_amount' : comission_amount}
                 comission_list.append(new_comission)
 
-            elif job_name == "ASISTENTE SOCIAL":
+            elif job_name == "Asistente Social":
                 #Asignar por defecto el asistente con comisión 0
                 new_comission = {'employee_id' : myEmployee_id, 'plan_id' : row['plan_id'].id, 'pay_order' : row['pay_order'], 'job_id' : row['job_id'].id, 'comission_agent_id' : myEmployee_id, 'comission_amount' : 0}
                 comission_list.append(new_comission)
@@ -108,9 +108,9 @@ class ComissionTemplate(models.Model):
         job_name = self.env['hr.job'].search([('id', '=', job_id)]).name
             
         ### Si cambio la comisión de algun empleado calcular el fideicomiso ###
-        if job_name != "FIDEICOMISO" and vals.get('comission_amount') != None:
+        if job_name != "Fideicomiso" and vals.get('comission_amount') != None:
             #Obtener el id del cargo fideicomiso
-            fideicomiso_id = self.env['hr.job'].search([('name', '=', 'FIDEICOMISO')]).id
+            fideicomiso_id = self.env['hr.job'].search([('name', '=', 'Fideicomiso')]).id
 
             #Obtener la plantilla que se está modificando excepto la linea de fideicomiso
             template = self.env['pabs.comission.template'].search([

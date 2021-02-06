@@ -562,11 +562,11 @@ class PABSContracts(models.Model):
         raise ValidationError(("El A.S {} no cuenta con un arbol de comisiones".format(self.employee_id.name)))
 
       ajuste_por_sueldo = 0
-      contratoEsSueldo = (self.payment_scheme_id.name == "SUELDO")
+      contratoEsSueldo = (self.payment_scheme_id.name == "Sueldo")
 
       ### RECORRER TODAS LAS LINEAS DEL DETALLE DE LA PLANTILLA e insertar el registro
       for line in comission_template_id:
-        if line.job_id.name != 'FIDEICOMISO':
+        if line.job_id.name != 'Fideicomiso':
           data = {
             'contract_id' : self.id,
             'pay_order' : line.pay_order,
@@ -591,10 +591,10 @@ class PABSContracts(models.Model):
         
         monto_comision = line.comission_amount
 
-        if contratoEsSueldo and line.job_id.name == "ASISTENTE SOCIAL":
+        if contratoEsSueldo and line.job_id.name == "Asistente Social":
           ajuste_por_sueldo = monto_comision
           monto_comision = 0
-        elif contratoEsSueldo and line.job_id.name == "FIDEICOMISO":
+        elif contratoEsSueldo and line.job_id.name == "Fideicomiso":
           monto_comision = monto_comision + ajuste_por_sueldo
 
         data = {
@@ -741,7 +741,7 @@ class PABSContracts(models.Model):
         #### COMIENZA VALIDACIÓN DE COMISIONES Validar que en la plantilla de comisiones el asistente tenga comisión asignada > $0 #####
         if previous.employee_id and previous.name_service:
           #Obtener el puesto de asistente social
-          job_id = self.env['hr.job'].search([('name', '=', 'ASISTENTE SOCIAL')]).id
+          job_id = self.env['hr.job'].search([('name', '=', 'Asistente Social')]).id
 
           #Obtener la lista de precios
           pricelist_id = pricelist_obj.search([('product_id','=',previous.name_service.id)])

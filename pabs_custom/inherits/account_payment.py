@@ -38,6 +38,8 @@ class account_Payment(models.Model):
 
     card_number = fields.Char(string = "Número de tarjeta", size = 4)
 
+    card_expiration_date = fields.Date(string='Fecha de expiración')
+
     card_expiration_month = fields.Char(string = "Mes de vencimiento", size = 2)
     card_expiration_year = fields.Char(string = "Año de vencimiento", size = 4)
 

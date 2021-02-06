@@ -26,3 +26,4 @@ access_pabs_bonus_user,pabs.bonus.user,pabs_custom.model_pabs_bonus,sales_team.g
 access_pabs_status_stock,pabs_status_stock_user,pabs_custom.model_pabs_status_stock,group_contracts_user,1,1,1,1
 access_pabs_contract_status,pabs.contract.status.user,pabs_custom.model_pabs_contract_status,group_contracts_manager,1,1,1,1
 access_pabs_contract_status_reason,pabs.contract.status.reason.user,pabs_custom.model_pabs_contract_status_reason,group_contracts_manager,1,1,1,1
+access_pabs_comission_template_manager,pabs.comission.template.manager,pabs_custom.model_pabs_comission_template,pabs_custom.admin_profile,1,1,1,1
