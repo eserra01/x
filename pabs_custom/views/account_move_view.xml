@@ -9,7 +9,7 @@
         <attribute name="attrs">{'required' : [('type','=','in_invoice')]}</attribute>
       </xpath>
 
-      <xpath expr="//notebook" position="after">
+      <xpath expr="//group[1]" position="after">
         <group string="Salida de comisiones" attrs="{'invisible' : [('type','!=','out_refund')]}">
           <field name="comission_output_ids" nolabel="1"/>
         </group>

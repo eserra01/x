@@ -51,7 +51,7 @@ class ComissionTree(models.Model):
         ######################## PAPELERIA ##########################
         if TipoPago == "Papeleria":
             #Obtener id del cargo
-            id_cargo = self.env['hr.job'].search([('name', '=', "PAPELERIA")]).id
+            id_cargo = self.env['hr.job'].search([('name', '=', "Papeleria")]).id
 
             #Obtener registro de papeleria en el árbol de comisiones
             registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
@@ -77,7 +77,7 @@ class ComissionTree(models.Model):
         elif TipoPago == "Bono":
 
             #Obtener id del cargo
-            id_cargo = self.env['hr.job'].search([('name', '=', "FIDEICOMISO")]).id
+            id_cargo = self.env['hr.job'].search([('name', '=', "Fideicomiso")]).id
 
             #Obtener registro de papeleria en el árbol de comisiones
             registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
@@ -158,7 +158,7 @@ class ComissionTree(models.Model):
             MontoComisionCobrador = MontoPago * PorcentajeCobrador
 
             #Obtener id del cargo de cobrador
-            id_cargo_cobrador = self.env['hr.job'].search([('name', '=', "COBRADOR")]).id
+            id_cargo_cobrador = self.env['hr.job'].search([('name', '=', "Cobrador")]).id
             registroCobradorEnArbol = self.search([('contract_id','=', contrato.id),('comission_agent_id', '=', empleado.id), ('job_id', '=', id_cargo_cobrador)], limit = 1)
 
             if registroCobradorEnArbol:
