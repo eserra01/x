@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'mail', 'hr', 'pabs_custom','account','contacts'],
+    'depends': ['base', 'mail', 'hr', 'pabs_custom'],
 
     # always loaded
     'data': [
@@ -40,7 +40,6 @@
         'views/ds_ataud.xml',
         'views/ds_urna.xml',
         'views/relacion_confinad.xml',
-        'views/podp_calle_ynumber.xml',
         'views/iv_lugar_velacion.xml',
         'views/iv_nombre_capilla.xml',
         'views/dc_forma_pago.xml',
@@ -48,9 +47,7 @@
         'views/carroza.xml',
         'views/ig_proveedor_embalsama.xml',
         'views/ig_templo.xml',
-        'views/ig_panteon.xml',
         'views/menus.xml',
-        'views/account_move_view.xml',
         'data/data.xml',
         'report/report_bsf.xml',
         'report/report_cgs.xml',

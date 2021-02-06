@@ -44,7 +44,6 @@
       <field name="arch" type="xml">
         <form string="form_mortuary">
           <header>
-            <field name="partner_id" invisible="1"/>
               <button string='Edo. Cuenta' name='btn_edo_cuenta' type='object' class="btn-primary"
                 attrs="{'invisible':[('id','==',0)]}" />
               <button string='Tarjeta' name='btn_tarjeta' type='object' class="btn-primary"
@@ -61,16 +60,6 @@
               <button string='Crear pagos' name='btn_create_pagos' type='object' class="btn-primary" />
           </header>
           <sheet>
-            <div class="oe_button_box" name="button_box">
-              <button type="object" class="oe_stat_button" icon="fa-pencil-square-o" name="action_get_invoices" context="{'default_bitacora_id': active_id}" attrs="{'invisible' : [('invoices','=',False)]}">
-                <div class="o_form_field o_stat_info">
-                  <span class="o_stat_value">
-                    <field name="invoices"/>
-                  </span>
-                  <span class="o_stat_text">Facturas</span>
-                </div>
-              </button>
-            </div>
             <group>
               <group string="Información inicial" priority="1">
                 <div class="o_row">
@@ -225,13 +214,10 @@
                   />
               </group>
               <group string="Titular de contrato" priority="5">
-                <field name="tc_no_contrato" domain="[('state','=','contract')]"/>
+                <field name="tc_no_contrato" />
                 <field name="tc_nomb_titular" />
               </group>
-              <group string="Saldo de bitacora" priority="6">
-                <field name="balance"/>
               </group>
-            </group>
               <notebook>
                 <page name="Condiciones generales del servicio" string="Condiciones generales del servicio"
                  >
@@ -482,7 +468,7 @@
                             <label for="iv_hora_de_inicio" class="o_form_label" style="font-weight:bold;"/>
                         </div>
                         <div class="o_setting_right_pane">
-                            <field name="iv_hora_de_inicio"/>
+                            <field name="iv_hora_de_inicio" widget="float_time"/>
                         </div>
                       </div>
                       <field name="iv_direccion" />
@@ -565,7 +551,7 @@
                             <label for="ir_hora_de_inicio" class="o_form_label" style="font-weight:bold;"/>
                         </div>
                         <div class="o_setting_right_pane">
-                            <field name="ir_hora_de_inicio"/>
+                            <field name="ir_hora_de_inicio" widget="float_time"/>
                         </div>
                       </div>
                       <div class="o_row">
@@ -581,7 +567,7 @@
                             <label for="ir_hora_de_fin" class="o_form_label" style="font-weight:bold;"/>
                         </div>
                         <div class="o_setting_right_pane">
-                            <field name="ir_hora_de_fin"/>
+                            <field name="ir_hora_de_fin" widget="float_time"/>
                         </div>
                       </div>
                     </group>
@@ -602,7 +588,7 @@
                             <label for="ii_hora_de_inicio" class="o_form_label" style="font-weight:bold;"/>
                         </div>
                         <div class="o_setting_right_pane">
-                            <field name="ii_hora_de_inicio"/>
+                            <field name="ii_hora_de_inicio" widget="float_time"/>
                         </div>
                       </div>
                       <div class="o_row">
@@ -618,7 +604,7 @@
                             <label for="ii_hora_de_fin" class="o_form_label" style="font-weight:bold;"/>
                         </div>
                         <div class="o_setting_right_pane">
-                            <field name="ii_hora_de_fin"/>
+                            <field name="ii_hora_de_fin" widget="float_time"/>
                         </div>
                       </div>
                     </group>
@@ -639,7 +625,7 @@
                             <label for="ic_hora_de_inicio" class="o_form_label" style="font-weight:bold;"/>
                         </div>
                         <div class="o_setting_right_pane">
-                            <field name="ic_hora_de_inicio"/>
+                            <field name="ic_hora_de_inicio" widget="float_time"/>
                         </div>
                       </div>
                       <div class="o_row">
@@ -655,7 +641,7 @@
                             <label for="ic_hora_de_fin" class="o_form_label" style="font-weight:bold;"/>
                         </div>
                         <div class="o_setting_right_pane">
-                            <field name="ic_hora_de_fin"/>
+                            <field name="ic_hora_de_fin" widget="float_time"/>
                         </div>
                       </div>
                     </group>
@@ -682,7 +668,7 @@
                             <label for="ig_hora_de_misa" class="o_form_label" style="font-weight:bold;"/>
                         </div>
                         <div class="o_setting_right_pane">
-                            <field name="ig_hora_de_misa"/>
+                            <field name="ig_hora_de_misa" widget="float_time"/>
                         </div>
                       </div>
                       <div class="o_row">

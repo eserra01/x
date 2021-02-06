@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from odoo import models, fields, api
-from datetime import timedelta
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+# from odoo.exceptions import ValidationError
 
 
 class IiServicio(models.Model):
@@ -139,13 +139,6 @@ class RelacionConfinad(models.Model):
     # [('0', 'HIJO')],
 
 
-class PodpCalleYNumber(models.Model):
-    _name = 'podp.calle.ynumber'
-
-    name = fields.Char(string="Nombre")
-    # [('0', 'MARIANO BARCENA 45')],
-
-
 class IvLugarVelacion(models.Model):
     _name = 'iv.lugar.velacion'
 
@@ -202,14 +195,6 @@ class IgTemplo(models.Model):
     name = fields.Char(string="Nombre")
     # [('0', 'PAULINA RODRIGUEZ GONZALEZ')],#
 
-
-class IgPanteon(models.Model):
-    _name = 'ig.panteon'
-
-    name = fields.Char(string="Nombre")
-    # [('0', 'PANTEON MUNICIPAL DE ATOTONILCO')],
-
-
 class Mortuary(models.Model):
     _name = 'mortuary'
     _description = 'modulo de funeraria'
@@ -245,10 +230,8 @@ class Mortuary(models.Model):
     cs_observacions = fields.Text(string="Observaciones", compute="get_comentarios")
     cs_nuevo_comentario = fields.Text(string="Nuevo comentario")
 
-    tc_no_contrato = fields.Many2one(comodel_name='pabs.contract',
-        string="Nùmero de contrato")
-    tc_nomb_titular = fields.Char(string="Nombre de titular",
-        related="tc_no_contrato.full_name")
+    tc_no_contrato = fields.Char(string="Nùmero de contrato")
+    tc_nomb_titular = fields.Char(string="Nombre de titular")
 
     ds_atiende_servicio = fields.Many2one(
         "ds.atiende.servicio", string="Atiende servicio")
@@ -300,7 +283,7 @@ class Mortuary(models.Model):
         ondelete='restrict',
         domain="[('municipality_id', '=', podp_municipio_id)]"
     )
-    podp_calle_y_number = fields.Many2one("podp.calle.ynumber", string="Calle y #")
+    podp_calle_y_number = fields.Char(string="Calle y #")
     podp_tel = fields.Char(string="Teléfono")
     podp_relacion_confinad = fields.Many2one(
         "relacion.confinad", string="Relación con finado")
@@ -350,15 +333,10 @@ class Mortuary(models.Model):
     ig_templo = fields.Many2one("ig.templo", string="Templo")
     ig_hora_de_misa = fields.Float(string="Hora de misa")
     ig_acta_de_defuncion = fields.Char(string="Acta de defunción")
-    ig_panteon = fields.Many2one("ig.panteon", string="Panteón ")
+    ig_panteon = fields.Char(string="Panteón")
 
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     revisado = fields.Many2one("ii.llamada", string="Llamada")
-    partner_id = fields.Many2one(comodel_name='res.partner',
-        string='Finado')
-    balance = fields.Float(string="Saldo", compute="_calc_balance")
-    invoices = fields.Integer(string='Cantidad de Facturas',
-        compute='count_invoices')
 
     revisado_admin = fields.Selection([
         ('si', 'SI'),
@@ -375,38 +353,29 @@ class Mortuary(models.Model):
         ]
     )
 
-    def action_get_invoices(self):
-        account_obj = self.env['account.move']
-        invoice_id = account_obj.search([
-            ('type','=', 'out_invoice'),
-            ('bitacora_id','=',self.id)])
-        context = dict(self.env.context or {})
-        context.update(create=False)
-        return {
-            'name': 'Facturas de convenio {}'.format(self.name),
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'res_model': 'account.move',
-            'view_id': self.env.ref('account.view_invoice_tree').id,
-            'domain' : "[('id','in',{})]".format(invoice_id.ids),
-            'context': context,
-        }
+    @api.constrains('cs_tel', 'contact_1_tel', 'contact_2_tel', 'podp_tel')
+    def check_phone_number(self):
+        print('------------------------------check_phone_number---------------------------------')
+        for obj in self:
+            if obj.cs_tel:
+                if obj.cs_tel.isdigit() is False:
+                    raise UserError(_("El campo teléfono debe de ser numérico"))
 
-    def count_invoices(self):
-        account_obj = self.env['account.move']
-        for rec in self:
-            val = account_obj.search_count([
-                ('type','=','out_invoice'),
-                ('bitacora_id','=',rec.id)])
-            rec.invoices = val
+            if obj.contact_1_tel:
+                if obj.contact_1_tel.isdigit() is False:
+                    raise UserError(_("El campo teléfono debe de ser numérico"))
 
+            if obj.contact_2_tel:
+                if obj.contact_2_tel.isdigit() is False:
+                    raise UserError(_("El campo teléfono debe de ser numérico"))
+
+            if obj.podp_tel:
+                if obj.podp_tel.isdigit() is False:
+                    raise UserError(_("El campo teléfono debe de ser numérico"))
 
     @api.model
     def create(self, vals):
-        today = fields.Datetime.now() - timedelta(hours=6)
-        hours = today.hour
-        minutes = today.minute
-        vals['ii_hora_creacion'] = "{}:{}".format(hours,minutes)
+        vals['ii_hora_creacion'] = "{}:{}".format(datetime.now().hour - 6, datetime.now().minute)
         result = super(Mortuary, self).create(vals)
         return result
 
@@ -520,37 +489,18 @@ class Mortuary(models.Model):
                 'hora_creacion': "{}:{}".format(datetime.now().hour - 6, datetime.now().minute)
             }
             self.env['observaciones'].create(dicc)
-            model_comnetarios = self.env['observaciones'].search(
-                [('bitacor_id', '=', self.id)])
-            comentarios = ''
-            for com in model_comnetarios:
-                comentarios += "{} {} {}: {} {}".format(com.fecha_creacion, com.hora_creacion, com.id_user.name, com.name, '\n')
             self.cs_nuevo_comentario = ''
-            self.cs_observacions = comentarios
 
     def get_comentarios(self):
-        comentarios = ''
         for rec in self:
+            comentarios = ''
             model_comnetarios = self.env['observaciones'].search(
-                [('bitacor_id', '=', rec.id)])
+                [('bitacor_id', '=', rec.id)], order='create_date desc')
             for com in model_comnetarios:
                 comentarios += "{} {} {}: {} {}".format(com.fecha_creacion, com.hora_creacion, com.id_user.name, com.name, '\n')
             rec.cs_observacions = comentarios
 
     def btn_create_facturas(self):
-        partner_obj = self.env['res.partner']
-        account_obj = self.env['account.move']
-        bitacora_name = self.name
-        partner_prev = partner_obj.search([
-            ('name','=',bitacora_name)])
-        if partner_prev:
-            partner_id = partner_prev
-        else:
-            partner_id = partner_obj.create({
-                'name' : bitacora_name,
-                'ref' : self.ii_finado,
-                })
-        self.partner_id = partner_id.id
         return {
             'name': 'Crear Factura',
             'type': 'ir.actions.act_window',
@@ -559,9 +509,6 @@ class Mortuary(models.Model):
             'view_id': self.env.ref('account.view_move_form').id,
             'context': {
                 'default_type': 'out_invoice',
-                'default_ref' : self.ii_finado,
-                'default_bitacora_id' : self.id,
-                'default_partner_id' : partner_id.id,
             }
         }
 
@@ -576,14 +523,6 @@ class Mortuary(models.Model):
                 'default_payment_type': 'inbound',
             }
         }
-
-    #Obtiene el saldo del contrato sumando el monto pendiente de las facturas
-    def _calc_balance(self):
-        invoice_obj = self.env['account.move']
-        for rec in self:
-            invoice_ids = invoice_obj.search([('type','=','out_invoice'),('bitacora_id','=',rec.id)])
-            result = sum(invoice_ids.mapped('amount_residual'))
-            rec.balance = result
 
 
 class Observaciones(models.Model):
@@ -602,9 +541,3 @@ class Observaciones(models.Model):
         tracking=True,
         readonly=True,
         copy=False)
-
-class AccountMove(models.Model):
-    _inherit = 'account.move'
-
-    bitacora_id = fields.Many2one(comodel_name='mortuary',
-        string='Bitacora')

@@ -29,121 +29,34 @@
             <t t-call="mortuary.my_template_carnet_pago2">
 
               <div class="page">
-                <br/><br/><br/><br/><br/>
-                <div class="row">
-
-                  <div class="col-4">
-                    <table width="100%">
-                      <tr>
-                        <td>
-                          Tel. servicio: 36 503695 y 38 23 21 55.
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-
-                  <div class="col-4">
-                    <table width="100%">
-                      <tr>
-                        <th>
-                          Solicitud:<span>&amp;nbsp;&amp;nbsp;</span>
-                        </th>
-                        <td style="width: 70%; border-bottom: 1px solid black;">020405024716</td>
-                      </tr>
-                    </table>
-                  </div>
-
-                </div>
-
-                <div class="row">
-
-                  <div class="col-4">
-                    <table width="100%">
-                      <tr>
-                        <td>
-                          Tel. oficina: 36 15 02 07 y 36 15 02 17.
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-
-                  <div class="col-4">
-                    <table width="100%">
-                      <tr>
-                        <th>
-                          Código de Activación:<span>&amp;nbsp;&amp;nbsp;</span>
-                        </th>
-                        <td style="width: 50%; border-bottom: 1px solid black;">C0019998</td>
-                      </tr>
-                    </table>
-                  </div>
-
-                  <div class="col-4">
-                    <table width="100%">
-                      <tr>
-                        <th class="text-right" style="width: 60%;">
-                          Teléfono:<span>&amp;nbsp;&amp;nbsp;</span>
-                        </th>
-                        <td style="width: 40%; border-bottom: 1px solid black;">1234567899</td>
-                      </tr>
-                    </table>
-                  </div>
-
-                </div>
-                <br/>
-
-
-                <!-- <table class="tg"  width="100%">
-                  <colgroup>
-                    <col style="width: 20%"/>
-                    <col style="width: 10%"/>
-                    <col style="width: 5%"/>
-                    <col style="width: 5%"/>
-                    <col style="width: 15%"/>
-                    <col style="width: 20%"/>
-                    <col style="width: 10%"/>
-                  </colgroup>
-                  <thead>
-                    <tr>
-                      <td>Tel. oficina: 36 15 02 07 y 36 15 02 17.</td>
-                      <td></td>
-                      <td class="tg-fymr"><strong>Solicitud:</strong></td>
-                      <td style="border-bottom: 1px solid black;">120215454845</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td style="height: 1px; font-size: 10px; line-height: 0px"></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td class="tg-fymr text-right"><strong>Telefono:</strong><span>&amp;nbsp;&amp;nbsp;</span><br/></td>
-                      <td  style="border-bottom: 1px solid black;">3333333333</td>
-                    </tr>
-                    <tr>
-                      <td>Tel. oficina: 36 15 02 07 y 36 15 02 17.</td>
-                      <td></td>
-                      <td class="tg-fymr" colspan="2"><strong>Codigo de activacion:</strong><br/></td>
-                      <td style="border-bottom: 1px solid black;">C000457845<br/></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </tbody>
-                </table><br/> -->
+                <!-- <style type="text/css">
+                  table, th, td {
+                    border: 1px solid black;
+                  }
+                </style> -->
+                <br/><br/><br/>
 
                 <table width="100%">
-                  <thead>
-                    <tr>
-                      <th style="width: 7%;">A. social:</th>
-                      <td style="width: 40%; border-bottom: 1px solid black;">FRANCISCO BUENROSTRO LOPEZ</td>
-                      <th style="width: 10%;">Contratante:</th>
-                      <td style="width: 43%; border-bottom: 1px solid black;">RICARDO RIZO LOPEZ</td>
-                    </tr>
-                  </thead>
+                  <tr>
+                    <td width="20%"><strong>Tel. Cobrador: 33 1479 2810</strong></td>
+                    <td width="47%"></td>
+                    <td width="5%"><strong>Bitácora</strong></td>
+                    <td width="28%" style="border-bottom: 1px solid black;"><strong><span t-field="doc.name"/></strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Tel. Oficina: 36 50 3686 Ext. 115</strong></td>
+                    <td colspan="3"></td>
+                  </tr>
+                </table>
+
+                <table width="100%">
+                  <tr>
+                    <td width="5%"><strong>Finado: </strong></td>
+                    <td width="62%" style="border-bottom: 1px solid black;"><strong><span t-field="doc.ii_finado"/></strong></td>
+                    <td width="2%"></td>
+                    <td width="6%"><strong>Contacto: </strong></td>
+                    <td width="22%" style="border-bottom: 1px solid black;"><strong><span t-field="doc.contact_1_nomb"/></strong></td>
+                  </tr>
                 </table><br/>
 
                 <div class="row">
@@ -292,27 +205,16 @@
                     </table>
                   </div>
 
-                </div><br/>
+                </div><br/><br/><br/>
 
                 <table width="100%">
                   <tr>
-                    <td><strong>Domicilio:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
-                    <td style="width: 40%; border-bottom: 1px solid black;">AVENIDA CONSTITUCIÓN 50 B</td>
-                    <td style="width: 5%; border-bottom: 1px solid black;"><strong>Col:</strong></td>
-                    <td style="width: 48%; border-bottom: 1px solid black;">ZALATITAN TONALA</td>
+                    <td width="10%"><strong>Aportaciones de:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
+                    <td width="90%" style="border-bottom: 1px solid black;"><span>&amp;nbsp;&amp;nbsp;</span></td>
                   </tr>
                 </table>
 
-                <table width="100%">
-                <thead>
-                  <tr>
-                    <td><strong>Entre calles:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
-                    <td style="width: 90%; border-bottom: 1px solid black;">AVENIDA CONSTITUCIÓN 50 B</td>
-                  </tr>
-                </thead>
-              </table>
-
-              <div style="page-break-before:always;"></div>
+                <div style="page-break-before:always;"></div>
 
               </div>
             </t>
@@ -322,27 +224,15 @@
 
       <template id="header_carnet_pago2">
         <div class="header">
-
-          <table class='table table-borderless'>
-            <thead>
-              <tr>
-                <th style="width: 20%;">Forma de pago:</th>
-                <th style="width: 10%;">$ $100.00</th>
-                <th style="width: 10%;">Recuperador:</th>
-                <th style="width: 60%;">ALBERTO CHAVEZ MANZANO</th>
-              </tr>
-            </thead>
-          </table>
-
-          <table width="100%" cellspacing="0" cellpadding="0">
+          <table width="100%" cellspacing="0" cellpadding="0" style="margin-top:50px !important">
             <tr>
               <td style="width: 30%;" rowspan="4">
-                <!-- <img src="mortuary/static/description/image2.jpg" style="width:300px;" height="70px"/> -->
-                <img class="img" src="mortuary/static/description/imagen.jpg" style="width:300px;" height="70px" alt="Logo"/>
+                <img class="img" src="mortuary/static/description/imagen.jpg" style="width:300px;" height="85px" alt="Logo"/>
               </td>
-              <td style="width: 40%;"><h3><strong>CARNET DE APORTACIONES</strong></h3></td>
-              <td class="text-right" style="width: 10%;"><strong>Contrato N°:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
-              <td style="width: 20%; border-bottom: 1px solid black; !important"><span t-field="doc.tc_no_contrato"/></td>
+              <td class="text-center" style="width: 50%;"><br/><h3><strong>CARNET DE APORTACIONES</strong></h3></td>
+              <td class="text-center" style="width: 20%;">
+                <h3><strong>SERVICIO<br/>REALIZADO</strong></h3>
+              </td>
             </tr>
           </table>
 
@@ -358,7 +248,7 @@
     <field name="page_height">100</field>
     <field name="page_width">245</field>
     <field name="orientation">Portrait</field>
-    <field name="margin_top">5</field>
+    <field name="margin_top">8</field>
     <field name="margin_bottom">5</field>
     <field name="margin_left">7</field>
     <field name="margin_right">7</field>
