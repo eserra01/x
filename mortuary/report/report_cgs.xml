@@ -553,7 +553,8 @@
     <table width="100%" cellspacing="0" cellpadding="0">
       <tr>
         <td width="20%" rowspan="2" aling="top">
-          <img class="img" t-att-src="image_data_uri(company.logo)" style="width:250px; max-height: 105px;" alt="Logo"/>
+          <!-- <img class="img" t-att-src="image_data_uri(company.logo)" style="width:250px; max-height: 105px;" alt="Logo"/> -->
+          <img class="img" src="mortuary/static/description/imagen.jpg" style="width:250px; max-height: 105px;" alt="Logo"/>
         </td>
         <td  class="text-center" aling="top">
           <h3><strong><br/>CONDICIONES GENERALES DEL SERVICIO</strong></h3>

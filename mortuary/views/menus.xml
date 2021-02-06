@@ -104,14 +104,6 @@
     />
 
     <menuitem
-      id="submenu_13"
-      parent="models_menu_main"
-      name="Calle y número"
-      sequence="13"
-      action="action_podp_calle_ynumber"
-    />
-
-    <menuitem
       id="submenu_14"
       parent="models_menu_main"
       name="Lugar de velación"
@@ -165,14 +157,6 @@
       name="Templo"
       sequence="20"
       action="action_ig_templo"
-    />
-
-    <menuitem
-      id="submenu_21"
-      parent="models_menu_main"
-      name="Panteón"
-      sequence="21"
-      action="action_ig_panteon"
     />
 
   </data>

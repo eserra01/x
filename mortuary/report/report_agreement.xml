@@ -172,7 +172,7 @@
           <td width="30%" rowspan="2" aling="top"></td>
           <td width="40%" class="text-center" rowspan="2" aling="top">
             <!-- <img class="img" t-att-src="image_data_uri(company.logo)" style="width:270px;" alt="Logo"/><br/><br/> -->
-            <img class="img" t-att-src="image_data_uri(company.logo)" style="width:270px; max-height: 105px;" alt="Logo"/><br/><br/>
+            <img class="img" src="mortuary/static/description/imagen.jpg" style="width:270px; max-height: 105px;" alt="Logo"/><br/><br/>
             <h5><strong>CONVENIO DE PAGO</strong></h5>
           </td>
           <td width="30%" class="text-right" aling="top">
@@ -222,9 +222,9 @@
         <table width="100%">
           <tr>
             <td width="7%"></td>
-            <td width="38%" class="border_btn_arr text-center">DAVID GONZALES VALENVIA</td>
+            <td width="38%" class="border_btn_arr text-center"><span t-field="doc.podp_nomb" /></td>
             <td width="10%"></td>
-            <td width="38%" class="border_btn_arr text-center">OCTAVIO FABIAN ZUÑIGA CARRILLO</td>
+            <td width="38%" class="border_btn_arr text-center"><span t-field="doc.ds_atiende_servicio" /></td>
             <td width="7%"></td>
           </tr>
         </table><br/>

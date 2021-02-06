@@ -885,9 +885,9 @@
                 }
             </style>
             <div class="caj">
-                <div class="caj" style="border-top: double; border-top-width: 20px;">
-                </div>
-                <img class="img" t-att-src="image_data_uri(company.logo)" style="max-height: 65px; width: 285px;" alt="Logo"/>
+                <div class="caj" style="border-top: double; border-top-width: 20px;"></div>
+                <!-- <img class="img" t-att-src="image_data_uri(company.logo)" style="max-height: 65px; width: 285px;" alt="Logo"/> -->
+                <img class="img" src="mortuary/static/description/imagen.jpg" style="width:285px; max-height: 65px;" alt="Logo"/>
             </div>
             <br/><br/><br/>
             <div class="text-center">
