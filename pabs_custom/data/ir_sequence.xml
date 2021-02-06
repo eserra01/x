@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-  <record id="seq_pabs_arching" model="ir.sequence">
-    <field name="name">Secuencia de arqueos</field>
-    <field name="code">pabs.arching</field>
-    <field name="prefix">AR</field>
-    <field name="padding">6</field>
-    <field name="number_next">1</field>
-    <field name="number_increment">1</field>
-  </record>
+  <!-- <record id="seq_pabs_arching" model="ir.sequence">
+      <field name="name">Secuencia de arqueos</field>
+      <field name="code">pabs.arching</field>
+      <field name="prefix">AR</field>
+      <field name="padding">6</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record> -->
 
   <!-- Secuencia para la creación de contratos -->
   <record id="seq_pabs_contracts" model="ir.sequence">

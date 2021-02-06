@@ -18,9 +18,6 @@
   <!-- Submenú de contratos para busqueda en general -->
   <menuitem id="many_contract_menu" parent="main_contract_menu" action="action_many_contracts" sequence="2"/>
 
-  <!-- Submenú de arqueos -->
-  <menuitem id="menu_arching" name="Arqueos" parent="stock.menu_stock_root" action="pabs_arching_action" sequence="20"/>
-
   <!-- Submenú de Oficinas -->
   <menuitem id="menu_offices" name="Oficinas" parent="hr.menu_hr_root" action="pabs_office_action" sequence="20"/>
 
