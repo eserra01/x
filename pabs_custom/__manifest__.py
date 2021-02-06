@@ -46,7 +46,7 @@
     'wizard/pabs_single_contract_wizard_view.xml',
     'views/menu_views.xml',
     'security/security.xml',
-    'security/ir.model.access.csv',
+    #'security/ir.model.access.csv',
     ],
   'installable': True,
   'auto_install': False,
