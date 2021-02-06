@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <data noupdate="0"> 
+
+    <!-- Categoría Call Center -->
+    <record id="call_center_category" model="ir.module.category">
+      <field name="name">Call Center</field>
+    </record>
+
+    <record id="supervisor_call_center_profile" model="res.groups">
+      <field name="name">Supervisor</field>
+      <field name="category_id" ref="pabs_custom.call_center_category"/>
+    </record>
+
+    <record id="agent_call_center_profile" model="res.groups">
+      <field name="name">Agente</field>
+      <field name="category_id" ref="pabs_custom.call_center_category"/>
+    </record>
+
+    <record id="administrator_call_center_profile" model="res.groups">
+      <field name="name">Administrador Call Center</field>
+      <field name="category_id" ref="pabs_custom.call_center_category"/>
+    </record>
+
     <!--Categoria Funeraria-->
     <record id="mortuary_category" model ="ir.module.category">
       <field name="name">Funeraria</field>
