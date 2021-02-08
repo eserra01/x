@@ -28,8 +28,6 @@ class StockLocation(models.Model):
     for operation in operation_ids:
       operation.active = False
 
-
-
   @api.model
   def create(self, vals):
     res = super(StockLocation, self).create(vals)
