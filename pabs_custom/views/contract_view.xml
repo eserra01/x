@@ -274,7 +274,7 @@
             </group>
 
             <group string="Datos de cobranza">
-              <field name="debt_collector"/>
+              <field name="debt_collector" domain="[('job_id','=','COBRADOR')]"/>
               <field name="payment_amount" />
               <field name="way_to_payment" />
               <field name="days_without_payment" readonly="1"/>
