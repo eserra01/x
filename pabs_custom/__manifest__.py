@@ -16,6 +16,7 @@
   'data': [
     'data/ir_sequence.xml',
     'reports/closing_transfer_report.xml',
+    'reports/arching_report.xml',
     'views/pabs_office_view.xml',
     'views/hr_employee_view.xml',
     'views/payment_scheme_view.xml',
@@ -44,6 +45,7 @@
     'wizard/pabs_closing_transfer_wizard_view.xml',
     'wizard/fix_stock_move_wizard_view.xml',
     'wizard/pabs_single_contract_wizard_view.xml',
+    'wizard/pabs_arching_view.xml',
     'security/security.xml',
     'views/menu_views.xml',
     'security/ir.model.access.csv',
