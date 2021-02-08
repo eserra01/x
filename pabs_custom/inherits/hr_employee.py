@@ -333,40 +333,9 @@ class HrEmployee(models.Model):
     if vals.get('warehouse_id') and not vals.get('local_location_id'):
       warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
       view_location_id = warehouse_id.view_location_id
-      ### Sí se cambia el almacén se inactiva la ubicación automáticamente
-      self.local_location_id.inactivate_location()
-      name = vals.get('barcode') or self.barcode
-      ### Verificando que no exista una ubicación previa asignada al A.S (buscará en las que están archivadas)
-      previous_local_location = location_obj.search([
-        ('name','=',name),
-        ('active','=',False),
-        ('location_id','=',view_location_id.id)], limit=1)
-      if previous_local_location:
-        previous_local_location.active = True
-        ### Sí se encuentra se asignará esa ubicación al A.S
-        local_location = previous_local_location
-      else:
-        ### Sí no, creará una ubicación nueva en la asignación
-        location_val = {
-          'name': name,
-          'location_id': view_location_id.id or False,
-          'usage': 'internal',
-          'consignment_location': True
-        }
-        local_location = location_obj.sudo().create(location_val)
-      ### Se agrega el id de la ubicación en el diccionario principal
-      vals['local_location_id'] = local_location.id
-      ### Buscando la ubicación de oficina asignada a ese almacén
-      request_location = location_obj.search([
-        ('location_id','=',view_location_id.id),
-        ('office_location','=',True)],limit=1)
-      ### Sí lo encuentra lo agregará automáticamente al diccionario
-      if request_location:
-        vals['request_location_id'] = request_location.id
-      else:
-        ### Sí no, enviará un mensaje de error al usuario para configurar correctamente el almacén
-        raise ValidationError((
-          "No se encontró ninguna ubicación de solicitudes, favor de contactar a sistemas"))
+      ### Sí se cambia el almacén se deberá sobre-escribir el almacén a esa ubicación
+      self.local_location_id.warehouse_id = warehouse_id.id
+      name = vals.get('barcode') or self.barcode      
       ### Buscando la ubicación de contratos asignada a ese almacén
       contract_location = location_obj.search([
         ('contract_location','=',True)], limit=1)
