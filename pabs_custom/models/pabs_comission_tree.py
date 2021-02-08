@@ -94,8 +94,12 @@ class ComissionTree(models.Model):
                 raise ValidationError("La comisión restante de Fideicomiso ya se encuentra en cero")
 
             #Actualizar arbol
-            comisionRestante = registro_arbol.remaining_commission - MontoPago
-            registro_arbol.write({"commission_paid":MontoPago, "actual_commission_paid":MontoPago, "remaining_commission": comisionRestante})
+            comisionPagada = registro_arbol.commission_paid + MontoPago                 #2.1 Comision a pagar = Comision_pagada + Monto_pago
+            comisionRealPagada = registro_arbol.actual_commission_paid + MontoPago      #2.2 Comisión real pagada de arbol = Comision_real_pagada + Comision_real_pagada_salida
+            comisionRestante = registro_arbol.remaining_commission - MontoPago          #2.3 Comision restante = Comision_restante - Monto_pago
+
+            registro_arbol.write({"commission_paid":comisionPagada, "actual_commission_paid":comisionRealPagada, "remaining_commission": comisionRestante})
+
 
             #Crear registro en salida de comisiones
             salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago}])
