@@ -53,7 +53,7 @@
                               ('parent.type_transfer', '!=', 'cont-ov'),
                             ]}"/>
         <field name="papeleria" readonly="True"
-          attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}" widget="monetary"/>
+          attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}" force_save="1" widget="monetary"/>
         <field name="return_reasons"
           attrs="{'column_invisible': [('parent.type_transfer','!=','cont-ov')],
                   'required' : [('parent.type_transfer','==','cont-ov')]}"/>
