@@ -12,23 +12,15 @@ class SupportPayroll(models.Model):
     string='Asistente',
     required=True)
 
-  new_entry = fields.Float(string='Apoyo Nuevo Ingreso')
+  date_of_admission = fields.Date(string='Fecha de ingreso',
+    related='employee_id.date_of_admission')
 
-  pantry_support = fields.Float(string='Apoyo para despensa')
+  payment_scheme = fields.Many2one(comodel_name='pabs.payment.scheme',
+    string='Esquema de pago',
+    related='employee_id.payment_scheme')
 
-  salary = fields.Float(string='Sueldo')
+  productivity_bonus = fields.Float(string='Afiliaciones bono por productividad')
 
-  investment_bonus = fields.Float(string='Bono por Inversión')
+  five_hundred_support = fields.Float(string='Apoyo de $500')
 
-  warranty = fields.Float(string='Garantía')
-  
-  absences = fields.Float(string='Faltas')
-
-  total = fields.Float(string='Total',
-    compute="_calc_total")
-
-  @api.onchange('new_entry','pantry_support','salary','investment_bonus','warranty','absences')
-  def _calc_total(self):
-    for rec in self:
-      rec.total = rec.new_entry + rec.pantry_support + rec.salary + rec.investment_bonus + rec.warranty + rec.absences
-    
+  permanence_bonus = fields.Float(string='Bono por permanencia')

@@ -1,4 +1,5 @@
 from odoo import fields, models, api
+from odoo.exceptions import ValidationError
 from odoo.addons.pabs_payroll.models.pabs_payroll import WEEK
 
 class WeekNumberConfig(models.Model):
@@ -12,8 +13,6 @@ class WeekNumberConfig(models.Model):
     required=True,
     string='Número de Semana')
 
-  first_date = fields.Date(string='Inicio de Semana',
-    required=True)
+  first_date = fields.Date(string='Inicio de Semana')
 
-  end_date = fields.Date(string='Fin de la semana',
-    required=True)
+  end_date = fields.Date(string='Fin de la semana')

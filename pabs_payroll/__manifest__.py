@@ -11,10 +11,12 @@
     'hr',
     'pabs_custom'],
   'data': [
-    'data/ir_sequence.xml',
     'security/ir.model.access.csv',
+    'data/ir_sequence.xml',
     'views/week_number_view.xml',
     'views/pabs_payroll_view.xml',
+    'views/pabs_payroll_collection_view.xml',
+    'wizard/pabs_payroll_generate_year_wizard.xml',
     'views/menu_items.xml',
     ],
   'installable': True,

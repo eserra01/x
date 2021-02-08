@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="generate_year_wizard" model="ir.ui.view">
+    <field name="name">generate.year</field>
+    <field name="model">pabs.payroll.generate.year.wizard</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <p>
+            Escribe el año que deseas generar, esto solo generará la plantilla de las 52 semanas, al final tu tendrás que capturar las fechas que representa esa semana.
+          </p>
+          <group>
+            <group>
+              <field name="name"/>
+              <field name="first_day"/>
+            </group>
+            <p> Es necesario escribir el primer día de la semana, puesto que el sistema aumentará 8 días hasta llegar al final de la semana
+            </p>
+          </group>
+          <footer>
+            <button name="generate_fiscal_year" string="Generar" type="object" class="btn-primary"/>
+             ó 
+            <button string="Cancelar" class="btn-secondary" special="cancel" />
+          </footer>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="generate_fiscal_year_action" model="ir.actions.act_window">
+    <field name="name">Crear plantilla del año</field>
+    <field name="res_model">pabs.payroll.generate.year.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+
+</odoo>

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
+from odoo.addons.pabs_payroll.models.pabs_payroll_high_investment import VALUES
 from datetime import datetime
 
 STATES = [
@@ -36,7 +37,8 @@ class PabsPayroll(models.Model):
     default='draft')
   
   warehouse_id = fields.Many2one(comodel_name='stock.warehouse',
-    string='Oficina de Ventas')
+    string='Oficina de Ventas',
+    required=True)
 
   user_id = fields.Many2one(comodel_name='res.users',
     string='Usuario',
@@ -44,6 +46,7 @@ class PabsPayroll(models.Model):
 
   week_number = fields.Selection(selection=WEEK,
     string='Semana',
+    required=True,
     default=lambda self: self._calc_week_number())
 
   first_date = fields.Date(string='Fecha Inicio')
@@ -54,21 +57,39 @@ class PabsPayroll(models.Model):
     inverse_name='payroll_id',
     string='Apoyos')
 
-  referral_id = fields.One2many(comodel_name='pabs.referral.bonuses',
+  high_investment_ids = fields.One2many(comodel_name='pabs.payroll.high.investment',
     inverse_name='payroll_id',
-    string='Bonos por recomendación')
+    string='Inversión Alta')
 
-  reaffiliation_ids = fields.One2many(comodel_name='pabs.payroll.reaffiliations',
-    inverse_name='payroll_id',
-    string='Reafiliaciones')
+  support_total = fields.Float(string='Total Apoyo', store=True, readonly=True,
+        compute='_calc_support',
+        inverse='_inverse_support_total')
 
-  changes_ids = fields.One2many(comodel_name='pabs.funeral.changes',
-    inverse_name='payroll_id',
-    string='Cambios de funeraria')
+  # high_investment_total = fields.Float(string='Total Inversión Alta', store=True, readonly=True,
+  #   compute="_calc_high_investment_total",
+  #   inverse="_inverse_investment_total")
 
-  note_ids = fields.One2many(comodel_name='pabs.payroll.notes',
-    inverse_name='payroll_id',
-    string='Notas')
+  @api.depends(
+    'support_ids.productivity_bonus',
+    'support_ids.five_hundred_support',
+    'support_ids.permanence_bonus')
+  def _calc_support(self):
+    for rec in self:
+      productivity_total = sum(rec.support_ids.mapped('productivity_bonus'))
+      five_hundred_total = sum(rec.support_ids.mapped('five_hundred_support'))
+      permanence_total = sum(rec.support_ids.mapped('permanence_bonus'))
+      total = productivity_total + five_hundred_total + permanence_total
+      rec.support_total = total
+
+  # @api.depends(
+  #   'high_investment_ids.five_hundred_bonus',
+  #   'high_investment_ids.one_thousand_bonus')
+  # def _calc_high_investment_total(self):
+  #   for rec in self:
+  #     five_hundred_bonus = sum(rec.high_investment_ids.mapped('five_hundred_bonus'))
+  #     one_thousand_bonus = sum(rec.high_investment_ids.mapped('one_thousand_bonus'))
+  #     total = five_hundred_bonus + one_thousand_bonus
+  #     rec.high_investment_total = total
   
   def _calc_week_number(self):
     today = datetime.today()
@@ -110,3 +131,63 @@ class PabsPayroll(models.Model):
     sequence_obj = self.env['ir.sequence']
     self.name = sequence_obj.next_by_code('pabs.payroll')
     self.state = 'to review'
+
+  @api.model
+  def create(self, vals):
+    week_config_obj = self.env['week.number.config']
+    year_config_obj = self.env['week.year']
+    vals['name'] = self.env['ir.sequence'].next_by_code(
+      'pabs.payroll')
+    year = fields.Date.today().year
+    year_id = year_config_obj.search([
+      ('name','=',year)],limit=1)
+    record = week_config_obj.search([
+      ('number_week','=',vals['week_number']),
+      ('year','=',year_id.id)])
+    vals['first_date'] = record.first_date
+    vals['end_date'] = record.end_date
+    return super(PabsPayroll, self).create(vals)
+
+  @api.onchange('warehouse_id','first_date', 'end_date')
+  def _calc_high_investment(self):
+    self.high_investment_ids = [(5,0,0)]
+    contract_obj = self.env['pabs.contract']
+    initial_investment = []
+    if self.warehouse_id and self.first_date and self.end_date:
+      all_contracts = contract_obj.search([
+        ('state','=','contract'),
+        ('invoice_date','>=',self.first_date),
+        ('invoice_date','<=',self.end_date)],)
+      employee_ids = all_contracts.mapped('employee_id')
+      for employee_id in employee_ids:
+        if self.warehouse_id.id == employee_id.warehouse_id.id:
+          five_hundred = 0
+          one_thousand = 0
+          contract_ids = all_contracts.filtered(lambda x : x.employee_id.id == employee_id.id)
+          for contract_id in contract_ids:
+            if contract_id.initial_investment >= 500 and contract_id.initial_investment < 1000:
+              five_hundred += 1
+            elif contract_id.initial_investment >= 1000:
+              one_thousand += 1
+          initial_investment.append([0,0,{
+            'employee_id' : employee_id.id,
+            'five_hundred_investment' : five_hundred,
+            'one_thousand_investment' : one_thousand,
+            'five_hundred_bonus' : float(five_hundred * VALUES['500']),
+            'one_thousand_bonus' : float(one_thousand * VALUES['1000']),
+          }])
+    if initial_investment:
+      self.high_investment_ids = initial_investment
+
+  @api.constrains('warehouse_id','week_number')
+  def check_payroll_duplicate(self):
+    payroll_obj = self.env['pabs.payroll']
+    for rec in self:
+      qty = payroll_obj.search_count([
+        ('warehouse_id','=',rec.warehouse_id.id),
+        ('week_number','=',rec.week_number)])
+      if qty > 1:
+        raise ValidationError(
+          "No se puede crear el registro: ya se creó un registro previo Oficina: {} {}".format(
+            rec.warehouse_id.name,
+            dict(rec._fields['week_number'].selection).get(rec.week_number)))
