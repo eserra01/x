@@ -17,7 +17,7 @@ access_pabs_recepit,pabs.contract.receipt,pabs_custom.model_pabs_contract,recept
 access_pabs_contract_manager,pabs.contract.manager,pabs_custom.model_pabs_contract,admin_profile,1,1,1,1
 access_det_operaciones,det.operaciones,pabs_custom.model_det_operaciones,base.group_user,1,1,1,1
 access_transf_operaciones,transf.operaciones,pabs_custom.model_transf_operaciones,base.group_user,1,1,1,1
-access_pabs_closing_transfer,pabs.closing.transfer,pabs_custom.model_pabs_closing_transfer,contract_profile,1,1,1,0
+access_pabs_closing_transfer,pabs.closing.transfer,pabs_custom.model_pabs_closing_transfer,secretary_profile,1,1,1,0
 access_pabs_closing_transfer_manager,pabs.closing.transfer.manager,pabs_custom.model_pabs_closing_transfer,admin_profile,1,1,1,1
 access_closing_transfer_registry_user,closing.transfer.registry.user,pabs_custom.model_closing_transfer_registry,secretary_profile,1,1,1,1
 access_closing_transfer_registry_manager,closing.transfer.registry.manager,pabs_custom.model_closing_transfer_registry,admin_profile,1,1,1,1
