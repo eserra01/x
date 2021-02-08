@@ -328,24 +328,22 @@ class HrEmployee(models.Model):
     ### Declaración de objetos
     warehouse_obj = self.env['stock.warehouse']
     location_obj = self.env['stock.location']
-    
-    ### Creación y modificación de ubicaciones automatizada
-    if vals.get('warehouse_id') and not vals.get('local_location_id'):
-      warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
+
+    ### MODIFICANDO LA UBICACIÓN POR OTRO ALMACÉN
+    if vals.get('warehouse_id'):
       view_location_id = warehouse_id.view_location_id
-      ### Sí se cambia el almacén se deberá sobre-escribir el almacén a esa ubicación
-      self.local_location_id.warehouse_id = warehouse_id.id
-      name = vals.get('barcode') or self.barcode      
-      ### Buscando la ubicación de contratos asignada a ese almacén
-      contract_location = location_obj.search([
-        ('contract_location','=',True)], limit=1)
-      ### Sí lo encuentra lo agregará automáticamente al diccionario
-      if contract_location:
-        vals['contract_location_id'] = contract_location.id
+      if vals.get('local_location'):
+        location_id = location_obj.browse(vals.get('local_location'))
+        location_id.location_id = view_location_id.id
       else:
-        ### Sí no, enviará un mensaje de error al usuario para configurar correctamente el almacén
+        self.location_id.location_id = view_location_id.id
+      req_location_id = location_obj.search([
+        ('location_id','child_of',view_location_id.id),
+        ('office_location','=',True)],limit=1)
+      if not req_location_id:
         raise ValidationError((
-          "No se encontró ninguna ubicación de contratos, favor de contactar a sistemas"))
+          "No se encontró la ubicación de solicitudes"))
+      vals['request_location_id'] = req_location_id.id
     ### Retorno del método original con el diccionario modificado
     return super(HrEmployee, self).write(vals)
 
