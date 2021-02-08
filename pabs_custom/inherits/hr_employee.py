@@ -249,14 +249,15 @@ class HrEmployee(models.Model):
       if duplicated:
         raise ValidationError((
           "No puedes dar de alta el código de empleado {} por que ya existe".format(vals.get('barcode'))))
-      if vals.get('job_id'):
+      if vals.get('job_id').upper() == 'COBRADOR':
         deb_collector = job_obj.search([
           ('name','like','Cobrador')])
         if not deb_collector:
           raise ValidationError((
             "No se encontró el puesto de cobrador"))
+      if vals.get('job_id'):
         job_ids = job_obj.search([
-          ('name','in',('Coordinador','Gerente de Oficina','Asistente Social'))])
+          ('name','in',('COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))])
         if vals.get('job_id') in job_ids.ids:
           ### validación para seleccionar automáticamente las ubicaciones correspondientes
           if vals.get('warehouse_id'):
@@ -299,7 +300,7 @@ class HrEmployee(models.Model):
             newEmployee = super(HrEmployee, self).create(vals)
 
             #Solo crear plantilla cuando el empleado es del departamento de ventas
-            sales_dept_id = self.env['hr.department'].search([('name','=','Ventas')], limit = 1)
+            sales_dept_id = self.env['hr.department'].search([('name','=','VENTAS')], limit = 1)
             if newEmployee['department_id'] == sales_dept_id:
               self.env['pabs.comission.template'].create_comission_template(newEmployee['id'])
         elif vals.get('job_id') == deb_collector.id:

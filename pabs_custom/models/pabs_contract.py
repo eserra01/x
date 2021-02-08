@@ -591,10 +591,10 @@ class PABSContracts(models.Model):
         
         monto_comision = line.comission_amount
 
-        if contratoEsSueldo and line.job_id.name == "Asistente Social":
+        if contratoEsSueldo and line.job_id.name == "ASISTENTE SOCIAL":
           ajuste_por_sueldo = monto_comision
           monto_comision = 0
-        elif contratoEsSueldo and line.job_id.name == "Fideicomiso":
+        elif contratoEsSueldo and line.job_id.name == "FIDEICOMISO":
           monto_comision = monto_comision + ajuste_por_sueldo
 
         data = {
@@ -741,7 +741,7 @@ class PABSContracts(models.Model):
         #### COMIENZA VALIDACIÓN DE COMISIONES Validar que en la plantilla de comisiones el asistente tenga comisión asignada > $0 #####
         if previous.employee_id and previous.name_service:
           #Obtener el puesto de asistente social
-          job_id = self.env['hr.job'].search([('name', '=', 'Asistente Social')]).id
+          job_id = self.env['hr.job'].search([('name', '=', 'ASISTENTE SOCIAL')]).id
 
           #Obtener la lista de precios
           pricelist_id = pricelist_obj.search([('product_id','=',previous.name_service.id)])
