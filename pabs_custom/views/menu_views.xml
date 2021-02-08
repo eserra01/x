@@ -7,10 +7,10 @@
   <menuitem id="activation_main_menu" name="Activaciones" parent="service_menu_root" action="activation_action" sequence="1"/>
 
   <!-- Submenú de precontrato en servicios -->
-  <menuitem id="precontract_menu" name="Pre-Contratos" parent="service_menu_root" groups="pabs_custom.admin_profile,pabs_custom.precontract_menu" action="precontract_action" sequence="2"/>
+  <menuitem id="precontract_menu" name="Pre-Contratos" parent="service_menu_root" groups="pabs_custom.admin_profile,pabs_custom.contract_profile" action="precontract_action" sequence="2"/>
 
   <!-- Submenú de contratos para busqueda en general -->
-  <menuitem id="many_contract_menu" parent="service_menu_root" groups="pabs_custom.admin_profile,pabs_custom.precontract_menu,pabs_custom.secretary_profile" action="action_many_contracts" sequence="2"/>
+  <menuitem id="many_contract_menu" parent="service_menu_root" groups="pabs_custom.admin_profile,pabs_custom.contract_profile,pabs_custom.secretary_profile" action="action_many_contracts" sequence="2"/>
 
   <!-- Submenú de arqueos -->
   <menuitem id="menu_arching" name="Arqueos" groups="pabs_custom.admin_profile,pabs_custom.secretary_profile" parent="stock.menu_stock_root" action="pabs_arching_action" sequence="20"/>
@@ -47,16 +47,16 @@
 
 <!-- COMISIONES -->
   <!-- Menu comisiones -->
-  <menuitem id="comission_menu" name="Comisiones" groups="pabs_custom.admin_profile,pabs_custom.precontract_menu" parent="service_menu_root" sequence="5"/>
+  <menuitem id="comission_menu" name="Comisiones" groups="pabs_custom.admin_profile,pabs_custom.contract_profile" parent="service_menu_root" sequence="5"/>
 
   <!-- Submenu plantillas de plantillas de árboles-->
-  <menuitem id="comission_template_of_templates" name="Plantilla de plantillas" parent="comission_menu" groups="pabs_custom.admin_profile,pabs_custom.precontract_menu" action="comission_template_of_templates_action" sequence="1"/>
+  <menuitem id="comission_template_of_templates" name="Plantilla de plantillas" parent="comission_menu" groups="pabs_custom.admin_profile,pabs_custom.contract_profile" action="comission_template_of_templates_action" sequence="1"/>
 
   <!-- Submenu plantillas de árbol de comision por asistente-->
   <menuitem id="comission_template" name="Plantillas de asistentes" parent="comission_menu" action="comission_template_action" sequence="2"/>
 
   <!-- Submenu arbol de comisiones de contratos -->
-  <menuitem id="comission_per_contract" name="Árboles de contratos" parent="comission_menu" groups="pabs_custom.admin_profile,pabs_custom.precontract_menu" action="comission_tree_action" sequence="3"/>
+  <menuitem id="comission_per_contract" name="Árboles de contratos" parent="comission_menu" groups="pabs_custom.admin_profile,pabs_custom.contract_profile" action="comission_tree_action" sequence="3"/>
   
   <!-- Submenu comisiones de cobradores -->
   <menuitem id="comission_debt_collector" name="Comisiones de cobradores" parent="comission_menu" action="comission_debt_collector_action" sequence="4"/>
