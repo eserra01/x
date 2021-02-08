@@ -379,21 +379,22 @@ class StockMove(models.Model):
 
   @api.model
   def create(self, vals):
-    pricelist_item_obj = self.env['product.pricelist.item']
-    product_obj = self.env['product.product']
-    if vals.get('product_id'):
-      product_id = product_obj.browse(vals.get('product_id'))
-      if product_id.tracking == 'serial':
-        item_id = pricelist_item_obj.search([('product_id','=',product_id.id)],
-          order="create_date desc",limit=1)
-        if item_id:
-          vals['papeleria'] = item_id.stationery
-    res = super(StockMove, self).create(vals)
     picking_obj = self.env['stock.picking']
     move_line_obj = self.env['stock.move.line']
     lot_obj = self.env['stock.production.lot']
+    pricelist_item_obj = self.env['product.pricelist.item']
+    product_obj = self.env['product.product']
+    picking_id = picking_obj.browse(vals.get('picking_id'))
+    if picking_id.type_transfer in ('ov-as','as-ov'):
+      if vals.get('product_id'):
+        product_id = product_obj.browse(vals.get('product_id'))
+        if product_id.tracking == 'serial':
+          item_id = pricelist_item_obj.search([('product_id','=',product_id.id)],
+            order="create_date desc",limit=1)
+          if item_id:
+            vals['papeleria'] = item_id.stationery
+    res = super(StockMove, self).create(vals)
     if vals.get('picking_id'):
-      picking_id = picking_obj.browse(vals.get('picking_id'))
       if picking_id.type_transfer in ('ov-as','as-ov'):
         lot_id = lot_obj.search([('name','=',res.series)],limit=1)
         data = {
