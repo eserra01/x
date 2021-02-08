@@ -733,7 +733,22 @@ class PABSContracts(models.Model):
     comission_template_obj = self.env['pabs.comission.template']
     pricelist_obj = self.env['product.pricelist.item']
 
+    contract_status = self.env['pabs.contract.status']
+    contract_status_reason = self.env['pabs.contract.status.reason']
+
     reconcile = {}
+    ### Pasando el contrato a activo
+    contract_status_id = contract_status.search([
+      ('name','=','ACTIVO')],limit=1)
+    if contract_status_id:
+      self.contract_status_item = contract_status_id.id
+
+    contract_status_reason_id = contract_status_reason.search([
+      ('name','=','ACTIVO')],limit=1)
+    
+    if contract_status_reason_id:
+      self.contract_status_reason = contract_status_reason_id.id
+
     if vals:
       if vals.get('lot_id'):
         previous = self.search([('lot_id','=',vals['lot_id'])],limit=1)
