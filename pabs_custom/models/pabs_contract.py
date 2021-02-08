@@ -739,12 +739,12 @@ class PABSContracts(models.Model):
     reconcile = {}
     ### Pasando el contrato a activo
     contract_status_id = contract_status.search([
-      ('name','=','ACTIVO')],limit=1)
+      ('status','=','ACTIVO')],limit=1)
     if contract_status_id:
       self.contract_status_item = contract_status_id.id
 
     contract_status_reason_id = contract_status_reason.search([
-      ('name','=','ACTIVO')],limit=1)
+      ('reason','=','ACTIVO')],limit=1)
     
     if contract_status_reason_id:
       self.contract_status_reason = contract_status_reason_id.id
@@ -929,7 +929,7 @@ class PABSContracts(models.Model):
       raise ValidationError("La fecha de suspensión temporal debe ser mayor a la fecha actual")
 
     ### Si se quita la suspensión temporal quitar la fecha de reactivación
-    if vals.get('contract_status_item') and vals.get('contract_status_item') != "Suspensión temporal" and self.contract_status_item.status == "Suspensión temporal":
+    if vals.get('contract_status_item') and vals.get('contract_status_item') != "SUSPENSIÓN TEMPORAL" and self.contract_status_item.status == "SUSPENSIÓN TEMPORAL":
         self.reactivation_date = None
 
     return super(PABSContracts, self).write(vals)
