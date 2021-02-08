@@ -8,6 +8,13 @@
     action="week_number_action"
     sequence="3"/>
 
+  <menuitem
+    id="week_number_generate"
+    name='Generación de fechas para nómina'
+    parent="hr.menu_human_resources_configuration"
+    action="generate_fiscal_year_action"
+    sequence="2"/>
+
   <!-- Menú principal -->
   <menuitem 
     id="pabs_payroll_menu" 
@@ -19,6 +26,7 @@
   <menuitem
     id="pabs_payroll_secretary"
     name="Secretaría"
+    groups="pabs_custom.secretary_profile"
     parent="pabs_payroll_menu"
     sequence="1"/>
 
@@ -26,7 +34,8 @@
   <menuitem 
     id="pabs_payroll_create_menu" 
     name="Crear Incidencia" 
-    parent="pabs_payroll_secretary" 
+    groups="pabs_custom.secretary_profile"
+    parent="pabs_payroll_secretary"
     action="pabs_payroll_form_action" 
     sequence="1"/>
 
@@ -34,7 +43,8 @@
   <menuitem 
     id="search_pabs_payroll_menu" 
     name="Consultar Incidencias" 
-    parent="pabs_payroll_secretary" 
+    groups="pabs_custom.secretary_profile"
+    parent="pabs_payroll_secretary"
     action="pabs_payroll_consult_action"
     sequence="2"/>
 
@@ -43,6 +53,25 @@
     id="pabs_payroll_collection"
     name="Cobranza"
     parent="pabs_payroll_menu"
+    groups="pabs_custom.collection_profile"
+    sequence="2"/>
+
+  <!-- Crear Incidencia para Cobranza -->
+  <menuitem
+    id="pabs_payroll_collection_incidence"
+    name="Crear Incidencia"
+    groups="pabs_custom.collection_profile"
+    parent="pabs_payroll_collection"
+    action="pabs_payroll_collection_form_action"
+    sequence="1"/>
+
+  <!-- Consultar incidencias Secretaria -->
+  <menuitem 
+    id="search_pabs_payroll_collection_menu" 
+    name="Consultar Incidencias" 
+    groups="pabs_custom.collection_profile"
+    parent="pabs_payroll_collection"
+    action="pabs_payroll_collection_consult_action"
     sequence="2"/>
       
 </odoo>
