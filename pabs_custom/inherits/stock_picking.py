@@ -161,6 +161,7 @@ class StockPicking(models.Model):
         raise ValidationError((
           "No se encontró el número de serie en el sistema"))
       serie_data = {
+        'name' : lot_id.product_id.name,
         'product_id' : lot_id.product_id.id,
         'series' : serie,
         'product_uom' : lot_id.product_id.uom_id.id,
