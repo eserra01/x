@@ -9,6 +9,8 @@
     'base', 
     'stock',
     'sale_management',
+    'account_accountant',
+    'account',
     'product',
     'purchase',
     'contacts',
