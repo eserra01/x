@@ -385,7 +385,7 @@ class StockMove(models.Model):
     pricelist_item_obj = self.env['product.pricelist.item']
     product_obj = self.env['product.product']
     picking_id = picking_obj.browse(vals.get('picking_id'))
-    if picking_id.type_transfer in ('ov-as','as-ov'):
+    if picking_id.type_transfer == 'as-ov':
       if vals.get('product_id'):
         product_id = product_obj.browse(vals.get('product_id'))
         if product_id.tracking == 'serial':
