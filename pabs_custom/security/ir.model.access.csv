@@ -48,3 +48,4 @@ access_pabs_contract_status_reason_manager,pabs.contract.status.reason.manager,p
 access_pabs_contract_status_reason_user,pabs.contract.status.reason.user,pabs_custom.model_pabs_contract_status_reason,base.group_user,1,0,0,0
 access_pabs_comission_template_manager,pabs.comission.template.manager,pabs_custom.model_pabs_comission_template,admin_profile,1,1,1,1
 access_pabs_comission_template_user,pabs.comission.template.user,pabs_custom.model_pabs_comission_template,base.group_user,1,0,0,0
+access_pabs_arching,pabs.arching,pabs_custom.model_pabs_arching,base.group_user,1,1,1,1

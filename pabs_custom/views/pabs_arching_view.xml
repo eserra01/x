@@ -6,12 +6,13 @@
     <field name="type">tree</field>
     <field name="model">pabs.arching</field>
     <field name="arch" type="xml">
-      <tree>
+      <tree default_order="employee_id, create_date desc" >
         <field name="name"/>
-        <field name="code"/>
         <field name="employee_id"/>
-        <field name="office_code"/>
-        <field name="office_id"/>
+        <field name="warehouse_name"/>
+        <field name="create_date"/>
+        <field name="closing_date"/>
+        <field name="state"/>
       </tree>
     </field>
   </record>
@@ -21,44 +22,82 @@
     <field name="type">form</field>
     <field name="model">pabs.arching</field>
     <field name="arch" type="xml">
-      <form>
-        <header>
-          <button name="close_arching" string="Cerrar Arqueo" type="object" class="o_btn_validate" attrs="{'invisible' : [('state','!=','draft')]}"/>
-          <button name="print_report" string="Imprimir" type="object" class="o_btn_validate" attrs="{'invisible' : [('state','!=','done')]}"/>
-          <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"/>
-        </header>
+      <form delete="0" duplicate="0">
         <sheet>
-          <div class="oe_title">
-            <h1>
-              <field name="name" readonly="1"/>
-            </h1>
-          </div>
+          <header>
+            <button name="close_arching" string="Cerrar Arqueo" type="object" class="btn btn-primary" attrs="{'invisible' : ['|',('state', '!=', 'open'), ('code','=',False)]}"/>
+            <button name="%(arching_report_action)d" string="Imprimir" type="action" class="btn btn-primary" attrs="{'invisible' : [('state', '!=', 'closed')]}"/>
+            <field name="state" widget="statusbar"/>
+          </header>
+
           <group>
-            <group>
-              <field name="code" attrs="{'readonly': [('state', '=', 'done')]}"/>
-              <field name="office_code" />
-            </group>
-            <group>
-              <field name="employee_id"/>
-              <field name="office_id"/>
-            </group>
+              <field name="code" class="oe_inline" attrs="{'invisible':[('code','!=',False)]}"/>
           </group>
-          <field name="line_ids" attrs="{'readonly': [('state', '=', 'done')]}">
-            <tree editable="top">
-              <field name="company"/>
-              <field name="product_id"/>
-              <field name="lot_id" domain="[('product_id','=',product_id)]"/>
-            </tree>
-          </field>
+          
+          <group col="4">
+              <field name="name" readonly="1" force_save="1"/>
+              <field name="employee_id" readonly="1" force_save="1"/>
+              <field name="create_date" readonly="1" force_save="1"/>
+              <field name="warehouse_name" readonly="1" force_save="1"/>
+              <field name="closing_date" readonly="1" force_save="1"/>
+          </group>
+
+          <group col="6">
+              <field name="cantidad_escaneadas" class="oe_inline" readonly="1" force_save="1"/>
+              <field name="cantidad_solicitudes" class="oe_inline" readonly="1" force_save="1"/>
+              <field name="effectiveness" class="oe_inline" readonly="1" force_save="1"/>
+          </group>
+
+        
+          <!-- <group>
+              <field name="solicitud" class="oe_inline"/>
+          </group> -->
+
+          <!-- Seccion solicitudes a escanear -->
+          <group string="Solicitudes presentadas">
+            <field name="line_ids" nolabel="1" attrs="{'readonly':[('state', '=', 'closed')]}">
+              <tree editable="bottom">
+                <field name="lot_id"/>
+                <field name="activated" readonly="1" force_save="1"/>
+                <field name="scan_date" readonly="1" force_save="1"/>
+                <field name="state" readonly="1" force_save="1"/>
+                <field name="service_name" readonly="1"/>
+              </tree>
+            </field>
+          </group>
+
+          <!-- Seccion solicitudes en poder del asistetne -->
+          <group string="Solicitudes en poder del asistente" col="1">
+              <field name="solicitudes" nolabel="1" readonly="1" force_save="1"/>
+          </group>
         </sheet>
       </form>
     </field>
   </record>
 
+  <!-- Barra de búsqueda -->
+    <record id="arching_search_view" model="ir.ui.view" >
+        <field name="name">pabs.arching.search.view</field>
+        <field name="model">pabs.arching</field>
+        <field name="arch" type="xml">
+            <search>
+                <!-- Filtros -->
+                <field name="employee_id"/>
+
+                <!-- Agrupaciones en barra de búsqueda -->
+                <group string="Group By">
+                    <filter name="group_by_employee_id" string="Empleado" context="{'group_by': ('employee_id')}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
   <record id="pabs_arching_action" model="ir.actions.act_window">
     <field name="name">Arqueos</field>
     <field name="res_model">pabs.arching</field>
     <field name="view_mode">tree,form</field>
+    <field name="context">{'group_by': ('employee_id')}</field>
+    <!-- <field name="domain">[('warehouse_id','in', [4,5])]</field> -->
   </record>
 
 </odoo>
