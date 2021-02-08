@@ -79,7 +79,7 @@ class ComissionTree(models.Model):
             #Obtener id del cargo
             id_cargo = self.env['hr.job'].search([('name', '=', "FIDEICOMISO")]).id
 
-            #Obtener registro de papeleria en el árbol de comisiones
+            #Obtener registro de fideicomiso en el árbol de comisiones
             registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
 
             if not registro_arbol:
@@ -212,7 +212,7 @@ class ComissionTree(models.Model):
                     comisionPagadaSalida = MontoPago                                        #1.1 Comision pagada de salida = Monto_pago
                     comisionRealPagadaSalida = MontoPago - (MontoPago * PorcentajeCobrador) #1.2 Comision real pagada de salida = Monto_pago - (Monto_pago * Porcentaje_cobrador)
 
-                    comisionPagada = comisionPagada + MontoPago                             #2.1 Comision a pagar = Monto_pago
+                    comisionPagada = comisionPagada + MontoPago                             #2.1 Comision a pagar = Comision pagada + Monto_pago
                     comisionRealPagada = comisionRealPagada + comisionRealPagadaSalida      #2.2 Comisión real pagada de arbol = Comision_real_pagada + Comision_real_pagada_salida
                     comisionRestante = comisionRestante - MontoPago                         #2.3 Comision restante = Comision_restante - Monto_pago
                     MontoPago = 0                                                           #4. Disminuir el monto del abono = 0
