@@ -246,16 +246,14 @@ class HrEmployee(models.Model):
       vals['barcode'] = vals['barcode'].upper()
       ### Validar que no se repitan los códigos de empleado
       duplicated = self.search([('barcode','=',vals.get('barcode'))])
+      deb_collector = job_obj.search([
+        ('name','=','COBRADOR')],limit=1)
+      if not deb_collector:
+        raise ValidationError((
+          "No se encontró el puesto de cobrador"))
       if duplicated:
         raise ValidationError((
           "No puedes dar de alta el código de empleado {} por que ya existe".format(vals.get('barcode'))))
-      job_id = job_obj.browse(vals.get('job_id')) if vals.get('job_id') else ''
-      if job_id.name == 'COBRADOR':
-        deb_collector = job_obj.search([
-          ('name','=','COBRADOR')],limit=1)
-        if not deb_collector:
-          raise ValidationError((
-            "No se encontró el puesto de cobrador"))
       if vals.get('job_id'):
         job_ids = job_obj.search([
           ('name','in',('COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))])
