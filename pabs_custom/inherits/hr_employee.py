@@ -250,12 +250,14 @@ class HrEmployee(models.Model):
         raise ValidationError((
           "No puedes dar de alta el código de empleado {} por que ya existe".format(vals.get('barcode'))))
       job_id = job_obj.browse(vals.get('job_id')) if vals.get('job_id') else ''
+      raise ValidationError((
+        "Job: {}".format(job_id)))
       if job_id.name.upper() == 'COBRADOR':
         deb_collector = job_obj.search([
           ('name','like','Cobrador')])
-        if not deb_collector:
+        """if not deb_collector:
           raise ValidationError((
-            "No se encontró el puesto de cobrador"))
+            "No se encontró el puesto de cobrador"))"""
       if vals.get('job_id'):
         job_ids = job_obj.search([
           ('name','in',('COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))])
