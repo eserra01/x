@@ -322,7 +322,7 @@ class HrEmployee(models.Model):
       result.append((record.id, "{} - {}".format(record.barcode,record.name)))
     return result
 
-  def write(self, vals):
+  """def write(self, vals):
     ### Declaración de objetos
     warehouse_obj = self.env['stock.warehouse']
     location_obj = self.env['stock.location']
@@ -344,7 +344,7 @@ class HrEmployee(models.Model):
           "No se encontró la ubicación de solicitudes"))
       vals['request_location_id'] = req_location_id.id
     ### Retorno del método original con el diccionario modificado
-    return super(HrEmployee, self).write(vals)
+    return super(HrEmployee, self).write(vals)"""
 
   @api.model
   def _name_search(self, name='', args=None, operator="ilike", limit=100):
