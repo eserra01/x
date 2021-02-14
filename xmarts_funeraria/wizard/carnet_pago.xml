@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_wizar_report_carnet_pago" model="ir.ui.view">
+    <field name="name">Impresión de tarjetas</field>
+    <field name="model">report.carnet.pago</field>
+    <field name="arch" type="xml">
+      <form string="Choose The Details">
+
+        <group string="Impresión por rango">
+          <field name="print_by_range" />
+          <field name="date_from" attrs="{'readonly': [('print_by_range','==',False)]}" />
+          <field name="date_to" attrs="{'readonly': [('print_by_range','==',False)]}" />
+          <field name="office" attrs="{'readonly': [('print_by_range','==',False)]}" />
+        </group>
+
+        <group string="Impresión individual">
+          <field name="contract_number" attrs="{'readonly': [('print_by_range','==',True)]}" />
+          <field name="no_copies" attrs="{'readonly': [('print_by_range','==',True)]}" />
+        </group>
+
+        <footer>
+          <button name="filter" string="Aceptar" type="object" class="oe_highlight" />
+          or
+          <button string="Cancelar" class="oe_link" special="cancel"/>
+        </footer>
+
+      </form>
+    </field>
+  </record>
+
+  <record id="action_carnet_pago" model="ir.actions.act_window">
+    <field name="name">Impresión de tarjetas</field>
+    <field name="res_model">report.carnet.pago</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="view_wizar_report_carnet_pago"/>
+    <field name="target">new</field>
+  </record>
+
+  <menuitem
+    id="menu_root_carnet_pago"
+    name="Impresión de tarjetas"
+    parent="xmarts_funeraria.report_root_menu" 
+    sequence="1"
+    action="action_carnet_pago" />
+
+</odoo>

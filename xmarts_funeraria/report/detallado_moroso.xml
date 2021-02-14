@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.detallado_moroso">
+        <t t-call="web.html_container">
+          <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+              <div class="page">
+
+                <style type="text/css">
+                  <!-- table, th, td {
+                    border: 1px solid black;
+                  } -->
+                </style>
+
+                <table width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <!-- <td width="20%" rowspan="2" aling="top">
+                      <img src="xmarts_funeraria/static/description/image.png" style="width:250px;" />
+                    </td> -->
+                    <td width="100%" class="text-center" aling="top">
+                      <h3>
+                        <strong>
+                          REPORTE DETALLADO DE MOROSOS
+                        </strong>
+                      </h3>
+                    </td>
+                    <!-- <td width="20%" rowspan="2" aling="top"></td> -->
+                  </tr>
+                </table>
+
+                <table width="100%">
+                  <thead>
+                    <tr>
+                      <th class="" style="width: 8%; border: none; border-bottom:1px solid black; border-top:1px solid black;">CONTRATO</th>
+                      <th class="" style="width: 25%; border: none; border-bottom:1px solid black; border-top:1px solid black;">CLIENTE</th>
+                      <th class="" style="width: 21%; border: none; border-bottom:1px solid black; border-top:1px solid black;">DOMICILIO</th>
+                      <th class="" style="width: 17%; border: none; border-bottom:1px solid black; border-top:1px solid black;">COLONIA</th>
+                      <th class="" style="width: 10%; border: none; border-bottom:1px solid black; border-top:1px solid black;">LOCALIDAD</th>
+                      <th class="" style="width: 8%; border: none; border-bottom:1px solid black; border-top:1px solid black;">Último Abono</th>
+                      <th class="text-center" style="width: 4%; border: none; border-bottom:1px solid black; border-top:1px solid black;">Pago</th>
+                      <th class="" style="width: 7%; border: none; border-bottom:1px solid black; border-top:1px solid black;">Telefono</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="8"><strong>ADAN ISAI ALENCASTRO JIMENEZ</strong></td>
+                    </tr>
+                    <tr>
+                      <td class="" style=""><span/>1AF006415</td>
+                      <td class="" style=""><span/>ZULEMA MONSERRAT BARBA ORTIZ</td>
+                      <td class="" style=""><span>AV RAMON CORONA #16</span></td>
+                      <td class="" style=""><span/>RESIDENCIAL SANTA ANITA</td>
+                      <td class="" style=""><span/>TLAQUEPAQUE</td>
+                      <td class="text-center" style=""><span/>01/20/2020</td>
+                      <td class="text-center" style=""><span/>Q</td>
+                      <td class="" style=""><span/>3310402474</td>
+                    </tr>
+                  </tbody>
+                </table><br/>
+
+              </div>
+            </t>
+          </t>
+        </t>
+    	</template>
+
+  </data>
+
+	<record id="paperformat_detallado_moroso" model="report.paperformat">
+    <field name="name">Detallado de morosos</field>
+    <field name="default" eval="True"/>
+    <field name="format">Letter</field>
+    <field name="page_height">0</field>
+    <field name="page_width">0</field>
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">15</field>
+    <field name="margin_left">7</field>
+    <field name="margin_right">7</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">130</field>
+ </record>
+
+	<report
+    string="Detallado de morosos"
+    id="id_detallado_moroso"
+    model='sale.order'
+    name="xmarts_funeraria.detallado_moroso"
+    file="xmarts_funeraria.detallado_moroso"
+    report_type="qweb-pdf"
+    print_report_name="'Detallado de morosos'"
+    paperformat="xmarts_funeraria.paperformat_detallado_moroso"
+  />
+
+</odoo>

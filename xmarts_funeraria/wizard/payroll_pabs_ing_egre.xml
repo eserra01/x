@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_wizar_report_payroll" model="ir.ui.view">
+        <field name="name">Reporte ingresos y egresos</field>
+        <field name="model">report.pabs.ing.egre</field>
+        <field name="arch" type="xml">
+            <form string="Choose The Details">
+                <group>
+                    <group>
+                        <field name="date_from" />
+                        <field name="date_to" />
+                    </group>
+                </group>
+                <footer>
+                    <button name="filter" string="Aceptar" type="object" class="oe_highlight" />
+                    or
+                    <button string="Cancelar" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_payroll_ing_egre" model="ir.actions.act_window">
+            <field name="name">Reporte ingresos y egresos</field>
+            <field name="res_model">report.pabs.ing.egre</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_wizar_report_payroll"/>
+            <field name="target">new</field>
+    </record>
+
+
+    <menuitem id="menu_root_payroll" 
+        name="Reporte ingresos y egresos" 
+        parent="xmarts_funeraria.report_root_menu" 
+        sequence="5" 
+        action="action_payroll_ing_egre"/>
+
+</odoo>

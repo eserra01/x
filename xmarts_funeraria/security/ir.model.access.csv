@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_report_pabs,report.pabs,model_report_pabs,,1,1,1,1
+access_report_pabs_ing_egre,report.pabs.ing.egre,model_report_pabs_ing_egre,,1,1,1,1

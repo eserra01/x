@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.contrato_pagado">
+        <t t-call="web.html_container">
+          <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+              <div class="page">
+
+                <style type="text/css">
+                  .border_btn_abj_white {border-bottom: 1px solid #fff;}
+
+                  .borders1px {border: 1px solid black;}
+                  .borders2px {border: 2px solid black;}
+                  .borders3px {border: 3px solid black;}
+                  .espac3pt {word-spacing: 3pt;}
+                  .espac4pt {word-spacing: 4pt;}
+                  .espac5pt {word-spacing: 5pt;}
+                  .espac6pt {word-spacing: 6pt;}
+                  .espac7pt {word-spacing: 7pt;}
+                  .espac8pt {word-spacing: 8pt;}
+                  .espac9pt {word-spacing: 9pt;}
+                  .espac10pt {word-spacing: 10pt;}
+                  .espac15pt {word-spacing: 15pt;}
+                  .espac20pt {word-spacing: 20pt;}
+                  .espac23pt {word-spacing: 23pt;}
+                  .espac26pt {word-spacing: 26pt;}
+                  .espac30pt {word-spacing: 30pt;}
+                  .border_btn_abj {border-bottom: 1px solid black;}
+                  .border_btn_arr {border-top: 1px solid black;}
+                  .red {background: red;}
+                  .white {background: white;}
+                  .color_white {color: white;}
+                  .blue {background: blue;}
+                  .tex_negrit {font-weight: bold;}
+
+                  <!-- table, th, td {
+                    border: 1px solid black;
+                  } -->
+
+                </style>
+
+                <table width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="20%" rowspan="3" aling="top">
+                      <img src="xmarts_funeraria/static/description/image.png" style="width:100%;" height="120px"/>
+                    </td>
+                    <td width="55%" class="text-center" aling="top">
+                      <h3>
+                        <strong>
+                          PABS - Programa de Apoyo De Beneficio Social <br/>
+                          Guadalajara Jalisco
+                        </strong>
+                      </h3>
+                    </td>
+                    <td width="20%" class="text-center border_btn_arr" style="vertical-align:top; border-left: 1px solid black; border-right: 1px solid black;">
+                      <strong>CONTRATOS CON FECHA DE <br/> ULTIMO ABONO</strong>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2" class="text-center" style="vertical-align:bottom;">
+                      <h4><strong>CONTRATOS PAGADOS</strong></h4>
+                    </td>
+                    <td rowspan="2" class="border_btn_abj" style="vertical-align:bottom; border-left:1px solid black; border-right: 1px solid black; padding-left: 20px;">
+                      <strong>DEL:&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;</strong>2020-06-01 <br/>
+                      <strong>AL:&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;</strong>2020-06-28
+                    </td>
+                  </tr>
+                </table><br/>
+
+                <table width="100%" style="border-spacing:10px; border-collapse:separate;">
+                  <thead>
+                    <tr>
+                      <th class="" style="width: 10%; border: none; border-bottom: 1px solid black;">Cliente</th>
+                      <th class="" style="width: 7%; border: none; border-bottom: 1px solid black;">Contrato</th>
+                      <th class="" style="width: 5%; border: none; border-bottom: 1px solid black;">Fecha</th>
+                      <th class="" style="width: 6%; border: none; border-bottom: 1px solid black;">Costo</th>
+                      <th class="" style="width: 7%; border: none; border-bottom: 1px solid black;">Cobrador</th>
+                      <th class="" style="width: 7%; border: none; border-bottom: 1px solid black;">Domicilio</th>
+                      <th class="" style="width: 8%; border: none; border-bottom: 1px solid black;">Colonia</th>
+                      <th class="" style="width: 8%; border: none; border-bottom: 1px solid black;">Localidad</th>
+                      <th class="" style="width: 7%; border: none; border-bottom: 1px solid black;">Telefono</th>
+                      <th class="" style="width: 6%; border: none; border-bottom: 1px solid black;">EntreCalles</th>
+                      <th class="" style="width: 10%; border: none; border-bottom: 1px solid black;">Promotor</th>
+                      <th class="" style="width: 8%; border: none; border-bottom: 1px solid black;">CódigoProm</th>
+                      <th class="" style="width: 11%; border: none; border-bottom: 1px solid black;">FechaUltimoAbono</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="" style=""><span/>ANA LUZ SIORD</td>
+                      <td class="" style=""><span/>2CJ019240</td>
+                      <td class="" style="">04/12/20</td>
+                      <td class="" style=""><span/>$21,900.00</td>
+                      <td class="" style=""><span/>JUAN CARLO</td>
+                      <td class="" style=""><span/>PASE DE LOS</td>
+                      <td class="" style=""><span/>PRADOS TLAQ</td>
+                      <td class="" style=""><span/>TLAQUEPAQUE</td>
+                      <td class="" style=""><span/>0123456789</td>
+                      <td class="" style=""><span/>CARR EL SALTO Y FRACC LOS CIRUELOS</td>
+                      <td class="" style=""><span/>LILI MENDO</td>
+                      <td class="" style=""><span/>P0390</td>
+                      <td class="" style=""><span/>01/06/2020 12:00</td>
+                    </tr>
+                  </tbody>
+                </table><br/>
+
+              </div>
+            </t>
+          </t>
+        </t>
+    	</template>
+
+  </data>
+
+	<record id="paperformat_contrato_pagado" model="report.paperformat">
+    <field name="name">Contratos pagados</field>
+    <field name="default" eval="True"/>
+    <field name="format">Letter</field>
+    <field name="page_height">0</field>
+    <field name="page_width">0</field>
+    <field name="orientation">Landscape</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">15</field>
+    <field name="margin_left">7</field>
+    <field name="margin_right">7</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">130</field>
+ </record>
+
+	<report
+    string="Contratos pagados"
+    id="id_contrato_pagado"
+    model='sale.order'
+    name="xmarts_funeraria.contrato_pagado"
+    file="xmarts_funeraria.contrato_pagado"
+    report_type="qweb-pdf"
+    print_report_name="'Contratos pagados'"
+    paperformat="xmarts_funeraria.paperformat_contrato_pagado"
+  />
+
+</odoo>

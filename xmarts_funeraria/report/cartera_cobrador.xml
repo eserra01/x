@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.cartera_cobrador">
+        <t t-call="web.html_container">
+          <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+              <div class="page">
+
+                <style type="text/css">
+                  <!-- table, th, td {
+                    border: 1px solid black;
+                  } -->
+                </style>
+
+                <table width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="20%" rowspan="2" aling="top">
+                      <img src="xmarts_funeraria/static/description/image.png" style="width:250px;" />
+                    </td>
+                    <td width="60%" class="text-center" aling="top">
+                      <h3>
+                        <strong>
+                          <br/>REPORTE DE CARTERA DE COBRADORES
+                          <br/>PABS - Programa de Apoyo De Beneficio Social
+                        </strong>
+                      </h3>
+                    </td>
+                    <td width="20%" rowspan="2" aling="top"></td>
+                  </tr>
+                </table>
+
+                <table width="100%">
+                  <tr>
+                    <td width="25%"></td>
+                    <td width="25%"><strong>COBRADOR: </strong> ANGEL HERNANDEZ DIAZ</td>
+                    <td width="15%"></td>
+                    <td width="10%"><strong>Contratos: 348</strong></td>
+                    <td width="25%"></td>
+                  </tr>
+                </table><br/>
+
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th class="text-center" style="width: 6%; border: none; border-bottom: 1px solid black;">CONTRATO</th>
+                      <th class="text-center" style="width: 19%; border: none; border-bottom: 1px solid black;">CLIENTE</th>
+                      <th class="text-center" style="width: 19%; border: none; border-bottom: 1px solid black;">DOMICILIO</th>
+                      <th class="text-center" style="width: 10%; border: none; border-bottom: 1px solid black;">COLONIA</th>
+                      <th class="text-center" style="width: 13%; border: none; border-bottom: 1px solid black;">LOCALIDAD</th>
+                      <th class="text-center" style="width: 20%; border: none; border-bottom: 1px solid black;">ENTRE CALLES</th>
+                      <th class="text-center" style="width: 2%; border: none; border-bottom: 1px solid black;">F.P.</th>
+                      <th class="text-center" style="width: 2%; border: none; border-bottom: 1px solid black;">ESTATUS</th>
+                      <th class="text-center" style="width: 2%; border: none; border-bottom: 1px solid black;">MONTOPAGO</th>
+                      <th class="text-center" style="width: 5%; border: none; border-bottom: 1px solid black;">SALDO</th>
+                      <th class="text-center" style="width: 2%; border: none; border-bottom: 1px solid black;">ORIGEN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="text-center" style=""><span/>1AF014973</td>
+                      <td class="text-center" style=""><span/>MIGUEL ANGEL CASTELLANO</td>
+                      <td class="text-center" style=""><span>VICENTE GUERRERO #15</span></td>
+                      <td class="text-center" style=""><span/>LOS MAESTROS</td>
+                      <td class="text-center" style=""><span/>EL SALTO</td>
+                      <td class="text-center" style=""><span/>HIDALGO Y JUUVENTINO RC</td>
+                      <td class="text-center" style=""><span/>S</td>
+                      <td class="text-center" style=""><span/>ACTIVO</td>
+                      <td class="text-center" style=""><span/>$100.00</td>
+                      <td class="text-center" style=""><span/>$6350.00</td>
+                      <td class="text-center" style=""><span/>PABS</td>
+                    </tr>
+                  </tbody>
+                </table><br/>
+
+              </div>
+            </t>
+          </t>
+        </t>
+    	</template>
+
+  </data>
+
+	<record id="paperformat_cartera_cobrador" model="report.paperformat">
+    <field name="name">Cartera de cobradores</field>
+    <field name="default" eval="True"/>
+    <field name="format">Letter</field>
+    <field name="page_height">0</field>
+    <field name="page_width">0</field>
+    <field name="orientation">Landscape</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">15</field>
+    <field name="margin_left">7</field>
+    <field name="margin_right">7</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">130</field>
+ </record>
+  
+ 
+</odoo>

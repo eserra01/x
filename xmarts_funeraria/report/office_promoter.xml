@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.office_promoter">
+			<t t-call="web.html_container">
+			    <t t-call="web.basic_layout">
+			        <t t-foreach="docs" t-as="doc"> 
+			           <div class="page" style="font-size: 10px;">
+                        <t t-if="doc.type_transfer ==  'ov-as'">
+                            <table>
+                                <tr>
+                                    <td><img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="width:200px;"/></td>
+                                    <td class="pull-right"> <h5>RECIBO - ENTREGA SOLICITUDES</h5></td>
+                                </tr>
+                            </table>          	
+			           		<br/>
+                            <ul class="list-inline mb4 text-center">
+                                
+                                    <li  class="list-inline-item text-center"><strong>OFICINAS - PROMOTORES</strong></li>
+                                
+                               
+                             </ul>
+			           		
+			           		<br/>
+			           		 <ul class="list-inline mb4">
+			           		 	<li  class="list-inline-item"><ins><span>Fecha:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.date_done" t-options='{"widget": "date"}'/></ins></li>
+                    			<li  class="list-inline-item pull-right"><ins><span>Hora:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-field="doc.date_done" t-options='{"format":"hh:mm:ss"}'/></ins></li>
+			           		 </ul>
+			           		 <ul class="list-inline mb4">
+			           		 	<li  class="list-inline-item pull-right"><strong>Folio:</strong><span>&amp;nbsp;&amp;nbsp;</span><strong t-esc="doc.name"/></li>
+			           		 </ul>
+                             <br/>
+			           		 <ul class="list-inline mb4">
+			           		 	<li  class="list-inline-item"><span>DE: Almacén</span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.location_id.name"/></li>
+                               
+                                     <li  class="list-inline-item pull-right"><span>OFICINAS-PROMOTORES</span></li>
+			           		 </ul>
+			           		  <ul class="list-inline mb4">
+			           		 	<li  class="list-inline-item"><span>A: Almacén</span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.location_dest_id.name"/></li>
+
+                    			<li  class="list-inline-item pull-right"><span>OFICINA VENTAS:</span></li>
+			           		 </ul>
+			           		
+			           		        
+                             <hr style="border: 1px solid black;"/>
+                             <ul class="list-inline mb4">
+                                <li  class="list-inline-item text-center"><span t-esc="doc.employee_id.barcode"/><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.employee_id.name"/></li>
+                             </ul>
+                             <hr style="border: 1px solid black;"/>
+                             <strong>OFICINA DE VENTAS:</strong> <span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.location_id.name"/>
+                            <t t-set="amount" t-value="0"/>
+                            <t t-set="done" t-value="0"/>
+                             <table class="table" style="table-layout: fixed; border:0 px;">
+                                <thead style="display: table-row-group font-size: 8px;">
+                                    <tr>
+                                        <th class="text-center" style="width: 25%; border: 1px solid black;" scope="col">DESCRIPCIÓN</th>
+                                        <th class="text-center" style="width: 25%; border: 1px solid black;" scope="col">SERIE INI</th>
+                                        <th class="text-center" style="width: 25%; border: 1px solid black;" scope="col">CANT</th>
+                                        <th class="text-center" style="width: 25%; border: 1px solid black;" scope="col">COD ACTIVACION</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-if="doc.move_ids_without_package">
+                                        <t t-foreach="doc.move_ids_without_package" t-as="result">
+                                            <tr>
+                                                <td style="border: 1px solid black;"><span t-esc="result.description_picking"/></td>
+                                                <td style="border: 1px solid black;"><span t-esc="result.series_start"/></td>
+                                                <td style="border: 1px solid black;"><span t-esc="result.quantity_done"/></td>
+                                                <td style="border: 1px solid black;"><span t-esc="result.codigo_de_activacion_valid"/></td>                                        
+                                            </tr>
+                                              <tr>
+                                                <td><span>Inv Inicial</span></td>
+                                                <td><span>$ <span>&amp;nbsp;&amp;nbsp;</span></span><span t-esc="result.inversion_inicial"/></td>
+                                                <td><span>Tomó Comi</span><span><span>&amp;nbsp;&amp;nbsp;</span>$ <span>&amp;nbsp;&amp;nbsp;</span></span><span t-esc="result.toma_comision"/></td>
+                                                <td><span>Importe</span><span><span>&amp;nbsp;&amp;nbsp;</span>$ <span>&amp;nbsp;&amp;nbsp;</span></span><span t-esc="result.amount_received"/></td>       
+                                                <t t-set="amount" t-value="amount + result.amount_received"/>
+                                                <t t-set="done" t-value="done + result.quantity_done"/>                                  
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </tbody>
+                             </table>
+                              <table class="table" style="table-layout: fixed">
+                                <thead style="display: table-row-group" >
+                                    <tr>
+                                        <th class="text-center" style="width: 40%; border: 1px solid black;" scope="col">TOTALES</th>
+                                        <th class="text-center" style="width: 30%; border: 1px solid black;" scope="col"><span t-esc="done"/></th>
+                                        <th class="text-center" style="width: 30%; border: 1px solid black;" scope="col">$ <span>&amp;nbsp;&amp;nbsp;</span><span t-esc="amount"/></th>
+                                    </tr>
+                                </thead>
+                                
+                             </table>
+                              <ul class="list-inline mb4">
+                                <li  class="list-inline-item">__________________________</li>
+                                <li  class="list-inline-item pull-right">__________________________</li>
+                             </ul>
+                              <ul class="list-inline mb4">
+                                <li  class="list-inline-item"><span>Recibi de Conformidad</span></li>
+                                <li  class="list-inline-item pull-right"><span>Recibi de Conformidad</span></li>
+                             </ul>
+                              <ul class="list-inline mb4">
+                                <li  class="list-inline-item"><span t-esc="doc.employee_id.name"/></li>
+                             </ul>
+                             <br/>
+                             <span>Comentarios Adiccionales:</span>
+                             <div style="border:1px solid #000000; padding-bottom: 80px;"></div>
+                            </t>
+			           </div>
+			       	</t>
+			   </t>
+			</t>
+    	</template>
+
+	</data>
+	<record id="paperformat_report" model="report.paperformat"> 
+            <field name="name">Recibo Ticket</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">250</field>
+            <field name="page_width">75</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">2</field>
+            <field name="margin_bottom">2</field>
+            <field name="margin_left">1</field>
+            <field name="margin_right">1</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">1</field>
+            <field name="dpi">130</field>
+    </record>
+	<report
+        string="Oficina a promotor"
+        id="id_office_promoter"
+        model='stock.picking'
+        name="xmarts_funeraria.office_promoter"
+        file="xmarts_funeraria.office_promoter"
+        report_type="qweb-pdf"
+        print_report_name="'Oficina a promotor'"
+        paperformat="xmarts_funeraria.paperformat_report"
+        />
+
+</odoo>

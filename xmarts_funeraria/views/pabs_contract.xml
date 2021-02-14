@@ -1,0 +1,25 @@
+<odoo>
+  <data>
+   <record model="ir.ui.view" id="view_pabs_contract">
+            <field name="name">view_pabs_contract_inherit</field>
+            <field name="model">pabs.contract</field>
+            <field name="inherit_id" ref="pabs_custom.contract_form_view"/>
+            <field name="arch" type="xml">
+                <data>
+                
+                    <xpath expr="//field[@name='allow_edit']" position="after">
+                        <button name="print_report_est_cuenda" string="Edo. Cuenta" type="object" class="btn btn-info" style="margin-rigth: 10px" attrs="{'invisible' : [('lot_id','=',False)]}"/>         
+                        
+                    
+                        <button name="print_report_est_pago" string="Estimado Pagos" type="object" class="btn btn-info" style="margin-rigth: 10px" attrs="{'invisible' : [('lot_id','=',False)]}"/>
+
+
+                        <button name="print_report_car_cobrador" string="Tarjeta 'X'" type="object" class="btn btn-info" style="margin-rigth: 10px" attrs="{'invisible' : [('lot_id','=',False)]}"/>
+          
+         
+                    </xpath>
+                </data>
+            </field>
+        </record> 
+  </data>
+</odoo>

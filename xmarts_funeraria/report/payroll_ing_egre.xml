@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.payroll_ing_egre">
+			<t t-call="web.html_container">
+			    <t t-call="web.basic_layout">
+			           <div class="page">
+                            <table  width="100%"  cellspacing="0" cellpadding="0">
+                                <tr>
+
+                                    <td  rowspan="4" aling="top"><img  src="xmarts_funeraria/static/description/image.png" style="width:250px;"/></td>
+                                    <td colsan="2" class="text-center"  aling="top"> <h3>PABS - Programa de Apoyo De Beneficio Social</h3></td>
+                                </tr>
+                                <tr>
+                                    <td colsan="2" class="text-center"  aling="top" style="padding-left: 10px;"> <h3>INGRESOS Y EGRESOS
+                                    GENERAL</h3></td>
+                                </tr>
+                                <tr>
+                                    <td class="pull-left"  aling="top"><ins><strong>PERIODO DE:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="date_start"/></ins></td>
+                                    <td class="text-center" style="padding-right: 20px;"  aling="top"><ins><strong>HASTA:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="date_end"/></ins></td>
+                                </tr>
+                               
+                                  
+                            </table>
+                           
+                            <br/>
+                             <table width="100%" style="table-layout: fixed; border:0 px;">
+                                <tbody>
+                                    <tr>
+                                        <th class="text-center" style="width: 25%;" scope="col"><ins>CODIGO</ins></th>
+                                        <th class="text-center" style="width: 25%;" scope="col"><ins>NOMBRE</ins></th>
+                                        <th class="text-center" style="width: 25%;" scope="col"><ins>IMPORTE</ins></th>
+                                    </tr>
+                                </tbody>
+                                
+                             </table>           
+                                 
+                             <strong>INGRESOS</strong><br/>
+                             <strong>01 SIN CLASIFICAR</strong><br/>
+                            <table width="100%"  style="table-layout: fixed; border:0 px;">
+                             
+                                <tbody>
+                                   
+                                        <tr>
+                                            <td class="text-center"></td>
+                                            <td class="text-left">COBRANZA EXD. INV.</td>
+                                            <td class="text-center"><span t-esc="exend"/></td>
+                                        </tr>
+                                 
+                                </tbody>
+                             </table>           
+                             <strong>02 CLASIFICADOS</strong>
+                             <br/>
+                             <table  width="100%" style="table-layout: fixed; border:0 px;">
+                             
+                                <tbody>
+                                    <t t-foreach="docs" t-as="doc">
+                                        <tr>
+                                            <td class="text-center"><span t-esc="doc['Ecobro_receipt']"/></td>
+                                            <td class="text-left"><span t-esc="doc['debt_collector_code']"/></td>
+                                            <td class="text-center"><span t-esc="doc['amount']"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                             </table>        	
+			           	         
+                              <table width="100%" class="table pull-left" style="table-layout: fixed">
+                                <thead style="display: table-row-group" >
+                                    <tr>
+                                            <td class="text-left"></td>
+                                            <td class="text-left"></td>
+                                            <td class="text-center"><span>$<span>&amp;nbsp;&amp;nbsp;</span><strong t-esc="amount_total"/></span></td>
+                                       
+                                       
+                                    </tr>
+                                </thead>
+                                
+                             </table>
+                             <p style="page-break-before:always;"> </p>
+                            <table  width="100%"  cellspacing="0" cellpadding="0">
+                                <tr>
+
+                                    <td  rowspan="4" aling="top"><img  src="xmarts_funeraria/static/description/image.png" style="width:250px;"/></td>
+                                    <td colsan="2" class="text-center"  aling="top"> <h3>PABS - Programa de Apoyo De Beneficio Social</h3></td>
+                                </tr>
+                                <tr>
+                                    <td colsan="2" class="text-center"  aling="top" style="padding-left: 10px;"> <h3>INGRESOS Y EGRESOS
+                                    GENERAL</h3></td>
+                                </tr>
+                                <tr>
+                                    <td class="pull-left"  aling="top"><ins><strong>PERIODO DE:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="date_start"/></ins></td>
+                                    <td class="text-center" style="padding-right: 20px;"  aling="top"><ins><strong>HASTA:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="date_end"/></ins></td>
+                                </tr>
+                               
+                                  
+                            </table>
+                           
+                            <br/>
+                             <table width="100%" style="table-layout: fixed; border:0 px;">
+                                <tbody>
+                                    <tr>
+                                        <th class="text-center" style="width: 25%;" scope="col"><ins>CODIGO</ins></th>
+                                        <th class="text-center" style="width: 25%;" scope="col"><ins>NOMBRE</ins></th>
+                                        <th class="text-center" style="width: 25%;" scope="col"><ins>IMPORTE</ins></th>
+                                    </tr>
+                                </tbody>
+                                
+                             </table>           
+                                 
+                             <strong>EGRESOS</strong><br/>
+                             <strong>01 SIN CLASIFICAR</strong><br/>
+                            <table width="100%"  style="table-layout: fixed; border:0 px;">
+                             
+                                <tbody>
+                                   
+                                        <tr>
+                                            <td class="text-center"></td>
+                                            <td class="text-left">Fideicomiso</td>
+                                            <td class="text-center"><span t-esc="exend_e"/></td>
+                                        </tr>
+                                 
+                                </tbody>
+                             </table>           
+                             <strong>02 CLASIFICADOS</strong>
+                             <br/>
+                             <table  width="100%" style="table-layout: fixed; border:0 px;">
+                             
+                                <tbody>
+                                    <t t-foreach="docse" t-as="doc">
+                                        <tr>
+                                            <td class="text-center"><span t-esc="doc['Ecobro_receipt']"/></td>
+                                            <td class="text-left"><span t-esc="doc['debt_collector_code']"/></td>
+                                            <td class="text-center"><span t-esc="doc['amount']"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                             </table>           
+                                 
+                              <table width="100%" class="table pull-left" style="table-layout: fixed">
+                                <thead style="display: table-row-group" >
+                                    <tr>
+                                        <td class="text-center"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-center"><span>$<span>&amp;nbsp;&amp;nbsp;</span><strong t-esc="amount_total_e"/></span></td>
+                                       
+
+
+                                    </tr>
+                                </thead>
+                                
+                             </table>
+			           </div>
+			     
+			   </t>
+			</t>
+    	</template>
+
+	</data>
+	<record id="paperformat_report_payroll" model="report.paperformat"> 
+           <field name="name">PF Sale Order Landscape</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">15</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">3</field>
+            <field name="dpi">90</field>
+    </record>
+	<report
+        string="Reporte ingresos y egresos"
+        id="id_payroll_ing_egre"
+        model='report.pabs.ing.egre'
+        name="xmarts_funeraria.payroll_ing_egre"
+        file="xmarts_funeraria.payroll_ing_egre"
+        report_type="qweb-pdf"
+        print_report_name="'Reporte ingresos y egresos'"
+        paperformat="xmarts_funeraria.paperformat_report_payroll"
+        />
+
+</odoo>
