@@ -9,13 +9,17 @@ class ComissionTemplate(models.Model):
     _description = "Plantilla de árboles de comision"
 
     #Al eliminar el empleado se eliminan sus plantillas de comisiones
-    employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, readonly=True, ondelete="cascade")
+    #employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, readonly=True, ondelete="cascade")
+    employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, ondelete="cascade")
 
-    plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True, readonly=True)
+    #plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True, readonly=True)
+    plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True)
 
-    pay_order = fields.Integer(string="Prioridad", required = True, readonly=True)
+    #pay_order = fields.Integer(string="Prioridad", required = True, readonly=True)
+    pay_order = fields.Integer(string="Prioridad", required = True)
 
-    job_id = fields.Many2one(string="Cargo", comodel_name="hr.job", required=True, tracking=True, readonly=True)
+    #job_id = fields.Many2one(string="Cargo", comodel_name="hr.job", required=True, tracking=True, readonly=True)
+    job_id = fields.Many2one(string="Cargo", comodel_name="hr.job", required=True, tracking=True)
 
     comission_agent_id = fields.Many2one(string="Comisionista", comodel_name="hr.employee", tracking=True)
 
