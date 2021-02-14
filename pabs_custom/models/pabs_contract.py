@@ -4,6 +4,7 @@ from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, date
 import calendar
+import logging
 from odoo.addons.pabs_custom.externals.calcule import CalculeRFC, CalculeCURP
 
 import math
@@ -32,6 +33,8 @@ SERVICE = [
   ('unrealized','No realizado'),
   ('realized','Realizado'),
   ('made_receivable','Realizado por cobrar')]
+
+_logger = logging.getLogger(__name__)
 
 class PABSContracts(models.Model):
   _name = 'pabs.contract'
@@ -762,6 +765,9 @@ class PABSContracts(models.Model):
           pricelist_id = pricelist_obj.search([('product_id','=',previous.name_service.id)])
           if not pricelist_id:
             raise ValidationError(("No se encontró la información del plan {}".format(previous.product_id.name)))
+
+            ### enviando a los logs los datos
+            _logger.info("Empleado: {}, plan: {}".format(previous.employee_id.name, pricelist_id.product_id.name))
 
           #Obtener la plantilla de comisiones
           comission_template = comission_template_obj.search([
