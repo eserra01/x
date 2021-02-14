@@ -34,7 +34,7 @@
     'category': 'Warehouse',
     'version': '0.2',
     'images': ['static/description/WarehouseRestrictions.jpg'],
-    'depends': ['base', 'stock'],
+    'depends': ['base', 'stock', 'pabs_custom'],
 
     'data': [
 

@@ -2,8 +2,11 @@
 
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+import calendar
 from odoo.addons.pabs_custom.externals.calcule import CalculeRFC, CalculeCURP
+
+import math
 
 STATES = [
   ('actived','Solicitud Activada'),
@@ -61,9 +64,8 @@ class PABSContracts(models.Model):
   partner_mname = fields.Char(string='Apellido materno', required=True)
   birthdate = fields.Date(string='Fecha de nacimiento', default=fields.Date.today(), required=True)
   phone = fields.Char(string='Teléfono', required=True)
-  street = fields.Char(string='Calle / Número', required=True)
+  street = fields.Char(string='Calle / Número')
   name_service = fields.Many2one(comodel_name = 'product.product', related="lot_id.product_id", string='Servicio')
-  street = fields.Char(string='Calle / Número', required=True)
   street_toll = fields.Char(string = 'Calle')
   between_streets_toll = fields.Char(string ='Entre calles')
   vat = fields.Char(string='RFC', compute='_calc_rfc')
@@ -95,10 +97,10 @@ class PABSContracts(models.Model):
   way_to_payment = fields.Selection(selection=WAY_TO_PAY,string = 'Forma de pago')
   date_first_payment = fields.Date(string='Fecha primer abono')
   status_of_contract = fields.Char(string="Estatus")
-  contract_expires = fields.Date(string="Vencimiento contrato")
-  days_without_payment = fields.Integer(string="Dias sin abonar")
-  late_amount = fields.Float(string="Monto atrasado")
-  comments = fields.Text(string='Observaciones')
+  contract_expires = fields.Date(string="Vencimiento contrato", compute ="calcular_vencimiento_y_atraso")
+  days_without_payment = fields.Integer(string="Dias sin abonar", compute="calcular_dias_sin_abonar")
+  late_amount = fields.Float(string="Monto atrasado", compute="calcular_vencimiento_y_atraso")
+  comments = fields.Text(string='Comentarios de activación')
   service_detail = fields.Selection(selection=SERVICE, string='Detalle de servicio', default="unrealized", required="1")
 
   commission_tree = fields.One2many(comodel_name='pabs.comission.tree', inverse_name='contract_id', string="Arbol de comisiones")
@@ -278,7 +280,7 @@ class PABSContracts(models.Model):
         }
       return partner_obj.create(data)
 
-  @api.model
+  """@api.model
   def create(self, vals):
     ### Valida que si ya existe una activación con ese número de serie, no permita generarla nuevamente
     previous = self.search([('lot_id','=',vals['lot_id'])],limit=1)
@@ -301,7 +303,7 @@ class PABSContracts(models.Model):
     vals['partner_id'] = partner_id.id
     vals['state'] = 'actived'
     ### Se retorna el diccionario modificado
-    return super(PABSContracts, self).create(vals)
+    return super(PABSContracts, self).create(vals)"""
 
   def unlink(self):
     for contract in self:
@@ -374,7 +376,6 @@ class PABSContracts(models.Model):
     self.allow_create = False
     self.invoice_date = False
     self.service_detail = False
-    self.payment_scheme_id = False
     self.product_code = False
     self.status_of_contract = False
     self.contract_expires = False
@@ -448,7 +449,6 @@ class PABSContracts(models.Model):
       #Datos contables
       self.invoice_date = contract_id.invoice_date
       self.service_detail = contract_id.service_detail
-      self.payment_scheme_id = contract_id.payment_scheme_id
       self.product_code = contract_id.product_code
       self.status_of_contract = contract_id.status_of_contract
       self.contract_expires = contract_id.contract_expires
@@ -458,7 +458,6 @@ class PABSContracts(models.Model):
       self.late_amount = contract_id.late_amount
       self.service_detail = contract_id.service_detail
       self.debt_collector = contract_id.debt_collector
-
 
   #Al modificar la forma de pago actualizar el monto de pago
   @api.onchange('way_to_payment')
@@ -592,10 +591,10 @@ class PABSContracts(models.Model):
         
         monto_comision = line.comission_amount
 
-        if contratoEsSueldo and line.job_id.name == "Asistente Social":
+        if contratoEsSueldo and line.job_id.name == "ASISTENTE SOCIAL":
           ajuste_por_sueldo = monto_comision
           monto_comision = 0
-        elif contratoEsSueldo and line.job_id.name == "Fideicomiso":
+        elif contratoEsSueldo and line.job_id.name == "FIDEICOMISO":
           monto_comision = monto_comision + ajuste_por_sueldo
 
         data = {
@@ -734,7 +733,22 @@ class PABSContracts(models.Model):
     comission_template_obj = self.env['pabs.comission.template']
     pricelist_obj = self.env['product.pricelist.item']
 
+    contract_status = self.env['pabs.contract.status']
+    contract_status_reason = self.env['pabs.contract.status.reason']
+
     reconcile = {}
+    ### Pasando el contrato a activo
+    contract_status_id = contract_status.search([
+      ('status','=','ACTIVO')],limit=1)
+    if contract_status_id:
+      self.contract_status_item = contract_status_id.id
+
+    contract_status_reason_id = contract_status_reason.search([
+      ('reason','=','ACTIVO')],limit=1)
+    
+    if contract_status_reason_id:
+      self.contract_status_reason = contract_status_reason_id.id
+
     if vals:
       if vals.get('lot_id'):
         previous = self.search([('lot_id','=',vals['lot_id'])],limit=1)
@@ -742,7 +756,7 @@ class PABSContracts(models.Model):
         #### COMIENZA VALIDACIÓN DE COMISIONES Validar que en la plantilla de comisiones el asistente tenga comisión asignada > $0 #####
         if previous.employee_id and previous.name_service:
           #Obtener el puesto de asistente social
-          job_id = self.env['hr.job'].search([('name', '=', 'Asistente Social')]).id
+          job_id = self.env['hr.job'].search([('name', '=', 'ASISTENTE SOCIAL')]).id
 
           #Obtener la lista de precios
           pricelist_id = pricelist_obj.search([('product_id','=',previous.name_service.id)])
@@ -915,7 +929,223 @@ class PABSContracts(models.Model):
       raise ValidationError("La fecha de suspensión temporal debe ser mayor a la fecha actual")
 
     ### Si se quita la suspensión temporal quitar la fecha de reactivación
-    if vals.get('contract_status_item') and vals.get('contract_status_item') != "Suspensión temporal" and self.contract_status_item.status == "Suspensión temporal":
-        self.reactivation_date = None
+    if vals.get('contract_status_item') and vals.get('contract_status_item') != "SUSPENSION TEMPORAL" and self.contract_status_item.status == "SUSPENSION TEMPORAL":
+      self.reactivation_date = None
 
     return super(PABSContracts, self).write(vals)
+
+  #Agregar comentario como nota interna
+  def save_comment(self):
+    if len(self.new_comment.strip()) == 0:
+      raise ValidationError("No se ha escrito un comentario")
+
+    values = {
+      'body': "<p>" + self.new_comment + "</p>",
+      'model': self._name,
+      'message_type': 'comment',
+      'no_auto_thread': False,
+      'res_id': self.id
+    }
+    
+    self.env['mail.message'].create(values)
+    self.new_comment = ""
+
+  # Calcular fecha de vencimiento
+  @api.depends('payment_amount', 'way_to_payment', 'date_first_payment')
+  def calcular_vencimiento_y_atraso(self):
+    for rec in self:
+      #Obtener información del contrato
+      monto_pago = rec.payment_amount
+      forma_pago = rec.way_to_payment
+      fecha_primer_abono = rec.date_first_payment
+
+      if fecha_primer_abono == False or forma_pago == False or monto_pago == False:
+        rec.contract_expires = None
+        rec.late_amount = 0
+        return
+
+      saldo_a_plazos = rec.product_price - rec.initial_investment - rec.investment_bond
+      abonado = rec.paid_balance - rec.initial_investment - rec.investment_bond #Abonos sin tomar en cuenta enganche
+
+      lista_pagos = []
+      monto_atrasado = 0
+
+      #
+      ##
+      ### Proceso exclusivo para primer pago #####
+      indice = 1
+
+      #Calcular importe a pagar
+      importe_a_pagar = 0
+
+      if saldo_a_plazos >= monto_pago:
+        importe_a_pagar = monto_pago
+      else:
+        importe_a_pagar = saldo_a_plazos
+
+      #Calcular importe restante
+      importe_restante = 0
+      
+      if abonado >= importe_a_pagar:
+        importe_restante = 0
+        abonado = abonado - importe_a_pagar
+      else:
+        importe_restante = importe_a_pagar - abonado
+        abonado = 0
+
+      #Calcular importe_pagado
+      importe_pagado = importe_a_pagar - importe_restante
+
+      #Sumar al monto atrasado
+      if fecha_primer_abono < fields.Date.today():
+        monto_atrasado = monto_atrasado + importe_restante
+
+      pago = {
+        "numero_de_pago": indice, 
+        "fecha_pago": fecha_primer_abono,
+        "importe_a_pagar": importe_a_pagar,
+        "importe_restante": importe_restante,
+        "importe_pagado": importe_pagado,
+        "saldo_restante": saldo_a_plazos,
+        "monto_atrasado": monto_atrasado
+      }
+
+      lista_pagos.append(pago)
+
+      saldo_a_plazos = saldo_a_plazos - importe_a_pagar
+      indice = indice + 1
+
+      fecha_pago_anterior = fecha_primer_abono
+      
+      #
+      ##
+      ### Proceso exclusivo para los demas pagos #####
+      while saldo_a_plazos > 0:
+
+        #Calcular importe a pagar
+        importe_a_pagar = 0
+
+        if saldo_a_plazos >= monto_pago:
+          importe_a_pagar = monto_pago
+        else:
+          importe_a_pagar = saldo_a_plazos
+
+        #Calcular importe restante
+        importe_restante = 0
+        
+        if abonado >= importe_a_pagar:
+          importe_restante = 0
+          abonado = abonado - importe_a_pagar
+        else:
+          importe_restante = importe_a_pagar - abonado
+          abonado = 0
+
+        #Calcular importe_pagado
+        importe_pagado = importe_a_pagar - importe_restante
+
+        #Calcular siguiente fecha
+        fecha_pago = ""
+        if forma_pago == 'weekly':
+          fecha_pago = fecha_pago_anterior + timedelta(days=7)
+          fecha_pago_anterior = fecha_pago
+        elif forma_pago == 'biweekly':
+          pass
+          fecha_pago = rec.add_one_biweek(fecha_pago_anterior, fecha_primer_abono.day)
+          fecha_pago_anterior = fecha_pago
+        elif forma_pago == 'monthly':
+          fecha_pago = rec.add_one_month(fecha_pago_anterior, fecha_primer_abono.day)
+          fecha_pago_anterior = fecha_pago
+
+        #Sumar al monto atrasado
+        if fecha_pago < fields.Date.today():
+          monto_atrasado = monto_atrasado + importe_restante
+
+        pago = {
+          "numero_de_pago": indice, 
+          "fecha_pago": fecha_pago,
+          "importe_a_pagar": importe_a_pagar,
+          "importe_restante": importe_restante,
+          "importe_pagado": importe_pagado,
+          "saldo_restante": saldo_a_plazos,
+          "monto_atrasado": monto_atrasado
+        }
+
+        lista_pagos.append(pago)
+        
+        saldo_a_plazos = saldo_a_plazos - importe_a_pagar
+        indice = indice + 1
+
+      #retornar valores de actualización
+      fecha_vencimiento = fecha_pago_anterior.strftime("%Y-%m-%d")
+      
+      #Actualizaciones a los campos
+      rec.contract_expires = fecha_vencimiento
+      rec.late_amount = monto_atrasado
+
+  def add_one_month(self, orig_date, dia_primer_abono):
+
+    ### Validar cambio de año ###
+    # advance year and month by one month
+    new_year = orig_date.year
+    new_month = orig_date.month + 1
+    # note: in datetime.date, months go from 1 to 12
+    if new_month > 12:
+        new_year = new_year + 1
+        new_month = new_month - 12
+
+    last_day_of_month = calendar.monthrange(new_year, new_month)[1]
+    #new_day = min(orig_date.day, last_day_of_month) #Linea original
+    
+    new_day = min(dia_primer_abono, last_day_of_month) #Para mantener el día mas próximo al día del primer abono
+
+    return orig_date.replace(year=new_year, month=new_month, day=new_day)
+
+  def add_one_biweek(self, orig_date, dia_primer_abono):
+    #Si el dia es menor o igual a 14 se calculará en el mes actual (ejemplo si la quincena uno cae en dia 2, la quincena dos caerá en dia 16)
+    if orig_date.day <= 14:
+      new_year = orig_date.year
+      new_month = orig_date.month
+      new_day = orig_date.day + 14
+
+      if dia_primer_abono >= 28:
+        last_day_of_month = calendar.monthrange(new_year, new_month)[1]
+        new_day = min(dia_primer_abono, last_day_of_month) #Para mantener el día mas próximo al día del primer abono
+
+      return orig_date.replace(year=new_year, month=new_month, day=new_day)
+    
+    #Si el día es mayor o igual a 15 se calculará con el mes siguiente (ejemplo si la quincena uno cae en dia 31, la quincena dos caerá en dia 14)
+    if orig_date.day >= 15:
+      
+      ### Validar cambio de año ###
+      # advance year and month by one month
+      new_year = orig_date.year
+      new_month = orig_date.month + 1
+    
+      # note: in datetime.date, months go from 1 to 12
+      if new_month > 12:
+          new_year = new_year + 1
+          new_month = new_month - 12
+
+      if orig_date.day >= 28:
+        new_day = 14
+      else:
+        new_day = orig_date.day - 14
+
+      return orig_date.replace(year=new_year, month=new_month, day=new_day)
+
+  #Calcular dias sin abonar
+  def calcular_dias_sin_abonar(self):
+    for rec in self:
+      #Obtener registro del último pago de cobranza
+      ultimo_abono_cobranza = rec.env['account.payment'].search([('contract','=', rec.id), ('date_receipt','!=',False)], order='date_receipt desc', limit = 1)
+      
+      if ultimo_abono_cobranza.date_receipt:
+        rec.days_without_payment = (fields.Date.today() - ultimo_abono_cobranza.date_receipt).days
+      else:
+        #Obtener registro del último pago de oficina
+        ultimo_abono_oficina = rec.env['account.payment'].search([('contract','=', rec.id), ('payment_date','!=',False)], order='payment_date desc', limit = 1)
+        
+        if ultimo_abono_oficina.payment_date:
+          rec.days_without_payment = (fields.Date.today() - ultimo_abono_oficina.payment_date).days
+        else:
+          rec.days_without_payment = 0

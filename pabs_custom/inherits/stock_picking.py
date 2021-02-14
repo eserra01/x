@@ -21,6 +21,8 @@ class StockPicking(models.Model):
 
   salary = fields.Boolean(related='employee_id.payment_scheme.allow_all')
 
+  find_serie = fields.Char(String='Buscar Serie')
+
   ### Campos XMARTS
   type_transfer = fields.Selection([
     ('ac-ov', 'Almacén Central -> Oficina de Ventas'),
@@ -124,26 +126,39 @@ class StockPicking(models.Model):
             'message': partner.picking_warn_msg}}
 
   
-  @api.onchange('location_dest_id')
-  def onchange_location_dest_id(self):
+  @api.onchange('location_dest_id','location_id')
+  def onchange_location_ids(self):
     employee_obj = self.env['hr.employee']
-    if self.location_dest_id:
-      if self.location_dest_id.consignment_location:
+    if self.location_dest_id or self.location_id:
+      if self.location_dest_id.consignment_location or self.location_id.consignment_location:
         employee_id = employee_obj.search([
-          ('local_location_id','=',self.location_dest_id.id)],limit=1)
-        if employee_id:
-          self.employee_id = employee_id.id
-        else:
-          self.employee_id = False
-
-  @api.onchange('location_id')
-  def onchange_location_id(self):
-    employee_obj = self.env['hr.employee']
-    if self.location_id:
-      if self.location_id.consignment_location:
-        employee_id = employee_obj.search([
+          '|',('local_location_id','=',self.location_dest_id.id),
           ('local_location_id','=',self.location_id.id)],limit=1)
         if employee_id:
           self.employee_id = employee_id.id
         else:
           self.employee_id = False
+
+  @api.onchange('find_serie')
+  def search_serie(self):
+    lot_obj = self.env['stock.production.lot']
+    if self.find_serie:
+      serie = self.find_serie
+      lot_id = lot_obj.search([
+        ('name','=',serie)])
+      if not lot_id:
+        raise ValidationError((
+          "No se encontró el número de serie en el sistema"))
+      serie_data = {
+        'name' : lot_id.product_id.name,
+        'product_id' : lot_id.product_id.id,
+        'series' : serie,
+        'product_uom' : lot_id.product_id.uom_id.id,
+        'product_uom_qty' : 1,
+
+      }
+      self.move_ids_without_package = [(0, 0, serie_data)]
+      self.find_serie = False
+      return {
+        'move_ids_without_package' : [(0, 0, serie_data)]
+      }      

@@ -4,11 +4,9 @@
       <field name="name">Campos</field>
       <field name="type">form</field>
       <field name="model">account.payment</field>
-      <field name="groups_id" eval="[(4,ref('pabs_custom.group_contracts_manager'))]"/>
+      <!--<field name="groups_id" eval="[(4,ref('pabs_custom.group_contracts_manager'))]"/>-->
       <field name="inherit_id" ref="account.view_account_payment_form"/>
       <field name="arch" type="xml">
-
-      
 
       <xpath expr="//field[@name='communication']" position="attributes">
         <attribute name="invisible">True</attribute>
@@ -23,18 +21,18 @@
       </xpath>
 
       <xpath expr="//field[@name='partner_id']" position="after">
-          <field name="contract" invisible="1"/>
+          <field name="contract" invisible="1" options="{'no_create': True, 'no_create_edit':True}"/>
       </xpath>
 
       <xpath expr="//field[@name='payment_date']" position="after">
           <field name="date_receipt"/>
           <field name="reference"/>
           <field name="Ecobro_receipt"/>
-          <field name="debt_collector_code" domain="[('job_id.name','=','Cobrador')]"/>
+          <field name="debt_collector_code" domain="[('job_id.name','=','COBRADOR')]"/>
         </xpath>
 
         <xpath expr="//field[@name='journal_id']" position="before">
-          <field name="contract"/>
+          <field name="contract" options="{'no_create': True, 'no_create_edit':True}"/>
         </xpath>
 
         <xpath expr="//field[@name='journal_id']" position="after">
@@ -63,7 +61,7 @@
       <field name="type">form</field>
       <field name="model">account.payment</field>
       <field name="inherit_id" ref="account.view_account_payment_form"/>
-      <field name="groups_id" eval="[(4,ref('pabs_custom.funeral_recepcionist'))]"/>
+      <!--<field name="groups_id" eval="[(4,ref('pabs_custom.funeral_recepcionist'))]"/>-->
       <field name="arch" type="xml">
          
          <xpath expr="//field[@name='partner_type']" position="attributes">
@@ -85,7 +83,8 @@
           <field name="way_to_pay"/>
           <field name="type_card_payment" attrs="{'invisible' : [('way_to_pay','!=','credit_card')], 'required' :  [('way_to_pay','=','credit_card')]}"/>
           <field name="card_number" attrs="{'invisible' : [('way_to_pay','!=','credit_card')], 'required' :  [('way_to_pay','=','credit_card')]}"/>
-          <field name="card_expiration_date" attrs="{'invisible' : [('way_to_pay','!=','credit_card')], 'required' :  [('way_to_pay','=','credit_card')]}"/>
+          <field name="card_expiration_month" attrs="{'invisible' : [('way_to_pay','!=','credit_card')], 'required' :  [('way_to_pay','=','credit_card')]}"/>
+          <field name="card_expiration_year" attrs="{'invisible' : [('way_to_pay','!=','credit_card')], 'required' :  [('way_to_pay','=','credit_card')]}"/>
           <field name="number_phone" attrs="{'invisible' : [('way_to_pay','!=','credit_card')], 'required' :  [('way_to_pay','=','credit_card')]}"/>
           <field name="transfer_reference" attrs="{'invisible' : [('way_to_pay','!=','transfer')], 'required' :  [('way_to_pay','=','transfer')]}"/>
           <field name="authorization_number" attrs="{'invisible' : [('way_to_pay','!=','credit_card')], 'required' :  [('way_to_pay','=','credit_card')]}"/>
@@ -108,6 +107,10 @@
 
       <xpath expr="//field[@name='journal_id']" position="attributes">
         <attribute name="invisible">True</attribute>
+      </xpath>
+
+      <xpath expr="//field[@name='payment_method_id']" position="after">
+        <field name="payment_person"/>
       </xpath>
 
 

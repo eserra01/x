@@ -182,9 +182,19 @@ class StockMove(models.Model):
   def onchange_series(self):
     move_obj = self.env['stock.move']
     quant_obj = self.env['stock.quant']
+    contract_obj = self.env['pabs.contract']
     location_id = False
     
     for rec in self:
+      cont = 0
+      ### Validar que no se esté duplicando la linea que se está capturando
+      if rec.series:
+        for obj_line in rec.picking_id.move_ids_without_package:
+          if rec.series == obj_line.series:
+            cont+=1
+            if cont > 2:
+              raise ValidationError((
+                "No se puede agregar la línea por que ya fue agregada previamente"))
       line = move_obj.search([
         ('series','=',rec.series),
         ('origen_solicitud','in',('cancelada','extravio'))],limit=1)
@@ -192,7 +202,7 @@ class StockMove(models.Model):
         raise ValidationError((
           "La solicitud {} no puede ser ingresada por que está {}".format(rec.series,dict(rec._fields['origen_solicitud'].selection).get(rec.origen_solicitud))))
       mode_prod = self.env['stock.production.lot'].search(
-        [('name', '=', str(rec.series))], limit=1)
+        [('name', '=', str(rec.series))], limit=1)        
       if rec.series and rec.picking_id.type_transfer == 'ov-as':
         if rec.picking_id.location_dest_id.consignment_location:
           for prodc in mode_prod:
@@ -218,22 +228,29 @@ class StockMove(models.Model):
                   "La solicitud {} no se encuentra asignada al A.S {}, se encuentra en {}".format(rec.series, rec.picking_id.employee_id.name, quant_id.location_id.name)))
             rec.product_id = prodc.product_id
             rec.product_uom_qty = 1
+            ### VALIDAR SI ESTA ACTIVADA LA SOLICITUD
+            contract_id = contract_obj.search([
+              ('lot_id','=',mode_prod.id),
+              ('activation_code','!=',False)])
+            if not contract_id:
+              raise ValidationError((
+                "La solicitud {} no se encuentra con una activación previa".format(rec.series)))
         else:
           raise ValidationError((
             "No se encontró la ubicación de recibidos"))
 
+  ### Método de xmarts limpiado
   def _update_reserved_quantity(self,need,available_quantity,
     location_id,lot_id=None,package_id=None,owner_id=None,strict=True):
-    print("_update_reserved_quantity      moveeeeeeeeeeeeeeeeeeeee")
     self.delete()
     for rec in self:
       series_start = ''
-      if rec.picking_id.type_transfer == 'sucursal':
+      if rec.picking_id.type_transfer == 'ac-ov':
         if rec.series_start:
           series_start = rec.series_start
         else:
           raise ValidationError(_('Es necesario agregar una serie de inicio en el producto %s.') % (rec.product_id.name))
-      elif rec.picking_id.type_transfer == 'asistente' or rec.picking_id.type_transfer == 'regreso_solicitudes' or rec.picking_id.type_transfer == 'ventas':
+      elif rec.picking_id.type_transfer == 'ov-as' or rec.picking_id.type_transfer == 'as-ov' or rec.picking_id.type_transfer == 'as-cont':
         series_start = rec.series
       if series_start != '':
         self.env['transf.operaciones'].create({
@@ -362,12 +379,22 @@ class StockMove(models.Model):
 
   @api.model
   def create(self, vals):
-    res = super(StockMove, self).create(vals)
     picking_obj = self.env['stock.picking']
     move_line_obj = self.env['stock.move.line']
     lot_obj = self.env['stock.production.lot']
+    pricelist_item_obj = self.env['product.pricelist.item']
+    product_obj = self.env['product.product']
+    picking_id = picking_obj.browse(vals.get('picking_id'))
+    if picking_id.type_transfer == 'as-ov':
+      if vals.get('product_id'):
+        product_id = product_obj.browse(vals.get('product_id'))
+        if product_id.tracking == 'serial':
+          item_id = pricelist_item_obj.search([('product_id','=',product_id.id)],
+            order="create_date desc",limit=1)
+          if item_id:
+            vals['papeleria'] = item_id.stationery
+    res = super(StockMove, self).create(vals)
     if vals.get('picking_id'):
-      picking_id = picking_obj.browse(vals.get('picking_id'))
       if picking_id.type_transfer in ('ov-as','as-ov'):
         lot_id = lot_obj.search([('name','=',res.series)],limit=1)
         data = {

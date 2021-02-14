@@ -51,7 +51,7 @@ class ComissionTree(models.Model):
         ######################## PAPELERIA ##########################
         if TipoPago == "Papeleria":
             #Obtener id del cargo
-            id_cargo = self.env['hr.job'].search([('name', '=', "Papeleria")]).id
+            id_cargo = self.env['hr.job'].search([('name', '=', "PAPELERIA")]).id
 
             #Obtener registro de papeleria en el árbol de comisiones
             registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
@@ -77,9 +77,9 @@ class ComissionTree(models.Model):
         elif TipoPago == "Bono":
 
             #Obtener id del cargo
-            id_cargo = self.env['hr.job'].search([('name', '=', "Fideicomiso")]).id
+            id_cargo = self.env['hr.job'].search([('name', '=', "FIDEICOMISO")]).id
 
-            #Obtener registro de papeleria en el árbol de comisiones
+            #Obtener registro de fideicomiso en el árbol de comisiones
             registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
 
             if not registro_arbol:
@@ -94,8 +94,12 @@ class ComissionTree(models.Model):
                 raise ValidationError("La comisión restante de Fideicomiso ya se encuentra en cero")
 
             #Actualizar arbol
-            comisionRestante = registro_arbol.remaining_commission - MontoPago
-            registro_arbol.write({"commission_paid":MontoPago, "actual_commission_paid":MontoPago, "remaining_commission": comisionRestante})
+            comisionPagada = registro_arbol.commission_paid + MontoPago                 #2.1 Comision a pagar = Comision_pagada + Monto_pago
+            comisionRealPagada = registro_arbol.actual_commission_paid + MontoPago      #2.2 Comisión real pagada de arbol = Comision_real_pagada + Comision_real_pagada_salida
+            comisionRestante = registro_arbol.remaining_commission - MontoPago          #2.3 Comision restante = Comision_restante - Monto_pago
+
+            registro_arbol.write({"commission_paid":comisionPagada, "actual_commission_paid":comisionRealPagada, "remaining_commission": comisionRestante})
+
 
             #Crear registro en salida de comisiones
             salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago}])
@@ -158,7 +162,7 @@ class ComissionTree(models.Model):
             MontoComisionCobrador = MontoPago * PorcentajeCobrador
 
             #Obtener id del cargo de cobrador
-            id_cargo_cobrador = self.env['hr.job'].search([('name', '=', "Cobrador")]).id
+            id_cargo_cobrador = self.env['hr.job'].search([('name', '=', "COBRADOR")]).id
             registroCobradorEnArbol = self.search([('contract_id','=', contrato.id),('comission_agent_id', '=', empleado.id), ('job_id', '=', id_cargo_cobrador)], limit = 1)
 
             if registroCobradorEnArbol:
@@ -208,7 +212,7 @@ class ComissionTree(models.Model):
                     comisionPagadaSalida = MontoPago                                        #1.1 Comision pagada de salida = Monto_pago
                     comisionRealPagadaSalida = MontoPago - (MontoPago * PorcentajeCobrador) #1.2 Comision real pagada de salida = Monto_pago - (Monto_pago * Porcentaje_cobrador)
 
-                    comisionPagada = comisionPagada + MontoPago                             #2.1 Comision a pagar = Monto_pago
+                    comisionPagada = comisionPagada + MontoPago                             #2.1 Comision a pagar = Comision pagada + Monto_pago
                     comisionRealPagada = comisionRealPagada + comisionRealPagadaSalida      #2.2 Comisión real pagada de arbol = Comision_real_pagada + Comision_real_pagada_salida
                     comisionRestante = comisionRestante - MontoPago                         #2.3 Comision restante = Comision_restante - Monto_pago
                     MontoPago = 0                                                           #4. Disminuir el monto del abono = 0
@@ -222,3 +226,49 @@ class ComissionTree(models.Model):
                     #Al no quedar mas por repartir se termina el proceso
                     break
         
+    #Revierte las comisiones generadas por un pago. Actualiza los montos en el arbol de comisiones. Las salidas permanecen en el pago cancelado.
+    def RevertirSalidas(self, IdPago, NumeroContrato):
+
+        #Obtener y validar información del contrato
+        contrato = self.env['pabs.contract'].search([('name', '=', NumeroContrato)])
+
+        if not contrato.id:
+            raise ValidationError("No se encontró el contrato {}".format(NumeroContrato))
+
+        #Obtener y validar información del arbol de comisiones
+        arbol = self.search([('contract_id', '=', contrato.id)], order='pay_order asc')
+
+        if not arbol:
+            raise ValidationError("No se encontro el árbol de comisiones")
+
+        #Obtener y validar información de salida de comisiones
+        salida_comisiones = self.env['pabs.comission.output'].search([('payment_id', '=', IdPago)])
+
+        if not salida_comisiones:
+            raise ValidationError("No se encontraron salidas de comisiones del pago")
+
+        #Obtener id del cargo de cobrador
+        id_cargo_cobrador = self.env['hr.job'].search([('name', '=', "COBRADOR")]).id
+
+        if not id_cargo_cobrador:
+            raise ValidationError("No se encontró el id para el cargo Cobrador")
+
+        ##### REALIZAR PROCESO PARA EMPLEADOS DEL ÁRBOL #####
+        for salida in salida_comisiones:
+
+            #Obtener registro en el árbol de comisiones
+            com = arbol.search(['&', ('comission_agent_id', '=', salida.comission_agent_id.id), ('job_id', '=', salida.job_id.id)], limit = 1)
+
+            #Calcular nuevos montos
+            comisionRestante = com.remaining_commission + salida.commission_paid
+            comisionPagada = com.commission_paid - salida.commission_paid
+            comisionRealPagada = com.actual_commission_paid - salida.actual_commission_paid
+
+            #Si es cobrador y se quedó sin comisión: eliminar el registro del árbol. De lo contrario, actualizar.
+            if com.job_id.id == id_cargo_cobrador:
+                if comisionRealPagada == 0:
+                    com.unlink()
+                else:
+                    com.write({"actual_commission_paid":comisionRealPagada})
+            else:
+                com.write({"commission_paid":comisionPagada, "actual_commission_paid":comisionRealPagada, "remaining_commission":comisionRestante})

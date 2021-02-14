@@ -10,7 +10,9 @@ WAY_TO_PAY = [
 
 REFERENCE =[('payment','Abono'),
   ('stationary','Papelería'),
-  ('surplus','Excedente')]
+  ('surplus','Excedente'),
+  ('transfer','Traspaso'),
+  ('payment_mortuary','Cobro Funeraria')]
 
 TYPE_CARD =[('tdc','Tarjeta de Crédito'),
   ('tdd','Tarjeta Débito')]
@@ -37,6 +39,8 @@ class account_Payment(models.Model):
       string= "Tipo de tarjeta")
 
     card_number = fields.Char(string = "Número de tarjeta", size = 4)
+
+    card_expiration_date = fields.Date(string='Fecha de expiración')
 
     card_expiration_month = fields.Char(string = "Mes de vencimiento", size = 2)
     card_expiration_year = fields.Char(string = "Año de vencimiento", size = 4)
@@ -87,4 +91,12 @@ class account_Payment(models.Model):
     place_of_death = fields.Char(string = "Lugar de fallecimiento")
 
     additional = fields.Char(string ="Adicionales")
-    
+
+    payment_person = fields.Char(string='Cliente que realizó el pago')
+
+    @api.onchange('contract')
+    def _onchange_contract(self):
+      for rec in self:
+        if rec.contract:
+          rec.partner_id = rec.contract_id.partner_id.id
+        
