@@ -118,10 +118,10 @@ class PABSContracts(models.Model):
 
 # Domicilio de casa
   street_name = fields.Char(string='Calle', required=True)
-  street_number = fields.Char(string='Numero', required=True)
+  street_number = fields.Char(string='Numero')
   between_streets = fields.Char(string='Entre calles')
   municipality_id = fields.Many2one(comodel_name='res.locality', required=True, string='Municipio')
-  neighborhood_id = fields.Many2one(comodel_name='colonias', required=True, string='Colonia')
+  neighborhood_id = fields.Many2one(comodel_name='colonias', string='Colonia')
   phone = fields.Char(string='Teléfono', required=True)
   
 # Domicilio de cobro
