@@ -101,3 +101,10 @@ class HREmployee(models.Model):
       raise ValidationError((
         "valor recibido: {}",format(cr.fetchall)))
 
+  ### OMITIMOS QUE ANTEPONGA EL NOMBRE DEL ALMACÉN, PARA NO CAUSAR RUIDO AL USUARIO
+  def name_get(self):
+    ### EL formato en el cual mostrará la relación de hr.employee ejem. "V0001 - Eduardo Serrano"
+    result = []
+    for record in self:
+      result.append((record.id, "{}".format(record.name)))
+    return result
