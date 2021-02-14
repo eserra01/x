@@ -322,12 +322,17 @@ class HrEmployee(models.Model):
       result.append((record.id, "{} - {}".format(record.barcode,record.name)))
     return result
 
-  """def write(self, vals):
+  def write(self, vals):
     ### Declaración de objetos
     warehouse_obj = self.env['stock.warehouse']
     location_obj = self.env['stock.location']
 
-    ### MODIFICANDO LA UBICACIÓN POR OTRO ALMACÉN
+    #Solo crear plantilla cuando el empleado es del departamento de ventas
+    sales_dept_id = self.env['hr.department'].search([('name','=','VENTAS')], limit = 1)
+    if vals['department_id'] == sales_dept_id:
+      self.env['pabs.comission.template'].create_comission_template(self.id)
+
+    """"### MODIFICANDO LA UBICACIÓN POR OTRO ALMACÉN
     if vals.get('warehouse_id'):
       warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
       view_location_id = warehouse_id.view_location_id
