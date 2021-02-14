@@ -27,7 +27,7 @@ class ComissionTemplate(models.Model):
 
     start_date = fields.Date(string="Fecha de inicio", default=fields.Date.today(), tracking=True)
 
-    ### 100%: No permitir registrar dos cargos en el mismo árbol de comisión (la llave se compone de id_empleado, id_plan, id_cargo)
+    """### 100%: No permitir registrar dos cargos en el mismo árbol de comisión (la llave se compone de id_empleado, id_plan, id_cargo)
     _sql_constraints = [
         ('unique_comission_entry',
         'UNIQUE(employee_id,plan_id,job_id)',
@@ -175,4 +175,4 @@ class ComissionTemplate(models.Model):
 
     # 50/100%: Al seleccionar un empleado mostrar los registros agrupados por plan y desplegada
     # 50%: Ya se muestra agrupado, falta la expansión
-    # probar módulo https://apps.odoo.com/apps/modules/13.0/web_groupby_expand/
+    # probar módulo https://apps.odoo.com/apps/modules/13.0/web_groupby_expand/"""
