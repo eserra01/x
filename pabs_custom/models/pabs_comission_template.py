@@ -9,13 +9,17 @@ class ComissionTemplate(models.Model):
     _description = "Plantilla de árboles de comision"
 
     #Al eliminar el empleado se eliminan sus plantillas de comisiones
-    employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, readonly=True, ondelete="cascade")
+    #employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, readonly=True, ondelete="cascade")
+    employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, ondelete="cascade")
 
-    plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True, readonly=True)
+    #plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True, readonly=True)
+    plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True)
 
-    pay_order = fields.Integer(string="Prioridad", required = True, readonly=True)
+    #pay_order = fields.Integer(string="Prioridad", required = True, readonly=True)
+    pay_order = fields.Integer(string="Prioridad", required = True)
 
-    job_id = fields.Many2one(string="Cargo", comodel_name="hr.job", required=True, tracking=True, readonly=True)
+    #job_id = fields.Many2one(string="Cargo", comodel_name="hr.job", required=True, tracking=True, readonly=True)
+    job_id = fields.Many2one(string="Cargo", comodel_name="hr.job", required=True, tracking=True)
 
     comission_agent_id = fields.Many2one(string="Comisionista", comodel_name="hr.employee", tracking=True)
 
@@ -23,7 +27,7 @@ class ComissionTemplate(models.Model):
 
     start_date = fields.Date(string="Fecha de inicio", default=fields.Date.today(), tracking=True)
 
-    ### 100%: No permitir registrar dos cargos en el mismo árbol de comisión (la llave se compone de id_empleado, id_plan, id_cargo)
+    """### 100%: No permitir registrar dos cargos en el mismo árbol de comisión (la llave se compone de id_empleado, id_plan, id_cargo)
     _sql_constraints = [
         ('unique_comission_entry',
         'UNIQUE(employee_id,plan_id,job_id)',
@@ -171,4 +175,4 @@ class ComissionTemplate(models.Model):
 
     # 50/100%: Al seleccionar un empleado mostrar los registros agrupados por plan y desplegada
     # 50%: Ya se muestra agrupado, falta la expansión
-    # probar módulo https://apps.odoo.com/apps/modules/13.0/web_groupby_expand/
+    # probar módulo https://apps.odoo.com/apps/modules/13.0/web_groupby_expand/"""
