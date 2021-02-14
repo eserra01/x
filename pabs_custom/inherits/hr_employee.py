@@ -331,6 +331,7 @@ class HrEmployee(models.Model):
     sales_dept_id = self.env['hr.department'].search([('name','=','VENTAS')], limit = 1)
     if vals['department_id'] == sales_dept_id:
       self.env['pabs.comission.template'].create_comission_template(self.id)
+    return super(HrEmployee, self).write(vals)
 
     """"### MODIFICANDO LA UBICACIÓN POR OTRO ALMACÉN
     if vals.get('warehouse_id'):
