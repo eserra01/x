@@ -280,7 +280,7 @@ class PABSContracts(models.Model):
         }
       return partner_obj.create(data)
 
-  """@api.model
+  @api.model
   def create(self, vals):
     ### Valida que si ya existe una activación con ese número de serie, no permita generarla nuevamente
     previous = self.search([('lot_id','=',vals['lot_id'])],limit=1)
@@ -303,7 +303,7 @@ class PABSContracts(models.Model):
     vals['partner_id'] = partner_id.id
     vals['state'] = 'actived'
     ### Se retorna el diccionario modificado
-    return super(PABSContracts, self).create(vals)"""
+    return super(PABSContracts, self).create(vals)
 
   def unlink(self):
     for contract in self:
