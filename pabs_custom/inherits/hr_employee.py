@@ -324,24 +324,30 @@ class HrEmployee(models.Model):
 
   def write(self, vals):
     ### Declaración de objetos
+    job_obj = self.env['hr.job']
     warehouse_obj = self.env['stock.warehouse']
     location_obj = self.env['stock.location']
-    ### MODIFICANDO LA UBICACIÓN POR OTRO ALMACÉN
-    if vals.get('warehouse_id'):
-      warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
-      view_location_id = warehouse_id.view_location_id
-      if vals.get('local_location'):
-        location_id = location_obj.browse(vals.get('local_location'))
-        location_id.location_id = view_location_id.id
-      else:
-        self.location_id.location_id = view_location_id.id
-      req_location_id = location_obj.search([
-        ('location_id','child_of',view_location_id.id),
-        ('office_location','=',True)],limit=1)
-      if not req_location_id:
-        raise ValidationError((
-          "No se encontró la ubicación de solicitudes"))
-      vals['request_location_id'] = req_location_id.id
+    ### VERIFICAMOS SI NO HUBO MODIFICACIÓN DE PUESTO
+    if vals.get('job_id'):
+      job_id = job_obj.browse(vals.get('job_id'))
+      if job_id.name = 'ASISTENTE SOCIAL':
+        if vals.get('warehouse_id'):
+          warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
+          view_location_id = warehouse_id.view_location_id
+          local_location = location_obj.search([
+            ('name','=',self.barcode)])
+          if not local_location:
+            raise ValidationError((
+              "No se encontró la ubicación del A.S."))
+          local_location.location_id = view_location_id.id
+          vals['local_location'] = local_location.id
+          vals['request_location_id'] = warehouse_id.lot_stock_id.id
+          contract_location = location_obj.search([
+            ('contract_location','=',True)], limit=1)
+          if not contract_location:
+            raise ValidationError((
+              "No se encontró la ubicación de contratos"))
+          vals['contract_location_id'] = contract_location_id.id
     ### Retorno del método original con el diccionario modificado
     return super(HrEmployee, self).write(vals)
 
