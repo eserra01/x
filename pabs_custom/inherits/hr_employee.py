@@ -330,7 +330,7 @@ class HrEmployee(models.Model):
     ### VERIFICAMOS SI NO HUBO MODIFICACIÓN DE PUESTO
     if vals.get('job_id'):
       job_id = job_obj.browse(vals.get('job_id'))
-      if job_id.name = 'ASISTENTE SOCIAL':
+      if job_id.name == 'ASISTENTE SOCIAL':
         if vals.get('warehouse_id'):
           warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
           view_location_id = warehouse_id.view_location_id
