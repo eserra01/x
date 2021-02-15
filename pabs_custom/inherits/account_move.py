@@ -2,6 +2,9 @@
 
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class StockMove(models.Model):
   _inherit = 'account.move'
@@ -13,6 +16,8 @@ class StockMove(models.Model):
   def action_post(self):
     comission_tree_obj = self.env['pabs.comission.tree']
     context = self._context
+    for line in self.line_ids:
+      _logger.warning("los movimientos son: descripcion: {} \n Cuenta: {}".format(line.name, line.account_id.name))
     res = super(StockMove, self).action_post()
     if context.get('investment_bond'):
       NumeroContrato = self.contract_id.name,
