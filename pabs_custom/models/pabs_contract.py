@@ -676,10 +676,10 @@ class PABSContracts(models.Model):
         if not pricelist_id:
           raise ValidationError((
             "No se encontró una secuencia"))
-        """raise ValidationError((
-          "Valor: {}\n Producto: {}".format(pricelist_id.sequence_id.id, pricelist_id.product_id.name)))"""
-        #contract_name = pricelist_id.sequence_id._next()
-        #previous.name = contract_name
+        raise ValidationError((
+          "Valor: {}\n Producto: {}".format(pricelist_id.sequence_id.id, pricelist_id.product_id.name)))
+        contract_name = pricelist_id.sequence_id._next()
+        previous.name = contract_name
         if not previous.partner_id:
           raise ValidationError((
             "No tiene un cliente ligado al contrato"))
