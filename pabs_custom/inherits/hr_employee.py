@@ -326,14 +326,7 @@ class HrEmployee(models.Model):
     ### Declaración de objetos
     warehouse_obj = self.env['stock.warehouse']
     location_obj = self.env['stock.location']
-
-    #Solo crear plantilla cuando el empleado es del departamento de ventas
-    sales_dept_id = self.env['hr.department'].search([('name','=','VENTAS')], limit = 1)
-    if vals['department_id'] == sales_dept_id:
-      self.env['pabs.comission.template'].create_comission_template(self.id)
-    return super(HrEmployee, self).write(vals)
-
-    """"### MODIFICANDO LA UBICACIÓN POR OTRO ALMACÉN
+    ### MODIFICANDO LA UBICACIÓN POR OTRO ALMACÉN
     if vals.get('warehouse_id'):
       warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
       view_location_id = warehouse_id.view_location_id
@@ -350,7 +343,7 @@ class HrEmployee(models.Model):
           "No se encontró la ubicación de solicitudes"))
       vals['request_location_id'] = req_location_id.id
     ### Retorno del método original con el diccionario modificado
-    return super(HrEmployee, self).write(vals)"""
+    return super(HrEmployee, self).write(vals)
 
   @api.model
   def _name_search(self, name='', args=None, operator="ilike", limit=100):
