@@ -97,9 +97,10 @@ class ClosingTransfers(models.TransientModel):
       ### RETORNA EL REPORTE CON LA INFORMACIÓN QUE YA EXISTÍA PREVIAMENTE
       return self.env.ref('pabs_custom.closing_transfer_print').report_action(self, data=data)
     ### BUSCAR LA UBICACIÓN DE RECIBIDOS DEL ALMACÉN
-    child_id = location_obj.search([
+    """child_id = location_obj.search([
       ('parent_path','like',self.warehouse_id.view_location_id.id),
-      ('received_location','=',True)],limit=1)
+      ('received_location','=',True)],limit=1)"""
+      child_id = self.warehouse_id.wh_receipt_stock_id
     ### SI NO ENCUENTRA LA UBICACIÓN ENVÍA UN ERROR
     if not child_id:
       raise ValidationError((
