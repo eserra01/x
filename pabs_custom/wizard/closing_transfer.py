@@ -100,7 +100,7 @@ class ClosingTransfers(models.TransientModel):
     """child_id = location_obj.search([
       ('parent_path','like',self.warehouse_id.view_location_id.id),
       ('received_location','=',True)],limit=1)"""
-      child_id = self.warehouse_id.wh_receipt_stock_id
+    child_id = self.warehouse_id.wh_receipt_stock_id
     ### SI NO ENCUENTRA LA UBICACIÓN ENVÍA UN ERROR
     if not child_id:
       raise ValidationError((
