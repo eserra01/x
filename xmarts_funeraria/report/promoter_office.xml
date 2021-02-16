@@ -3,108 +3,97 @@
 	<data>
     	<template id="xmarts_funeraria.promoter_office">
 			<t t-call="web.html_container">
-			    <t t-call="web.basic_layout">
-			        <t t-foreach="docs" t-as="doc"> 
-			           <div class="page" style="font-size: 10px;">
-                        <t t-if="doc.type_transfer ==  'as-ov'">
-                            <table>
-                                <tr>
-                                    <td><img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="width:200px;"/></td>
-                                    <td class="pull-right"> <h5>RECIBO - ENTREGA SOLICITUDES</h5></td>
-                                </tr>
-                            </table>          	
-			           		<br/>
-                            <ul class="list-inline mb4 text-center">
-                                    <li  class="list-inline-item text-center"><strong>PROMOTORES - OFICINAS</strong></li>
-                             </ul>
-			           		
-			           		<br/>
-			           		 <ul class="list-inline mb4">
-			           		 	<li  class="list-inline-item"><ins><span>Fecha:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.date_done" t-options='{"widget": "date"}'/></ins></li>
-                    			<li  class="list-inline-item pull-right"><ins><span>Hora:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-field="doc.date_done" t-options='{"format":"hh:mm:ss"}'/></ins></li>
-			           		 </ul>
-			           		 <ul class="list-inline mb4">
-			           		 	<li  class="list-inline-item pull-right"><strong>Folio:</strong><span>&amp;nbsp;&amp;nbsp;</span><strong t-esc="doc.name"/></li>
-			           		 </ul>
-                             <br/>
-			           		 <ul class="list-inline mb4">
-			           		 	<li  class="list-inline-item"><span>DE: Almacén</span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.location_id.name"/></li>
-                                   <li  class="list-inline-item pull-right"><span>PROMOTORES-OFICINAS</span></li>
-			           		 </ul>
-			           		  <ul class="list-inline mb4">
-			           		 	<li  class="list-inline-item"><span>A: Almacén</span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.location_dest_id.name"/></li>
+            <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc"> 
+                <div class="page" style="font-size: 13pt;">
+                    <t t-if="doc.type_transfer ==  'as-ov'">
 
-                    			<li  class="list-inline-item pull-right"><span>OFICINA VENTAS:</span></li>
-			           		 </ul>
-			           		 
-			           		
-			           		 <hr style="border: 1px solid black;"/>
-			           		 <ul class="list-inline mb4">
-			           		 	<li  class="list-inline-item text-center"><span t-esc="doc.employee_id.barcode"/><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.employee_id.name"/></li>
-			           		 </ul>
-                             <hr style="border: 1px solid black;"/>
-			           		 <strong>OFICINA DE VENTAS:</strong> <span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.location_id.name"/>
-                            <t t-set="amount" t-value="0"/>
-                            <t t-set="amount" t-value="0"/>
-                            <t t-set="done" t-value="0"/>
-			           		 <table class="table" style="table-layout: fixed; border:0 px;">
-                                <thead style="display: table-row-group font-size: 8px;">
+                        <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">RECEPCIÓN DE SOLICITUDES</span><br/>
+                        <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">** PROMOTOR A OFICINA **</span><br/>
+                        <br/>
+
+                        <span>Folio:</span><span>&amp;nbsp;&amp;nbsp;</span><strong t-esc="doc.name"/><br/>
+                        <span>Fecha:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.date_done" t-options='{"widget": "date"}'/><br/>
+                        <span>Hora:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-field="doc.date_done" t-options='{"format":"hh:mm:ss"}'/><br/>
+                        
+                        <span>Entrega: </span><span t-esc="doc.employee_id.barcode"/><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.employee_id.name"/><br/>
+                        <span>Recibe: </span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="user.partner_id.name"/><br/>
+                        <br/>
+
+                        <t t-set="entregadas" t-value="0"/>    
+                        <t t-set="inversion_inicial" t-value="0"/>
+                        <t t-set="comision_tomada" t-value="0"/>
+                        <t t-set="importe_recibido" t-value="0"/>
+                        <!-- SOLICITUDES -->
+                        <table class="table" style="border: 1px solid black; border-collapse: collapse; width: 100%;">
+                        <thead style="border: 1px solid black">
+                            <tr>
+                                <th style="text-align: center; font-weight: bold;">PLAN</th>
+                                <th style="text-align: center; font-weight: bold;">FOLIO</th>
+                                <th style="text-align: center; font-weight: bold;">COD ACTIVACION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="doc.move_ids_without_package">
+                                <t t-set="entregadas" t-value="len(doc.move_ids_without_package)"/>
+                                <t t-foreach="doc.move_ids_without_package" t-as="result">
                                     <tr>
-                                        <th class="text-center" style="width: 25%; border: 1px solid black;" scope="col">DESCRIPCIÓN</th>
-                                        <th class="text-center" style="width: 25%; border: 1px solid black;" scope="col">SERIE INI</th>
-                                        <th class="text-center" style="width: 25%; border: 1px solid black;" scope="col">CANT</th>
-                                        <th class="text-center" style="width: 25%; border: 1px solid black;" scope="col">COD ACTIVACION</th>
+                                        <td style="border: 1px solid black;"><span t-esc="result.description_picking"/></td>
+                                        <td style="border: 1px solid black;"><span t-esc="result.series"/></td>
+                                        <td style="border: 1px solid black;"><span t-esc="result.codigo_de_activacion_valid"/></td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-if="doc.move_ids_without_package">
-                                    	<t t-foreach="doc.move_ids_without_package" t-as="result">
-                                            <tr>
-                                                <td style="border: 1px solid black;"><span t-esc="result.description_picking"/></td>
-                                                <td style="border: 1px solid black;"><span t-esc="result.series_start"/></td>
-                                                <td style="border: 1px solid black;"><span t-esc="result.quantity_done"/></td>
-                                                <td style="border: 1px solid black;"><span t-esc="result.codigo_de_activacion_valid"/></td>                                        
-                                            </tr>
-                                              <tr>
-                                                <td><span>Inv Inicial</span></td>
-                                                <td><span>$ <span>&amp;nbsp;&amp;nbsp;</span></span><span t-esc="result.inversion_inicial"/></td>
-                                                <td><span>Tomó Comi</span><span><span>&amp;nbsp;&amp;nbsp;</span>$ <span>&amp;nbsp;&amp;nbsp;</span></span><span t-esc="result.toma_comision"/></td>
-                                                <td><span>Importe</span><span><span>&amp;nbsp;&amp;nbsp;</span>$ <span>&amp;nbsp;&amp;nbsp;</span></span><span t-esc="result.amount_received"/></td>       
-                                                <t t-set="amount" t-value="amount + result.amount_received"/>
-                                                <t t-set="done" t-value="done + result.quantity_done"/>                                  
-                                            </tr>
-                                        </t>
-                                    </t>
-                                </tbody>
-                             </table>
-                              <table class="table" style="table-layout: fixed">
-                                <thead style="display: table-row-group" >
+
                                     <tr>
-                                        <th class="text-center" style="width: 40%; border: 1px solid black;" scope="col">TOTALES</th>
-                                        <th class="text-center" style="width: 30%; border: 1px solid black;" scope="col"><span t-esc="done"/></th>
-                                        <th class="text-center" style="width: 30%; border: 1px solid black;" scope="col">$ <span>&amp;nbsp;&amp;nbsp;</span><span t-esc="amount"/></th>
+                                        <td style="border: 1px solid black;">Inv. inicial</td>
+                                        <td style="border: 1px solid black;">Toma comisión</td>
+                                        <td style="border: 1px solid black;">Monto Entregado</td>
                                     </tr>
-                                </thead>
-                                
-                             </table>
-                              <ul class="list-inline mb4">
-			           		 	<li  class="list-inline-item">__________________________</li>
-                    			<li  class="list-inline-item pull-right">__________________________</li>
-			           		 </ul>
-			           		  <ul class="list-inline mb4">
-			           		 	<li  class="list-inline-item"><span>Recibi de Conformidad</span></li>
-                    			<li  class="list-inline-item pull-right"><span>Recibi de Conformidad</span></li>
-			           		 </ul>
-			           		  <ul class="list-inline mb4">
-			           		 	<li  class="list-inline-item"><span t-esc="doc.employee_id.name"/></li>
-			           		 </ul>
-			           		 <br/>
-			           		 <span>Comentarios Adiccionales:</span>
-			           		 <div style="border:1px solid #000000; padding-bottom: 80px;"></div>
+                                    <tr>
+                                        <td style="border: 1px solid black;">$<span t-esc="result.inversion_inicial"/></td>
+                                        <td style="border: 1px solid black;">$<span t-esc="result.toma_comision"/></td>
+                                        <td style="border: 1px solid black;">$<span t-esc="result.amount_received"/></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>.</td>
+                                        <td>.</td>
+                                        <td>.</td>
+                                    </tr>
+
+                                    <!-- Suma a variables de total -->
+                                    <t t-set="inversion_inicial" t-value="inversion_inicial + result.inversion_inicial"/>
+                                    <t t-set="comision_tomada" t-value="comision_tomada + result.toma_comision"/>
+                                    <t t-set="importe_recibido" t-value="importe_recibido + result.amount_received"/>
+                                </t>
                             </t>
-			           </div>
-			       	</t>
-			   </t>
+                        </tbody>
+                        </table>
+
+                        <!-- TOTALES -->
+                        <br/>
+                        <strong><span>TOTALES:</span></strong><br/>
+                        <span>Entregadas: </span><span t-esc="entregadas"/><br/>
+                        <span>Inversión inicial: $</span><span t-esc="inversion_inicial"/><br/>
+                        <span>Comisión Tomada: $</span><span t-esc="comision_tomada"/><br/>
+                        <span>Monto entregado: $</span><span t-esc="importe_recibido"/><br/>
+                        
+                        <!-- FIRMAS -->
+                        <div style="font-size:12pt;">
+                            <br/>
+                            <br/>
+                            <br/>
+                            _________________________ <br/>
+                            <span style="margin-left: 10px;">Firma Asistente</span> 
+                            <br/>
+                            <br/>
+                            <br/>
+                            _________________________ <br/>
+                            <span style="margin-left: 10px">Firma Secretaria</span>
+                        </div>
+                    </t>
+                </div>
+            </t>
+            </t>
 			</t>
     	</template>
 
@@ -118,8 +107,8 @@
             <field name="orientation">Portrait</field>
             <field name="margin_top">2</field>
             <field name="margin_bottom">2</field>
-            <field name="margin_left">1</field>
-            <field name="margin_right">1</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
             <field name="header_line" eval="False" />
             <field name="header_spacing">1</field>
             <field name="dpi">130</field>

@@ -39,23 +39,29 @@ class ReportAttendanceRecap(models.AbstractModel):
 
     @api.model
     def _get_report_values(self, docids, data=None):
+        
+        #Obtener datos de la ventana
         date_start = data['form']['date_start']
         date_end = data['form']['date_end']
         employee = data['form']['employee']
         employee_name = data['form']['employee_name']
 
+        #Si se seleccionó un cobrador
         if employee:
+            #Consultar los pagos del cobrador entre dos fechas
             payment = self.env['account.payment'].search([
                     ('debt_collector_code', '=', employee),
                     ('payment_date', '>=', date_start),
                     ('payment_date', '<=', date_end),
                 ])
 
-            docs = []
-            total_amount = 0
-            total_item = 0
+            total_amount = 0 #Total cobrado por el cobrador
+            total_item = 0 #Número de recibos cobrados por el cobrador
+
+            docs = [] #Listado de recibos del cobrador
+
+            #Ingresar cada recibo a la lista
             for pay in payment:
-                
                 total_amount += pay.amount
                 total_item += 1
                 docs.append({
@@ -67,6 +73,7 @@ class ReportAttendanceRecap(models.AbstractModel):
                     'amount': pay.amount,
                 })
 
+            #Retornar información con totales
             reg = [{'report': 1,
                     'collectors': employee_name,
                     'date_start': date_start,
@@ -76,33 +83,39 @@ class ReportAttendanceRecap(models.AbstractModel):
                     'docs': docs,}]
             return {
                 'reg': reg,
-                
             }
-        else:
+        else: #Todos los cobradores
+
+            #Consultar todos los pagos entre dos fechas
             payment = self.env['account.payment'].search([
                     ('payment_date', '>=', date_start),
                     ('payment_date', '<=', date_end),
                 ])
             
             if payment:
-
                 reg = []
                 combr = []
+                #Por cada pago
                 for p in payment:
-                    if p.debt_collector_code.name:                
-                        if not p.debt_collector_code.name in combr:                                    
+                    if p.debt_collector_code.name:
+
+                        #Asignar el nombre del cobrador a una lista
+                        if not p.debt_collector_code.name in combr:
                             combr.append(p.debt_collector_code.name)
+
+                            #Consultar los recibos del cobrador
                             pp = self.env['account.payment'].search([
                                     ('debt_collector_code', '=', p.debt_collector_code.name),
                                     ('payment_date', '>=', date_start),
                                     ('payment_date', '<=', date_end),
                                 ])
 
-                            docs = []
-                            total_amount = 0
-                            total_item = 0
+                            docs = [] #Listado de recibos del cobrador
+                            total_amount = 0 #Total cobrado por el cobrador
+                            total_item = 0 #Número de recibos cobrados por el cobrador
+                            
+                            #Ingresar cada recibo a la lista
                             for pay in pp:
-                                
                                 total_amount += pay.amount
                                 total_item += 1
                                 docs.append({
@@ -114,6 +127,7 @@ class ReportAttendanceRecap(models.AbstractModel):
                                     'amount': pay.amount,
                                 })
 
+                            #Ingresar información con totales a la lista de documentos del reporte
                             reg.append({'report': 2,
                                     'collectors': p.debt_collector_code.name,
                                     'date_start': date_start,
@@ -121,7 +135,8 @@ class ReportAttendanceRecap(models.AbstractModel):
                                     'total_amount': total_amount,
                                     'total_item': total_item,
                                     'docs': docs,})
+
+                #Retornar todos los documentos
                 return {
                     'reg': reg,
-                    
                 }

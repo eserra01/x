@@ -3,126 +3,136 @@
 	<data>
     	<template id="xmarts_funeraria.collectors">
 			<t t-call="web.html_container">
-			    <t t-call="web.basic_layout">
-                     <t t-foreach="reg" t-as="vals">
-                        <t t-if="vals['report'] == 1">
-			           <div class="page">
+            <t t-call="web.basic_layout">
+            <t t-foreach="reg" t-as="vals">
 
-                            <table  width="100%"  cellspacing="0" cellpadding="0">
-                                <tr>
+                <!-- Vista cuando se elige cobrador -->
+                <t t-if="vals['report'] == 1">
+                    <div class="page">
 
-                                    <td  rowspan="4" aling="top"><img  src="xmarts_funeraria/static/description/image.png" style="width:250px;"/></td>
-                                    <td colsan="2" class="text-center"  aling="top"> <h3>PABS - Programa de Apoyo De Beneficio Social</h3></td>
-                                </tr>
+                        <!-- Encabezado del reporte -->
+                        <table  width="100%"  cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td  rowspan="4" aling="top"><img  src="xmarts_funeraria/static/description/image.png" style="width:250px;"/></td>
+                                <td colsan="2" class="text-center"  aling="top"> <h3>PABS - Programa de Apoyo De Beneficio Social</h3></td>
+                            </tr>
+                            <tr>
+                                <td colsan="2" class="text-center"  aling="top" style="padding-left: 10px;"> <h3>DETALLE DE INGRESOS</h3></td>
+                            </tr>
+                            <tr>
+                                <td class="pull-left"  aling="top"><ins><strong>PERIODO DE:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['date_start']"/></ins></td>
+                                <td class="text-center" style="padding-right: 20px;"  aling="top"><ins><strong>HASTA:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['date_end']"/></ins></td>
+                            </tr>
+                        </table>
+                        
+                        <!-- Nombre del cobrador -->
+                        <span>Cobrador:</span><span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['collectors']"/>
+                        <br/>
+                        <table class="table" style="table-layout: fixed; border:0 px;">
+                            <!-- Nombres de columnas -->
+                            <thead style="display: table-row-group">
                                 <tr>
-                                    <td colsan="2" class="text-center"  aling="top" style="padding-left: 10px;"> <h3>DETALLE DE INGRESOS</h3></td>
+                                    <th class="text-center" style="width: 12%;" scope="col">Fecha Recibo</th>
+                                    <th class="text-center" style="width: 12%;" scope="col">Fecha Oficina</th>
+                                    <th class="text-center" style="width: 12%;" scope="col">Contrato</th>
+                                    <th class="text-center" style="width: 12%;" scope="col">Recibo</th>
+                                    <th class="text-center" style="width: 40%;" scope="col">Cliente</th>
+                                    <th class="text-center" style="width: 12%;" scope="col">Importe</th>
                                 </tr>
-                                <tr>
-                                    <td class="pull-left"  aling="top"><ins><strong>PERIODO DE:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['date_start']"/></ins></td>
-                                    <td class="text-center" style="padding-right: 20px;"  aling="top"><ins><strong>HASTA:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['date_end']"/></ins></td>
-                                </tr>
-                               
-                                  
-                            </table>
-                            <span>Cobrador:</span><span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['collectors']"/>
-                            <br/>
-                             <table class="table" style="table-layout: fixed; border:0 px;">
-                                <thead style="display: table-row-group">
-                                    <tr>
-                                        <th class="text-center" style="width: 12%;" scope="col">Fecha Recibo</th>
-                                        <th class="text-center" style="width: 12%;" scope="col">Fecha Oficina</th>
-                                        <th class="text-center" style="width: 12%;" scope="col">Contrato</th>
-                                        <th class="text-center" style="width: 12%;" scope="col">Recibo</th>
-                                        <th class="text-center" style="width: 40%;" scope="col">Cliente</th>
-                                        <th class="text-center" style="width: 12%;" scope="col">Importe</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="vals['docs']" t-as="doc">
-                                        <tr>
-                                            <td class="text-center"><span t-esc="doc['date_receipt']"/></td>
-                                            <td class="text-center"><span t-esc="doc['payment_date']"/></td>
-                                            <td class="text-center"><span t-esc="doc['contract']"/></td>
-                                            <td class="text-center"><span t-esc="doc['Ecobro_receipt']"/></td>
-                                            <td class="text-center"><span t-esc="doc['partner']"/></td>
-                                            <td class="text-center">$<span t-esc="doc['amount']"/></td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                             </table>        	
-			           	         
-                              <table class="table" style="table-layout: fixed">
-                                <thead style="display: table-row-group" >
-                                    <tr>
-                                        <th class="text-center" style="width: 40%; border: 0px;" scope="col"></th>
-                                        <th class="pull-left" style="width: 40%; border: 0px;" scope="col"><span>Total Recibos:</span><span>&amp;nbsp;&amp;nbsp;</span><span><t t-esc="vals['total_item']"/></span></th>
-                                        <th class="pull-right" style="width: 20%; border: 0px;" scope="col">$ <t t-esc="vals['total_amount']"/></th>
-                                    </tr>
-                                </thead>
-                                
-                             </table>
-			           </div>
-                   </t>
-                   <t t-if="vals['report'] == 2">
-                       <div class="page">
+                            </thead>
 
-                            <table  width="100%"  cellspacing="0" cellpadding="0">
+                            <!-- Recibos del cobrador -->
+                            <tbody>
+                                <t t-foreach="vals['docs']" t-as="doc">
+                                    <tr>
+                                        <td class="text-center"><span t-esc="doc['date_receipt']"/></td>
+                                        <td class="text-center"><span t-esc="doc['payment_date']"/></td>
+                                        <td class="text-center"><span t-esc="doc['contract']"/></td>
+                                        <td class="text-center"><span t-esc="doc['Ecobro_receipt']"/></td>
+                                        <td class="text-center"><span t-esc="doc['partner']"/></td>
+                                        <td class="text-center">$<span t-esc="doc['amount']"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>        	
+                        
+                        <!-- Numero de recibos y total -->
+                        <table class="table" style="table-layout: fixed">
+                            <thead style="display: table-row-group" >
                                 <tr>
+                                    <th class="text-center" style="width: 40%; border: 0px;" scope="col"></th>
+                                    <th class="pull-left" style="width: 40%; border: 0px;" scope="col"><span>Total Recibos:</span><span>&amp;nbsp;&amp;nbsp;</span><span><t t-esc="vals['total_item']"/></span></th>
+                                    <th class="pull-right" style="width: 20%; border: 0px;" scope="col">$ <t t-esc="vals['total_amount']"/></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </t>
 
-                                    <td  rowspan="4" aling="top"><img  src="xmarts_funeraria/static/description/image.png" style="width:250px;"/></td>
-                                    <td colsan="2" class="text-center"  aling="top"> <h3>PABS - Programa de Apoyo De Beneficio Social</h3></td>
-                                </tr>
+                <!-- Vista cuando se eligen todos los cobradores -->
+                <t t-if="vals['report'] == 2">
+                    <div class="page">
+
+                        <!-- Encabezado del reporte -->
+                        <table  width="100%"  cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td  rowspan="4" aling="top"><img  src="xmarts_funeraria/static/description/image.png" style="width:250px;"/></td>
+                                <td colsan="2" class="text-center"  aling="top"> <h3>PABS - Programa de Apoyo De Beneficio Social</h3></td>
+                            </tr>
+                            <tr>
+                                <td colsan="2" class="text-center"  aling="top" style="padding-left: 10px;"> <h3>DETALLE DE INGRESOS</h3></td>
+                            </tr>
+                            <tr>
+                                <td class="pull-left"  aling="top"><ins><strong>PERIODO DE:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['date_start']"/></ins></td>
+                                <td class="text-center" style="padding-right: 20px;"  aling="top"><ins><strong>HASTA:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['date_end']"/></ins></td>
+                            </tr>
+                        </table>
+
+                        <!-- Nombre del cobrador -->
+                        <span>Cobrador:</span><span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['collectors']"/>
+                        <br/>
+                        <table class="table" style="table-layout: fixed; border:0 px;">
+                            <!-- Nombres de columnas -->
+                            <thead style="display: table-row-group">
                                 <tr>
-                                    <td colsan="2" class="text-center"  aling="top" style="padding-left: 10px;"> <h3>DETALLE DE INGRESOS</h3></td>
+                                    <th class="text-center" style="width: 12%;" scope="col">Fecha Recibo</th>
+                                    <th class="text-center" style="width: 12%;" scope="col">Fecha Oficina</th>
+                                    <th class="text-center" style="width: 12%;" scope="col">Contrato</th>
+                                    <th class="text-center" style="width: 12%;" scope="col">Recibo</th>
+                                    <th class="text-center" style="width: 40%;" scope="col">Cliente</th>
+                                    <th class="text-center" style="width: 12%;" scope="col">Importe</th>
                                 </tr>
+                            </thead>
+
+                            <!-- Recibos del cobrador -->
+                            <tbody>
+                                <t t-foreach="vals['docs']" t-as="doc">
+                                    <tr>
+                                        <td class="text-center"><span t-esc="doc['date_receipt']"/></td>
+                                        <td class="text-center"><span t-esc="doc['payment_date']"/></td>
+                                        <td class="text-center"><span t-esc="doc['contract']"/></td>
+                                        <td class="text-center"><span t-esc="doc['Ecobro_receipt']"/></td>
+                                        <td class="text-center"><span t-esc="doc['partner']"/></td>
+                                        <td class="text-center">$<span t-esc="doc['amount']"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>           
+                            
+                        <!-- Numero de recibos y total -->
+                        <table class="table" style="table-layout: fixed">
+                            <thead style="display: table-row-group" >
                                 <tr>
-                                    <td class="pull-left"  aling="top"><ins><strong>PERIODO DE:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['date_start']"/></ins></td>
-                                    <td class="text-center" style="padding-right: 20px;"  aling="top"><ins><strong>HASTA:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['date_end']"/></ins></td>
+                                    <th class="text-center" style="width: 40%; border: 0px;" scope="col"></th>
+                                    <th class="pull-left" style="width: 40%; border: 0px;" scope="col"><span>Total Recibos:</span><span>&amp;nbsp;&amp;nbsp;</span><span><t t-esc="vals['total_item']"/></span></th>
+                                    <th class="pull-right" style="width: 20%; border: 0px;" scope="col">$ <t t-esc="vals['total_amount']"/></th>
                                 </tr>
-                               
-                                  
-                            </table>
-                            <span>Cobrador:</span><span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['collectors']"/>
-                            <br/>
-                             <table class="table" style="table-layout: fixed; border:0 px;">
-                                <thead style="display: table-row-group">
-                                    <tr>
-                                        <th class="text-center" style="width: 12%;" scope="col">Fecha Recibo</th>
-                                        <th class="text-center" style="width: 12%;" scope="col">Fecha Oficina</th>
-                                        <th class="text-center" style="width: 12%;" scope="col">Contrato</th>
-                                        <th class="text-center" style="width: 12%;" scope="col">Recibo</th>
-                                        <th class="text-center" style="width: 40%;" scope="col">Cliente</th>
-                                        <th class="text-center" style="width: 12%;" scope="col">Importe</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-foreach="vals['docs']" t-as="doc">
-                                        <tr>
-                                            <td class="text-center"><span t-esc="doc['date_receipt']"/></td>
-                                            <td class="text-center"><span t-esc="doc['payment_date']"/></td>
-                                            <td class="text-center"><span t-esc="doc['contract']"/></td>
-                                            <td class="text-center"><span t-esc="doc['Ecobro_receipt']"/></td>
-                                            <td class="text-center"><span t-esc="doc['partner']"/></td>
-                                            <td class="text-center">$<span t-esc="doc['amount']"/></td>
-                                        </tr>
-                                    </t>
-                                </tbody>
-                             </table>           
-                                 
-                              <table class="table" style="table-layout: fixed">
-                                <thead style="display: table-row-group" >
-                                    <tr>
-                                        <th class="text-center" style="width: 40%; border: 0px;" scope="col"></th>
-                                        <th class="pull-left" style="width: 40%; border: 0px;" scope="col"><span>Total Recibos:</span><span>&amp;nbsp;&amp;nbsp;</span><span><t t-esc="vals['total_item']"/></span></th>
-                                        <th class="pull-right" style="width: 20%; border: 0px;" scope="col">$ <t t-esc="vals['total_amount']"/></th>
-                                    </tr>
-                                </thead>
-                                
-                             </table>
-                       </div>
-                   </t>
-			     </t>
-			   </t>
+                            </thead>
+                        </table>
+                    </div>
+                </t>
+            </t>
+            </t>
 			</t>
     	</template>
 

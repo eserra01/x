@@ -49,7 +49,7 @@ class CarnetPagoWizard(models.TransientModel):
     )
 
     def filter(self):
-        print('--------------------------filter-------------------------------')
+        # print('--------------------------filter-------------------------------')
         data = {
             'ids': self.ids,
             'model': self._name,
@@ -58,8 +58,8 @@ class CarnetPagoWizard(models.TransientModel):
                 'date_end': self.date_to,
             },
         }
-        print('data', data)
-        print("cccccc")
+        # print('data', data)
+        # print("cccccc")
         return self.env.ref('xmarts_funeraria.id_carnet_pago').report_action(self, data=data)
 
 
