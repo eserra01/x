@@ -681,7 +681,7 @@ class PABSContracts(models.Model):
             "No tiene un cliente ligado al contrato"))
         if previous.partner_id:
           partner_id = previous.partner_id
-          partner_id.write({'name' : contract_name})
+#          partner_id.write({'name' : contract_name})
         previous.state = 'contract'
         previous.create_commision_tree(invoice_id=invoice_id)
         # contract_name = pricelist_id.sequence_id._next()
@@ -915,6 +915,7 @@ class PABSContracts(models.Model):
       self.reconcile_all(reconcile)
       contract_name = pricelist_id.sequence_id._next()
       previous.name = contract_name
+      previous.partner_id.write({'name' : contract_name})
 
   #################################################
   ### OVERWRITE DEL METODO WRITE
