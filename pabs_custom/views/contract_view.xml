@@ -1542,6 +1542,26 @@
     <field name="view_id" ref="pabs_custom.contract_form_view_gerencia"/>
     <field name="act_window_id" ref="action_contract_gerencia"/>
   </record>
+
+  <record id="contract_search_view" model="ir.ui.view" >
+    <field name="name">contract.search.view</field>
+    <field name="model">pabs.contract</field>
+    <field name="arch" type="xml">
+        <search>
+            <field name="name" string="Contrato"/>
+
+            <field name="partner_name" string="Nombre"/>
+            <field name="partner_fname" string="Apellido paterno"/>
+            <field name="partner_mname" string="Apellido materno"/>
+            
+            <field name="lot_id" string="Solicitud"/>
+            <field name="street_name" string="Calle de casa"/>
+            <field name="street_name_toll" string="Calle de cobro"/>
+            <field name="activation_code" string="Clave de activación"/>
+            
+        </search>
+    </field>
+  </record>
   
 
 <!-- Fin formularios de contrato -->
