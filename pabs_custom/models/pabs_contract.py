@@ -3,10 +3,13 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, date
+import logging
 import calendar
 from odoo.addons.pabs_custom.externals.calcule import CalculeRFC, CalculeCURP
 
 import math
+
+_logger = logging.getLogger(__name__)
 
 STATES = [
   ('actived','Solicitud Activada'),
@@ -676,16 +679,18 @@ class PABSContracts(models.Model):
         if not pricelist_id:
           raise ValidationError((
             "No se encontró una secuencia"))
+        """raise ValidationError((
+          "Valor: {}\n Producto: {}".format(pricelist_id.sequence_id.id, pricelist_id.product_id.name)))
+        #contract_name = pricelist_id.sequence_id._next()
+        #previous.name = contract_name
         if not previous.partner_id:
           raise ValidationError((
             "No tiene un cliente ligado al contrato"))
         if previous.partner_id:
           partner_id = previous.partner_id
-          partner_id.write({'name' : contract_name})
+          partner_id.write({'name' : contract_name})"""
         previous.state = 'contract'
         previous.create_commision_tree(invoice_id=invoice_id)
-         contract_name = pricelist_id.sequence_id._next()
-         previous.name = contract_name
         return invoice_id
 
   def reconcile_all(self, reconcile={}):
@@ -762,6 +767,7 @@ class PABSContracts(models.Model):
             raise ValidationError(("No se encontró la información del plan {}".format(previous.product_id.name)))
 
           #Obtener la plantilla de comisiones
+          _logger.warning('empleado: {}\nplan: {}'.format(previous.employee_id.barcode, pricelist_id.product_tmpl_id.name))
           comission_template = comission_template_obj.search([
             ('employee_id', '=', previous.employee_id.id),
             ('plan_id', '=', pricelist_id.id),
@@ -912,6 +918,7 @@ class PABSContracts(models.Model):
             ### VALIDANDO NOTA DE CRÉDITO
             reconcile.update({'pabs' : line.id})
             refund_id.with_context(investment_bond=True).action_post()
+      _logger.info("Se creó la factura del contrato")
       self.reconcile_all(reconcile)
 
   #################################################
@@ -1147,3 +1154,13 @@ class PABSContracts(models.Model):
           rec.days_without_payment = (fields.Date.today() - ultimo_abono_oficina.payment_date).days
         else:
           rec.days_without_payment = 0
+
+  def create_contracts(self):
+    _logger.warning('El contrato')
+    contract_obj = self.env['pabs.contract']
+    contract_ids = contract_obj.search([
+      ('state','=','precontract')],limit=300)
+    for contract_id in contract_ids:
+      lot_id = contract_id.lot_id.id
+      _logger.warning('El contrato {}'.format(lot_id))
+      self.create_contract(vals={'lot_id' : lot_id})
