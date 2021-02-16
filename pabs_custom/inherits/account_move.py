@@ -16,7 +16,6 @@ class StockMove(models.Model):
   def action_post(self):
     comission_tree_obj = self.env['pabs.comission.tree']
     context = self._context
-    for line in self.line_ids:
     res = super(StockMove, self).action_post()
     if context.get('investment_bond'):
       NumeroContrato = self.contract_id.name,
