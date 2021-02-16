@@ -37,7 +37,7 @@ class ClosingTransfers(models.TransientModel):
     lot_obj = self.env['stock.production.lot']
     for line in picking_id.move_line_ids_without_package:
       lot = line.lot_id.name
-      lot_id = lob_obj.search([('name','=',lot)],limit=1)
+      lot_id = lot_obj.search([('name','=',lot)],limit=1)
       move_id = move_obj.search([
         ('series','=',lot),
         ('codigo_de_activacion_valid','!=',False)],limit=1)
