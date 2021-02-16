@@ -61,7 +61,7 @@ class account_Payment(models.Model):
       context = self._context
       IdPago = self.id
       CodigoCobrador = self.debt_collector_code.barcode
-      NumeroContrato = self.contract.name
+      NumeroContrato = self.contract.id
       MontoPago = self.amount or 0
       if context.get('stationery'):
         comission_tree_obj.CrearSalidasEnganche(

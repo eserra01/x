@@ -18,7 +18,7 @@ class StockMove(models.Model):
     context = self._context
     res = super(StockMove, self).action_post()
     if context.get('investment_bond'):
-      NumeroContrato = self.contract_id.name,
+      NumeroContrato = self.contract_id.id,
       MontoPago = self.amount_total
       comission_tree_obj.CrearSalidasEnganche(
         IdPago=self.id, NumeroContrato=NumeroContrato, 
