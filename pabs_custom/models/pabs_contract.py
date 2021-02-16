@@ -671,21 +671,21 @@ class PABSContracts(models.Model):
         account_line_obj.create(partner_line_data)
         invoice_id.action_post()
         previous.allow_create = False
-        # pricelist_id = pricelist_obj.search([
-        #   ('product_id','=',previous.name_service.id)], limit=1)
-        # if not pricelist_id:
-        #   raise ValidationError((
-        #     "No se encontró una secuencia"))
+         pricelist_id = pricelist_obj.search([
+           ('product_id','=',previous.name_service.id)], limit=1)
+         if not pricelist_id:
+           raise ValidationError((
+             "No se encontró una secuencia"))
         if not previous.partner_id:
           raise ValidationError((
             "No tiene un cliente ligado al contrato"))
         if previous.partner_id:
           partner_id = previous.partner_id
-#          partner_id.write({'name' : contract_name})
+          partner_id.write({'name' : contract_name})
         previous.state = 'contract'
         previous.create_commision_tree(invoice_id=invoice_id)
-        # contract_name = pricelist_id.sequence_id._next()
-        # previous.name = contract_name
+         contract_name = pricelist_id.sequence_id._next()
+         previous.name = contract_name
         return invoice_id
 
   def reconcile_all(self, reconcile={}):
@@ -913,9 +913,6 @@ class PABSContracts(models.Model):
             reconcile.update({'pabs' : line.id})
             refund_id.with_context(investment_bond=True).action_post()
       self.reconcile_all(reconcile)
-      contract_name = pricelist_id.sequence_id._next()
-      previous.name = contract_name
-      previous.partner_id.write({'name' : contract_name})
 
   #################################################
   ### OVERWRITE DEL METODO WRITE
