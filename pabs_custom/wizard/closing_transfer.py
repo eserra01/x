@@ -34,12 +34,15 @@ class ClosingTransfers(models.TransientModel):
     data = []
     move_obj = self.env['stock.move']
     contract_obj = self.env['pabs.contract']
+    lot_obj = self.env['stock.production.lot']
     for line in picking_id.move_line_ids_without_package:
       lot = line.lot_id.name
+      lot_id = lob_obj.search([('name','=',lot)],limit=1)
       move_id = move_obj.search([
         ('series','=',lot),
         ('codigo_de_activacion_valid','!=',False)],limit=1)
       contract_id = contract_obj.search([
+        ('lot_id','=',lot_id.id),
         ('activation_code','=',move_id.codigo_de_activacion_valid)])
       data_dict = {
         'code' : move_id.picking_id.employee_id.barcode,

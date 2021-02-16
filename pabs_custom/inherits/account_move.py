@@ -17,7 +17,6 @@ class StockMove(models.Model):
     comission_tree_obj = self.env['pabs.comission.tree']
     context = self._context
     for line in self.line_ids:
-      _logger.warning("los movimientos son: descripcion: {} \n Cuenta: {}".format(line.name, line.account_id.name))
     res = super(StockMove, self).action_post()
     if context.get('investment_bond'):
       NumeroContrato = self.contract_id.name,
