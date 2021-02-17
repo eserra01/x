@@ -54,11 +54,11 @@
                                         <td style="border: 1px solid black;">$<span t-esc="result.amount_received"/></td>
                                     </tr>
 
-                                    <tr>
+                                    <!-- <tr>
                                         <td>.</td>
                                         <td>.</td>
                                         <td>.</td>
-                                    </tr>
+                                    </tr> -->
 
                                     <!-- Suma a variables de total -->
                                     <t t-set="inversion_inicial" t-value="inversion_inicial + result.inversion_inicial"/>
