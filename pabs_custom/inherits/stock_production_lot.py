@@ -12,6 +12,9 @@ class StockProductionLot(models.Model):
   employee_id = fields.Many2one(comodel_name='hr.employee',
     string='Asistente')
 
+  warehouse_id = fields.Many2one(comodel_name='stock.warehouse',
+    string='Oficina de Ventas')
+
   ### Cancelación de solicitudes (borrado lógico)
   def action_cancel(self):
     self.active = False

@@ -411,6 +411,20 @@ class StockMove(models.Model):
         }
         move_line_obj.create(data)
         lot_id.employee_id = picking_id.employee_id.id or False
+        ### SI EL MOVIMIENTO ES OFICINA DE VENTAS - ASISTENTE
+        if picking_id.type_transfer == 'ov-as':
+          location_id = picking_id.location_id
+        ### SI NO, VIENE DEL ASISTENTE A LA OFICINA DE VENTAS
+        else:
+          location_id = picking_id.location_dest_id
+        ### SI HAY UBICACIÓN
+        if location_id:
+          ### BUSCA EL ALMACÉN AL QUE PERTENECE LA TRANSFERENCIA
+          warehouse_id = picking_id.location_id.get_warehouse()
+          ### SI SE ENCONTRÓ EL ALMACÉN
+          if warehouse_id:
+            ### PONE LA SOLICITUD EN EL ALMACÉN DE LA TRANSFERENCIA
+            lot_id.warehouse_id = warehouse_id.id
         res.state = 'assigned'
       if picking_id.type_transfer == 'ac-ov':
         ### VALIDAR TODOS LOS NÚMEROS DE SERIE
