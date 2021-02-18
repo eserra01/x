@@ -30,125 +30,119 @@
               font-family: Arial, Helvetica, sans-serif;
               font-size: 10pt;
             }
-                </style>
-                    <div>
-                            <div>
-                                <!-- LOGO -->
-                                <div style="float: left; width: 15%; text-align: center;">
-                                    <img t-if="logo" t-att-src="'data:image/png;base64,%s' %logo" alt="logoPABS" height="100px"/>
-                                </div>
+          </style>
+          <div>
+            <div>
+              <!-- LOGO -->
+              <div style="float: left; width: 15%; text-align: center;">
+                <img t-if="logo" t-att-src="'data:image/png;base64,%s' %logo" alt="logoPABS" height="100px"/>
+              </div>
 
-                                <div style=" width: 85%;  text-align: left;">
-
-                                    <!-- TITULO DEL REPORTE -->
-                                    <div style="font-size:15pt; color:#000000;  font-weight:bold; text-align: LEFT;">
-                                        <br/>
-                                        PROGRAMA DE APOYO DE BENEFICIO SOCIAL
-                                        <br/>
-                                        CORTE DE CONTRATOS ELABORADOS
-                                        <br/>
-                                        FECHA: <span t-esc="date"/>
-                                        <br/>
-                                    </div>
-                                </div>
-
-                            </div>
-                
-
-                    <div t-foreach="headers" t-as="header">
-                        <!-- NOMBRE OFICINA DE VENTAS Y FECHAS-->
-                        <div style="font-size:13pt; color:#000000;  font-weight:bold; text-align: LEFT;">
-                                <br/>
-                                OFICINA: <span t-esc="header"/>
-                                <br/>
-                        </div>
-                        <!-- VARIABLES -->
-                        <t t-set="tot_contratos" t-value="0"/>
-                        <t t-set="tot_plan" t-value="0"/>
-                        <t t-set="tot_inv_ini" t-value="0"/>
-                        <t t-set="tot_exc" t-value="0"/>
-                        <t t-set="tot_importe_ini" t-value="0"/>
-                        <t t-set="tot_bono" t-value="0"/>
-
-                        <table style="border: 1px solid black; border-collapse: collapse; width: 100%;">
-                            <thead class="encabezado">
-                                <th>No. Contrato</th>
-                                <th>Plan</th>
-                                <th>Valor del plan</th>
-                                <th>Inversión inicial</th>
-                                <th>Excedente inv. Inicial</th>
-                                <th>Importe inicial</th>
-                                <th>Bono por Inversión</th>
-                                <th>No. Solicitud</th>
-                                <th>Nombre Promotor</th>
-                            </thead>
-                            <tbody style="color:#000000; font-weight:normal; text-align: center;" t-foreach="data[header]" t-as="line">
-                               
-                                
-                                <tr >
-                                    <td><span t-esc="line['contract']"/></td>
-                                    <td><span t-esc="line['product_id']"/></td>
-                                    <td><span t-esc="line['price']"/></td>
-                                    <td><span t-esc="line['papeleria']"/></td>
-                                    <td><span t-esc="line['exc_inv']"/></td>
-                                    <td><span t-esc="line['initial_investment']"/></td>
-                                    <td><span t-esc="line['bono']"/></td>
-                                    <td><span t-esc="line['solicitud']"/></td>
-                                    <td><span t-esc="line['promoter']"/></td>
-                                </tr>
-                                <t t-set="tot_contratos" t-value="tot_contratos+1"/>
-                                <t t-set="tot_plan" t-value="tot_plan + line['price']"/>
-                                <t t-set="tot_inv_ini" t-value="tot_inv_ini + line['papeleria']"/>
-                                <t t-set="tot_exc" t-value="tot_exc + line['exc_inv']"/>
-                                <t t-set="tot_importe_ini" t-value="tot_importe_ini + line['initial_investment']"/>
-                                <t t-set="tot_bono" t-value="tot_bono + line['bono']"/>
-                                <t t-set="total" t-value="0"/>
-
-                                
-                             </tbody>
-
-                            
-                        </table>
-
-                         <br/>
-                            <table style="font-weight: bold; text-align: center; width: 70%;">
-                                <thead class="encabezado">
-
-                                    <td>No. de contratos</td>
-                                    <td>Total valor plan</td>
-                                    <td>Total Inversión inicial</td>
-                                    <td>Total Excedente</td>
-                                    <td>Total importe</td>
-                                    <td>Total bono</td>
-                                </thead>
-                                <tbody style="background-color:yellow;">
-                                    <tr>
-                                        <td><span t-esc = "tot_contratos"/> </td>
-                                        <td> <span t-esc="tot_plan"/> </td>
-                                        <td><span t-esc ="tot_inv_ini"/></td>
-                                        <td><span t-esc ="tot_exc"/></td>
-                                        <td><span t-esc ="tot_importe_ini"/></td>
-                                        <td><span t-esc ="tot_bono"/></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+              <div style=" width: 85%;  text-align: left;">
+                <!-- TITULO DEL REPORTE -->
+                <div style="font-size:15pt; color:#000000;  font-weight:bold; text-align: LEFT;">
+                  <br/>
+                  PROGRAMA DE APOYO DE BENEFICIO SOCIAL
+                  <br/>
+                  CORTE DE CONTRATOS ELABORADOS
+                  <br/>
+                  FECHA: <span t-esc="date"/>
+                  <br/>
                 </div>
-                 <!-- FIRMAS -->
-                <div style="font-size:12pt;display: table;clear: both;">
-                    <div style="float: left;width: 50%;padding: 10px;height: 300px;">
-                    <center>
-                        _________________________ <br/>
-                        <span t-esc="user.name"/>
-                    </center>
-                    </div>
-                    <div style="float: left;width: 50%;padding: 10px;height: 300px;">
-                    <center>
-                        _________________________ <br/>
-                        <span style="margin-left: 10px">FIRMA REVISO/ AUTORIZÓ</span>
-                    </center>
-                    </div>
-                </div>
+              </div>
             </div>
+
+            <div t-foreach="headers" t-as="header">
+              <!-- NOMBRE OFICINA DE VENTAS Y FECHAS-->
+              <div style="font-size:13pt; color:#000000;  font-weight:bold; text-align: LEFT;">
+                <br/>
+                OFICINA: <span t-esc="header"/>
+                <br/>
+              </div>
+
+              <!-- VARIABLES -->
+              <t t-set="tot_contratos" t-value="0"/>
+              <t t-set="tot_plan" t-value="0"/>
+              <t t-set="tot_inv_ini" t-value="0"/>
+              <t t-set="tot_exc" t-value="0"/>
+              <t t-set="tot_importe_ini" t-value="0"/>
+              <t t-set="tot_bono" t-value="0"/>
+
+              <table style="border: 1px solid black; border-collapse: collapse; width: 100%;">
+                <thead class="encabezado">
+                  <th>No. Contrato</th>
+                  <th>Plan</th>
+                  <th>Valor del plan</th>
+                  <th>Inversión inicial</th>
+                  <th>Excedente inv. Inicial</th>
+                  <th>Importe inicial</th>
+                  <th>Bono por Inversión</th>
+                  <th>No. Solicitud</th>
+                  <th>Nombre Promotor</th>
+                </thead>
+
+                <tbody style="color:#000000; font-weight:normal; text-align: center;" t-foreach="data[header]" t-as="line">
+                  <tr >
+                    <td><span t-esc="line['contract']"/></td>
+                    <td><span t-esc="line['product_id']"/></td>
+                    <td><span t-esc="line['price']"/></td>
+                    <td><span t-esc="line['papeleria']"/></td>
+                    <td><span t-esc="line['exc_inv']"/></td>
+                    <td><span t-esc="line['initial_investment']"/></td>
+                    <td><span t-esc="line['bono']"/></td>
+                    <td><span t-esc="line['solicitud']"/></td>
+                    <td><span t-esc="line['promoter']"/></td>
+                  </tr>
+                  <t t-set="tot_contratos" t-value="tot_contratos+1"/>
+                  <t t-set="tot_plan" t-value="tot_plan + line['price']"/>
+                  <t t-set="tot_inv_ini" t-value="tot_inv_ini + line['papeleria']"/>
+                  <t t-set="tot_exc" t-value="tot_exc + line['exc_inv']"/>
+                  <t t-set="tot_importe_ini" t-value="tot_importe_ini + line['initial_investment']"/>
+                  <t t-set="tot_bono" t-value="tot_bono + line['bono']"/>
+                  <t t-set="total" t-value="0"/>
+                </tbody>
+              </table>
+              <br/>
+              <table style="font-weight: bold; text-align: center; width: 70%;">
+                <thead class="encabezado">
+                  <td>No. de contratos</td>
+                  <td>Total valor plan</td>
+                  <td>Total Inversión inicial</td>
+                  <td>Total Excedente</td>
+                  <td>Total importe</td>
+                  <td>Total bono</td>
+                </thead>
+
+                <tbody style="background-color:yellow;">
+                  <tr>
+                    <td><span t-esc = "tot_contratos"/> </td>
+                    <td> <span t-esc="tot_plan"/> </td>
+                    <td><span t-esc ="tot_inv_ini"/></td>
+                    <td><span t-esc ="tot_exc"/></td>
+                    <td><span t-esc ="tot_importe_ini"/></td>
+                    <td><span t-esc ="tot_bono"/></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- FIRMAS -->
+            <div style="font-size:12pt;display: table;clear: both;">
+              <div style="float: left;width: 50%;padding: 10px;height: 300px;">
+                <center>
+                  _________________________ <br/>
+                  <span t-esc="user.name"/>
+                </center>
+              </div>
+              <div style="float: left;width: 50%;padding: 10px;height: 300px;">
+                <center>
+                  _________________________ <br/>
+                  <span style="margin-left: 10px">FIRMA REVISO/ AUTORIZÓ</span>
+                </center>
+              </div>
+            </div>
+          </div>
+        </div>
       </t>
     </template>
 
