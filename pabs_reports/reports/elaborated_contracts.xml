@@ -125,22 +125,6 @@
                 </tbody>
               </table>
             </div>
-
-            <!-- FIRMAS -->
-            <div style="font-size:12pt;display: table;clear: both;">
-              <div style="float: left;width: 50%;padding: 10px;height: 300px;">
-                <center>
-                  _________________________ <br/>
-                  <span t-esc="user.name"/>
-                </center>
-              </div>
-              <div style="float: left;width: 50%;padding: 10px;height: 300px;">
-                <center>
-                  _________________________ <br/>
-                  <span style="margin-left: 10px">FIRMA REVISO/ AUTORIZÓ</span>
-                </center>
-              </div>
-            </div>
           </div>
         </div>
       </t>
