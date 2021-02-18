@@ -260,11 +260,14 @@ class PABSContracts(models.Model):
       mother_lastname = self.partner_mname
       birthdate = fields.Date.from_string(
         self.birthdate).strftime('%d-%m-%Y')
-      rfc = CalculeRFC(nombres=name,
-        paterno=father_lastname,
-        materno=mother_lastname,
-        fecha=birthdate)
-      self.vat = rfc.data
+      try:
+        rfc = CalculeRFC(nombres=name,
+          paterno=father_lastname,
+          materno=mother_lastname,
+          fecha=birthdate)
+        self.vat = rfc.data
+      except:
+        self.vat = 'No se pudo generar RFC'
 
   #Crear Contacto (Cliente)
   def create_partner(self, vals):
