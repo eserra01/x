@@ -83,7 +83,6 @@ class ElaboratedContract(models.AbstractModel):
     data = data.get('data')
     date = data.get('fecha')
     logo = self.env.user.company_id.logo
-    raise ValidationError(("headers: {}\nData:{}".format(headers,data)))
     return {
       'date' : date,
       'logo' : logo,
