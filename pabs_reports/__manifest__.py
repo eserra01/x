@@ -6,6 +6,7 @@
   'category': 'Reports',
   'website': 'https://www.pabsmr.org',
   'depends' : [
+    'xmarts_funeraria',
     'pabs_custom'],
   'data': [
     'wizard/production_contract.xml',
