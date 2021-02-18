@@ -92,12 +92,12 @@
                     <td><span t-esc="line['bono']"/></td>
                     <td><span t-esc="line['solicitud']"/></td>
                     <td><span t-esc="line['promoter']"/></td>
-                    <t t-set="tot_contratos" t-value="tot_contratos+1"/>
+                    <!--<t t-set="tot_contratos" t-value="tot_contratos+1"/>
                     <t t-set="tot_plan" t-value="tot_plan + line['price']"/>
                     <t t-set="tot_inv_ini" t-value="tot_inv_ini + line['papeleria']"/>
                     <t t-set="tot_exc" t-value="tot_exc + line['exc_inv']"/>
                     <t t-set="tot_importe_ini" t-value="tot_importe_ini + line['initial_investment']"/>
-                    <t t-set="tot_bono" t-value="tot_bono + line['bono']"/>
+                    <t t-set="tot_bono" t-value="tot_bono + line['bono']"/>-->
                   </tr>
                 </tbody>
               </table>
