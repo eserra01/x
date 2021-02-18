@@ -31,7 +31,7 @@
         'report/account_payment_colloctors.xml',
         'wizard/payroll_pabs_ing_egre.xml',
         'report/payroll_ing_egre.xml',
-        'wizard/carnet_pago_rango.xml',
+        'wizard/carnet_pago.xml',
         'views/hr_employee.xml',
         'report/arqueo.xml',
         'report/carnet_pago.xml',
