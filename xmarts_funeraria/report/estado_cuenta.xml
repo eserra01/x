@@ -31,7 +31,7 @@
                 <td width="7%"><ins><strong>Contrato:</strong></ins></td>
                 <td><t t-esc="doc.name"/></td>
                 <td class="text-right" width="20%"><ins><strong>Fecha contrato:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                <td><t t-esc="doc.create_date" t-options='{"widget": "date"}'/></td>
+                <td><t t-esc="doc.invoice_date" t-options='{"widget": "date"}'/></td>
                 <td class="text-right" width="20%"><ins><strong>Solicitud:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
                 <td><t t-esc="doc.lot_id.name"/></td>
                 <td class="text-right" width="20%"><ins><strong>Costo:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
