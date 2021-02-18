@@ -80,10 +80,8 @@ class ElaboratedContract(models.AbstractModel):
     data = data.get('data')
     date = data.get('fecha')
     logo = self.env.user.company_id.logo
-    user = self.env.user.name
 
     return {
-      'user' : user,
       'date' : date,
       'logo' : logo,
       'headers' : headers,
