@@ -55,11 +55,11 @@ class ContractsElaboratedW1zard(models.TransientModel):
         info.append({
           'product_id' : contract_id.name_service.name,
           'contract': contract_id.name,
-          'price': contract_id.product_price,  
-          'papeleria':contract_id.stationery,  
-          'exc_inv': (contract_id.initial_investment - contract_id.stationery),  
-          'initial_investment':contract_id.initial_investment,
-          'bono':contract_id.investment_bond,
+          'price': contract_id.product_price or 0,  
+          'papeleria':contract_id.stationery or 0,  
+          'exc_inv': (contract_id.initial_investment - contract_id.stationery) or 0,  
+          'initial_investment':contract_id.initial_investment or 0,
+          'bono':contract_id.investment_bond or 0,
           'solicitud':contract_id.lot_id.name,  
           'promoter':contract_id.lot_id.employee_id.name
           })
@@ -83,7 +83,7 @@ class ElaboratedContract(models.AbstractModel):
     data = data.get('data')
     date = data.get('fecha')
     logo = self.env.user.company_id.logo
-    
+
     return {
       'date' : date,
       'logo' : logo,
