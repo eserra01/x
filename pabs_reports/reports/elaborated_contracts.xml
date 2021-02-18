@@ -33,11 +33,6 @@
           </style>
           <div>
             <div>
-              <!-- LOGO -->
-              <div style="float: left; width: 15%; text-align: center;">
-                <img t-if="logo" t-att-src="'data:image/png;base64,%s' %logo" alt="logoPABS" height="100px"/>
-              </div>
-
               <div style=" width: 85%;  text-align: left;">
                 <!-- TITULO DEL REPORTE -->
                 <div style="font-size:15pt; color:#000000;  font-weight:bold; text-align: LEFT;">
@@ -46,7 +41,7 @@
                   <br/>
                   CORTE DE CONTRATOS ELABORADOS
                   <br/>
-                  FECHA: <span t-esc="date"/>
+                  FECHA:
                   <br/>
                 </div>
               </div>
