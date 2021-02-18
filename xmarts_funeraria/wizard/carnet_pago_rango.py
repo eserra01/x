@@ -38,7 +38,7 @@ class ReportCarnetPagoRango(models.AbstractModel):
                 ('state','=','contract'),
                 ('name','>=',initial_contract),
                 ('name','<=',final_contract)
-            ])
+            ],order="name")
         else:
             raise ValidationError("Elige el contrato inicial y el contrato final")
 
