@@ -72,6 +72,7 @@ class ContractsElaboratedW1zard(models.TransientModel):
       'headers' : warehouse_names,
       'data' : contract_data
     }
+    raise ValidationError(("datos: {}".format(contract_data)))
     return self.env.ref('pabs_reports.elaborated_contracts_print').report_action(self, data=data)
 
 class ElaboratedContract(models.AbstractModel):
