@@ -5,51 +5,10 @@ from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DATE_FORMAT, DEFAULT_SERVER
 class CarnetPagoWizard(models.TransientModel):
     _name = 'report.carnet.pago'
 
-    print_by_range = fields.Boolean(
-        string='Impresión por rango',
-        default=True,
-    )
-
-    date_from = fields.Date(
-        string='Inicial',
-    )
-    date_to = fields.Date(
-        string='Final',
-    )
-
-    office = fields.Selection([
-        ('1', 'OFICINA VENTAS1'),
-        ('2', 'OFICINA VENTAS2'),
-        ('3', 'OFICINA VENTAS3'),
-        ('4', 'OFICINA VENTAS4'),
-        ('5', 'OFICINA VENTAS5'),
-        ('6', 'OFICINA VENTAS6'),
-        ('7', 'OFICINA VENTAS7'),
-        ('8', 'OFICINA VENTAS8'),
-    ],
-        string='Oficina',
-    )
-
-    contract_number = fields.Char(
-        string='Contrato',
-    )
-
-    no_copies = fields.Selection([
-        ('2', '2'),
-        ('3', '3'),
-        ('4', '4'),
-        ('5', '5'),
-        ('6', '6'),
-        ('7', '7'),
-        ('8', '8'),
-        ('9', '9'),
-        ('10', '10'),
-    ],
-        string='No. copias',
-    )
+    initial_contract = fields.Many2one(comodel_name="pabs.contract", domain="([('state','=','contract')])", string="Contrato inicial")
+    final_contract = fields.Many2one(comodel_name="pabs.contract", domain="([('state','=','contract')])", string="Contrato final")
 
     def filter(self):
-        # print('--------------------------filter-------------------------------')
         data = {
             'ids': self.ids,
             'model': self._name,
@@ -58,36 +17,40 @@ class CarnetPagoWizard(models.TransientModel):
                 'date_end': self.date_to,
             },
         }
-        # print('data', data)
-        # print("cccccc")
         return self.env.ref('xmarts_funeraria.id_carnet_pago').report_action(self, data=data)
 
+#<!-- <div style="page-break-before: always;"></div> -->
 
-# class ReportAttendanceRecapINGEGRE(models.AbstractModel):
+class ReportAttendanceRecap(models.AbstractModel):
+    _name = "report.xmarts_funeraria.id_carnet_pago"
 
-#     _name = "report.xmarts_funeraria.payroll_ing_egre"
+    @api.model
+    def _get_report_values(self, docids, data=None):
+        #Obtener datos de la ventana
+        initial_contract = data['form']['initial_contract']
+        final_contract = data['form']['final_contract']
 
-#     @api.model
-#     def _get_report_values(self, docids, data=None):
-#         date_start = data['form']['date_start']
-#         date_end = data['form']['date_end']
+        #Si se seleccionaron los contratos
+        if initial_contract and final_contract:
+            contract_ids = self.env['pabs.contract'].search([
+                ('state','=','contract'),
+                ('name','>=',initial_contract),
+                ('name','<=',final_contract)
+            ])
 
-#         print("xxxxxxx",date_start)
-#         employee = self.env['hr.employee'].search([
-#                 ('id', '>', 0),
-#             ])
+        contracts_list = []
+        #Ingresar cada contrato a la lista
+        for con in contract_ids:
+            contracts_list.append({
+                "name": con.name
+            })
+        
+        #Retornar información
+        info = [{
+            "break":1,
+            'docs': contracts_list
+        }]
 
-#         docs = []
-#         for emp in employee:
-#             print("CCCCC",emp.name)
-
-#             docs.append({
-#                 'partner': emp.name,
-#                 'code': emp.code_pabs,
-#             })
-
-#         return {
-#             'date_start': date_start,
-#             'date_end': date_end,
-#             'docs': docs,
-#         }
+        return {
+            "docs": info
+        }
