@@ -31,9 +31,11 @@
         'report/account_payment_colloctors.xml',
         'wizard/payroll_pabs_ing_egre.xml',
         'report/payroll_ing_egre.xml',
+        'wizard/carnet_pago_rango.xml',
         'views/hr_employee.xml',
         'report/arqueo.xml',
         'report/carnet_pago.xml',
+        'report/carnet_pago_sin_tabla.xml',
         'report/estado_cuenta.xml',
         'report/estimado_pago.xml',
         'report/bono500.xml',
@@ -43,7 +45,6 @@
         'report/contrato_pagado.xml',
         'report/promotor.xml',
         'report/office_promoter.xml',
-        # 'wizard/carnet_pago.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
