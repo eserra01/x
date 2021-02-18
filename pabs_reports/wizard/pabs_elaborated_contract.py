@@ -30,13 +30,18 @@ class ContractsElaboratedW1zard(models.TransientModel):
           ('invoice_date','>=',start_date),
           ('invoice_date','<=',end_date)])
 
-    if not contract_ids:
-      raise ValidationError(("No hay contratos para procesar"))
-
     lot_ids = [x.lot_id for x in contract_ids]
     warehouse_ids = [x.warehouse_id for x in lot_ids] #lot_ids.filtered(lambda x: x.warehouse_ids)
     warehouse_ids = set(warehouse_ids)
     warehouse_names = []
+
+    plans_ids = [x.product_id.product_tmpl_id.name for x in lot_ids]
+    plans_ids = set(plans_ids)
+    plan_name =[]
+    
+
+    
+    
 
     for rec in warehouse_ids:
       warehouse_name = rec.name
@@ -45,6 +50,8 @@ class ContractsElaboratedW1zard(models.TransientModel):
       for req in lot_ids:
         if req.warehouse_id.id == rec.id:
           record_ids.append(req)
+
+        
 
       ### GUARDAR LA LISTA DE CADA ALMACÉN
       info = []
@@ -55,11 +62,11 @@ class ContractsElaboratedW1zard(models.TransientModel):
         info.append({
           'product_id' : contract_id.name_service.name,
           'contract': contract_id.name,
-          'price': contract_id.product_price or 0,  
-          'papeleria':contract_id.stationery or 0,  
-          'exc_inv': (contract_id.initial_investment - contract_id.stationery) or 0,  
-          'initial_investment':contract_id.initial_investment or 0,
-          'bono':contract_id.investment_bond or 0,
+          'price': contract_id.product_price,  
+          'papeleria':contract_id.stationery,  
+          'exc_inv': (contract_id.initial_investment - contract_id.stationery),  
+          'initial_investment':contract_id.initial_investment,
+          'bono':contract_id.investment_bond,
           'solicitud':contract_id.lot_id.name,  
           'promoter':contract_id.lot_id.employee_id.name
           })
@@ -83,7 +90,10 @@ class ElaboratedContract(models.AbstractModel):
     data = data.get('data')
     date = data.get('fecha')
     logo = self.env.user.company_id.logo
+    user = self.env.user.name
+
     return {
+      'user' : user,
       'date' : date,
       'logo' : logo,
       'headers' : headers,
