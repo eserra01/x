@@ -56,7 +56,7 @@
               </tr>
               <tr>
                 <td><ins><strong>Domicilio:</strong></ins></td>
-                <td><t t-esc="doc.street_toll "/>&amp;nbsp;<t t-esc="doc.street_number_toll"/></td>
+                <td><t t-esc="doc.street_name_toll "/>&amp;nbsp;<t t-esc="doc.street_number_toll"/></td>
                 <td colspan="2"><ins><strong>Importe de Pago Actual:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
                 <td><t t-esc="doc.payment_amount"/></td>
               </tr>
