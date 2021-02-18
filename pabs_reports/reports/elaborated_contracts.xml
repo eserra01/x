@@ -66,12 +66,7 @@
                             <div style="font-size:13pt; color:#000000;  font-weight:bold; text-align: LEFT;">
                                     <br/>
                                     OFICINA: <span t-esc="header" tyle="font-size:13pt;"/>
-                                    <div style="font-size:13pt; color:#000000;  font-weight:bold; text-align: LEFT;">
-                                   <p> ____________________________________________________________________________________________________________________________________________________</p>
-                                    
-                                    <span >IMPERIAL PREMIUM</span>
-                                    </div>
-
+                                
                                     
                             </div>
                             <!-- VARIABLES -->
