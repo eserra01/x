@@ -87,24 +87,3 @@ class StockPickingType(models.Model):
     for record in self:
       result.append((record.id, "{}".format(record.name)))
     return result
-
-class HREmployee(models.Model):
-  _inherit = 'hr.employee'
-
-  @api.model
-  def create(self, vals):
-    users_obj = self.env['res.users'].sudo()
-    res = super(HREmployee, self).create(vals)
-    if res.warehouse_id:
-      query = "select user_id from warehouse_security_users where warehouse_id = {}".format(res.warehouse_id.id)
-      cr = self.env.cr.execute(query)
-      raise ValidationError((
-        "valor recibido: {}",format(cr.fetchall)))
-
-  ### OMITIMOS QUE ANTEPONGA EL NOMBRE DEL ALMACÉN, PARA NO CAUSAR RUIDO AL USUARIO
-  def name_get(self):
-    ### EL formato en el cual mostrará la relación de hr.employee ejem. "V0001 - Eduardo Serrano"
-    result = []
-    for record in self:
-      result.append((record.id, "{}".format(record.name)))
-    return result
