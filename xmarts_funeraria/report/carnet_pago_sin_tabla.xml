@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <odoo>
-	<data>
-    	<template id="xmarts_funeraria.carnet_pago_sin_tabla">
+    <data>
+        <template id="xmarts_funeraria.carnet_pago_sin_tabla">
         <t t-call="web.html_container">
         <t t-call="web.basic_layout">
         <t t-foreach="docs" t-as="doc">
@@ -105,31 +105,30 @@
                 <!-- Margen de quitar bordes de tablas -->
                 <div style="height: 1mm;"> </div>
             
-                <!-- RECIBOS -->
-
-                <t t-set="fecha_recibo" t-value="x"/>
-                <t t-set="recibo" t-value=" sin "/>
-                <t t-set="monto" t-value="0"/>
-                <t t-set="cobrador" t-value=" sin "/>
+                <!-- RECIBOS:  Obtener el ultimo recibo (por id) -->
                 <t t-set="saldo" t-value="doc.balance"/>
 
+                <t t-set="fecha_recibo" t-value="x"/>
+                <t t-set="recibo" t-value="x"/>
+                <t t-set="monto" t-value="0"/>
+                <t t-set="cobrador" t-value="x"/>
+
+                <t t-set="id_anterior" t-value="0"/>
                 <t t-foreach="doc.payment_ids" t-as="abono">
-                    <t t-if="abono.date_receipt == True">
-                        <t t-set="fecha_recibo" t-value="abono.date_receipt"/>    
-                    </t>
-                    <t t-else="">
-                        <t t-set="fecha_recibo" t-value="abono.payment_date"/>
-                    </t>
-                    
-                    <t t-if="abono.Ecobro_receipt == True">
+                    <t t-if="abono.id > id_anterior">
+                        <t t-if="abono.date_receipt">
+                            <t t-set="fecha_recibo" t-value="abono.date_receipt"/>    
+                        </t>
+                        <t t-else="">
+                            <t t-set="fecha_recibo" t-value="abono.payment_date"/>
+                        </t>
+
                         <t t-set="recibo" t-value="abono.Ecobro_receipt"/>    
+                        <t t-set="monto" t-value="abono.amount"/>
+                        <t t-set="cobrador" t-value="abono.debt_collector_code.name"/>
                     </t>
 
-                    <t t-set="monto" t-value="abono.amount"/>
-
-                    <t t-if="abono.debt_collector_code == True">
-                        <t t-set="cobrador" t-value="abono.debt_collector_code.name"/>    
-                    </t>
+                    <t t-set="id_anterior" t-value="abono.id"/>
                 </t>
 
                 <table style="width: 100%;">
@@ -158,10 +157,6 @@
                         <td style="width: 40%;" class="dato"><div class="dato_largo_rec" t-esc="doc.debt_collector.name"></div></td>
                     </tr>
                 </table>
-
-                <!-- <t t-if="vals['break'] == 1">
-                    <t style="page-break-after: always;"></t>
-                </t> -->
             </div>
           </div>
         </t>
@@ -171,7 +166,7 @@
   </data>
   
   <!-- ACAPULCO 97 x 210 -->
-	<record id="paperformat_carnet_pago_sin_tabla" model="report.paperformat">
+    <record id="paperformat_carnet_pago_sin_tabla" model="report.paperformat">
     <field name="name">Tarjeta_sin_tabla</field>
     <field name="default" eval="True"/>
     <field name="format">custom</field>
@@ -196,7 +191,5 @@
     print_report_name="'Carnet de pago sin tabla'"
     paperformat="xmarts_funeraria.paperformat_carnet_pago_sin_tabla"
   />
-
-
 
 </odoo>
