@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="contracts_elaborated_wizard_view" model="ir.ui.view">
+		<field name="name">contracts.elaborated.wizard.view</field>
+		<field name="model">pabs.elaborated.contract.wizard</field>
+		<field name="arch" type="xml">
+			<form string="Corte de contratos elaborados">
+        <group coslpan="2">
+          <group>
+            <field name="date_contract"/>
+          </group>
+          <group>
+            <center><h3>Corte de Contratos elaborados</h3></center><br/>
+          </group>
+        </group>
+        <footer>
+          <button name="get_contracts_per_day" string="Imprimir" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+		</field>
+	</record>
+
+    <record id="action_pabs_contracts_elaborated" model="ir.actions.act_window">
+        <field name="name">Corte de contratos elaborados</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pabs.elaborated.contract.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="contracts_elaborated_wizard_view"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem 
+    action="action_pabs_contracts_elaborated" 
+    id="menu_informes"
+    name="Informes" 
+    parent="pabs_custom.service_menu_root" 
+    sequence="7"/>
+</odoo>
