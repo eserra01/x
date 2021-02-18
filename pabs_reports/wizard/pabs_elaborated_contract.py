@@ -30,6 +30,9 @@ class ContractsElaboratedW1zard(models.TransientModel):
           ('invoice_date','>=',start_date),
           ('invoice_date','<=',end_date)])
 
+    if not contract_ids:
+      raise ValidationError(("No hay contratos para procesar"))
+
     lot_ids = [x.lot_id for x in contract_ids]
     warehouse_ids = [x.warehouse_id for x in lot_ids] #lot_ids.filtered(lambda x: x.warehouse_ids)
     warehouse_ids = set(warehouse_ids)
