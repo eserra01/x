@@ -113,13 +113,13 @@ class PabsReportXLSX(models.AbstractModel):
     for rec_index,contract_id in enumerate(contract_ids):
       rec_index+=1
       count = 0
-      sheet.write(rec_index,count,contract_id.invoice_date,date_format)
+      sheet.write(rec_index,count,contract_id.invoice_date or "",date_format)
       count+=1
-      sheet.write(rec_index,count,contract_id.name)
+      sheet.write(rec_index,count,contract_id.name or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.lot_id.name)
+      sheet.write(rec_index,count,contract_id.lot_id.name or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.full_name)
+      sheet.write(rec_index,count,contract_id.full_name or "")
       count+=1
       street = contract_id.street_name
       number = contract_id.street_number
@@ -128,40 +128,40 @@ class PabsReportXLSX(models.AbstractModel):
         address = address + street
       if number:
         address = address + " " + number
-      sheet.write(rec_index,count,address)
+      sheet.write(rec_index,count,address or "")
       count+=1
       neightborhood = ""
       if contract_id.neighborhood_id:
         neighborhood = contract_id.neighborhood_id.name
-      sheet.write(rec_index,count,neighborhood)
+      sheet.write(rec_index,count,neighborhood or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.municipality_id.name)
+      sheet.write(rec_index,count,contract_id.municipality_id.name or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.between_streets)
+      sheet.write(rec_index,count,contract_id.between_streets or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.phone)
+      sheet.write(rec_index,count,contract_id.phone or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.sale_employee_id.name)
+      sheet.write(rec_index,count,contract_id.sale_employee_id.name or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.debt_collector.name)
+      sheet.write(rec_index,count,contract_id.debt_collector.name or "")
       count+=1
-      sheet.write(rec_index,count,dict(contract_id._fields['way_to_payment'].selection).get(contract_id.way_to_payment))
+      sheet.write(rec_index,count,dict(contract_id._fields['way_to_payment'].selection).get(contract_id.way_to_payment) or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.date_of_last_status,date_format)
+      sheet.write(rec_index,count,contract_id.date_of_last_status,date_format or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.contract_status_item.status)
+      sheet.write(rec_index,count,contract_id.contract_status_item.status or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.contract_status_reason.reason)
+      sheet.write(rec_index,count,contract_id.contract_status_reason.reason or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.id)
+      sheet.write(rec_index,count,contract_id.id or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.payment_amount,money)
+      sheet.write(rec_index,count,contract_id.payment_amount,money or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.name_service.name)
+      sheet.write(rec_index,count,contract_id.name_service.name or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.product_price,money)
+      sheet.write(rec_index,count,contract_id.product_price,money or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.balance,money)
+      sheet.write(rec_index,count,contract_id.balance,money or "")
       count+=1
       stationery = contract_id.commission_tree.filtered(lambda t: t.job_id.name == "PAPELERIA")
       if stationery:
@@ -238,56 +238,20 @@ class PabsReportXLSX(models.AbstractModel):
         count+=1
         sheet.write(rec_index,count,"")
         count+=1
-      """for commission_line in contract_id.commission_tree.sorted(key=lambda r: r.pay_order):
-        if commission_line.job_id.name == "PAPELERIA":
-          sheet.write(rec_index,count,commission_line.comission_agent_id.name)
-          count+=1
-          sheet.write(rec_index,count,commission_line.corresponding_commission,money)
-          count+=1
-          sheet.write(rec_index,count,commission_line.remaining_commission,money)
-          count+=1
-        elif commission_line.job_id.name == "ASISTENTE SOCIAL":
-          sheet.write(rec_index,count,commission_line.comission_agent_id.name)
-          count+=1
-          sheet.write(rec_index,count,commission_line.corresponding_commission,money)
-          count+=1
-          sheet.write(rec_index,count,commission_line.remaining_commission,money)
-          count+=1
-        elif commission_line.job_id.name == "COORDINADOR":
-          sheet.write(rec_index,count,commission_line.comission_agent_id.name)
-          count+=1
-          sheet.write(rec_index,count,commission_line.corresponding_commission,money)
-          count+=1
-          sheet.write(rec_index,count,commission_line.remaining_commission,money)
-          count+=1
-        elif commission_line.job_id.name == "GERENTE DE OFICINA":
-          sheet.write(rec_index,count,commission_line.comission_agent_id.name)
-          count+=1
-          sheet.write(rec_index,count,commission_line.corresponding_commission,money)
-          count+=1
-          sheet.write(rec_index,count,commission_line.remaining_commission,money)
-          count+=1
-        elif commission_line.job_id.name == "FIDEICOMISO":
-          sheet.write(rec_index,count,commission_line.comission_agent_id.name)
-          count+=1
-          sheet.write(rec_index,count,commission_line.corresponding_commission,money)
-          count+=1
-          sheet.write(rec_index,count,commission_line.remaining_commission,money)
-          count+=1"""
       for payment_id in contract_id.payment_ids.sorted(key=lambda r: r.payment_date,reverse=True):
-        sheet.write(rec_index,count,payment_id.name)
+        sheet.write(rec_index,count,payment_id.name or "")
         count+=1
         payment_name = payment_id.Ecobro_receipt or payment_id.name
-        sheet.write(rec_index,count,payment_name)
+        sheet.write(rec_index,count,payment_name or "")
         count+=1
-        sheet.write(rec_index,count,payment_id.amount,money)
+        sheet.write(rec_index,count,payment_id.amount or "",money)
         count+=1
-        sheet.write(rec_index,count,dict(payment_id._fields['state'].selection).get(payment_id.state))
+        sheet.write(rec_index,count,dict(payment_id._fields['state'].selection).get(payment_id.state) or "")
         count+=1
         break
-      sheet.write(rec_index,count,contract_id.days_without_payment)
+      sheet.write(rec_index,count,contract_id.days_without_payment or "")
       count+=1
-      sheet.write(rec_index,count,contract_id.late_amount,money)
+      sheet.write(rec_index,count,contract_id.late_amount or "",money)
       count+=1
     #_logger.warning("lista recibida: {}".format(data))
     ### RECORRER LA INFORMACIÓN RECOPILADA
