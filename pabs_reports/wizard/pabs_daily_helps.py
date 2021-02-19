@@ -239,7 +239,7 @@ class PabsReportXLSX(models.AbstractModel):
         sheet.write(rec_index,count,"")
         count+=1
       for payment_id in contract_id.payment_ids.sorted(key=lambda r: r.payment_date,reverse=True):
-        sheet.write(rec_index,count,payment_id.name or "")
+        sheet.write(rec_index,count,payment_id.payment_date or "",date_format)
         count+=1
         payment_name = payment_id.Ecobro_receipt or payment_id.name
         sheet.write(rec_index,count,payment_name or "")
