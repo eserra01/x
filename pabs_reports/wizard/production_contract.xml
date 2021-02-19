@@ -35,6 +35,6 @@
     action="action_pabs_contracts_elaborated" 
     id="menu_informes"
     name="Contratos elaborados por dia" 
-     parent="xmarts_funeraria.report_root_menu"
+    parent="xmarts_funeraria.report_root_menu"
     sequence="7"/>
 </odoo>
