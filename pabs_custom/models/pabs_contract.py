@@ -682,14 +682,14 @@ class PABSContracts(models.Model):
         if not pricelist_id:
           raise ValidationError((
             "No se encontró una secuencia"))
-        contract_name = pricelist_id.sequence_id._next()
-        previous.name = contract_name
+        #contract_name = pricelist_id.sequence_id._next()
+        #previous.name = contract_name
         if not previous.partner_id:
           raise ValidationError((
             "No tiene un cliente ligado al contrato"))
         if previous.partner_id:
           partner_id = previous.partner_id
-          partner_id.write({'name' : contract_name})
+          partner_id.write({'name' : previous.name})
         previous.state = 'contract'
         previous.create_commision_tree(invoice_id=invoice_id)
         return invoice_id
@@ -1161,7 +1161,10 @@ class PABSContracts(models.Model):
     _logger.warning('El contrato')
     contract_obj = self.env['pabs.contract']
     contract_ids = contract_obj.search([
-      ('state','=','precontract')],limit=300)
+      ('state','=','precontract')
+      ('invoice_date','<','15/07/2020')])
+    raise ValidationError((
+      "Contratos Encontrados: {}".format(len(contract_ids))))
     for contract_id in contract_ids:
       lot_id = contract_id.lot_id.id
       _logger.warning('El contrato {}'.format(lot_id))
