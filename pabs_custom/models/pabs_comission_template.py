@@ -152,8 +152,8 @@ class ComissionTemplate(models.Model):
                 ### PENDIENTE: FALTA QUE SE ACTUALICE VISUALMENTE EL MONTO DEL FIDEICOMISO [ETAPA 2]
                 if fideicomiso_row:
                     fideicomiso_row.comission_amount = fideicomiso_amount
-                else:
-                    raise ValidationError("No se pudo realizar la actualización del fideicomiso")
+                #else:
+                    #raise ValidationError("No se pudo realizar la actualización del fideicomiso")
 
                 return res
 
