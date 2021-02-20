@@ -1162,7 +1162,7 @@ class PABSContracts(models.Model):
     contract_obj = self.env['pabs.contract']
     contract_ids = contract_obj.search([
       ('state','=','precontract'),
-      ('invoice_date','<','15/02/2021')])
+      ('invoice_date','<','15-02-2021')])
     raise ValidationError((
       "Contratos Encontrados: {}".format(len(contract_ids))))
     for contract_id in contract_ids:
