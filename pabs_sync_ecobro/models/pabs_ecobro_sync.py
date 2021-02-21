@@ -294,7 +294,10 @@ class PABSEcobroSync(models.Model):
     ### SE ENVIA LA PETICIÓN PARA RECIBIR LOS PAGOS
     req = requests.post(url_pending)
     ### CASTEANDO A JSON LA RESPUESTA
-    response = json.loads(req.text)
+    try:
+      response = json.loads(req.text)
+    except Exception as e:
+      _logger.warning("Información recibida: {}".format(e))
     ### DECLARANDO ARRAY PARA LOS CORRECTOS
     done = []
     ### DECLARANDO ARRAY PARA CANCELADOS
@@ -436,6 +439,7 @@ class PABSEcobroSync(models.Model):
     ### AGREGAMOS LAS RESPUESTAS A UN DICCIONARIO
     data_response = {'result' : result}
     try:
+      _logger.warning("Estó es lo que se enviará a la petición: {}".format(data_response))
       ### SE ENVIA LA PETICIÓN PARA ACTUALIZAR LOS RECIBOS COMO AFECTADOS
       req2 = requests.post(url_update,json=data_response)
           ### LEYENDO RESPUESTA DEL WEB SERVICE
