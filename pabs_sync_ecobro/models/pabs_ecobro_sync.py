@@ -423,7 +423,8 @@ class PABSEcobroSync(models.Model):
         fails.append({
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
-          'detalle' : e,
+          #'detalle' : e,
+          'detalle' : "No se pudo procesar"
         })
     ### AL FINALIZAR DE PROCESAR TODA LA INFORMACIÓN
 
