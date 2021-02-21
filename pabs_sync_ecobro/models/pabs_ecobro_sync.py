@@ -383,7 +383,8 @@ class PABSEcobroSync(models.Model):
         'currency_id' : currency_id.id,
         'date_receipt' : rec['fecha_recibo'],
         'payment_date' : rec['fecha_oficina'],
-        'Ecobro_receipt' : rec['afectacionID'],
+        'ecobro_affect_id' : rec['afectacionID'], 
+        'Ecobro_receipt' : rec['no_recibo'],
         'journal_id' : cash_journal_id.id,
         'payment_method_id' : payment_method_id.id,
       }
@@ -438,6 +439,8 @@ class PABSEcobroSync(models.Model):
       ### SE ENVIA LA PETICIÓN PARA ACTUALIZAR LOS RECIBOS COMO AFECTADOS
       req2 = requests.post(url_update,json=data_response)
           ### LEYENDO RESPUESTA DEL WEB SERVICE
+      ### RESPUESTA ANTES DE CASTEAR
+      _logger.info("La respuesta del WebService: {}".format(req2.text))
       response2 = json.loads(req2.text)
       ### SI HUBO ALGÚN ERROR
       if response2['fail']:
@@ -459,5 +462,6 @@ class PABSEcobroSync(models.Model):
       else:
         _logger.info("Todos los recibos fueron afectados correctamente, esta totalmente actualizado!!")
     except Exception as e:
+      self._cr.rollback()
       _logger.warning("Hubo un problema con la petición al webservice, mensaje: {}".format(e))
 
