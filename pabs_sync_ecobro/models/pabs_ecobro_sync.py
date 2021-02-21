@@ -313,7 +313,7 @@ class PABSEcobroSync(models.Model):
       ('payment_type','=','inbound'),
       ('code','=','manual')],limit=1)
     ### RECORRER LA RESPUESTA
-    #_logger.info("Registros a procesar: {}".format(len(response['result'])))
+    _logger.info("Registros a procesar: {}".format(len(response['result'])))
     for rec in response['result']:
       ### CONCATENAR LA SERIE CON EL NUMERO DE CONTRATO
       contract_name = "{}{}".format(rec['serie'],rec['no_contrato'])
