@@ -372,6 +372,7 @@ class PABSEcobroSync(models.Model):
       ### LANZANDO NUMERO DE CONTRATO QUE ESTA SIENDO AFECTADO
       _logger.info("Número de Contrato: {}".format(contract_id.name))
       ### GENERANDO INFORMACIÓN PARA APLICAR EL PAGO
+      ecobro_number = "{}{}".format(rec['serie_recibo'],rec['no_recibo'])
       payment_data = {
         'payment_reference' : 'Sincronizado de Ecobro',
         'reference' : 'payment',
@@ -387,7 +388,7 @@ class PABSEcobroSync(models.Model):
         'date_receipt' : rec['fecha_recibo'],
         'payment_date' : rec['fecha_oficina'],
         'ecobro_affect_id' : rec['afectacionID'], 
-        'Ecobro_receipt' : rec['no_recibo'],
+        'Ecobro_receipt' : ecobro_number,
         'journal_id' : cash_journal_id.id,
         'payment_method_id' : payment_method_id.id,
       }
