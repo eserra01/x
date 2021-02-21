@@ -310,6 +310,7 @@ class PABSEcobroSync(models.Model):
       ('payment_type','=','inbound'),
       ('code','=','manual')],limit=1)
     ### RECORRER LA RESPUESTA
+    _logger.info("Registros a procesar: {}".format(len(response['result'])))
     for rec in response['result']:
       ### CONCATENAR LA SERIE CON EL NUMERO DE CONTRATO
       contract_name = "{}{}".format(rec['serie'],rec['no_contrato'])
@@ -365,6 +366,8 @@ class PABSEcobroSync(models.Model):
           break
       if float(invoice_id.amount_residual) < float(rec['monto']):
         continue
+      ### LANZANDO NUMERO DE CONTRATO QUE ESTA SIENDO AFECTADO
+      _logger.info("Número de Contrato: {}".format(contract_id.name))
       ### GENERANDO INFORMACIÓN PARA APLICAR EL PAGO
       payment_data = {
         'payment_reference' : 'Sincronizado de Ecobro',
@@ -429,7 +432,6 @@ class PABSEcobroSync(models.Model):
       _logger.warning("No se ha configurado ninguna IP de sincronización con ecobro")
     ### JUNTAMOS TODAS LAS PETICIONES PROCESADAS, TANTO LAS CORRECTAS COMO LAS FALLIDAS
     result = done + fails
-    _logger.warning("Estos son los resultados: {}".format(result))
     ### AGREGAMOS LAS RESPUESTAS A UN DICCIONARIO
     data_response = {'result' : result}
     try:
