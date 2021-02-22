@@ -243,12 +243,12 @@ class PABSContracts(models.Model):
     for rec in self:
       rec.amount_received = (rec.initial_investment - rec.comission) or 0
       product_id = rec.name_service
-      """rec.investment_bond = 0
+      rec.investment_bond = 0
       bonus = pabs_bonus_obj.search([
         ('plan_id','=',product_id.id)], order="min_value")
       for bon_rec in bonus:
         if rec.initial_investment >= bon_rec.min_value and rec.initial_investment <= bon_rec.max_value:
-          rec.investment_bond = bon_rec.bonus"""
+          rec.investment_bond = bon_rec.bonus
 
   ### Calculo de RFC con la información cargada
   @api.onchange('partner_name','partner_fname','partner_mname','birthdate')
