@@ -682,8 +682,8 @@ class PABSContracts(models.Model):
         if not pricelist_id:
           raise ValidationError((
             "No se encontró una secuencia"))
-        #contract_name = pricelist_id.sequence_id._next()
-        #previous.name = contract_name
+        contract_name = pricelist_id.sequence_id._next()
+        previous.name = contract_name
         if not previous.partner_id:
           raise ValidationError((
             "No tiene un cliente ligado al contrato"))
@@ -783,7 +783,7 @@ class PABSContracts(models.Model):
 
         #Asignar asistente de venta PRODUCCION
         vals['sale_employee_id'] = previous.employee_id
-        #vals['invoice_date'] = fields.Date.today()
+        vals['invoice_date'] = fields.Date.today()
 
         previous.write(vals)
         invoice_id = self.create_invoice(previous)
