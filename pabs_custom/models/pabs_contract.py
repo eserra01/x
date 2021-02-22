@@ -237,7 +237,7 @@ class PABSContracts(models.Model):
     for rec in self:
       rec.excedent = (float(rec.amount_received) - float(rec.stationery))
 
-  @api.onchange('initial_investment','comission')
+  """@api.onchange('initial_investment','comission')
   def _calc_amount_received(self):
     pabs_bonus_obj = self.env['pabs.bonus']
     for rec in self:
@@ -248,7 +248,7 @@ class PABSContracts(models.Model):
         ('plan_id','=',product_id.id)], order="min_value")
       for bon_rec in bonus:
         if rec.initial_investment >= bon_rec.min_value and rec.initial_investment <= bon_rec.max_value:
-          rec.investment_bond = bon_rec.bonus
+          rec.investment_bond = bon_rec.bonus"""
 
   ### Calculo de RFC con la información cargada
   @api.onchange('partner_name','partner_fname','partner_mname','birthdate')
