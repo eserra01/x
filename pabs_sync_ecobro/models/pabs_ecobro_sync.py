@@ -179,7 +179,11 @@ class PABSEcobroSync(models.Model):
     ### BUSCAR TODOS LOS CONTRATOS QUE NO ESTÉN EN ESTATUS CANCELADO, PAGADO Ó REALIZADO
     contract_ids = contract_obj.search([
       ('state','=','contract'),
-      ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO'))])
+      ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO')),
+      ('name','!=','Nuevo Contrato'),
+      ('invoice_date','>','2021-02-14')])
+    raise ValidationError((
+      "Contratos a sincronizar: {}".format(len(contract_ids))))
     ### LISTA DE CONTRATOS VACÍA
     contract_info = []
     ### SI SE ENCONTRARÓN REGISTROS SE CICLARÁ
