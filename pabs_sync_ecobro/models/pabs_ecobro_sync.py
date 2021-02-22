@@ -70,7 +70,7 @@ class PABSEcobroSync(models.Model):
       'codigo' : employee_id.barcode,
       'nombre' : employee_id.name,
       'serie' : debt_collector_id.receipt_series,
-      'telefono' : employee_id.mobile_phone,
+      'telefono' : employee_id.mobile_phone or "",
       'cobradorID' : employee_id.ecobro_id or employee_id.id
       })
     ### MANEJADOR DE ERRORES
