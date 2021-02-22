@@ -26,5 +26,12 @@
     <field name="interval_type">months</field>
     <field name="code">model.get_pending_payments()</field>
   </record>
+
+  <!--<record id="seq_contract_ecobro_id" model="ir.sequence">
+    <field name="name">Secuencia de ID de Ecobro</field>
+    <field name="code">contract_ecobro_id</field>
+
+    <field name="number_increment">1</field>
+  </record>-->
     
 </odoo>
