@@ -81,10 +81,12 @@ class PABSEcobroSync(models.Model):
         data = {
           'cobradores' : employee_data
         }
+        _logger.info("El JSON enviado es: {}".format(data))
         ### SE ENVÍA PETICIÓN POST
         req = requests.post(url, json=data)
         ### RECIBIENDO RESPUESTA
         response = json.loads(req.text)
+        _logger.info("Respuesta del WC: {}".format(response))
         ### SI SE ENCUENTRAN ERRORES
         if response['fail']:
           ### RECORRER LA LISTA DE ERRORES
