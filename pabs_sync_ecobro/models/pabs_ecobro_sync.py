@@ -197,7 +197,7 @@ class PABSEcobroSync(models.Model):
         way_payment = 3
       ### AGREGANDO INFORMACIÓN DE CONTRATO A LA LISTA
       contract_info.append({
-        'contratoID' : contract_id.ecobro_id or contract_id.id,
+        'contratoID' : int(contract_id.ecobro_id) or contract_id.id,
         'serie' : contract_id.name[0:3],
         'no_contrato' : contract_id.name[3:],
         'nombre' : contract_id.partner_name or '',
