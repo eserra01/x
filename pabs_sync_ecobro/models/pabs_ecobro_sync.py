@@ -71,7 +71,7 @@ class PABSEcobroSync(models.Model):
       'nombre' : employee_id.name,
       'serie' : debt_collector_id.receipt_series,
       'telefono' : employee_id.mobile_phone or "",
-      'cobradorID' : employee_id.ecobro_id or employee_id.id
+      'cobradorID' : int(employee_id.ecobro_id) or employee_id.id
       })
     ### MANEJADOR DE ERRORES
     try:
