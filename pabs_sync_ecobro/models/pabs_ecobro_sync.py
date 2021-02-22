@@ -203,7 +203,7 @@ class PABSEcobroSync(models.Model):
         'nombre' : contract_id.partner_name or '',
         'apellido_paterno' : contract_id.partner_fname or '',
         'apellido_materno' : contract_id.partner_mname or '',
-        'empresa' : '04',
+        'empresa' : '01',
         'calle' : contract_id.street_name_toll or '',
         'numero_exterior' : contract_id.street_number_toll or '',
         'colonia' : contract_id.toll_colony_id.name or '',
