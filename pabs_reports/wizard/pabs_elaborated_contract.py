@@ -7,8 +7,11 @@ class ContractsElaboratedW1zard(models.TransientModel):
   _name = 'pabs.elaborated.contract.wizard'
   _description = 'Corte de contratos elaborados'
 
-  date_contract = fields.Date(string = 'Fecha de corte de contratos',
+  date_contract = fields.Date(string = 'Fecha Inicio de Corte',
     default = fields.Date.today())
+
+  date_end = fields.Date(string = 'Fecha Final de Corte',
+    default=fields.Date.today())
 
   def get_contracts_per_day(self):
     ### VARIABLE DE DATOS PARA EL PICKING
@@ -23,7 +26,7 @@ class ContractsElaboratedW1zard(models.TransientModel):
 
       ### PARAMETROS DE BUSQUEDA EN LA FECHA
     start_date = '{} 00:00:00'.format(self.date_contract)
-    end_date = '{} 23:59:59'.format(self.date_contract)
+    end_date = '{} 23:59:59'.format(self.date_end)
 
     contract_ids = contract_obj.search([
           ('state','=','contract'),

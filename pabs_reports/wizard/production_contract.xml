@@ -10,8 +10,9 @@
             <field name="date_contract"/>
           </group>
           <group>
-            <center><h3>Corte de Contratos elaborados</h3></center><br/>
+            <field name="date_end"/>
           </group>
+          <center><h3>Corte de Contratos elaborados</h3></center><br/>
         </group>
         <footer>
           <button name="get_contracts_per_day" string="Imprimir" type="object" class="btn-primary"/>
