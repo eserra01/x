@@ -181,9 +181,11 @@ class PABSEcobroSync(models.Model):
     ### BUSCAR TODOS LOS CONTRATOS QUE NO ESTÉN EN ESTATUS CANCELADO, PAGADO Ó REALIZADO
     contract_ids = contract_obj.search([
       ('state','=','contract'),
-      ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO')),
-      ('name','!=','Nuevo Contrato'),
-      ('invoice_date','>','2021-02-14')])
+      ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO'),
+      ('invoice_date','>=','2021-02-15'))])
+
+    raise ValidationError((
+      "Numero de contratos: {}".format(len(contract_ids))))
     ### LISTA DE CONTRATOS VACÍA
     contract_info = []
     ### SI SE ENCONTRARÓN REGISTROS SE CICLARÁ
@@ -302,6 +304,7 @@ class PABSEcobroSync(models.Model):
       response = json.loads(req.text)
     except Exception as e:
       _logger.warning("Información recibida: {}".format(e))
+      return
     ### DECLARANDO ARRAY PARA LOS CORRECTOS
     done = []
     ### DECLARANDO ARRAY PARA CANCELADOS
@@ -325,14 +328,54 @@ class PABSEcobroSync(models.Model):
       collector_id = hr_employee_obj.search([
         '|',('ecobro_id','=',rec['no_cobrador']),
         ('id','=',rec['no_cobrador'])],limit=1)
+
       ### VALIDAMOS QUE HAYA ENCONTRADO UN COBRADOR
       if not collector_id:
         ### LO AGREGA A LAS LISTAS DE FAILS
         fails.append({
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
-          'detalle' : "No se pudo encontrar el cobrador para afectarlo en odoo"
+          'detalle' : "No se pudo encontrar el cobrador"
         })
+        continue
+
+      ### Validar que el recibo no esté afectado
+      ecobro_number = "{}{}".format(rec['serie_recibo'],rec['no_recibo'])
+      recibo_afectado = payment_obj.search([
+        ('Ecobro_receipt','=',ecobro_number),
+        ('state','in',['posted','sent','reconciled'])
+      ])
+
+      ### VERIFICAMOS LA CANTIDAD DE RECIBOS ENCONTRADOS
+      if len(recibo_afectado) > 1:
+        fail.append({
+          'afectacionID' : rec['afectacionID'],
+          'estatus' : 2,
+          'detalle' : "Se encontro {} recibos".format(len(recibo_afectado))
+          })
+
+      ### SI LO ENVIAN A AFECTAR Y YA SE ENCUENTRA AFECTADO ENVIA RESPUESTA COMO FAIL
+      if rec['status'] == 1:
+        if recibo_afectado:
+          done.append({
+            'afectacionID' : rec['afectacionID'],
+            'estatus' : 1,
+            'detalle' : "El recibo ya existe. No se realizo afectacion"
+          })
+          continue
+
+      ### SI LO ENVIAN A CANCELAR Y YA EXISTE EL MOVIMIENTO, LO CANCELA
+      elif rec['status'] == 7:
+        if recibo_afectado:
+          recibo_afectado.cancel()
+          done.append({
+            'afectacionID' : rec['afectacionID'],
+            'estatus' : 1,
+            'detalle' : "Se cancelo el recibo correctamente"
+          })
+          continue
+
+
       ### BUSCAMOS EL CONTRATO QUE SE CONCATENO
       contract_id = contract_obj.search([
         ('name', '=', contract_name)],limit=1)
@@ -342,7 +385,7 @@ class PABSEcobroSync(models.Model):
         fails.append({
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
-          'detalle' : "No se encontró el contrato para afectarlo en odoo"
+          'detalle' : "No se encontró el contrato"
         })
         ### CONTINUA CON EL SIGUIENTE REGISTRO
         continue
@@ -350,33 +393,44 @@ class PABSEcobroSync(models.Model):
       invoice_ids = contract_id.refund_ids.filtered(
         lambda x: x.type == 'out_invoice').sorted(
         key=lambda p: p.invoice_date)
+      ### SI NO HAY NINGUNA FACTURA
+      if not invoice_ids:
+        fails.append({
+          'afectacionID' : rec['afectacionID'],
+          'estatus' : 2,
+          'detalle' : "No se encontro la factura"
+        })
+        continue
+
+      ### Obtener el saldo del contrato
+      saldo = 0
+      for invoice_id in invoice_ids:
+        saldo = saldo + float(invoice_id.amount_residual)
+
+      ### Validar saldo del contrato
+      if saldo < float(rec['monto']):
+        message = "El Monto del recibo: '{}' es mayor que el saldo del contrato: '{}'".format(float(rec['monto']), saldo)
+        fails.append({
+          'afectacionID' : rec['afectacionID'],
+          'estatus' : 2,
+          'detalle' : message
+        })
+        continue
+
+      ##### PENDIENTE trabajar con mas de una factura #####
       ### SI EXISTE MÁS DE UN DOCUMENTO PARA AFECTAR
       if len(invoice_ids) >= 1:
         ### CICLAMOS LAS FACTURAS
         for invoice_id in invoice_ids:
-          ### SI EL RESTO DEL DOCUMENTO ES MAYOR O IGUAL QUE EL MONTO A PAGAR
-          if float(invoice_id.amount_residual) >= float(rec['monto']):
-            ### BUSCAMOS LA LINEA DONDE EL DEBITO SEA MAYOR QUE 0
-            line = invoice_id.line_ids.filtered(
-              lambda l: l.debit > 0)[0]
-            ### AGREGAMOS LA LINEA A RECONCILIAR
-            reconcile.update({'debit_move_id' : line.id})
-          else:
-            ### SI EL PAGO ES MAYOR QUE EL SALDO DEL DOCUMENTO, DEBE DE VOTARLO Y MANDARLO A LOS LOGS
-            message = "El contrato: '{}' es mayor que el monto afectar: '{}'".format(invoice_id.amount_residual,float(rec['monto']))
-            fails.append({
-              'afectacionID' : rec['afectacionID'],
-              'estatus' : 2,
-              'detalle' : message,
-            })
-          ### ROMPER CICLO
-          break
-      if float(invoice_id.amount_residual) < float(rec['monto']):
-        continue
+          ### BUSCAMOS LA LINEA DONDE EL DEBITO SEA MAYOR QUE 0
+          line = invoice_id.line_ids.filtered(
+            lambda l: l.debit > 0)[0]
+          ### AGREGAMOS LA LINEA A RECONCILIAR
+          reconcile.update({'debit_move_id' : line.id})
+
       ### LANZANDO NUMERO DE CONTRATO QUE ESTA SIENDO AFECTADO
       _logger.info("Número de Contrato: {}".format(contract_id.name))
       ### GENERANDO INFORMACIÓN PARA APLICAR EL PAGO
-      ecobro_number = "{}{}".format(rec['serie_recibo'],rec['no_recibo'])
       payment_data = {
         'payment_reference' : 'Sincronizado de Ecobro',
         'reference' : 'payment',
@@ -413,15 +467,13 @@ class PABSEcobroSync(models.Model):
         conciliation = self.reconcile_all(reconcile)
         if not conciliation:
           _logger.warning("no se concilió el pago y la factura")
-        ### SI SE CREO Y RECONCILIO CORRECTAMENTE SE AGREGA A LA LISTA "DONE"
-        done.append({
+          done.append({
           "afectacionID": rec['afectacionID'],
           "estatus":1,
-          "detalle" : "",
+          "detalle" : "Afectado Correctamente",
         })
-        ### SI EL ESTATÚS ES PARA CANCELAR EL PAGO PROCESADO PREVIAMENTE SE DEBERÁ CANCELAR
-        if rec['status'] == 7:
-          payment_id.cancel()
+        continue
+        
       ### SI HUBÓ ALGÚN PROBLEMA LO AGREGARÁ A FAIL
       except Exception as e:
         fails.append({
@@ -429,6 +481,25 @@ class PABSEcobroSync(models.Model):
           'estatus' : 2,
           #'detalle' : e,
           'detalle' : "No se pudo procesar"
+        })
+        continue
+      try:
+        ### SI EL ESTATÚS ES PARA CANCELAR EL PAGO PROCESADO PREVIAMENTE SE DEBERÁ CANCELAR
+        if rec['status'] == 7:
+          payment_id.cancel()
+          done.append({
+          "afectacionID": rec['afectacionID'],
+          "estatus":1,
+          "detalle" : "Cancelado Correctamente",
+        })
+        ### SI SE CREO Y RECONCILIO CORRECTAMENTE SE AGREGA A LA LISTA "DONE"
+        
+      except Exception as e:
+        fails.append({
+          'afectacionID' : rec['afectacionID'],
+          'estatus' : 2,
+          #'detalle' : e,
+          'detalle' : "No se pudo cancelar el pago"
         })
     ### AL FINALIZAR DE PROCESAR TODA LA INFORMACIÓN
 
@@ -441,7 +512,7 @@ class PABSEcobroSync(models.Model):
       ### ENVÍA AL LOG QUE NO SE PUDO CONFIGURAR LA URL
       _logger.warning("No se ha configurado ninguna IP de sincronización con ecobro")
     ### JUNTAMOS TODAS LAS PETICIONES PROCESADAS, TANTO LAS CORRECTAS COMO LAS FALLIDAS
-    result = done + fails
+    result = fails + done
     ### AGREGAMOS LAS RESPUESTAS A UN DICCIONARIO
     data_response = {'result' : result}
     try:
@@ -474,4 +545,3 @@ class PABSEcobroSync(models.Model):
     except Exception as e:
       self._cr.rollback()
       _logger.warning("Hubo un problema con la petición al webservice, mensaje: {}".format(e))
-
