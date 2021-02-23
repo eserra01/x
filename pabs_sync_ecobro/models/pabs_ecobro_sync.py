@@ -184,8 +184,6 @@ class PABSEcobroSync(models.Model):
       ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO')),
       ('invoice_date','>=','2021-02-15')])
 
-    raise ValidationError((
-      "Numero de contratos: {}".format(len(contract_ids))))
     ### LISTA DE CONTRATOS VACÍA
     contract_info = []
     ### SI SE ENCONTRARÓN REGISTROS SE CICLARÁ
