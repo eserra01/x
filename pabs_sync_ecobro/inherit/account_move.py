@@ -15,7 +15,7 @@ class AccountMove(models.Model):
       ('type','=','out_refund'),
       ('state','=','posted'),
       ('invoice_payment_ref','!=',False)])
-    move_ids.sorted(key=lambda r: r.invoice_payment_ref)
+    move_ids.sorted(key=lambda r: r.partner_id)
     last = False
     for move_id in move_ids:
       _logger.warning("El recibo: {} se esta procesando".format(move_id.invoice_payment_ref))
