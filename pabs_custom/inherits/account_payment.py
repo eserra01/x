@@ -60,24 +60,37 @@ class account_Payment(models.Model):
       res = super(account_Payment, self).post()
       context = self._context
       IdPago = self.id
-      CodigoCobrador = self.debt_collector_code.barcode
-      NumeroContrato = self.contract.id
-      MontoPago = self.amount or 0
-      if context.get('stationery'):
-        comission_tree_obj.CrearSalidasEnganche(
-          IdPago=IdPago, NumeroContrato=NumeroContrato, 
-          MontoPago=MontoPago, TipoPago='Papeleria')
-      elif context.get('excedent'):
-        comission_tree_obj.CrearSalidas(
-          IdPago=IdPago, NumeroContrato=NumeroContrato,
-          CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
-          EsExcedente=True)
-      else:
-        comission_tree_obj.CrearSalidas(
-          IdPago=IdPago, NumeroContrato=NumeroContrato,
-          CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
-          EsExcedente=False)
+      if self.contract:
+        CodigoCobrador = self.debt_collector_code.barcode
+        NumeroContrato = self.contract.id
+        MontoPago = self.amount or 0
+        if context.get('stationery'):
+          comission_tree_obj.CrearSalidasEnganche(
+            IdPago=IdPago, NumeroContrato=NumeroContrato, 
+            MontoPago=MontoPago, TipoPago='Papeleria')
+        elif context.get('excedent'):
+          comission_tree_obj.CrearSalidas(
+            IdPago=IdPago, NumeroContrato=NumeroContrato,
+            CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
+            EsExcedente=True)
+        else:
+          comission_tree_obj.CrearSalidas(
+            IdPago=IdPago, NumeroContrato=NumeroContrato,
+            CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
+            EsExcedente=False)
       return res
+      
+
+    def cancel(self):
+      comission_tree_obj = self.env['pabs.comission.tree']
+      res = super(account_Payment, self).cancel()
+      IdPago = self.id
+      if self.contract:
+        NumeroContrato = self.contract.id
+        comission_tree_obj.RevertirSalidas(
+          IdPago=IdPago,NumeroContrato=NumeroContrato)
+      return res
+
     #Fields mortuary
 
     binnacle =fields.Many2one(comodel_name = 'pabs.mortuary',string= "Número de bitácora")
