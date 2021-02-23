@@ -242,13 +242,13 @@ class PABSContracts(models.Model):
     pabs_bonus_obj = self.env['pabs.bonus']
     for rec in self:
       rec.amount_received = (rec.initial_investment - rec.comission) or 0
-      """product_id = rec.name_service
+      product_id = rec.name_service
       rec.investment_bond = 0
       bonus = pabs_bonus_obj.search([
         ('plan_id','=',product_id.id)], order="min_value")
       for bon_rec in bonus:
         if rec.initial_investment >= bon_rec.min_value and rec.initial_investment <= bon_rec.max_value:
-          rec.investment_bond = bon_rec.bonus"""
+          rec.investment_bond = bon_rec.bonus
 
   ### Calculo de RFC con la información cargada
   @api.onchange('partner_name','partner_fname','partner_mname','birthdate')
@@ -304,7 +304,6 @@ class PABSContracts(models.Model):
     if not vals.get('activation_code'):
       vals['activation_code'] = self.env['ir.sequence'].next_by_code(
         'pabs.contracts')
-      
       ### Se cambia el estado del registro a "Pre-Contrato"
     partner_id = self.create_partner(vals)
     vals['partner_id'] = partner_id.id
@@ -683,8 +682,8 @@ class PABSContracts(models.Model):
         if not pricelist_id:
           raise ValidationError((
             "No se encontró una secuencia"))
-        #contract_name = pricelist_id.sequence_id._next()
-        #previous.name = contract_name
+        contract_name = pricelist_id.sequence_id._next()
+        previous.name = contract_name
         if not previous.partner_id:
           raise ValidationError((
             "No tiene un cliente ligado al contrato"))
@@ -784,7 +783,7 @@ class PABSContracts(models.Model):
 
         #Asignar asistente de venta PRODUCCION
         vals['sale_employee_id'] = previous.employee_id
-        #vals['invoice_date'] = fields.Date.today()
+        vals['invoice_date'] = fields.Date.today()
 
         previous.write(vals)
         invoice_id = self.create_invoice(previous)
@@ -1163,7 +1162,7 @@ class PABSContracts(models.Model):
     contract_obj = self.env['pabs.contract']
     contract_ids = contract_obj.search([
       ('state','=','precontract'),
-      ('name','!=',"Nuevo Contrato")],limit=400,order="name")
+      ('invoice_date','<','2021-02-15')],limit=400,order="name")
     for contract_id in contract_ids:
       lot_id = contract_id.lot_id.id
       _logger.warning('El contrato {}'.format(lot_id))
