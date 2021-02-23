@@ -182,7 +182,7 @@ class PABSEcobroSync(models.Model):
     contract_ids = contract_obj.search([
       ('state','=','contract'),
       ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO')),
-      ('invoice_date','>=','15-02-2021')])
+      ('invoice_date','>=','2021-02-15')])
 
     raise ValidationError((
       "Numero de contratos: {}".format(len(contract_ids))))
