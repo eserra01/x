@@ -407,7 +407,7 @@ class PABSEcobroSync(models.Model):
 
       ### Validar saldo del contrato
       if saldo < float(rec['monto']):
-        message = "El Monto del recibo: '{}' es mayor que el saldo del contrato: '{}'".format(float(rec['monto']), saldo)
+        message = "El Monto del recibo: {} es mayor que el saldo del contrato: {}".format(float(rec['monto']), saldo)
         fails.append({
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
@@ -463,14 +463,19 @@ class PABSEcobroSync(models.Model):
         reconcile.update({'payment' : payment_line.id})
         ### EJECUTAMOS LA CONCILIACIÓN
         conciliation = self.reconcile_all(reconcile)
-        if not conciliation:
+        if conciliation:
+          done.append({
+            "afectacionID": rec['afectacionID'],
+            "estatus":1,
+            "detalle" : "Afectado Correctamente",
+          })
+        else:
           _logger.warning("no se concilió el pago y la factura")
           done.append({
-          "afectacionID": rec['afectacionID'],
-          "estatus":1,
-          "detalle" : "Afectado Correctamente",
-        })
-        continue
+            "afectacionID": rec['afectacionID'],
+            "estatus":1,
+            "detalle" : "Afectado sin conciliar",
+          })
         
       ### SI HUBÓ ALGÚN PROBLEMA LO AGREGARÁ A FAIL
       except Exception as e:
@@ -499,6 +504,8 @@ class PABSEcobroSync(models.Model):
           #'detalle' : e,
           'detalle' : "No se pudo cancelar el pago"
         })
+      ### SE TERMINA LA ITERACIÓN DE LOS PAGOS
+      
     ### AL FINALIZAR DE PROCESAR TODA LA INFORMACIÓN
 
     ### BUSCAMOS LA URL PARA ACTUALIZAR LOS PAGOS
