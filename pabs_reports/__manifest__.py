@@ -12,6 +12,7 @@
   'data': [
     'wizard/production_contract.xml',
     'wizard/pabs_daily_helps_wizard.xml',
+    'wizard/pabs_acumulated_report_wizard.xml',
     'views/menus.xml',
     'reports/elaborated_contracts.xml'
     
