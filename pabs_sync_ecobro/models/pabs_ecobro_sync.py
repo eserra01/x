@@ -324,8 +324,7 @@ class PABSEcobroSync(models.Model):
       contract_name = "{}{}".format(rec['serie'],rec['no_contrato'])
       ### BUSCAR EL COBRADOR
       collector_id = hr_employee_obj.search([
-        '|',('ecobro_id','=',rec['no_cobrador']),
-        ('id','=',rec['no_cobrador'])],limit=1)
+        ('ecobro_id','=',rec['no_cobrador'])],limit=1)
 
       ### VALIDAMOS QUE HAYA ENCONTRADO UN COBRADOR
       if not collector_id:
