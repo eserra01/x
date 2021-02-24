@@ -323,6 +323,7 @@ class PABSEcobroSync(models.Model):
       ### CONCATENAR LA SERIE CON EL NUMERO DE CONTRATO
       contract_name = "{}{}".format(rec['serie'],rec['no_contrato'])
       ### BUSCAR EL COBRADOR
+      _logger.info("El cobrador fue: {}".format(rec['no_cobrador']))
       collector_id = hr_employee_obj.search([
         ('ecobro_id','=',rec['no_cobrador'])],limit=1)
 
