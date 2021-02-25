@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.comisiones_por_recuperar">
+        <t t-call="web.html_container">
+        <t t-call="web.basic_layout">
+            <div class="page">
+                <style type="text/css">
+                    .border_btn_abj {border-bottom: 1px solid black;}
+
+                    .dato_bold{
+                        text-align: left; 
+                        font-weight: bold;
+                        text-decoration: underline;
+                    }
+
+                    .dato_centrado{
+                        text-align: center;
+                    }
+
+                    td {
+                        font-size: 10pt;
+                    }
+
+                    <!-- table, th, td {
+                        border: 1px solid black;
+                    } -->
+                </style>
+
+                <!-- ENCABEZADO -->
+                <table width="100%" cellspacing="0" cellpadding="0">
+                    <thead>
+                        <th width="20%" rowspan="3" aling="top">
+                                <img src="xmarts_funeraria/static/description/image.png" 
+                                    style="width:60%; display: block; margin-left: auto; margin-right: auto;" height="auto"/>
+                        </th>
+                        <th width="60%" class="text-center" aling="top" colspan="5">
+                            <h4><strong>
+                                PABS - Programa de Apoyo De Beneficio Social <br/>
+                                COMISIONES POR RECUPERAR
+                            </strong></h4>
+                        </th>
+                        <tr>
+                            <th width="7%" height="70px"></th>
+                            <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>PERIODO DE: <div t-esc="fecha_inicio"></div></strong></th>
+                            <th width="5%" height="70px"></th>
+                            <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>HASTA: <div t-esc="fecha_final"></div></strong></th>
+                            <th width="18%" height="70px"></th>
+                        </tr>
+                    </thead>
+                </table>
+                <br/>
+
+                <!-- NOMBRES DE COLUMNAS -->
+                <table width="100%">
+                    <thead>
+                        <tr>
+                            <th style="border: none;"  class="dato_bold">Fecha<br/>contrato</th>
+                            <th style="border: none;"  class="dato_bold">Contrato</th>
+                            <th style=" border: none;"  class="dato_bold">Cliente</th>
+                            <th style=" border: none;"  class="dato_bold">Colonia</th>
+                            <!-- <th st 24%; border: none;" class="dato_bold" >Localidad</th> -->
+                            <th style="border: none;" class="dato_bold">Telefono</th>
+                            <th style=" border: none;" class="dato_bold">Cobrador</th>
+                            <th style="border: none;" class="dato_bold">Cargo</th>
+                            <th style="border: none; text-align: center;" class="dato_bold">Comisión<br/>correspondiente</th>
+                            <th style="border: none; text-align: center;" class="dato_bold">Comisión<br/>Pagada</th>
+                            <th style="border: none; text-align: center;" class="dato_bold">Comisión<br/>por pagar</th>
+                            <th style=" border: none;" class="dato_bold">Motivo</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- ASISTENTE -->
+                        <t t-foreach="lista_asistentes" t-as="asistente">
+                            
+                            <!-- ESTATUS -->
+                            <t t-foreach="asistente.get('estatus_contratos')" t-as="estatus">
+
+                                <tr>
+                                    <td colspan="11" style="border-bottom: 1px solid black; font-weight: bold;">Promotor: 
+                                        <span t-esc="asistente.get('codigo_asistente')"/> - 
+                                            <span t-esc="asistente.get('asistente')"/> - Estatus:
+                                                <span t-esc="estatus.get('estatus')"/></td>
+                                </tr>
+
+                                <!-- CONTRATOS -->
+                                <t t-foreach="estatus.get('contratos')" t-as="contrato">
+                                    <tr>
+                                        <td><span t-esc="contrato.get('fecha_contrato')"/></td>
+                                        <td><span t-esc="contrato.get('contrato')"/></td>
+                                        <td><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 60mm" t-esc="contrato.get('cliente')"/></td>
+                                        <td><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 40mm" t-esc="contrato.get('colonia')"/></td>
+                                        <td><span t-esc="contrato.get('telefono')"/></td>
+                                        <td><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 60mm" t-esc="contrato.get('cobrador')"/></td>
+                                        <td><span t-esc="contrato.get('cargo')"/></td>
+                                        <td style="text-align: center;">$<span t-esc="contrato.get('comision_correspondiente')"/></td>
+                                        <td style="text-align: center;">$<span t-esc="contrato.get('comision_pagada')"/></td>
+                                        <td style="text-align: center;">$<span t-esc="contrato.get('comision_por_pagar')"/></td>
+                                        <td><span t-esc="contrato.get('motivo')"/></td>
+                                    </tr>
+                                </t>
+
+                                <!-- TOTAL POR ESTATUS -->
+                                <tr>
+                                    <td colspan="7"></td>
+                                    <td colspan="2" style="text-align: right;"> <strong>Total por pagar:&amp;nbsp;</strong></td>
+                                    <td style="border-top-style: solid; text-align: center;">$<strong><span t-esc="estatus.get('total_por_pagar')"/></strong></td>
+                                </tr>
+                                
+                            </t>
+                        </t>
+                        <!-- FIN CODIGOS -->
+
+                    </tbody>
+                </table><br/><br/><br/>
+            </div>
+        </t>
+        </t>
+    	</template>
+
+  </data>
+
+	<record id="paperformat_comisiones_por_recuperar" model="report.paperformat">
+    <field name="name">Papel comisiones por recuperar</field>
+    <field name="default" eval="True"/>
+    <field name="format">Letter</field>
+    <field name="page_height">0</field>
+    <field name="page_width">0</field>
+    <field name="orientation">Landscape</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">10</field>
+    <field name="margin_left">10</field>
+    <field name="margin_right">10</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">130</field>
+ </record>
+
+	<report
+    string="Comisiones por recuperar"
+    id="id_comisiones_por_recuperar"
+    model='sale.order'
+    name="xmarts_funeraria.comisiones_por_recuperar"
+    file="xmarts_funeraria.comisiones_por_recuperar"
+    report_type="qweb-pdf"
+    print_report_name="'Promotores'"
+    paperformat="xmarts_funeraria.paperformat_comisiones_por_recuperar"
+  />
+
+</odoo>

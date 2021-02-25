@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <odoo>
-  <data>
-      <template id="xmarts_funeraria.estado_cuenta">
+	<data>
+    	<template id="xmarts_funeraria.estado_cuenta">
         <t t-call="web.html_container">
         <t t-call="web.basic_layout">
         <t t-foreach="docs" t-as="doc">
@@ -56,7 +56,7 @@
               </tr>
               <tr>
                 <td><ins><strong>Domicilio:</strong></ins></td>
-                <td><t t-esc="doc.street_name_toll "/>&amp;nbsp;<t t-esc="doc.street_number_toll"/></td>
+                <td><t t-esc="doc.street_name_toll"/>&amp;nbsp;<t t-esc="doc.street_number_toll"/></td>
                 <td colspan="2"><ins><strong>Importe de Pago Actual:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
                 <td><t t-esc="doc.payment_amount"/></td>
               </tr>
@@ -172,11 +172,11 @@
         </t>
         </t>
         </t>
-      </template>
+    	</template>
 
   </data>
 
-  <record id="paperformat_estado_cuenta" model="report.paperformat">
+	<record id="paperformat_estado_cuenta" model="report.paperformat">
     <field name="name">Estado de cuentat</field>
     <field name="default" eval="True"/>
     <field name="format">Letter</field>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_wizar_report_payroll" model="ir.ui.view">
-        <field name="name">Reporte ingresos y egresos</field>
-        <field name="model">report.pabs.ing.egre</field>
+    <record id="wizard_historial_ventas" model="ir.ui.view">
+        <field name="name">Historial de ventas</field>
+        <field name="model">report.pabs.historial.ventas</field>
         <field name="arch" type="xml">
             <form string="Choose The Details">
                 <group>
@@ -20,19 +20,19 @@
         </field>
     </record>
 
-    <record id="action_payroll_ing_egre" model="ir.actions.act_window">
-            <field name="name">Reporte ingresos y egresos</field>
-            <field name="res_model">report.pabs.ing.egre</field>
+    <record id="action_wizard_historial_ventas" model="ir.actions.act_window">
+            <field name="name">Historial de ventas </field>
+            <field name="res_model">report.pabs.historial.ventas</field>
             <field name="view_mode">form</field>
-            <field name="view_id" ref="view_wizar_report_payroll"/>
+            <field name="view_id" ref="wizard_historial_ventas"/>
             <field name="target">new</field>
     </record>
 
 
-    <menuitem id="menu_root_payroll" 
-        name="Reporte ingresos y egresos" 
+    <menuitem id="menu_root_historial_ventas" 
+        name="Historial de ventas" 
         parent="xmarts_funeraria.report_root_menu" 
-        sequence="2" 
-        action="action_payroll_ing_egre"/>
+        sequence="4" 
+        action="action_wizard_historial_ventas"/>
 
 </odoo>

@@ -37,8 +37,9 @@ class ReportCarnetPagoRango(models.AbstractModel):
             contract_ids = self.env['pabs.contract'].search([
                 ('state','=','contract'),
                 ('name','>=',initial_contract),
-                ('name','<=',final_contract)
-            ],order="name")
+                ('name','<=',final_contract)], 
+                    order="name"
+            )
         else:
             raise ValidationError("Elige el contrato inicial y el contrato final")
 

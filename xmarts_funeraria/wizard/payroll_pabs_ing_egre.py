@@ -1,6 +1,7 @@
 from datetime import datetime
 from odoo import models, fields, api
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT as DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT as DATETIME_FORMAT
+from odoo.exceptions import ValidationError
 
 class ReportWizardINGEGR(models.TransientModel):
     _name = 'report.pabs.ing.egre'
@@ -34,116 +35,192 @@ class ReportAttendanceRecapINGEGRE(models.AbstractModel):
         date_start = data['form']['date_start']
         date_end = data['form']['date_end']
 
-        #Consultar todos los pagos realizados entre dos fechas
-        payment = self.env['account.payment'].search([
-                    ('payment_date', '>=', date_start),
-                    ('payment_date', '<=', date_end),
-                ])
+### INGRESOS
 
-        docs = [] #Lista de registro de ingresos
-        docse = [] #Lista de registro de egresos
-        exend = 0 #Total de ingresos por excedente
-        amount_total = 0 #Total de ingresos
-        exend_e = 0 #Total de egresos por fideicomiso
-        amount_total_e = 0 #Total de egresos
-        comisi = [] #Lista de id de comisionistas
-        do = [] #Lista de información del comisionista
+        # [
+        #     {
+        #         'codigo_cobrador': 'C0001',
+        #         'cobrador': 'Andres Andrade',
+        #         'ingresos': 1500
+        #     },
+        #     {
+        #         'codigo_cobrador': 'C0002',
+        #         'cobrador': 'Bernardo Benitez',
+        #         'cantidad_ingresos': 3000
+        #     },
+        # ]
 
-        if payment:
-            c = []
-        ### INGRESOS
-            for p in payment:
-                #Si el pago es de tipo Excedente sumar el monto a la variable de Total de ingresos por excedente y a la variable de Total de ingresos
-                if p.reference == 'surplus':
-                    exend += p.amount
-                    amount_total += p.amount
+        #Consultar todos los pagos realizados entre dos fechas con estatus válido
+        pagos = self.env['account.payment'].search([
+            ('payment_date', '>=', date_start), ('payment_date', '<=', date_end), 
+            ('state', 'in', ['posted','sent','reconciled']), 
+            ('reference','in',['payment', 'surplus'])
+        ])
 
-                #Si el pago pertenece a un cobrador (que tenga código) añadirlo a una lista
-                if p.debt_collector_code:
-                    c.append(p.debt_collector_code.id)
+        ingresos_lista_cobradores = []
+        ingresos_sin_clasificar = []
+        total_ingresos = 0
 
-            cobrador = set(c)
-            if cobrador:
-                #Iterar en la lista de cobradores
-                for c in cobrador:
-                    #Consultar los pagos de un cobrador
-                    cobra = self.env['account.payment'].search([('payment_date', '>=', date_start),('payment_date', '<=', date_end),('debt_collector_code', '=', c)])                   
-                    
-                    amount = 0
-                    if cobra:
-                        #Iterar en cada pago
-                        for co in cobra:
-                            #Si el pago es de tipo Abono sumar el monto a la variable de Total del cobrador y a la variable de Total de ingresos
-                            if co.reference == 'payment':
-                                amount_total += co.amount
-                                amount += co.amount
-                            print("----cobra--------",amount,"-----cobra-----",co.amount,"--------------",co.debt_collector_code.name,"--------------",co.name)
-                    
-                    #Consultar los datos del cobrador
-                    cobrador = self.env['account.payment'].search([('payment_date', '>=', date_start),('payment_date', '<=', date_end),('debt_collector_code', '=', c)],limit=1)                   
+    ### INGRESOS SIN CLASIFICAR (Pagos sin cobrador)
+        #Obtener los excedentes y los pagos que no tengan cobrador
+        pagos_sin_cobrador = pagos.filtered_domain([('debt_collector_code','=',False)])
 
-                    print("------------",amount,"----------",cobrador.name)
-                    for pay in cobrador:
-                        if pay.reference == 'payment':
-                            #Agregar el código, nombre y monto del primer recibo del cobrador a una lista
-                            docs.append({
-                                'Ecobro_receipt': pay.debt_collector_code.barcode,
-                                'debt_collector_code': pay.debt_collector_code.name,
-                                'amount': amount,
-                            })
-        ### EGRESOS
-            #Iterar en las salidas de comisiones de cada pago
-            for com in payment.comission_output_ids:
-                if com.actual_commission_paid > 0:
-                    #Si la salida le corresponde a Fideicomiso sumar el monto a la variable Total de egresos por fideicomiso y a la variable Total de egresos
-                    if com.job_id.name == 'FIDEICOMISO':
-                        exend_e += com.actual_commission_paid
-                        amount_total_e += com.actual_commission_paid
+        cantidad_surplus = 0
+        cantidad_payment = 0
+        for pago in pagos_sin_cobrador:
+            #Calcular pago por excedente
+            if pago.reference == 'surplus':
+                cantidad_surplus = cantidad_surplus + pago.amount
+            #Calcular pagos normales
+            elif pago.reference == 'payment':
+                cantidad_payment = cantidad_payment + pago.amount
 
-                    if com.job_id.name != 'FIDEICOMISO':
-                        #Ingresar el id del comisionista a una lista
-                        comisi.append(com.comission_agent_id.id)
+        if cantidad_surplus > 0:
+            total_ingresos = total_ingresos + cantidad_surplus
 
-                        #Agregar el código, nombre y comisión real pagada del comisionista a una lista
-                        do.append({
-                            'Ecobro_receipt': com.comission_agent_id.barcode,
-                            'debt_collector_code': com.comission_agent_id.name,
-                            'amount': com.actual_commission_paid,
-                        })
-     
-            comision = set(comisi)
-            if comision:
-                #Iterar en la lista de ids de comisionistas
-                for c in comision:
-                    
-                    #Consultar todas las salidas de comisión generadas para el empleado
-                    comm = self.env['pabs.comission.output'].search([('create_date', '>=', date_start),('create_date', '<=', date_end),('comission_agent_id', '=', c),('actual_commission_paid','>', 0)],limit=1)                   
-                    
-                    #Iterar en cada salida de comisión
-                    for cc in comm:
-                        if cc.job_id.name != 'FIDEICOMISO':
-                            amount = 0
+            ingresos_sin_clasificar.append({
+                'codigo_cobrador':'',
+                'cobrador':'COBRANZA EXD. INV.',
+                'cantidad_ingresos': cantidad_surplus
+            })
 
-                            #Iterar en cada comisionista de la lista y sumar el monto a la variable Total de egresos del comisionista y la variable Total de egresos
-                            for comis in do:
-                                if comis["Ecobro_receipt"] == cc.comission_agent_id.barcode:
-                                    amount_total_e += float(comis["amount"])
-                                    amount += float(comis["amount"])
+        if cantidad_payment > 0:
+            total_ingresos = total_ingresos + cantidad_payment
 
-                            #Ingresar los datos del comisionista a la lista de Egresos
-                            docse.append({
-                                'Ecobro_receipt': cc.comission_agent_id.barcode,
-                                'debt_collector_code': cc.comission_agent_id.name,
-                                'amount': amount,})
+            ingresos_sin_clasificar.append({
+                'codigo_cobrador':'',
+                'cobrador':'SIN COBRADOR',
+                'cantidad_ingresos': cantidad_payment
+            })
 
-        #Retornar datos
+    ### INGRESOS CLASIFICADOS (Pagos con cobrador)
+        #Obtener el cobrador único todos los pagos y ordenar por nombre
+        cobradores = pagos.mapped(lambda pago: pago.debt_collector_code) #Nota: no envia el cobrador Null
+        cobradores = cobradores.sorted(key=lambda cob: cob.name)
+
+        for cobrador in cobradores:
+            #Filtrar los pagos, dejar solo los de los empleados en turno
+            pagos_cobrador = pagos.filtered_domain([('debt_collector_code','=',cobrador.id), ('reference','=','payment')])
+
+            cantidad_cobrador = 0
+            for pago in pagos_cobrador:
+                cantidad_cobrador = cantidad_cobrador + pago.amount
+
+            total_ingresos = total_ingresos + cantidad_cobrador
+
+            ingresos_lista_cobradores.append({
+                'codigo_cobrador': cobrador.barcode,
+                'cobrador': cobrador.name,
+                'cantidad_ingresos': cantidad_cobrador
+            })
+
+        #raise ValidationError("{}".format(ingresos_lista_cobradores))
+
+### EGRESOS
+        # [
+        #     {
+        #         'codigo_comisionista': 'P0001',
+        #         'cargos': 
+        #         [
+        #             {
+        #                 'nombre_comisionista': 'Maria Morales (Asistente)',
+        #                 'cantidad_egresos': 500
+        #             },
+        #             {
+        #                 'nombre_comisionista': 'Maria Morales (Coordinador)',
+        #                 'cantidad_egresos': 1000
+        #             },
+        #         ]
+        #     },
+        #     { 'codigo_comisionista': 'P0002', ...}
+        # ]
+
+        egresos_lista_comisionistas = []
+        egresos_sin_clasificar = {} #SOLO FIDEICOMISO
+        total_egresos = 0
+
+        #Consultar id de cargo papeleria
+        cargo_papeleria = self.env['hr.job'].search([('name','=','PAPELERIA')])
+
+        #Consultar las salidas entre dos fechas
+        salidas = self.env['pabs.comission.output'].search([
+            ('payment_date', '>=', date_start), 
+            ('payment_date', '<=', date_end),
+            ('payment_status', 'in', ['posted','sent','reconciled']),
+            ('actual_commission_paid', '>', 0),
+            ('job_id', 'not in', [cargo_papeleria.id])
+            ]
+        )
+
+        # Validar que todas las salidas tengan un empleado que comisiona
+        lista_salidas_error = ""
+        for pago in salidas:
+            if not pago.comission_agent_id:
+                lista_salidas_error = "No se tiene un empleado asignado a la salida de comisiones en el recibo {}\n".format(pago.Ecobro_receipt)
+
+        if lista_salidas_error != "":
+            raise ValidationError(lista_salidas_error)
+
+        ### EGRESOS SIN CLASIFICAR (Fideicomiso)
+        #Filtrar las salidas por cargo de fideicomiso
+        cargo_fideicomiso = self.env['hr.job'].search([('name','=','FIDEICOMISO')])
+
+        salidas_fideicomiso = salidas.filtered_domain([('job_id','=',cargo_fideicomiso.id)])
+
+        total_fideicomiso = 0
+        for salida in salidas_fideicomiso:
+            total_fideicomiso = total_fideicomiso + salida.actual_commission_paid
+
+        total_egresos = total_egresos + total_fideicomiso
+        egresos_sin_clasificar.update({'codigo_comisionista': '', 'nombre_comisionista': 'FIDEICOMISO', 'cantidad_egresos':total_fideicomiso} )
+
+        ### EGRESOS CLASIFICADOS
+        #Quitar el cargo de fideicomiso al recordset de salidas
+        salidas_comisionistas = salidas.filtered_domain([('job_id', '!=', cargo_fideicomiso.id)])
+
+        #Obtener el comisionista único de todas las salidas y ordenar por codigo
+        codigos_unicos = salidas_comisionistas.mapped(lambda salida: salida.comission_agent_id)
+        codigos_unicos = codigos_unicos.sorted(key=lambda salida: salida.barcode)
+
+        for emp in codigos_unicos:
+
+            # Filtrar las salidas por código de empleado
+            salidas_por_codigo = salidas_comisionistas.filtered_domain([('comission_agent_id','=',emp.id)])
+
+            #Obtener los cargos únicos para todas las salidas del empleado
+            cargos_de_salidas = salidas_por_codigo.mapped(lambda salida: salida.job_id)
+
+            registro_empleado = {}
+            registro_empleado.update({'codigo_comisionista': emp.barcode})
+
+            cargos = []
+            for cargo in cargos_de_salidas:
+                #Filtrar las salidas por cargo
+                salidas_por_cargo = salidas_por_codigo.filtered_domain([('job_id','=',cargo.id)])
+                
+                nombre_comisionista = "{} - ({})".format(emp.name, cargo.name)
+                total_cargo = 0
+                for salida in salidas_por_cargo:
+                    total_cargo = total_cargo + salida.actual_commission_paid
+
+                cargos.append({'nombre_comisionista': nombre_comisionista, 'cantidad_egresos':total_cargo})
+                total_egresos = total_egresos + total_cargo
+                #Fin de iteración por cargos de un empleado
+
+            registro_empleado.update({'cargos': cargos})
+            egresos_lista_comisionistas.append(registro_empleado)
+            #Fin de iteración por códigos
+
+        #raise ValidationError("{}".format(egresos_lista_comisionistas))
+
+        ### ENVIAR DATOS ###
         return {
-            'amount_total': amount_total,       #Total de ingresos
-            'amount_total_e': amount_total_e,   #Total de egresos
-            'exend': exend,                     #Total de ingresos por Excedente de inversión inicial
-            'exend_e': exend_e,                 #Total de egresos por Excedente de inversión inicial???
-            'date_start': date_start,           #Fecha inicial
-            'date_end': date_end,               #Fecha final
-            'docs': docs,                       #Registros de ingreso
-            'docse': docse,                     #Registros de egreso
+            'fecha_inicio':     date_start,
+            'fecha_final':      date_end,
+            'lista_ingresos_sin_clasificar':   ingresos_sin_clasificar,
+            'lista_ingresos':   ingresos_lista_cobradores,
+            'total_ingresos':   total_ingresos,
+            'lista_egresos':    egresos_lista_comisionistas,
+            'egresos_fideicomiso': egresos_sin_clasificar,
+            'total_egresos':    total_egresos
         }

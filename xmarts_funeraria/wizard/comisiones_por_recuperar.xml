@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_wizar_report_payroll" model="ir.ui.view">
-        <field name="name">Reporte ingresos y egresos</field>
-        <field name="model">report.pabs.ing.egre</field>
+    <record id="wizard_comisiones_por_recuperar" model="ir.ui.view">
+        <field name="name">Comisiones por recuperar</field>
+        <field name="model">report.pabs.comisiones.por.recuperar</field>
         <field name="arch" type="xml">
             <form string="Choose The Details">
                 <group>
@@ -20,19 +20,19 @@
         </field>
     </record>
 
-    <record id="action_payroll_ing_egre" model="ir.actions.act_window">
-            <field name="name">Reporte ingresos y egresos</field>
-            <field name="res_model">report.pabs.ing.egre</field>
+    <record id="action_wizard_comisiones_por_recuperar" model="ir.actions.act_window">
+            <field name="name">Comisiones por recuperar </field>
+            <field name="res_model">report.pabs.comisiones.por.recuperar</field>
             <field name="view_mode">form</field>
-            <field name="view_id" ref="view_wizar_report_payroll"/>
+            <field name="view_id" ref="wizard_comisiones_por_recuperar"/>
             <field name="target">new</field>
     </record>
 
 
-    <menuitem id="menu_root_payroll" 
-        name="Reporte ingresos y egresos" 
+    <menuitem id="menu_root_comisiones_por_recuperar" 
+        name="Comisiones por recuperar" 
         parent="xmarts_funeraria.report_root_menu" 
-        sequence="2" 
-        action="action_payroll_ing_egre"/>
+        sequence="3" 
+        action="action_wizard_comisiones_por_recuperar"/>
 
 </odoo>

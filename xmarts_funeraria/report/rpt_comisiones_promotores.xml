@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.comisiones_promotores">
+        <t t-call="web.html_container">
+        <t t-call="web.basic_layout">
+            <div class="page">
+                <style type="text/css">
+                    .border_btn_abj {border-bottom: 1px solid black;}
+
+                    .dato_bold{
+                        text-align: center; 
+                        font-weight: bold;
+                    }
+
+                    .dato_centrado{
+                        text-align: center
+                    }
+
+                    <!-- table, th, td {
+                        border: 1px solid black;
+                    } -->
+                </style>
+
+                <!-- ENCABEZADO -->
+                <table width="100%" cellspacing="0" cellpadding="0">
+                    <thead>
+                        <th width="20%" rowspan="3" aling="top">
+                                <img src="xmarts_funeraria/static/description/image.png" 
+                                    style="width:100%; display: block; margin-left: auto; margin-right: auto;" height="auto"/>
+                        </th>
+                        <th width="60%" class="text-center" aling="top" colspan="5">
+                            <h4><strong>
+                                PABS - Programa de Apoyo De Beneficio Social <br/>
+                                DETALLE DE EGRESOS
+                            </strong></h4>
+                        </th>
+                        <tr>
+                            <th width="7%" height="70px"></th>
+                            <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>PERIODO DE: <div t-esc="fecha_inicio"></div></strong></th>
+                            <th width="5%" height="70px"></th>
+                            <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>HASTA: <div t-esc="fecha_final"></div></strong></th>
+                            <th width="18%" height="70px"></th>
+                        </tr>
+                    </thead>
+                </table>
+                <br/>
+
+                <!-- NOMBRES DE COLUMNAS -->
+                <table width="100%">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%; border: none;"  class="dato_bold">Fecha<br/>Recibo</th>
+                            <th style="width: 10%; border: none;"  class="dato_bold">Fecha<br/>Oficina</th>
+                            <th style="width: 10%; border: none;"  class="dato_bold">Contrato</th>
+                            <th style="width: 10%; border: none;"  class="dato_bold">Recibo</th>
+                            <th style="width: 24%; border: none;" class="dato_bold">Cliente</th>
+                            <th style="width: 12%; border: none;" class="dato_bold">Importe</th>
+                            <th style="width: 12%; border: none;" class="dato_bold">Comisión<br/>Cobrador</th>
+                            <th style="width: 12%; border: none;" class="dato_bold">Comisión</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- CODIGO -->
+                        <t t-foreach="codigos" t-as="codigo">
+                            
+                            <!-- PLAN - ASISTENTE -->
+                            <t t-foreach="codigo.get('planes')" t-as="plan">
+                                <tr>
+                                    <td colspan="8" style="border-bottom: 1px solid black; font-weight: bold;">Promotor: <span t-esc="plan.get('asistente_plan')" /></td>
+                                </tr>
+
+                                <!-- <tr><td colspan="8"><hr style="border: 1px solid black;"/></td></tr> -->
+
+                                <!-- COBRADORES -->
+                                <t t-foreach="plan.get('cobradores')" t-as="cobrador">
+                                    
+                                    <!-- PAGOS -->
+                                    <t t-foreach="cobrador.get('pagos')" t-as="pago">
+                                        <tr>
+                                            <td class="dato_centrado"><div t-esc="pago.get('fecha_recibo')"></div></td>
+                                            <td class="dato_centrado"><div t-esc="pago.get('fecha_oficina')"></div></td>
+                                            <td class="dato_centrado"><div t-esc="pago.get('contrato')"></div></td>
+                                            <td class="dato_centrado"><div t-esc="pago.get('recibo')"></div></td>
+                                            <td><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%" 
+                                                    t-esc="pago.get('cliente')"></div></td>
+                                            <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('importe'))"></span></td>
+                                            <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_cobrador'))"></span></td>
+                                            <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_asistente'))"></span></td>
+                                        </tr>
+                                    </t>
+                                    <!-- FIN PAGOS -->
+
+                                    <!-- subtotales por cobrador -->
+                                    <tr>
+                                        <td></td>
+                                        <td colspan="2" style="font-weight: bold;">Comisión cobrador:</td>
+                                        <td colspan="3" style="font-weight: bold; "><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%" 
+                                                t-esc="cobrador.get('cobrador')"></div></td>
+                                        <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(cobrador.get('subtotal_cobrador'))"></span></td>
+                                        <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(cobrador.get('subtotal_asistente'))"></span></td>
+                                    </tr>
+                                </t>
+                                <!-- FIN COBRADORES -->
+
+                                <!-- Subtotales por plan -->
+                                <tr>
+                                    <td colspan="6">&amp;nbsp;&amp;nbsp;</td>
+                                    <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(plan.get('subtotal_plan_cobrador'))"></span></td>
+                                    <td class="dato_centrado" style="border-top-style: solid;">$<span t-esc="'{0:,.2f}'.format(plan.get('subtotal_plan_asistente'))"></span></td>
+                                </tr>
+                            </t>
+                            <!-- FIN PLANES -->
+                            
+                            <tr><td colspan="8">&amp;nbsp;&amp;nbsp;</td></tr>
+
+                            <!-- total código -->
+                            <tr>
+                                <td colspan="6"></td>
+                                <td class="dato_bold">Total:</td>
+                                <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(codigo.get('total_codigo'))"></span></td>
+                            </tr>
+
+                            <tr><td colspan="8"><hr style="border: 1px dashed black;"/></td></tr>
+                            <tr><td colspan="8">&amp;nbsp;&amp;nbsp;</td></tr>
+                        </t>
+                        <!-- FIN CODIGOS -->
+
+                    </tbody>
+                </table><br/><br/><br/>
+            </div>
+        </t>
+        </t>
+    	</template>
+
+  </data>
+
+	<record id="paperformat_comisiones_promotores" model="report.paperformat">
+    <field name="name">Papel comisiones de promotores</field>
+    <field name="default" eval="True"/>
+    <field name="format">Letter</field>
+    <field name="page_height">0</field>
+    <field name="page_width">0</field>
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">10</field>
+    <field name="margin_left">10</field>
+    <field name="margin_right">10</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">130</field>
+ </record>
+
+	<report
+    string="Comisiones de promotores"
+    id="id_comisiones_promotores"
+    model='sale.order'
+    name="xmarts_funeraria.comisiones_promotores"
+    file="xmarts_funeraria.comisiones_promotores"
+    report_type="qweb-pdf"
+    print_report_name="'Promotores'"
+    paperformat="xmarts_funeraria.paperformat_comisiones_promotores"
+  />
+
+</odoo>

@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.historial_ventas">
+        <t t-call="web.html_container">
+        <t t-call="web.basic_layout">
+            <div class="page">
+                <style type="text/css">
+                    .border_btn_abj {border-bottom: 1px solid black;}
+
+                    .dato_bold{
+                        text-align: center; 
+                        font-weight: bold;
+                    }
+
+                    .dato_centrado{
+                        text-align: center
+                    }
+
+                    td {
+                       border: 1px solid black;
+                    }
+
+                    <!-- table, th, td {
+                        border: 1px solid black;
+                    } -->
+                </style>
+
+                <!-- ENCABEZADO -->
+                <table width="100%" cellspacing="0" cellpadding="0">
+                    <thead>
+                        <th width="20%" rowspan="3" aling="top">
+                                <img src="xmarts_funeraria/static/description/image.png" 
+                                    style="width:100%; display: block; margin-left: auto; margin-right: auto;" height="auto"/>
+                        </th>
+                        <th width="60%" class="text-center" aling="top" colspan="5">
+                            <h4><strong>
+                                PABS - Programa de Apoyo De Beneficio Social <br/>
+                                CONCENTRADO HISTORIAL DE VENTAS
+                            </strong></h4>
+                        </th>
+                        <tr>
+                            <th width="7%" height="70px"></th>
+                            <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>PERIODO DE: <div t-esc="fecha_inicio"></div></strong></th>
+                            <th width="5%" height="70px"></th>
+                            <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>HASTA: <div t-esc="fecha_final"></div></strong></th>
+                            <th width="18%" height="70px"></th>
+                        </tr>
+                    </thead>
+                </table>
+                <br/>
+
+                <table width="100%" style="border-collapse: collapse;">
+                    <thead>
+                        <!-- NOMBRES DE COLUMNAS -->
+                        <tr>
+                            <th style="width: 25%; border: none; border: 1px solid black;" class="dato_bold">Empleado</th>
+                            <th style="width: 10%; border: none; border: 1px solid black;" class="dato_bold">Total</th>
+                            <t t-foreach="lista_estatus" t-as="estatus">
+                                <th style="border: 1px solid black;"><div class="dato_bold" t-esc="estatus"></div></th>
+                            </t>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <!-- Fila de Totales -->
+                        <tr>
+                            <td style="font-weight:bold"><div t-esc="total_por_estatus.get('empleado')"></div></td>
+                            <td class="dato_bold"><div t-esc="total_por_estatus.get('total')"></div></td>
+                            <t t-foreach="lista_estatus" t-as="estatus">
+                                <td><div class="dato_bold" t-esc="total_por_estatus.get(estatus)"></div></td>
+                            </t>
+                        </tr>
+
+                        <!-- Filas de empleados -->
+                        <t t-foreach="lista_empleados" t-as="empleado">
+                            <tr>
+                                <td style="font-weight:bold"><div t-esc="empleado.get('empleado')"></div></td>
+                                <td class="dato_bold"><span t-esc="empleado.get('total')"></span></td>
+                                <t t-foreach="lista_estatus" t-as="estatus">
+                                    <td><div class="dato_centrado" t-esc="empleado.get(estatus)"></div></td>
+                                </t>
+                            </tr>
+                        </t>
+
+                    </tbody>
+                </table><br/><br/><br/>
+            </div>
+        </t>
+        </t>
+    	</template>
+
+  </data>
+
+	<record id="paperformat_historial_ventas" model="report.paperformat">
+    <field name="name">Papel Historial de ventas</field>
+    <field name="default" eval="True"/>
+    <field name="format">Letter</field>
+    <field name="page_height">0</field>
+    <field name="page_width">0</field>
+    <field name="orientation">Landscape</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">10</field>
+    <field name="margin_left">10</field>
+    <field name="margin_right">10</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">130</field>
+ </record>
+
+	<report
+    string="Historial de ventas"
+    id="id_historial_ventas"
+    model='sale.order'
+    name="xmarts_funeraria.historial_ventas"
+    file="xmarts_funeraria.historial_ventas"
+    report_type="qweb-pdf"
+    print_report_name="'Historial de ventas'"
+    paperformat="xmarts_funeraria.paperformat_historial_ventas"
+  />
+
+</odoo>
