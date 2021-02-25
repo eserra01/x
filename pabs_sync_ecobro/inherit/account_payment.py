@@ -25,7 +25,7 @@ class AccountPayment(models.Model):
         CodigoCobrador = payment_id.debt_collector_code.barcode
       if payment_id.amount:
         MontoPago = payment_id.amount or 0
-      _logger.info("ID: {} contrato: {} code: {} monto: {}".format(IdPago,NumeroContrato,CodigoCobrador,MontoPago))
+      _logger.info("ID: {} contrato: {} code: {} monto: {}".format(IdPago,payment_id.contract.name,CodigoCobrador,MontoPago))
       comission_tree_obj.CrearSalidas(
         IdPago=IdPago, NumeroContrato=NumeroContrato,
         CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
