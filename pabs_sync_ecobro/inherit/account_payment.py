@@ -2,6 +2,9 @@
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class AccountPayment(models.Model):
   _inherit = 'account.payment'
@@ -17,10 +20,13 @@ class AccountPayment(models.Model):
     for payment_id in payment_ids:
       IdPago = self.id
       if self.contract:
-        CodigoCobrador = self.debt_collector_code.barcode
         NumeroContrato = self.contract.id
+      if self.debt_collector_code:
+        CodigoCobrador = self.debt_collector_code.barcode
+      if self.amount:
         MontoPago = self.amount or 0
-        comission_tree_obj.CrearSalidas(
-          IdPago=IdPago, NumeroContrato=NumeroContrato,
-          CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
-          EsExcedente=False)
+      _logger.info("ID: {} contrato: {} code: {} monto: {}".format(IdPago,NumeroContrato,CodigoCobrador,MontoPago))
+      comission_tree_obj.CrearSalidas(
+        IdPago=IdPago, NumeroContrato=NumeroContrato,
+        CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
+        EsExcedente=False)
