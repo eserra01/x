@@ -1,0 +1,40 @@
+<odoo>
+  <data>
+
+    <record id="dc_forma_pago_form_view" model="ir.ui.view">
+      <field name="name">dc.forma.pago.form.view</field>
+      <field name="model">dc.forma.pago</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+
+              <group>
+                <field name="name" />
+              </group>
+
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="dc_forma_pago_tree_view" model="ir.ui.view">
+      <field name="name">dc.forma.pago.tree.view</field>
+      <field name="model">dc.forma.pago</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_dc_forma_pago" model="ir.actions.act_window">
+      <field name="name">Forma de pago</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">dc.forma.pago</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+  </data>
+</odoo>

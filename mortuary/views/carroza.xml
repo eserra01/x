@@ -1,0 +1,40 @@
+<odoo>
+  <data>
+
+    <record id="carroza_form_view" model="ir.ui.view">
+      <field name="name">carroza.form.view</field>
+      <field name="model">carroza</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+
+              <group>
+                <field name="name" />
+              </group>
+
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="carroza_tree_view" model="ir.ui.view">
+      <field name="name">carroza.tree.view</field>
+      <field name="model">carroza</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_carroza" model="ir.actions.act_window">
+      <field name="name">Carroza</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">carroza</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+  </data>
+</odoo>

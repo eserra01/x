@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="sync_collectors" model="ir.cron">
+    <field name="name">Sincronizar Cobradores</field>
+    <field name="model_id" ref="model_pabs_ecobro_sync"/>
+    <field name="user_id" ref="base.user_root"/>
+    <field name="interval_number">1</field>
+    <field name="interval_type">months</field>
+    <field name="code">model.sync_collectors()</field>
+  </record>
+
+  <record id="sync_contracts" model="ir.cron">
+    <field name="name">Sincronizar Contratos</field>
+    <field name="model_id" ref="model_pabs_ecobro_sync"/>
+    <field name="user_id" ref="base.user_root"/>
+    <field name="interval_number">1</field>
+    <field name="interval_type">months</field>
+    <field name="code">model.sync_contracts()</field>
+  </record>
+
+  <record id="pending_payments" model="ir.cron">
+    <field name="name">Sincronizar Pagos Pendientes</field>
+    <field name="model_id" ref="model_pabs_ecobro_sync"/>
+    <field name="user_id" ref="base.user_root"/>
+    <field name="interval_number">1</field>
+    <field name="interval_type">months</field>
+    <field name="code">model.get_pending_payments()</field>
+  </record>
+
+  <!--<record id="seq_contract_ecobro_id" model="ir.sequence">
+    <field name="name">Secuencia de ID de Ecobro</field>
+    <field name="code">contract_ecobro_id</field>
+
+    <field name="number_increment">1</field>
+  </record>-->
+    
+</odoo>

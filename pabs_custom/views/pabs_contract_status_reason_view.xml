@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista de formulario -->
+    <record id="contract_status_reason_form_view" model="ir.ui.view">
+        <field name="name">contract.status.reason.form.view</field>
+        <field name="model">pabs.contract.status.reason</field>
+        <field name="arch" type="xml">
+            <form string="Estatus reason form">
+                <sheet>
+                    <group>
+                        <field name="status_id" />
+                        <field name="reason" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de lista -->
+    <record id="contract_status_reason_tree_view" model="ir.ui.view">
+        <field name="name">contract.status.reason.tree.view</field>
+        <field name="model">pabs.contract.status.reason</field>
+        <field name="arch" type="xml">
+            <tree string="Estatus reason tree" editable="bottom" default_order="status_id">
+                <field name="status_id" />
+                <field name="reason" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="contract_status_reason_action" model="ir.actions.act_window" >
+        <field name="name">Motivos_de_estatus_de_contratos</field>
+        <field name="res_model">pabs.contract.status.reason</field>
+        <field name="view_mode">tree,form</field>
+        <!-- <field name="context">{'group_by': ('status_id')}</field> -->
+    </record>
+
+</odoo>

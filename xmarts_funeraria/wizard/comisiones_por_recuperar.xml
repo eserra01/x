@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="wizard_comisiones_por_recuperar" model="ir.ui.view">
+        <field name="name">Comisiones por recuperar</field>
+        <field name="model">report.pabs.comisiones.por.recuperar</field>
+        <field name="arch" type="xml">
+            <form string="Choose The Details">
+                <group>
+                    <group>
+                        <field name="date_from" />
+                        <field name="date_to" />
+                    </group>
+                </group>
+                <footer>
+                    <button name="filter" string="Aceptar" type="object" class="oe_highlight" />
+                    or
+                    <button string="Cancelar" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_wizard_comisiones_por_recuperar" model="ir.actions.act_window">
+            <field name="name">Comisiones por recuperar </field>
+            <field name="res_model">report.pabs.comisiones.por.recuperar</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="wizard_comisiones_por_recuperar"/>
+            <field name="target">new</field>
+    </record>
+
+
+    <menuitem id="menu_root_comisiones_por_recuperar" 
+        name="Comisiones por recuperar" 
+        parent="xmarts_funeraria.report_root_menu" 
+        sequence="3" 
+        action="action_wizard_comisiones_por_recuperar"/>
+
+</odoo>

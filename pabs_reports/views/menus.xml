@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Configuración de periodos semanales -->
+  <!-- Menú principal -->
+  <menuitem 
+    id="pabs_contracts_elaborated" 
+    name="Informes" 
+    parent="pabs_custom.service_menu_root" 
+    sequence="7"/>
+
+  <!-- Menú de secretaría-->
+  <menuitem
+    id="pabs_payroll_secretary"
+    name="Corte de contratos Elaborados"
+    groups="pabs_custom.admin_profile"
+    parent="pabs_contracts_elaborated"
+    sequence="1"/>
+
+
+</odoo>

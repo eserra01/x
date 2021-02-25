@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="ecobro_id_on_payments_view" model="ir.ui.view">
+    <field name="name">ecobro.id.on.payments.view</field>
+    <field name="model">account.payment</field>
+    <field name="inherit_id" ref="account.view_account_payment_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//header" position="inside">
+      	<field name="ecobro_affect_id" invisible="1"/>
+      </xpath>
+  </field>
+</record>
+</odoo>

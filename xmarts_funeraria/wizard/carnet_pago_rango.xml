@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_wizar_report_carnet_pago" model="ir.ui.view">
+    <field name="name">Impresión de tarjetas</field>
+    <field name="model">report.carnet.pago</field>
+    <field name="arch" type="xml">
+      <form string="Choose The Details">
+        <group string="Impresión por rango de contratos">
+          <field name="initial_contract" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+          <field name="final_contract" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+        </group>
+
+        <footer>
+          <button name="filter" string="Aceptar" type="object" class="oe_highlight" />
+          or
+          <button string="Cancelar" class="oe_link" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_carnet_pago" model="ir.actions.act_window">
+    <field name="name">Impresión de tarjetas</field>
+    <field name="res_model">report.carnet.pago</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="view_wizar_report_carnet_pago"/>
+    <field name="target">new</field>
+  </record>
+
+  <menuitem
+    id="menu_root_carnet_pago"
+    name="Impresión de tarjetas"
+    parent="xmarts_funeraria.report_root_menu" 
+    sequence="1"
+    action="action_carnet_pago" />
+
+</odoo>

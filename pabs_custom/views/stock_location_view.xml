@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Agregar campos a la vista de la ubicación para el tracking-->
+  <record id="office_location_stock_view" model="ir.ui.view">
+    <field name="name">office.location.stock.view</field>
+    <field name="model">stock.location</field>
+    <field name="inherit_id" ref="stock.view_location_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='return_location']" position="after">
+        <field name="office_location" attrs="{'invisible' : [('usage','!=','internal')]}"/>
+        <field name="contract_location" attrs="{'invisible' : [('usage','!=','internal')]}"/>
+        <field name="consignment_location" attrs="{'invisible' : [('usage','!=','internal')]}"/>
+        <field name="central_location" attrs="{'invisible' : [('usage','!=','internal')]}"/>
+        <field name="received_location" attrs="{'invisible' : [('usage','!=','internal')]}"/>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

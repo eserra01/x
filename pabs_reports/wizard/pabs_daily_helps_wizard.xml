@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pabs_daily_helps_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.daily.helps.wizard.view</field>
+		<field name="model">pabs.daily.helps</field>
+		<field name="arch" type="xml">
+			<form string="Generación de reporte de ayudas diarias">
+        <h3>Reporte de ayudas Diarias</h3>
+        <group coslpan="2">
+          <group>
+            <field name="start_date"/>
+          </group>
+          <group>
+            <field name="end_date"/>
+          </group>
+        </group>
+        <footer>
+          <button name="print_xls_report" string="Generar XLS" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+			</form>
+		</field>
+	</record>
+
+  <record id="action_pabs_daily_helps_report_action" model="ir.actions.act_window">
+    <field name="name">Reporte de Ayudas Diarias</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.daily.helps</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_daily_helps_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    action="action_pabs_daily_helps_report_action" 
+    id="daily_helps_menu"
+    name="Reporte de Ayudas Diarias" 
+    parent="xmarts_funeraria.report_root_menu"
+    sequence="7"/>
+
+  <report
+    id="daily_helps_xlsx"
+    model="pabs.daily.helps"
+    string="Ayudas Diarias XLSX"
+    report_type="xlsx"
+    name="pabs_reports.daily_helps_xlsx"
+    file="pabs_reports.daily_helps_xlsx"
+    attachment_use="False"
+    />
+    
+</odoo>

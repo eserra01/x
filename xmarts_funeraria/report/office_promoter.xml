@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.office_promoter">
+			<t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc"> 
+                <div class="page" style="font-size: 13pt;">
+                    <t t-if="doc.type_transfer == 'ov-as'">
+
+                        <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">ENTREGA DE SOLICITUDES</span><br/>
+                        <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">** OFICINA A PROMOTOR **</span><br/>
+                        <br/>
+
+                        <span>Folio:</span><span>&amp;nbsp;&amp;nbsp;</span><strong t-esc="doc.name"/><br/>
+                        <span>Fecha:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.date_done" t-options='{"widget": "date"}'/><br/>
+                        <span>Hora:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-field="doc.date_done" t-options='{"format":"hh:mm:ss"}'/><br/>
+                        
+                        <span>Entrega: </span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="user.partner_id.name"/><br/>
+                        <span>Recibe: </span><span t-esc="doc.employee_id.barcode"/><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.employee_id.name"/><br/>
+                        <br/>
+
+                        <t t-set="entregadas" t-value="0"/>
+                        <!-- SOLICITUDES -->
+                        <table class="table" style="border: 1px solid black; border-collapse: collapse; width: 100%;">
+                            <thead style="border: 1px solid black">
+                                <tr>
+                                    <th style="text-align: center; font-weight: bold;">PLAN</th>
+                                    <th style="text-align: center; font-weight: bold;">FOLIO</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-if="doc.move_ids_without_package">
+                                    <t t-set="entregadas" t-value="len(doc.move_ids_without_package)"/>
+                                    <t t-foreach="doc.move_ids_without_package" t-as="result">
+                                        <tr>
+                                            <td style="border: 1px solid black;"><span t-esc="result.description_picking"/></td>
+                                            <td style="border: 1px solid black;"><span t-esc="result.series"/></td>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- TOTALES -->
+                        <strong><span>Entregadas: </span><span t-esc="entregadas"/></strong><br/>
+                        
+                        <!-- FIRMAS -->
+                        <div style="font-size:12pt;">
+                            <br/>
+                            <br/>
+                            <br/>
+                            _________________________ <br/>
+                            <span style="margin-left: 10px;">Firma Asistente</span> 
+                            <br/>
+                            <br/>
+                            <br/>
+                            _________________________ <br/>
+                            <span style="margin-left: 10px">Firma Secretaria</span>
+                        </div>
+                    </t>
+                </div>
+            </t>
+            </t>
+			</t>
+    	</template>
+
+	</data>
+	<record id="paperformat_report" model="report.paperformat"> 
+            <field name="name">Ticket Ofi a Prom</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">250</field>
+            <field name="page_width">75</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">2</field>
+            <field name="margin_bottom">2</field>
+            <field name="margin_left">0</field>
+            <field name="margin_right">0</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">1</field>
+            <field name="dpi">130</field>
+    </record>
+	<report
+        string="Oficina a promotor"
+        id="id_office_promoter"
+        model='stock.picking'
+        name="xmarts_funeraria.office_promoter"
+        file="xmarts_funeraria.office_promoter"
+        report_type="qweb-pdf"
+        print_report_name="'Oficina a promotor'"
+        paperformat="xmarts_funeraria.paperformat_report"
+        />
+
+</odoo>

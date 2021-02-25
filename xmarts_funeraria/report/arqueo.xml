@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.arqueo">
+			<t t-call="web.html_container">
+			    <t t-call="web.basic_layout">
+			        <t t-foreach="docs" t-as="doc"> 
+			           <div class="page">
+                            <ul class="list-inline mb4">
+                                <li  class="list-inline-item" style="padding-left: 20px;"><span t-esc="doc.date_done" t-options='{"widget": "date"}'/></li>
+                                <li  class="list-inline-item pull-right"><span t-field="doc.date_done" t-options='{"format":"hh:mm:ss"}'/></li>
+                             </ul>
+                            <table>
+                                <tr>
+                                    <td><img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="width:200px;"/></td>
+                                    <td class="pull-right"> <strong>Programa de Apoyo de Beneficio Social Recepcion de Solicitudes</strong></td>
+                                </tr>
+                            </table>          	
+			           		<br/>
+                            <ul class="list-inline mb4 text-center">
+                                <li  class="list-inline-item text-center"><span>Empleado</span><span>&amp;nbsp;&amp;nbsp;</span><strong>XXXXX</strong></li>
+                             </ul>
+                              <ul class="list-inline mb4 text-center">
+                                <li  class="list-inline-item pull-left"><span>Cod. Nómina</span><span>&amp;nbsp;&amp;nbsp;</span><strong>XXXXX</strong></li>
+                                <li  class="list-inline-item pull-right"><span>Oficina</span><span>&amp;nbsp;&amp;nbsp;</span><strong>XXXXX</strong></li>
+                             </ul>
+			           		
+                             
+			           		 <table class="table" style="table-layout: fixed; border:0 px;">
+                                <thead style="display: table-row-group font-size: 8px;">
+                                    <tr>
+                                        <th class="text-center" style="width: 25%; border-bottom: 1px solid black;" scope="col">Empresa</th>
+                                        <th class="text-center" style="width: 25%; border-bottom: 1px solid black;" scope="col">Paquete</th>
+                                        <th class="text-center" style="width: 25%; border-bottom: 1px solid black;" scope="col">Folio</th>
+                                        <th class="text-center" style="width: 25%; border-bottom: 1px solid black;" scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-if="doc.move_ids_without_package">
+                                    	<t t-foreach="doc.move_ids_without_package" t-as="result">
+                                            <tr>
+                                                <td style="border: 1px solid black;"><span t-esc="doc.company_id.name"/></td>
+                                                <td style="border: 1px solid black;"><span t-esc="result.product_id.name"/></td>
+                                                <td style="border: 1px solid black;"><span>1</span></td>
+                                                <td style="border: 1px solid black;"><span t-esc="doc.state"/></td>                                        
+                                            </tr>
+                                          
+                                        </t>
+                                    </t>
+                                </tbody>
+                             </table>
+                              <table class="table" style="table-layout: fixed">
+                                <thead style="display: table-row-group" >
+                                    <tr>
+                                        <th class="text-center" style="width: 40%; border-bottom: 1px solid black;" scope="col">No solicitud debio entregar</th>
+                                        <th class="text-center" style="width: 30%; border-bottom: 1px solid black;" scope="col">1</th>
+                                        <th class="text-center" style="width: 30%; border-bottom: 1px solid black;" scope="col">Efectividad entregada</th>
+                                        <th class="text-center" style="width: 30%; border-bottom: 1px solid black;" scope="col">100 %</th>
+                                    </tr>
+                                </thead>
+                                
+                             </table>
+                              <ul class="list-inline mb4">
+			           		 	<li  class="list-inline-item">__________________________</li>
+                    			<li  class="list-inline-item pull-right">__________________________</li>
+			           		 </ul>
+			           		  <ul class="list-inline mb4">
+			           		 	<li  class="list-inline-item"><span>Definir</span></li>
+                    			<li  class="list-inline-item pull-right"><span>Firma/Reviso Autorizo</span></li>
+			           		 </ul>
+			           		
+			           </div>
+			       	</t>
+			   </t>
+			</t>
+    	</template>
+
+	</data>
+	<record id="paperformat_arqueo" model="report.paperformat"> 
+            <field name="name">Recibo Ticket</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">250</field>
+            <field name="page_width">75</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">2</field>
+            <field name="margin_bottom">2</field>
+            <field name="margin_left">1</field>
+            <field name="margin_right">1</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">1</field>
+            <field name="dpi">130</field>
+    </record>
+	<report
+        string="Arqueo"
+        id="id_arqueo"
+        model='stock.picking'
+        name="xmarts_funeraria.arqueo"
+        file="xmarts_funeraria.arqueo"
+        report_type="qweb-pdf"
+        print_report_name="'Arqueo'"
+        paperformat="xmarts_funeraria.paperformat_arqueo"
+        />
+
+</odoo>

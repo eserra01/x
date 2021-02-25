@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    <template id="xmarts_funeraria.payroll_ing_egre">
+    <t t-call="web.html_container">
+    <t t-call="web.basic_layout">
+        <div class="page">
+            <style type="text/css">
+                .border_btn_abj {border-bottom: 1px solid black;}
+
+                .dato_bold{
+                    text-align: left; 
+                    font-weight: bold;
+                    text-decoration: underline;
+                }
+
+                .dato_centrado{
+                    text-align: center
+                }
+                td {
+                    font-size: 10pt;
+                }
+            </style>
+
+            <!-- LOGO Y NOMBRE DEL REPORTE HOJA DE INGRESOS-->
+            <table width="100%" cellspacing="0" cellpadding="0">
+                <thead>
+                    <th width="20%" rowspan="3" aling="top">
+                            <img src="xmarts_funeraria/static/description/image.png" 
+                                style="width:100%; display: block; margin-left: auto; margin-right: auto;" height="auto"/>
+                    </th>
+                    <th width="60%" class="text-center" aling="top" colspan="5">
+                        <h4><strong>
+                            PABS - Programa de Apoyo De Beneficio Social <br/>
+                            REPORTE DE INGRESOS Y EGRESOS
+                        </strong></h4>
+                    </th>
+                    <tr>
+                        <th width="7%" height="70px"></th>
+                        <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>PERIODO DE: <div t-esc="fecha_inicio"></div></strong></th>
+                        <th width="5%" height="70px"></th>
+                        <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>HASTA: <div t-esc="fecha_final"></div></strong></th>
+                        <th width="18%" height="70px"></th>
+                    </tr>
+                </thead>
+            </table>
+            <br/>
+
+            <!-- COLUMNAS INGRESOS -->
+            <table width="100%" style="table-layout: fixed; border:0 px;">
+                <thead>
+                    <tr>
+                        <th class="dato_bold" style="width: 15%;">TIPO</th>
+                        <th class="dato_bold" style="width: 10%;">CODIGO</th>
+                        <th class="dato_bold" style="width: 55%;">NOMBRE</th>
+                        <th class="dato_bold" style="width: 20%;">IMPORTE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- INGRESOS SIN CLASIFICAR (FIDEICOMISO) -->
+                    <tr><td><strong>INGRESOS<br/>01 SIN CLASIFICAR</strong></td> <td colspan="3"></td> </tr>
+                    <t t-foreach="lista_ingresos_sin_clasificar" t-as="cobrador">
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td><span t-esc="cobrador.get('cobrador')"/></td>
+                            <td>$<span t-esc="'{0:,.2f}'.format(cobrador.get('cantidad_ingresos'))"/></td>
+                        </tr>
+                    </t>
+
+                    <!-- INGRESOS CLASIFICADOS (COBRADORES) -->
+                    <tr><td><strong>02 CLASIFICADOS</strong></td> <td colspan="3"></td> </tr>
+                    <t t-foreach="lista_ingresos" t-as="cobrador">
+                        <tr>
+                            <td></td>
+                            <td><span t-esc="cobrador.get('codigo_cobrador')"/></td>
+                            <td><span t-esc="cobrador.get('cobrador')"/></td>
+                            <td>$<span t-esc="'{0:,.2f}'.format(cobrador.get('cantidad_ingresos'))"/></td>
+                        </tr>
+                    </t>
+
+                    <!-- TOTAL DE INGRESOS -->
+                    <tr><td colspan="3"></td><td><strong>===============</strong></td></tr>
+                    <tr>
+                        <td colspan="3"></td>
+                        <td><span>$<strong t-esc="'{0:,.2f}'.format(total_ingresos)"/></span></td>
+                    </tr>
+
+                </tbody>
+            </table>              	
+
+            <p style="page-break-before:always;"> </p>
+
+            <!-- LOGO Y NOMBRE DEL REPORTE HOJA DE EGRESOS-->
+            <table width="100%" cellspacing="0" cellpadding="0">
+                <thead>
+                   <th width="20%" rowspan="3" aling="top">
+                            <img src="xmarts_funeraria/static/description/image.png" 
+                                style="width:100%; display: block; margin-left: auto; margin-right: auto;" height="auto"/>
+                    </th>
+                    <th width="60%" class="text-center" aling="top" colspan="5">
+                        <h4><strong>
+                            PABS - Programa de Apoyo De Beneficio Social <br/>
+                            REPORTE DE INGRESOS Y EGRESOS
+                        </strong></h4>
+                    </th>
+                    <tr>
+                        <th width="7%" height="70px"></th>
+                        <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>PERIODO DE: <div t-esc="fecha_inicio"></div></strong></th>
+                        <th width="5%" height="70px"></th>
+                        <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>HASTA: <div t-esc="fecha_final"></div></strong></th>
+                        <th width="18%" height="70px"></th>
+                    </tr>
+                </thead>
+            </table>
+            <br/>
+
+            <!-- COLUMNAS EGRESOS -->
+            <table width="100%" style="table-layout: fixed; border:0 px;">
+                <thead>
+                    <tr>
+                        <th class="dato_bold" style="width: 15%;">TIPO</th>
+                        <th class="dato_bold" style="width: 10%;">CODIGO</th>
+                        <th class="dato_bold" style="width: 55%;">NOMBRE</th>
+                        <th class="dato_bold" style="width: 20%;">IMPORTE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- EGRESOS SIN CLASIFICAR (FIDEICOMISO) -->
+                    <tr><td><strong>EGRESOS<br/>01 SIN CLASIFICAR</strong></td> <td colspan="3"></td> </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td><span t-esc="egresos_fideicomiso.get('nombre_comisionista')"></span></td>
+                        <td>$<span t-esc="'{0:,.2f}'.format(egresos_fideicomiso.get('cantidad_egresos'))"/></td>
+                    </tr>
+
+                    <!-- EGRESOS CLASIFICADOS (COMISIONISTAS) -->
+                    <tr><td><strong>02 CLASIFICADOS</strong></td> <td colspan="3"></td> </tr>
+                    <t t-foreach="lista_egresos" t-as="codigo">
+                        <t t-foreach="codigo.get('cargos')" t-as="comision">
+                            <tr>
+                                <td></td>
+                                <td><span t-esc="codigo.get('codigo_comisionista')"/></td>
+                                <td><span t-esc="comision.get('nombre_comisionista')"/></td>
+                                <td>$<span t-esc="'{0:,.2f}'.format(comision.get('cantidad_egresos'))"/></td>
+                            </tr>
+                        </t>
+                    </t>
+
+                    <!-- TOTAL DE EGRESOS -->
+                    <tr><td colspan="3"></td><td><strong>===============</strong></td></tr>
+                    <tr>
+                        <td colspan="3"></td>
+                        <td><span>$<strong t-esc="'{0:,.2f}'.format(total_egresos)"/></span></td>
+                    </tr>
+
+                </tbody>
+            </table>           
+
+        </div>
+    </t>
+    </t>
+    </template>
+
+	</data>
+	<record id="paperformat_report_payroll" model="report.paperformat"> 
+           <field name="name">PF Sale Order Landscape</field>
+            <field name="default" eval="True"/>
+            <field name="format">Letter</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">10</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">3</field>
+            <field name="dpi">90</field>
+    </record>
+	<report
+        string="Reporte ingresos y egresos"
+        id="id_payroll_ing_egre"
+        model='report.pabs.ing.egre'
+        name="xmarts_funeraria.payroll_ing_egre"
+        file="xmarts_funeraria.payroll_ing_egre"
+        report_type="qweb-pdf"
+        print_report_name="'Reporte ingresos y egresos'"
+        paperformat="xmarts_funeraria.paperformat_report_payroll"
+        />
+
+</odoo>

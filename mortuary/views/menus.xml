@@ -1,0 +1,163 @@
+<odoo>
+  <data>
+
+    <menuitem
+      id="models_menu_main"
+      name="Modelos"
+      parent="mortuary.mortuary"
+      sequence="3"
+    />
+
+    <menuitem
+      id="submenu_1"
+      parent="models_menu_main"
+      name="Servicios"
+      sequence="1"
+      action="action_ii_servicio"
+    />
+
+    <menuitem
+      id="submenu_2"
+      parent="models_menu_main"
+      name="Servicios2"
+      sequence="2"
+      action="action_ii_servicio2"
+    />
+
+    <menuitem
+      id="submenu_3"
+      parent="models_menu_main"
+      name="Causas de fallecimiento"
+      sequence="3"
+      action="action_ii_causa_fallecim"
+    />
+
+    <menuitem
+      id="submenu_4"
+      parent="models_menu_main"
+      name="Atiende servicio"
+      sequence="4"
+      action="action_ds_atiende_servicio"
+    />
+
+    <menuitem
+      id="submenu_5"
+      parent="models_menu_main"
+      name="Sucursal velación"
+      sequence="5"
+      action="action_ds_sucursal_velacion"
+    />
+
+    <menuitem
+      id="submenu_6"
+      parent="models_menu_main"
+      name="Tipo de servicio"
+      sequence="6"
+      action="action_ds_tipo_servicio"
+    />
+
+    <menuitem
+      id="submenu_7"
+      parent="models_menu_main"
+      name="Capilla"
+      sequence="7"
+      action="action_ds_capilla"
+    />
+
+    <menuitem
+      id="submenu_8"
+      parent="models_menu_main"
+      name="Origen"
+      sequence="8"
+      action="action_ds_origen"
+    />
+
+    <menuitem
+      id="submenu_9"
+      parent="models_menu_main"
+      name="Sucursal entrega cenizas"
+      sequence="9"
+      action="action_ds_sucursal_qentreg_cenizas"
+    />
+    <menuitem
+      id="submenu_10"
+      parent="models_menu_main"
+      name="Ataúd"
+      sequence="10"
+      action="action_ds_ataud"
+    />
+
+    <menuitem
+      id="submenu_11"
+      parent="models_menu_main"
+      name="Urna"
+      sequence="11"
+      action="action_ds_urna"
+    />
+
+    <menuitem
+      id="submenu_12"
+      parent="models_menu_main"
+      name="Relación con finado"
+      sequence="12"
+      action="action_relacion_confinad"
+    />
+
+    <menuitem
+      id="submenu_14"
+      parent="models_menu_main"
+      name="Lugar de velación"
+      sequence="14"
+      action="action_iv_lugar_velacion"
+    />
+
+    <menuitem
+      id="submenu_15"
+      parent="models_menu_main"
+      name="Nombre de capilla"
+      sequence="15"
+      action="action_iv_nombre_capilla"
+    />
+
+    <menuitem
+      id="submenu_16"
+      parent="models_menu_main"
+      name="Forma de pago"
+      sequence="16"
+      action="action_dc_forma_pago"
+    />
+
+    <menuitem
+      id="submenu_17"
+      parent="models_menu_main"
+      name="Operativo"
+      sequence="17"
+      action="action_ir_operativo"
+    />
+
+    <menuitem
+      id="submenu_18"
+      parent="models_menu_main"
+      name="Carroza"
+      sequence="18"
+      action="action_carroza"
+    />
+
+    <menuitem
+      id="submenu_19"
+      parent="models_menu_main"
+      name="Proveedor embalsama"
+      sequence="19"
+      action="action_ig_proveedor_embalsama"
+    />
+
+    <menuitem
+      id="submenu_20"
+      parent="models_menu_main"
+      name="Templo"
+      sequence="20"
+      action="action_ig_templo"
+    />
+
+  </data>
+</odoo>

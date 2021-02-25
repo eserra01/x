@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.carnet_pago_sin_tabla">
+        <t t-call="web.html_container">
+        <t t-call="web.basic_layout">
+        <t t-foreach="docs" t-as="doc">
+          <div class="page">
+            <style>
+                .dato {
+                    /* background-color: yellow; */
+                    font-size: 10pt;
+                }
+
+                .dato_largo_rec{
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    width: 85mm
+                }
+
+                .dato_corto_rec{
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    width: 20mm
+                }
+
+                .dato_s {
+                    /* background-color: yellow; */
+                    font-size: 10pt;
+                    text-align: center;
+                    vertical-align: top;
+                }
+                
+                /* tr{
+                    height: 0pt;
+                } */
+
+                td{
+                    /*border: 1px solid white;*/
+                    margin: 0px;
+                    padding: 0px;
+                }
+
+                body {
+                    /* to centre page on screen*/
+                    margin-left: 0mm;
+                }
+            </style>
+            <div>
+                <!-- Margen superior -->
+                <div style="height: 9mm;"> </div>
+
+                <!-- ENCABEZADO 1 -->
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 90%;"></td>
+                        <td style="width: 10%;" class="dato" ><div class="dato_corto_rec" t-esc="doc.name"></div></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td style="font-size: 8pt;" class="dato"><div class="dato_corto_rec" t-esc="doc.lot_id.name"></div></td>
+                    </tr>
+                </table>
+
+                <!-- Margen de quitar bordes de tablas -->
+                <!-- <div style="height: 1mm;"> </div> -->
+            
+                <!-- CUERPO 2 COLUMNAS -->
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 8%;"></td>
+                        <td style="width: 43%;" class="dato">
+                            <div class="dato_largo_rec">
+                                Forma de pago: 
+                                <span t-esc="dict(doc._fields['way_to_payment'].selection).get(doc.way_to_payment)"></span> 
+                                $<span t-esc="doc.payment_amount"></span>
+                            </div>
+                        </td>
+                        <td style="width: 10%;"></td>
+                        <td style="width: 40%;" class="dato"><div class="dato_largo_rec" t-esc="doc.full_name"></div></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="dato">ACAPULCO</td>
+                        <td></td>
+                        <td class="dato"> <div class="dato_largo_rec" t-esc="doc.phone_toll"> </div></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <!-- TELEFONOS DE LA FUNERARIA -->
+                        <td class="dato">3336154330 Y 36150207</td>
+                        <td></td>
+                        <td class="dato">
+                            <div class="dato_largo_rec">
+                                <span t-esc="doc.street_name_toll"></span>
+                                # <span t-esc="doc.street_number_toll"></span>
+                                Col. <span t-esc="doc.toll_colony_id.name"></span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Margen de quitar bordes de tablas -->
+                <div style="height: 1mm;"> </div>
+            
+                <!-- RECIBOS:  Obtener el ultimo recibo (por id) -->
+                <t t-set="saldo" t-value="doc.balance"/>
+
+                <t t-set="fecha_recibo" t-value="x"/>
+                <t t-set="recibo" t-value="x"/>
+                <t t-set="monto" t-value="0"/>
+                <t t-set="cobrador" t-value="x"/>
+
+                <t t-set="id_anterior" t-value="0"/>
+                <t t-foreach="doc.payment_ids" t-as="abono">
+                    <t t-if="abono.id > id_anterior">
+                        <t t-if="abono.date_receipt">
+                            <t t-set="fecha_recibo" t-value="abono.date_receipt"/>    
+                        </t>
+                        <t t-else="">
+                            <t t-set="fecha_recibo" t-value="abono.payment_date"/>
+                        </t>
+
+                        <t t-set="recibo" t-value="abono.Ecobro_receipt"/>    
+                        <t t-set="monto" t-value="abono.amount"/>
+                        <t t-set="cobrador" t-value="abono.debt_collector_code.name"/>
+                    </t>
+
+                    <t t-set="id_anterior" t-value="abono.id"/>
+                </t>
+
+                <table style="width: 100%;">
+                    <tr style="height: 5mm;">
+                    </tr>
+                    <tr style="height: 63mm;">
+                        <!-- Margen izquierdo -->
+                        <td style="width: 8%; font-size: 8pt;" class="dato_s"><span t-esc="fecha_recibo"></span></td>
+                        <td style="width: 10%;" class="dato_s"><span t-esc="recibo"></span></td>
+                        <td style="width: 12%;" class="dato_s">$<span t-esc="monto"></span></td>
+                        <td style="width: 10%;" class="dato_s"><span t-esc="cobrador"></span></td>
+                        <td style="width: 10%;" class="dato_s">$<span t-esc="saldo"></span></td>
+                        <td style="width: 50%;"></td>
+                    </tr>
+                </table>
+
+                <!-- Margen de quitar bordes de tablas -->
+                <!-- <div style="height: 1mm;"> </div> -->
+            
+                <!-- PIE -->
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="width: 13%;"></td>
+                        <td style="width: 38%;" class="dato"><div class="dato_largo_rec" t-esc="doc.employee_id.name"></div></td>
+                        <td style="width: 10%;"></td>
+                        <td style="width: 40%;" class="dato"><div class="dato_largo_rec" t-esc="doc.debt_collector.name"></div></td>
+                    </tr>
+                </table>
+            </div>
+          </div>
+        </t>
+        </t>
+        </t>
+      </template>
+  </data>
+  
+  <!-- ACAPULCO 97 x 210 -->
+	<record id="paperformat_carnet_pago_sin_tabla" model="report.paperformat">
+    <field name="name">Tarjeta_sin_tabla</field>
+    <field name="default" eval="True"/>
+    <field name="format">custom</field>
+    <field name="page_height">210</field>
+    <field name="page_width">97</field>
+    <field name="orientation">Landscape</field>
+    <field name="margin_top">0</field>
+    <field name="margin_bottom">0</field>
+    <field name="margin_left">5</field>
+    <field name="margin_right">0</field>
+    <field name="header_line" eval="False"/>
+    <field name="dpi">90</field>
+ </record>
+ 
+<report
+    string="Tarjeta sin tabla"
+    id="id_carnet_pago_sin_tabla"
+    model='pabs.contract'
+    name="xmarts_funeraria.carnet_pago_sin_tabla"
+    file="xmarts_funeraria.carnet_pago_sin_tabla"
+    report_type="qweb-pdf"
+    print_report_name="'Carnet de pago sin tabla'"
+    paperformat="xmarts_funeraria.paperformat_carnet_pago_sin_tabla"
+  />
+
+</odoo>

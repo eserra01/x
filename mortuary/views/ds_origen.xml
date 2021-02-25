@@ -1,0 +1,40 @@
+<odoo>
+  <data>
+
+    <record id="ds_origen_form_view" model="ir.ui.view">
+      <field name="name">ds.origen.form.view</field>
+      <field name="model">ds.origen</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+
+              <group>
+                <field name="name" />
+              </group>
+
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="ds_origen_tree_view" model="ir.ui.view">
+      <field name="name">ds.origen.tree.view</field>
+      <field name="model">ds.origen</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_ds_origen" model="ir.actions.act_window">
+      <field name="name">Origen</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">ds.origen</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+  </data>
+</odoo>

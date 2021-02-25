@@ -1,0 +1,449 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data noupdate="0">
+        <record id="ii_servicio_pendiente" model="ii.servicio">
+            <field name="name">PENDIENTE</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ii_servicio_terminado" model="ii.servicio">
+            <field name="name">TERMINADO</field>
+            <field name="id">2</field>
+        </record>
+        <record id="ii_servicio_cancelado" model="ii.servicio">
+            <field name="name">CANCELADO</field>
+            <field name="id">3</field>
+        </record>
+
+        <record id="ii_llamada_si" model="ii.llamada">
+            <field name="name">SI</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ii_llamada_no" model="ii.llamada">
+            <field name="name">NO</field>
+            <field name="id">2</field>
+        </record>
+
+        <record id="ii_certificamos_si" model="ii.certificamos">
+            <field name="name">Si</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ii_certificamos_no" model="ii.certificamos">
+            <field name="name">No</field>
+            <field name="id">2</field>
+        </record>
+
+        <record id="ii_vista_personal_si" model="ii.vista.personal">
+            <field name="name">Si</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ii_vista_personal_no" model="ii.vista.personal">
+            <field name="name">No</field>
+            <field name="id">2</field>
+        </record>
+
+        <record id="ii_servicio2_cremacion" model="ii.servicio2">
+            <field name="name">CREMACION</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ii_servicio2_inhumacion" model="ii.servicio2">
+            <field name="name">INHUMACION</field>
+            <field name="id">1</field>
+        </record>
+
+        <record id="ii_causa_fallecim_cardiopatias" model="ii.causa.fallecim">
+            <field name="name">CARDIOPATIAS</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ii_causa_fallecim_diabetes" model="ii.causa.fallecim">
+            <field name="name">DIABETES</field>
+            <field name="id">2</field>
+        </record>
+        <record id="ii_causa_fallecim_cancer" model="ii.causa.fallecim">
+            <field name="name">CANCER</field>
+            <field name="id">3</field>
+        </record>
+        <record id="ii_causa_fallecim_vias_respiratorias" model="ii.causa.fallecim">
+            <field name="name">VÍAS RESPIRATORIAS</field>
+            <field name="id">4</field>
+        </record>
+        <record id="ii_causa_fallecim_insuficiencia_renal" model="ii.causa.fallecim">
+            <field name="name">INSUFICIENCIA RENAL</field>
+            <field name="id">5</field>
+        </record>
+        <record id="ii_causa_fallecim_homicidio" model="ii.causa.fallecim">
+            <field name="name">HOMICIDIO</field>
+            <field name="id">6</field>
+        </record>
+        <record id="ii_causa_fallecim_suicidio" model="ii.causa.fallecim">
+            <field name="name">SUICIDIO</field>
+            <field name="id">7</field>
+        </record>
+        <record id="ii_causa_fallecim_accidente" model="ii.causa.fallecim">
+            <field name="name">ACCIDENTE</field>
+            <field name="id">8</field>
+        </record>
+        <record id="ii_causa_fallecim_prematurez" model="ii.causa.fallecim">
+            <field name="name">PREMATUREZ</field>
+            <field name="id">9</field>
+        </record>
+        <record id="ii_causa_fallecim_desnutricion" model="ii.causa.fallecim">
+            <field name="name">DESNUTRICIÓN</field>
+            <field name="id">10</field>
+        </record>
+        <record id="ii_causa_fallecim_color_toxico" model="ii.causa.fallecim">
+            <field name="name">COLON TOXICO</field>
+            <field name="id">11</field>
+        </record>
+        <record id="ii_causa_fallecim_epidemiologicas" model="ii.causa.fallecim">
+            <field name="name">EPIDEMIOLOGICAS</field>
+            <field name="id">12</field>
+        </record>
+        <record id="ii_causa_fallecim_covid_19" model="ii.causa.fallecim">
+            <field name="name">COVID 19</field>
+            <field name="id">13</field>
+        </record>
+        <record id="ii_causa_fallecim_infarto" model="ii.causa.fallecim">
+            <field name="name">INFARTO</field>
+            <field name="id">14</field>
+        </record>
+        <record id="ii_causa_fallecim_causa_natural" model="ii.causa.fallecim">
+            <field name="name">CAUSAS NATURALES</field>
+            <field name="id">15</field>
+        </record>
+        <record id="ii_causa_fallecim_tumor" model="ii.causa.fallecim">
+            <field name="name">TUMOR</field>
+            <field name="id">16</field>
+        </record>
+        <record id="ii_causa_fallecim_choque_septico" model="ii.causa.fallecim">
+            <field name="name">CHOQUE SEPTICO</field>
+            <field name="id">17</field>
+        </record>
+        <record id="ii_causa_fallecim_falla_organica_multiple" model="ii.causa.fallecim">
+            <field name="name">FALLA ORGANICA MULTIPLE</field>
+            <field name="id">18</field>
+        </record>
+        <record id="ii_causa_fallecim_cirrosis" model="ii.causa.fallecim">
+            <field name="name">CIRROSIS</field>
+            <field name="id">19</field>
+        </record>
+        <record id="ii_causa_fallecim_muerte_fetal" model="ii.causa.fallecim">
+            <field name="name">MUERTE FETAL</field>
+            <field name="id">20</field>
+        </record>
+
+        <record id="cs_servi_confirm_si" model="cs.servi.confirm">
+            <field name="name">Si</field>
+            <field name="id">1</field>
+        </record>
+        <record id="cs_servi_confirm_no" model="cs.servi.confirm">
+            <field name="name">No</field>
+            <field name="id">2</field>
+        </record>
+
+        <record id="ds_atiende_servicio_cinthia_lizet_ab" model="ds.atiende.servicio">
+            <field name="name">CINTHIA LIZET AGUILAR BRAVO</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ds_atiende_servicio_keyla_yamel_pm" model="ds.atiende.servicio">
+            <field name="name">KEYLA YAMEL PARRA MARCELINO</field>
+            <field name="id">2</field>
+        </record>
+        <record id="ds_atiende_servicio_ignacio_vg" model="ds.atiende.servicio">
+            <field name="name">IGNACIO VILCHIS GARDUÑO</field>
+            <field name="id">3</field>
+        </record>
+
+        <record id="ds_sucursal_velacion" model="ds.sucursal.velacion">
+            <field name="name">ACAPULCO</field>
+            <field name="id">1</field>
+        </record>
+
+        <record id="ds_tipo_servicio_plan" model="ds.tipo.servicio">
+            <field name="name">PLAN</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ds_tipo_servicio_directo" model="ds.tipo.servicio">
+            <field name="name">DIRECTO</field>
+            <field name="id">2</field>
+        </record>
+
+        <record id="ds_capilla" model="ds.capilla">
+            <field name="name">PROPIAS</field>
+            <field name="id">1</field>
+        </record>
+
+        <record id="ds_interplaza_si" model="ds.interplaza">
+            <field name="name">Si</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ds_interplaza_no" model="ds.interplaza">
+            <field name="name">No</field>
+            <field name="id">2</field>
+        </record>
+
+        <record id="ds_origen_ags_aguascalientes" model="ds.origen">
+            <field name="name">AGS, AGUASCALIENTES</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ds_origen_bcn_rosarito" model="ds.origen">
+            <field name="name">BCN, ROSARITO</field>
+            <field name="id">2</field>
+        </record>
+        <record id="ds_origen_bcn_tecate" model="ds.origen">
+            <field name="name">BCN, TECATE</field>
+            <field name="id">3</field>
+        </record>
+        <record id="ds_origen_bcn_tijuana" model="ds.origen">
+            <field name="name">BCN, TIJUANA</field>
+            <field name="id">4</field>
+        </record>
+        <record id="ds_origen_cdmx_ciudad_de_mexico" model="ds.origen">
+            <field name="name">CDMX, CIUDAD DE MÉXICO</field>
+            <field name="id">5</field>
+        </record>
+        <record id="ds_origen_chi_chihuahua" model="ds.origen">
+            <field name="name">CHI, CHIHUAHUA</field>
+            <field name="id">6</field>
+        </record>
+        <record id="ds_origen_chi_ciudad_juarez" model="ds.origen">
+            <field name="name">CHI, CIUDAD JUÁREZ</field>
+            <field name="id">7</field>
+        </record>
+        <record id="ds_origen_coah_saltillo" model="ds.origen">
+            <field name="name">COAH, SALTILLO</field>
+            <field name="id">8</field>
+        </record>
+        <record id="ds_origen_col_colima" model="ds.origen">
+            <field name="name">COL, COLIMA</field>
+            <field name="id">9</field>
+        </record>
+        <record id="ds_origen_col_manzanillo" model="ds.origen">
+            <field name="name">COL, MANZANILLO</field>
+            <field name="id">10</field>
+        </record>
+        <record id="ds_origen_col_tecoman" model="ds.origen">
+            <field name="name">COL, TECOMAN</field>
+            <field name="id">11</field>
+        </record>
+        <record id="ds_origen_dur_durango" model="ds.origen">
+            <field name="name">DUR, DURANGO</field>
+            <field name="id">12</field>
+        </record>
+        <record id="ds_origen_gto_celaya" model="ds.origen">
+            <field name="name">GTO, CELAYA</field>
+            <field name="id">13</field>
+        </record>
+        <record id="ds_origen_gto_leon" model="ds.origen">
+            <field name="name">GTO, LEÓN</field>
+            <field name="id">14</field>
+        </record>
+        <record id="ds_origen_mch_michoacan" model="ds.origen">
+            <field name="name">MCH, MICHOACÁN</field>
+            <field name="id">15</field>
+        </record>
+        <record id="ds_origen_mch_morelia" model="ds.origen">
+            <field name="name">MCH, MORELIA</field>
+            <field name="id">16</field>
+        </record>
+        <record id="ds_origen_jal_cd_guzman" model="ds.origen">
+            <field name="name">JAL, CD. GUZMAN</field>
+            <field name="id">17</field>
+        </record>
+        <record id="ds_origen_jal_guadalajara" model="ds.origen">
+            <field name="name">JAL, GUADALAJARA</field>
+            <field name="id">18</field>
+        </record>
+        <record id="ds_origen_puerto_vallarta" model="ds.origen">
+            <field name="name">JAL, PUERTO VALLARTA</field>
+            <field name="id">19</field>
+        </record>
+        <record id="ds_origen_max_toluca" model="ds.origen">
+            <field name="name">MEX, TOLUCA</field>
+            <field name="id">20</field>
+        </record>
+        <record id="ds_origen_nay_bucerias" model="ds.origen">
+            <field name="name">NAY, BUCERIAS</field>
+            <field name="id">21</field>
+        </record>
+        <record id="ds_origen_nay_compostela" model="ds.origen">
+            <field name="name">NAY, COMPOSTELA</field>
+            <field name="id">22</field>
+        </record>
+        <record id="ds_origen_nay_las_varas" model="ds.origen">
+            <field name="name">NAY, LAS VARAS</field>
+            <field name="id">23</field>
+        </record>
+        <record id="ds_origen_nay_tepic" model="ds.origen">
+            <field name="name">NAY, TEPIC</field>
+            <field name="id">24</field>
+        </record>
+        <record id="ds_origen_pue_puebla" model="ds.origen">
+            <field name="name">PUE, PUEBLA</field>
+            <field name="id">25</field>
+        </record>
+        <record id="ds_origen_qr_cancun" model="ds.origen">
+            <field name="name">QR, CANCÚN</field>
+            <field name="id">26</field>
+        </record>
+        <record id="ds_origen_sin_mazatlan" model="ds.origen">
+            <field name="name">SIN, MAZATLÁN</field>
+            <field name="id">27</field>
+        </record>
+        <record id="ds_origen_tamps_tampico" model="ds.origen">
+            <field name="name">TAMPS, TAMPICO</field>
+            <field name="id">28</field>
+        </record>
+        <record id="ds_origen_tla_tlaxcala" model="ds.origen">
+            <field name="name">TLA, TLAXCALA</field>
+            <field name="id">29</field>
+        </record>
+        <record id="ds_origen_yuc_merida" model="ds.origen">
+            <field name="name">YUC, MÉRIDA</field>
+            <field name="id">30</field>
+        </record>
+        <record id="ds_origen_zac_zacatecas" model="ds.origen">
+            <field name="name">ZAC, ZACATECAS</field>
+            <field name="id">31</field>
+        </record>
+
+        <record id="ds_sucursal_qentreg_cenizas_acapulco" model="ds.sucursal.qentreg.cenizas">
+            <field name="name">ACAPULCO</field>
+            <field name="id">1</field>
+        </record>
+
+        <record id="ds_aplica_seguro_si" model="ds.aplica.seguro">
+            <field name="name">Si</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ds_aplica_seguro_no" model="ds.aplica.seguro">
+            <field name="name">No</field>
+            <field name="id">2</field>
+        </record>
+
+        <record id="ds_ataud_imperial_metalico" model="ds.ataud">
+            <field name="name">IMPERIAL METALICO</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ds_ataud_mdf_color_vino" model="ds.ataud">
+            <field name="name">MDF COLOR VINO</field>
+            <field name="id">2</field>
+        </record>
+
+<!--         <record id="ds_urna" model="ds.urna">
+            <field name="name">RAMIRO RENTERIA ROBLES</field>
+            <field name="id">1</field>
+        </record> -->
+
+        <record id="relacion_confinad_abuelo" model="relacion.confinad">
+            <field name="name">ABUELO(A)</field>
+            <field name="id">1</field>
+        </record>
+        <record id="relacion_confinad_amigo" model="relacion.confinad">
+            <field name="name">AMIGO(A)</field>
+            <field name="id">2</field>
+        </record>
+        <record id="relacion_confinad_esposo" model="relacion.confinad">
+            <field name="name">ESPOSO(A)</field>
+            <field name="id">3</field>
+        </record>
+        <record id="relacion_confinad_hermano" model="relacion.confinad">
+            <field name="name">HERMANO(A)</field>
+            <field name="id">4</field>
+        </record>
+        <record id="relacion_confinad_hijo" model="relacion.confinad">
+            <field name="name">HIJO(A)</field>
+            <field name="id">5</field>
+        </record>
+        <record id="relacion_confinad_padre_o_madre" model="relacion.confinad">
+            <field name="name">PADRE/MADRE</field>
+            <field name="id">6</field>
+        </record>
+        <record id="relacion_confinad_tio" model="relacion.confinad">
+            <field name="name">TIO(A)</field>
+            <field name="id">7</field>
+        </record>
+        <record id="relacion_confinad_otro" model="relacion.confinad">
+            <field name="name">OTRO</field>
+            <field name="id">8</field>
+        </record>
+
+        <!-- <record id="podp_colonia_condesa" model="podp.colonia">
+            <field name="name">CONDESA</field>
+            <field name="id">1</field>
+        </record> -->
+
+        <!-- <record id="podp_calle_ynumber" model="podp.calle.ynumber">
+            <field name="name">MARIANO BARCENA 45</field>
+            <field name="id">1</field>
+        </record> -->
+
+        <record id="iv_lugar_velacion_capilla_propia" model="iv.lugar.velacion">
+            <field name="name">CAPILLA PROPIA</field>
+            <field name="id">1</field>
+        </record>
+        <record id="iv_lugar_velacion_capilla_terceros" model="iv.lugar.velacion">
+            <field name="name">CAPILLA TERCEROS</field>
+            <field name="id">2</field>
+        </record>
+        <record id="iv_lugar_velacion_domicilio" model="iv.lugar.velacion">
+            <field name="name">DOMICILIO</field>
+            <field name="id">3</field>
+        </record>
+
+        <record id="iv_nombre_capilla" model="iv.nombre.capilla">
+            <field name="name">FUNERALES GUERRERO</field>
+            <field name="id">1</field>
+        </record>
+
+        <record id="dc_forma_pago_semanal" model="dc.forma.pago">
+            <field name="name">SEMANAL</field>
+            <field name="id">1</field>
+        </record>
+        <record id="dc_forma_pago_quincenal" model="dc.forma.pago">
+            <field name="name">QUINCENAL</field>
+            <field name="id">2</field>
+        </record>
+        <record id="dc_forma_pago_mensual" model="dc.forma.pago">
+            <field name="name">MENSUAL</field>
+            <field name="id">3</field>
+        </record>
+
+        <record id="ir_operativo_jessus_bernal_de_jesus" model="ir.operativo">
+            <field name="name">JESUS BERNAL DE JESUS</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ir_operativo_ignacio_vilchis_garduno" model="ir.operativo">
+            <field name="name">IGNACIO VILCHIS GARDUÑO</field>
+            <field name="id">2</field>
+        </record>
+
+        <record id="carroza" model="carroza">
+            <field name="name">ESCALADE NEGRA</field>
+            <field name="id">1</field>
+        </record>
+
+        <record id="ig_entrego_ropa_si" model="ig.entrego.ropa">
+            <field name="name">Si</field>
+            <field name="id">1</field>
+        </record>
+        <record id="ig_entrego_ropa_no" model="ig.entrego.ropa">
+            <field name="name">No</field>
+            <field name="id">2</field>
+        </record>
+
+        <!-- <record id="ig_proveedor_embalsama" model="ig.proveedor.embalsama">
+            <field name="name">REYNALDO</field>
+            <field name="id">1</field>
+        </record> -->
+
+        <!-- <record id="ig_templo" model="ig.templo">
+            <field name="name">PAULINA RODRIGUEZ GONZALEZ</field>
+            <field name="id">1</field>
+        </record> -->
+
+        <!-- <record id="ig_panteon" model="ig.panteon">
+            <field name="name">PANTEON MUNICIPAL DE ATOTONILCO</field>
+            <field name="id">1</field>
+        </record> -->
+     </data>
+</odoo>

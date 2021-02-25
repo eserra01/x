@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="product_pricelist_inherit_view" model="ir.ui.view">
+    <field name="name">product.pricelist.inherit.view</field>
+    <field name="model">product.pricelist</field>
+    <field name="inherit_id" ref="product.product_pricelist_view"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='min_quantity']" position="replace">
+        <field name="prefix_request"/>
+        <field name="prefix_contract"/>
+        <field name="stationery" widget="monetary"/>
+        <field name="payment_amount" widget="monetary"/>
+        <field name="sequence_id" invisible="1"/>
+      </xpath>
+
+      <xpath expr="//field[@name='product_tmpl_id']" position="before">
+        <field name="type_company"/>
+      </xpath>
+
+      <xpath expr="//field[@name='item_ids']/tree" position="attributes">
+        <attribute name="editable">top</attribute>
+      </xpath>
+
+      <xpath expr="//field[@name='fixed_price']" position="attributes">
+        <attribute name="widget">monetary</attribute>
+      </xpath>
+
+    </field>
+  </record>
+</odoo>

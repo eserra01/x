@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="ecobro_settings_view" model="ir.ui.view">
+    <field name="name">ecobro.settings.view</field>
+    <field name="model">res.config.settings</field>
+    <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//div[@id='invite_users']" position="after">
+        <div id="remote_connection">
+          <h2>Conexión remota Ecobro</h2>
+          <div class="row mt16 o_settings_container">
+            <div class="col-12 col-lg-6 o_setting_box">
+              <div class="o_setting_left_pane"/>
+              <div class="o_setting_right_pane">
+                <span class="o_form_label">Datos de acceso al servidor.</span>
+                <div class="text-muted">
+                  Webservice de prueba
+                </div>
+                <div class="text-muted">
+                  <field name="testing_ecobro"/>
+                </div>
+                <div class="text-muted">
+                  IP
+                </div>
+                <div class="text-muted">
+                  <field name="ecobro_ip" attrs="{'readonly' : [('testing_ecobro','=',True)],'required' : [('testing_ecobro','=',False)]}"/>
+                </div>
+                <div class="text-muted">
+                  Ciudad de Sincronización
+                </div>
+                <div class="text-muted">
+                  <field name="ecobro_city" attrs="{'readonly' : [('testing_ecobro','=',True)],'required' : [('testing_ecobro','=',False)]}"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

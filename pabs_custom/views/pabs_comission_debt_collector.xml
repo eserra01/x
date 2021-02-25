@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista de formulario -->
+    <record id="comission_debt_collector_form_view" model="ir.ui.view">
+        <field name="name">comission.debt.collector.form.view</field>
+        <field name="type">form</field>
+        <field name="model">pabs.comission.debt.collector</field>
+        <field name="arch" type="xml">
+            <form string="Debt collector form" editable="bottom">
+                <sheet>
+                    <group>
+                        <field name="debt_collector_id" />
+                        <field name="comission_percentage" />
+                        <field name="comission_percentage_with_salary" />
+                        <field name="comission_percentage_pantheon" />
+                        <field name="effectiveness" />
+                        <field name="has_salary" />
+                        <field name="receipt_series" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de lista -->
+    <record id="comission_debt_collector_tree_view" model="ir.ui.view">
+        <field name="name">comission.debt.collector.tree.view</field>
+        <field name="model">pabs.comission.debt.collector</field>
+        <field name="arch" type="xml">
+            <tree string="Debt collector Tree" editable="bottom" default_order="debt_collector_id">
+                <field name="debt_collector_id" required="1"/>
+                <field name="receipt_series" required="1"/>
+                <field name="comission_percentage" required="1"/>
+                <field name="comission_percentage_with_salary" required="1"/>
+                <field name="comission_percentage_pantheon" required="1"/>
+                <field name="has_salary" />
+                <field name="effectiveness" required="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Barra de búsqueda -->
+    <record id="comission_debt_collector_search_view" model="ir.ui.view" >
+        <field name="name">comission.debt.collector.view</field>
+        <field name="model">pabs.comission.debt.collector</field>
+        <field name="arch" type="xml">
+            <search>
+                <!-- Filtros -->
+                <field name="debt_collector_id"/>
+                <field name="receipt_series"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="comission_debt_collector_action" model="ir.actions.act_window" >
+        <field name="name">Comisiones_de_cobradores</field>
+        <field name="res_model">pabs.comission.debt.collector</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+
+</odoo>

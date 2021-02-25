@@ -1,0 +1,272 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+
+      <template id="my_template_carnet_pago2">
+        <t t-if="not o" t-set="o" t-value="doc" />
+        <t t-if="not company">
+          <t t-if="company_id">
+            <t t-set="company" t-value="company_id" />
+          </t>
+          <t t-elif="o and 'company_id' in o">
+            <t t-set="company" t-value="o.company_id.sudo()" />
+          </t>
+          <t t-else="else">
+            <t t-set="company" t-value="res_company" />
+          </t>
+        </t>
+        <t t-call="mortuary.header_carnet_pago2" />
+        <div class="article">
+          <t t-raw="0"/>
+        </div>
+        <!-- <t t-call="mortuary.footer_carnet_pago2" /> -->
+      </template>
+
+    	<template id="mortuary.carnet_pago2">
+        <t t-call="web.html_container">
+          <!-- <t t-call="web.basic_layout"> -->
+          <t t-foreach="docs" t-as="doc">
+            <t t-call="mortuary.my_template_carnet_pago2">
+
+              <div class="page">
+                <!-- <style type="text/css">
+                  table, th, td {
+                    border: 1px solid black;
+                  }
+                </style> -->
+                <br/><br/><br/>
+
+                <table width="100%">
+                  <tr>
+                    <td width="20%"><strong>Tel. Cobrador: 33 1479 2810</strong></td>
+                    <td width="47%"></td>
+                    <td width="5%"><strong>Bitácora</strong></td>
+                    <td width="28%" style="border-bottom: 1px solid black;"><strong><span t-field="doc.name"/></strong></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Tel. Oficina: 36 50 3686 Ext. 115</strong></td>
+                    <td colspan="3"></td>
+                  </tr>
+                </table>
+
+                <table width="100%">
+                  <tr>
+                    <td width="5%"><strong>Finado: </strong></td>
+                    <td width="62%" style="border-bottom: 1px solid black;"><strong><span t-field="doc.ii_finado"/></strong></td>
+                    <td width="2%"></td>
+                    <td width="6%"><strong>Contacto: </strong></td>
+                    <td width="22%" style="border-bottom: 1px solid black;"><strong><span t-field="doc.contact_1_nomb"/></strong></td>
+                  </tr>
+                </table><br/>
+
+                <div class="row">
+
+                  <div class="col-6">
+                    <table width="100%">
+                      <thead>
+                        <tr>
+                          <th class="text-center" style="width: 20%; border: none;">FECHA</th>
+                          <th class="text-center" style="width: 20%; border: none;">N° RECIBO</th>
+                          <th class="text-center" style="width: 20%; border: none;">CANTIDAD</th>
+                          <th class="text-center" style="width: 20%; border: none;">RECIBIÓ</th>
+                          <th class="text-center" style="width: 20%; border: none;">SALDO</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="col-6">
+                    <table width="100%">
+                      <thead>
+                        <tr>
+                          <th class="text-center" style="width: 20%; border: none;">FECHA</th>
+                          <th class="text-center" style="width: 20%; border: none;">N° RECIBO</th>
+                          <th class="text-center" style="width: 20%; border: none;">CANTIDAD</th>
+                          <th class="text-center" style="width: 20%; border: none;">RECIBIÓ</th>
+                          <th class="text-center" style="width: 20%; border: none;">SALDO</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                        <tr>
+                          <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
+                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div><br/><br/><br/>
+
+                <table width="100%">
+                  <tr>
+                    <td width="10%"><strong>Aportaciones de:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
+                    <td width="90%" style="border-bottom: 1px solid black;"><span>&amp;nbsp;&amp;nbsp;</span></td>
+                  </tr>
+                </table>
+
+                <div style="page-break-before:always;"></div>
+
+              </div>
+            </t>
+          </t>
+        </t>
+      </template>
+
+      <template id="header_carnet_pago2">
+        <div class="header">
+          <table width="100%" cellspacing="0" cellpadding="0" style="margin-top:50px !important">
+            <tr>
+              <td style="width: 30%;" rowspan="4">
+                <img class="img" src="mortuary/static/description/imagen.jpg" style="width:300px;" height="85px" alt="Logo"/>
+              </td>
+              <td class="text-center" style="width: 50%;"><br/><h3><strong>CARNET DE APORTACIONES</strong></h3></td>
+              <td class="text-center" style="width: 20%;">
+                <h3><strong>SERVICIO<br/>REALIZADO</strong></h3>
+              </td>
+            </tr>
+          </table>
+
+        </div>
+      </template>
+
+  </data>
+
+	<record id="paperformat_carnet_pago2" model="report.paperformat">
+    <field name="name">PF Sale Order Landscape</field>
+    <field name="default" eval="True"/>
+    <field name="format">custom</field>
+    <field name="page_height">100</field>
+    <field name="page_width">245</field>
+    <field name="orientation">Portrait</field>
+    <field name="margin_top">8</field>
+    <field name="margin_bottom">5</field>
+    <field name="margin_left">7</field>
+    <field name="margin_right">7</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">130</field>
+ </record>
+
+	<report
+    string="Carnet de pago"
+    id="id_carnet_pago2"
+    model='mortuary'
+    name="mortuary.carnet_pago2"
+    file="mortuary.carnet_pago2"
+    report_type="qweb-pdf"
+    print_report_name="'Carnet de pago'"
+    paperformat="mortuary.paperformat_carnet_pago2"
+    menu="False"
+  />
+
+</odoo>
