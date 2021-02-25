@@ -497,7 +497,7 @@ class PABSEcobroSync(models.Model):
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
           #'detalle' : e,
-          'detalle' : e.replace('"','').replace("'","")
+          'detalle' : str(e).replace('"','').replace("'","")
         })
         continue
       try:
