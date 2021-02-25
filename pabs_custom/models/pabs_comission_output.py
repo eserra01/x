@@ -16,3 +16,7 @@ class ComissionOutput(models.Model):
     comission_agent_id = fields.Many2one(string="Comisionista", comodel_name="hr.employee")#, readonly=True)
     commission_paid = fields.Float(string="Comision pagada", default = 0)#, readonly=True)
     actual_commission_paid = fields.Float(string="Comision real pagada", default = 0)#, readonly=True)
+
+    # Fecha_oficina relacionado al pago
+    payment_date = fields.Date(comodel_name='account.payment', related="payment_id.payment_date", string='Fecha de oficina')
+    payment_status = fields.Selection(comodel_name='account.payment', related="payment_id.state", string='Estatus')

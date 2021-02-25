@@ -40,7 +40,7 @@ class ComissionTree(models.Model):
         # TipoPago = "Bono"
 
         #Obtener y validar información del contrato
-        contrato = self.env['pabs.contract'].browse([NumeroContrato])
+        contrato = self.env['pabs.contract'].search([('name', '=', NumeroContrato)])
 
         if not contrato.id:
             raise ValidationError("No se encontró el contrato {}".format(NumeroContrato))
@@ -122,7 +122,7 @@ class ComissionTree(models.Model):
             raise ValidationError("El monto del recibo = ({}) es menor a cero".format(MontoPago))
 
         #Obtener y validar información del contrato
-        contrato = self.env['pabs.contract'].browse(NumeroContrato)
+        contrato = self.env['pabs.contract'].search([('name', '=', NumeroContrato)])
 
         if not contrato.id:
             raise ValidationError("No se encontró el contrato {}".format(NumeroContrato))
@@ -230,7 +230,7 @@ class ComissionTree(models.Model):
     def RevertirSalidas(self, IdPago, NumeroContrato):
 
         #Obtener y validar información del contrato
-        contrato = self.env['pabs.contract'].browse(NumeroContrato)
+        contrato = self.env['pabs.contract'].search([('name', '=', NumeroContrato)])
 
         if not contrato.id:
             raise ValidationError("No se encontró el contrato {}".format(NumeroContrato))
