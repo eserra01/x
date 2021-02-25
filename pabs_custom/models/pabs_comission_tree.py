@@ -173,7 +173,7 @@ class ComissionTree(models.Model):
                 #No crear linea en el arbol si el cobrador no recibió comisión
                 if PorcentajeCobrador > 0:
                     #Obtener ultimo orden del arbol de comisiones
-                    siguiente_orden_disponible = arbol.search([], order='pay_order desc', limit = 1).pay_order + 1
+                    siguiente_orden_disponible = self.search([('contract_id','=', contrato.id)], order='pay_order desc', limit = 1).pay_order + 1
                     #Crear registro en Arbol
                     self.create([{"contract_id":contrato.id, "pay_order":siguiente_orden_disponible, "job_id":id_cargo_cobrador, "comission_agent_id":empleado.id, "actual_commission_paid":MontoComisionCobrador}])
 

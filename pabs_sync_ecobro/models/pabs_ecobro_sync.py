@@ -340,7 +340,7 @@ class PABSEcobroSync(models.Model):
       ### Validar que el recibo no esté afectado
       ecobro_number = "{}{}".format(rec['serie_recibo'],rec['no_recibo'])
       recibo_afectado = payment_obj.search([
-        ('Ecobro_receipt','=',ecobro_number),
+        ('ecobro_affect_id','=',rec['afectacionID']),
         ('state','in',['posted','sent','reconciled'])
       ])
 
@@ -352,6 +352,12 @@ class PABSEcobroSync(models.Model):
           'detalle' : "Se encontro {} recibos".format(len(recibo_afectado))
         })
         continue
+
+      ### IMPRIMIMOS EL NUMERO DE RECIBO
+      _logger.info("Numero: {}".format(ecobro_number))
+
+      ### Imprimimos para ver si existe el pago realizado previamente
+      _logger.info("encontrado: {}".format(recibo_afectado))
 
       ### Imprimimos en el log el estatus del recibo
       _logger.info("Estatus del recibo: {}".format(rec['status']))
@@ -487,7 +493,7 @@ class PABSEcobroSync(models.Model):
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
           #'detalle' : e,
-          'detalle' : "No se pudo procesar"
+          'detalle' : e
         })
         continue
       try:
