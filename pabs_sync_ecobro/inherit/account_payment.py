@@ -14,9 +14,13 @@ class AccountPayment(models.Model):
     payment_ids = payment_obj.search([
       ('ecobro_affect_id','!=',False),
       ('comission_output_ids','=',False)])
-    raise ValidationError((
-      "Registros encontrados: {}".format(len(payment_ids))))
-    comission_tree_obj.CrearSalidas(
-      IdPago=IdPago, NumeroContrato=NumeroContrato,
-      CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
-      EsExcedente=False)
+    for payment_id in payment_ids:
+      IdPago = self.id
+      if self.contract:
+        CodigoCobrador = self.debt_collector_code.barcode
+        NumeroContrato = self.contract.id
+        MontoPago = self.amount or 0
+      comission_tree_obj.CrearSalidas(
+        IdPago=IdPago, NumeroContrato=NumeroContrato,
+        CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
+        EsExcedente=False)
