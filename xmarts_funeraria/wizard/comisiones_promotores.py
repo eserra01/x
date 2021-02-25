@@ -164,22 +164,54 @@ class ReportComisionesPromotores(models.AbstractModel):
                     # 2. Filtrar las salidas por tipo de plan
                     aux_salidas_por_plan = aux_salidas_por_empleado.filtered(lambda salida: salida.payment_id.contract.name_service.id == plan.id) #<<< PLAN 1CJ FORZADO = 62
 
-                    #Obtener los cobradores de las salidas
-                    aux_cobradores_unicos = aux_salidas_por_plan.mapped(lambda salida: salida.payment_id.debt_collector_code.name or "NINGUNO")
+                    ### Primero: Anexar las salidas de los pagos sin cobrador
+                    # Filtrar las salidas que no tiene cobrador
+                    aux_salidas_sin_cobrador = aux_salidas_por_plan.filtered(lambda salida: salida.payment_id.debt_collector_code.id == False)
 
-                    #Quitar duplicados de la lista de cobradores
-                    aux_cobradores_unicos = list(set(aux_cobradores_unicos))
+                    subtotal_asistente_ninguno = 0
+                    subtotal_cobrador_ninguno = 0
+                    lista_pagos_ninguno = []
+                    for pago in aux_salidas_sin_cobrador:
+                        subtotal_asistente_ninguno = subtotal_asistente_ninguno + pago.actual_commission_paid
+                        subtotal_cobrador_ninguno = subtotal_cobrador_ninguno + (pago.commission_paid - pago.actual_commission_paid)
+
+                        lista_pagos_ninguno.append({
+                            # Datos de detalle
+                            'fecha_recibo': fields.Date.to_string(pago.payment_id.date_receipt),
+                            'fecha_oficina': fields.Date.to_string(pago.payment_id.payment_date),
+                            'contrato': pago.payment_id.contract.name,
+                            'recibo': pago.payment_id.Ecobro_receipt,
+                            'cliente': pago.payment_id.contract.full_name,
+                            'importe': pago.payment_id.amount,
+                            'comision_cobrador': pago.commission_paid - pago.actual_commission_paid,
+                            'comision_asistente': pago.actual_commission_paid
+                        })
+
+                    if lista_pagos_ninguno:
+                        lista_cobradores.append({
+                            'cobrador': 'NINGUNO',
+                            'subtotal_asistente': subtotal_asistente_ninguno,
+                            'subtotal_cobrador': subtotal_cobrador_ninguno,
+                            'pagos': lista_pagos_ninguno
+                        })
+
+                        # Sumar al acumulado por plan
+                        subtotal_plan_asistente = subtotal_plan_asistente + subtotal_asistente_ninguno
+
+                    ### Segundo: Anexar las salidas de los pagos con cobrador
+                    #Obtener los cobradores de las salidas que si tienen cobrador
+                    aux_cobradores_unicos = aux_salidas_por_plan.mapped(lambda salida: salida.payment_id.debt_collector_code) #Nota: No incluye los pagos sin cobrador
 
                     for cobrador in aux_cobradores_unicos:
                         # 3. Filtrar las salidas por cobrador
-                        aux_salidas_detalle = aux_salidas_por_plan.filtered(lambda salida: salida.payment_id.debt_collector_code.name == cobrador if salida.payment_id.debt_collector_code else True) #'NINGUNO' == 'NINGUNO')
+                        aux_salidas_detalle = aux_salidas_por_plan.filtered(lambda salida: salida.payment_id.debt_collector_code.id == cobrador.id)
                         
                         subtotal_asistente = 0
                         subtotal_cobrador = 0
                         lista_pagos = []
                         for pago in aux_salidas_detalle:
                             # 4. Contratos
-                            subtotal_asistente = subtotal_asistente + pago.commission_paid
+                            subtotal_asistente = subtotal_asistente + pago.actual_commission_paid
                             subtotal_cobrador = subtotal_cobrador + (pago.commission_paid - pago.actual_commission_paid)
 
                             lista_pagos.append({
@@ -196,7 +228,7 @@ class ReportComisionesPromotores(models.AbstractModel):
                             # 4. Fin iteración salida de contratos
 
                         lista_cobradores.append({
-                            'cobrador':cobrador,
+                            'cobrador': cobrador.name,
                             'subtotal_asistente': subtotal_asistente,
                             'subtotal_cobrador': subtotal_cobrador,
                             'pagos': lista_pagos
