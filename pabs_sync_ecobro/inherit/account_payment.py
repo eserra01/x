@@ -19,12 +19,12 @@ class AccountPayment(models.Model):
       ('comission_output_ids','=',False)])
     for payment_id in payment_ids:
       IdPago = self.id
-      if self.contract:
-        NumeroContrato = self.contract.id
-      if self.debt_collector_code:
-        CodigoCobrador = self.debt_collector_code.barcode
-      if self.amount:
-        MontoPago = self.amount or 0
+      if payment_id.contract:
+        NumeroContrato = payment_id.contract.id
+      if payment_id.debt_collector_code:
+        CodigoCobrador = payment_id.debt_collector_code.barcode
+      if payment_id.amount:
+        MontoPago = payment_id.amount or 0
       _logger.info("ID: {} contrato: {} code: {} monto: {}".format(IdPago,NumeroContrato,CodigoCobrador,MontoPago))
       comission_tree_obj.CrearSalidas(
         IdPago=IdPago, NumeroContrato=NumeroContrato,
