@@ -18,7 +18,7 @@ class AccountPayment(models.Model):
       ('ecobro_affect_id','!=',False),
       ('comission_output_ids','=',False)])
     for payment_id in payment_ids:
-      IdPago = self.id
+      IdPago = payment_id.id
       if payment_id.contract:
         NumeroContrato = payment_id.contract.id
       if payment_id.debt_collector_code:
