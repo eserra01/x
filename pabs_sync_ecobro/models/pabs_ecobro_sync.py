@@ -65,14 +65,17 @@ class PABSEcobroSync(models.Model):
     for debt_collector_id in debt_collector_ids:
       ### INFORMACIÓN DEL COBRADOR
       employee_id = debt_collector_id.debt_collector_id
-      ### EMPAQUETANDO INFORMACIÓN DEL COBRADOR
-      employee_data.append({
-      'codigo' : employee_id.barcode,
-      'nombre' : employee_id.name,
-      'serie' : debt_collector_id.receipt_series,
-      'telefono' : employee_id.mobile_phone or "",
-      'cobradorID' : int(employee_id.ecobro_id) or employee_id.id
-      })
+
+      ### VALIDAR QUE EL COBRADOR ESTÉ ACTIVO
+      if employee_id.employee_status == "ACTIVO":
+        ### EMPAQUETANDO INFORMACIÓN DEL COBRADOR
+        employee_data.append({
+        'codigo' : employee_id.barcode,
+        'nombre' : employee_id.name,
+        'serie' : debt_collector_id.receipt_series,
+        'telefono' : employee_id.mobile_phone or "",
+        'cobradorID' : int(employee_id.ecobro_id) or employee_id.id
+        })
     ### MANEJADOR DE ERRORES
     try:
       ### SI SE EMPAQUETÓ INFORMACIÓN
