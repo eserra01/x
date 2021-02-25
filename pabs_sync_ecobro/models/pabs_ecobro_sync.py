@@ -353,6 +353,8 @@ class PABSEcobroSync(models.Model):
         })
         continue
 
+      ### Imprimimos en el log el estatus del recibo
+      _logger.info("Estatus del recibo: {}".format(rec['status']))
       ### SI LO ENVIAN A AFECTAR Y YA SE ENCUENTRA AFECTADO ENVIA RESPUESTA COMO FAIL
       if rec['status'] == 1:
         if recibo_afectado:
