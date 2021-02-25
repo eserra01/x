@@ -361,6 +361,15 @@ class PABSEcobroSync(models.Model):
 
       ### Imprimimos en el log el estatus del recibo
       _logger.info("Estatus del recibo: {}".format(rec['status']))
+      if rec['status'] == 1:
+        _logger.warning("Se validó 1")
+      if rec['status'] == '1':
+        _logger.warning("Se validó 1 en string")
+      if rec['status'] == 7:
+        _logger.warning("Se validó 7")
+      if rec['status'] == '7':
+        _logger.warning("Se validó 7 en string")
+      continue
       ### SI LO ENVIAN A AFECTAR Y YA SE ENCUENTRA AFECTADO ENVIA RESPUESTA COMO FAIL
       if rec['status'] == 1:
         if recibo_afectado:
@@ -372,7 +381,7 @@ class PABSEcobroSync(models.Model):
           continue
 
       ### SI LO ENVIAN A CANCELAR Y YA EXISTE EL MOVIMIENTO, LO CANCELA
-      elif rec['status'] == 7:
+      if rec['status'] == 7:
         if recibo_afectado:
           recibo_afectado.cancel()
           _logger.warning("el recibo: {} fue cancelado".format(ecobro_number))
