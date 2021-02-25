@@ -367,7 +367,7 @@ class PABSEcobroSync(models.Model):
       elif rec['status'] == 7:
         if recibo_afectado:
           recibo_afectado.cancel()
-        _logger.warning("el recibo: {} fue cancelado".format(ecobro_number))
+          _logger.warning("el recibo: {} fue cancelado".format(ecobro_number))
           done.append({
             'afectacionID' : rec['afectacionID'],
             'estatus' : 1,
