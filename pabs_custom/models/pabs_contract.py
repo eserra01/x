@@ -1161,8 +1161,7 @@ class PABSContracts(models.Model):
     _logger.warning('El contrato')
     contract_obj = self.env['pabs.contract']
     contract_ids = contract_obj.search([
-      ('state','=','precontract'),
-      ('invoice_date','<','2021-02-15')],limit=400,order="name")
+      ('state','=','precontract')],limit=400,order="name")
     for contract_id in contract_ids:
       lot_id = contract_id.lot_id.id
       _logger.warning('El contrato {}'.format(lot_id))
