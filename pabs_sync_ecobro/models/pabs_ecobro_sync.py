@@ -350,7 +350,8 @@ class PABSEcobroSync(models.Model):
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
           'detalle' : "Se encontro {} recibos".format(len(recibo_afectado))
-          })
+        })
+        continue
 
       ### SI LO ENVIAN A AFECTAR Y YA SE ENCUENTRA AFECTADO ENVIA RESPUESTA COMO FAIL
       if rec['status'] == 1:
@@ -366,6 +367,7 @@ class PABSEcobroSync(models.Model):
       elif rec['status'] == 7:
         if recibo_afectado:
           recibo_afectado.cancel()
+        _logger.warning("el recibo: {} fue cancelado".format(ecobro_number))
           done.append({
             'afectacionID' : rec['afectacionID'],
             'estatus' : 1,
