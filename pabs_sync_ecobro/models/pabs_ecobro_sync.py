@@ -75,7 +75,7 @@ class PABSEcobroSync(models.Model):
         'serie' : debt_collector_id.receipt_series,
         'telefono' : employee_id.mobile_phone or "",
         'cobradorID' : int(employee_id.ecobro_id) or employee_id.id
-        
+
         })
     ### MANEJADOR DE ERRORES
     try:
@@ -497,7 +497,7 @@ class PABSEcobroSync(models.Model):
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
           #'detalle' : e,
-          'detalle' : e
+          'detalle' : e.replace('"','').replace("'","")
         })
         continue
       try:
