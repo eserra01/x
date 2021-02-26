@@ -305,6 +305,7 @@ class PABSContracts(models.Model):
       vals['activation_code'] = self.env['ir.sequence'].next_by_code(
         'pabs.contracts')
       ### Se cambia el estado del registro a "Pre-Contrato"
+      
     partner_id = self.create_partner(vals)
     vals['partner_id'] = partner_id.id
     vals['state'] = 'actived'
