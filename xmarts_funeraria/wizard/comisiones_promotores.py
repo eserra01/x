@@ -142,6 +142,7 @@ class ReportComisionesPromotores(models.AbstractModel):
         aux_codigos_unicos = []
         aux_codigos_unicos = salidas.mapped(lambda salida: salida.comission_agent_id)   
         
+        total_comisiones_asistentes = 0
         lista_codigos = [] # Lista que se enviará al reporte 
         for empleado in aux_codigos_unicos:
 
@@ -172,8 +173,6 @@ class ReportComisionesPromotores(models.AbstractModel):
                     subtotal_cobrador_ninguno = 0
                     lista_pagos_ninguno = []
                     for pago in aux_salidas_sin_cobrador:
-                        subtotal_asistente_ninguno = subtotal_asistente_ninguno + pago.actual_commission_paid
-                        subtotal_cobrador_ninguno = subtotal_cobrador_ninguno + (pago.commission_paid - pago.actual_commission_paid)
 
                         lista_pagos_ninguno.append({
                             # Datos de detalle
@@ -187,6 +186,11 @@ class ReportComisionesPromotores(models.AbstractModel):
                             'comision_asistente': pago.actual_commission_paid
                         })
 
+                        subtotal_asistente_ninguno = subtotal_asistente_ninguno + pago.actual_commission_paid
+                        subtotal_cobrador_ninguno = subtotal_cobrador_ninguno + (pago.commission_paid - pago.actual_commission_paid)
+                        #Fin de iteración de pagos sin cobrador
+
+
                     if lista_pagos_ninguno:
                         lista_cobradores.append({
                             'cobrador': 'NINGUNO',
@@ -197,6 +201,7 @@ class ReportComisionesPromotores(models.AbstractModel):
 
                         # Sumar al acumulado por plan
                         subtotal_plan_asistente = subtotal_plan_asistente + subtotal_asistente_ninguno
+                        subtotal_plan_cobrador = subtotal_plan_cobrador + subtotal_cobrador_ninguno
 
                     ### Segundo: Anexar las salidas de los pagos con cobrador
                     #Obtener los cobradores de las salidas que si tienen cobrador
@@ -211,9 +216,6 @@ class ReportComisionesPromotores(models.AbstractModel):
                         lista_pagos = []
                         for pago in aux_salidas_detalle:
                             # 4. Contratos
-                            subtotal_asistente = subtotal_asistente + pago.actual_commission_paid
-                            subtotal_cobrador = subtotal_cobrador + (pago.commission_paid - pago.actual_commission_paid)
-
                             lista_pagos.append({
                                 # Datos de detalle
                                 'fecha_recibo': fields.Date.to_string(pago.payment_id.date_receipt),
@@ -225,6 +227,9 @@ class ReportComisionesPromotores(models.AbstractModel):
                                 'comision_cobrador': pago.commission_paid - pago.actual_commission_paid,
                                 'comision_asistente': pago.actual_commission_paid
                             })
+
+                            subtotal_asistente = subtotal_asistente + pago.actual_commission_paid
+                            subtotal_cobrador = subtotal_cobrador + (pago.commission_paid - pago.actual_commission_paid)
                             # 4. Fin iteración salida de contratos
 
                         lista_cobradores.append({
@@ -259,13 +264,16 @@ class ReportComisionesPromotores(models.AbstractModel):
                 'total_codigo': total_codigo,
                 'planes' : lista_planes
             })
+            
+            total_comisiones_asistentes = total_comisiones_asistentes + total_codigo
             # Fin iteración codigos unicos
 
         # Variables a enviar al reporte
         return {
             "fecha_inicio": fecha_inicial,
             "fecha_final": fecha_final,
-            "codigos": lista_codigos
+            "codigos": lista_codigos,
+            "total_asistentes": total_comisiones_asistentes
         }
 
         # raise ValidationError("{}".format(lista_pagos))

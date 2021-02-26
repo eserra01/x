@@ -127,6 +127,13 @@
                         </t>
                         <!-- FIN CODIGOS -->
 
+                        <!-- TOTAL COMISIONES -->
+                        <tr>
+                            <td colspan="6"></td>
+                            <td class="dato_bold" style="text-align: center">Total:</td>
+                            <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(total_asistentes)"></span></td>
+                        </tr>
+
                     </tbody>
                 </table><br/><br/><br/>
             </div>
