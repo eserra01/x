@@ -61,13 +61,16 @@ class PABSEcobroSync(models.Model):
     debt_collector_ids = debt_collector_obj.search([('receipt_series','!=',False)])
     ### LISTA DE INFORMACIÓN VACÍA
     employee_data = []
+    ### BUSCAMOS EL ESTATUS ACTIVO
+    status_id = self.env['hr.employee.status'].search([
+      ('name','=','ACTIVO')],limit=1)
     ### SÍ EXISTEN COBRADORES CON SERIES ASIGNADAS, CREAMOS CICLO
     for debt_collector_id in debt_collector_ids:
       ### INFORMACIÓN DEL COBRADOR
       employee_id = debt_collector_id.debt_collector_id
 
       ### VALIDAR QUE EL COBRADOR ESTÉ ACTIVO
-      if employee_id.employee_status == "ACTIVO":
+      if employee_id.employee_status.id == status_id.id:
         ### EMPAQUETANDO INFORMACIÓN DEL COBRADOR
         employee_data.append({
         'codigo' : employee_id.barcode,
