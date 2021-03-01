@@ -575,7 +575,7 @@ class PABSEcobroSync(models.Model):
     for payment_id in cancel_payment_ids:
       if payment_id.move_line_ids:
         for obj in payment_id.move_line_ids:
-          obj.move_id.remove_move_reconcile()
+          obj.remove_move_reconcile()
           record_ids.append(obj.move_id.id)
     move_ids = set(record_ids)
     for move_id in move_ids:
