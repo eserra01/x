@@ -576,7 +576,6 @@ class PABSEcobroSync(models.Model):
         for obj in payment_id.move_line_ids:
           if obj.credit > 0:
             reconcile_id = reconcile_model.search([
-              '|',
               ('credit_move_id','=',obj.id),
               ('debit_move_id','=',obj.id)])
             _logger.warning("reconcile: {}".format(reconcile_id))
