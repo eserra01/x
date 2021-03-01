@@ -578,5 +578,6 @@ class PABSEcobroSync(models.Model):
           record_ids.append(obj.move_id.id)
     move_ids = set(record_ids)
     for move_id in move_ids:
-      account_move = account_move_obj.browse(move_id).button_draft().button_cancel()
+      if move_id:
+        account_move = account_move_obj.browse(move_id).button_draft().button_cancel()
     _logger.info("el método de ejecuto correctamente")
