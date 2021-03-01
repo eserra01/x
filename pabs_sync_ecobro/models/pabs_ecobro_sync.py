@@ -575,25 +575,13 @@ class PABSEcobroSync(models.Model):
   def unconcile_cancel_payments(self):
     payment_obj = self.env['account.payment'].sudo()
     account_move_obj = self.env['account.move'].sudo()
-    reconcile_model = self.env['account.partial.reconcile'].sudo()
     cancel_payment_ids = payment_obj.search([
       ('state','=','cancelled')])
-    record_ids = []
     for payment_id in cancel_payment_ids:
-      payment_id.disassociate_payment()
-      if payment_id.move_line_ids:
-        for obj in payment_id.move_line_ids:
-          obj.remove_move_reconcile()
-          record_ids.append(obj.move_id.id)
-          todo = reconcile_model.search_read(['|', ('debit_move_id', 'in', obj.ids), ('credit_move_id', 'in', obj.ids)])
-          if todo:
-            todo.unlink()
-    move_ids = set(record_ids)
-    for move_id in move_ids:
-      account_move = account_move_obj.browse(move_id)
-      if account_move:
-        account_move.button_draft()
-        account_move.button_cancel()
+      move_id = account_move_obj.search([
+        ('name','=',payment_id.move_name)],limit=1)
+      if move_id:
+        move_id.button_draft()
+        move_id.button_cancel()
+        _logger.warning("Pago desasentado correctamente")
 
-    _logger.info("el método de ejecuto correctamente")
-    _logger.info("Registros procesados: {}".format(move_ids))
