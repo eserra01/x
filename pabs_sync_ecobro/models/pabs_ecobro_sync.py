@@ -569,10 +569,12 @@ class PABSEcobroSync(models.Model):
   def unconcile_cancel_payments(self):
     payment_obj = self.env['account.payment'].sudo()
     account_move_obj = self.env['account.move'].sudo()
+    reconcile_model = self.env['account.partial.reconcile'].sudo()
     cancel_payment_ids = payment_obj.search([
       ('state','=','cancelled')])
     record_ids = []
     for payment_id in cancel_payment_ids:
+      payment_id.disassociate_payment()
       if payment_id.move_line_ids:
         for obj in payment_id.move_line_ids:
           obj.remove_move_reconcile()
@@ -583,6 +585,6 @@ class PABSEcobroSync(models.Model):
       if account_move:
         account_move.button_draft()
         account_move.button_cancel()
-        
+
     _logger.info("el método de ejecuto correctamente")
     _logger.info("Registros procesados: {}".format(move_ids))
