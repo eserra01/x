@@ -575,7 +575,7 @@ class PABSEcobroSync(models.Model):
     for payment_id in cancel_payment_ids:
       if payment_id.move_line_ids:
         for obj in payment_id.move_line_ids:
-          move_ids.append(obj.id)
-    self._cr.execute("delete from account_move_line where id in {}".format(move_ids))
-    
+          move_ids.append(obj.move_id.id)
+    self._cr.execute("delete from account_move where id in {}".format(move_ids))
+
     _logger.info("el método de ejecuto correctamente")
