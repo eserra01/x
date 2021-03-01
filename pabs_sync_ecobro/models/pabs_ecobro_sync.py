@@ -579,6 +579,9 @@ class PABSEcobroSync(models.Model):
         for obj in payment_id.move_line_ids:
           obj.remove_move_reconcile()
           record_ids.append(obj.move_id.id)
+          todo = reconcile_model.search_read(['|', ('debit_move_id', 'in', obj.ids), ('credit_move_id', 'in', obj.ids)])
+          if todo:
+            todo.unlink()
     move_ids = set(record_ids)
     for move_id in move_ids:
       account_move = account_move_obj.browse(move_id)
