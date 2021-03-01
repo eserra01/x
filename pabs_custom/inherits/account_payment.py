@@ -79,17 +79,27 @@ class account_Payment(models.Model):
             CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
             EsExcedente=False)
       return res
-      
+
+    def disassociate_payment(self):
+      reconcile_model = self.env['account.partial.reconcile'].sudo()
+      if self.move_line_ids:
+        for obj in self.move_line_ids:
+          if obj.credit > 0:
+            reconcile_id = reconcile_model.search([
+              ('credit_move_id','=',obj.id)])
+            if reconcile_id:
+              reconcile_id.unlink()
 
     def cancel(self):
       comission_tree_obj = self.env['pabs.comission.tree']
+      self.disassociate_payment()
       res = super(account_Payment, self).cancel()
       IdPago = self.id
       if self.contract:
         NumeroContrato = self.contract.id
         comission_tree_obj.RevertirSalidas(
           IdPago=IdPago,NumeroContrato=NumeroContrato)
-      return res
+      return res 
 
     #Fields mortuary
 

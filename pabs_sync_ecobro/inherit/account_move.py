@@ -14,14 +14,14 @@ class AccountMove(models.Model):
     move_ids = account_move_obj.search([
       ('type','=','out_refund'),
       ('state','=','posted'),
-      ('invoice_payment_ref','!=',False)],order="partner_id")
+      ('invoice_payment_ref','!=',False)])
+    move_ids.sorted(key=lambda r: r.invoice_payment_ref)
     last = False
     for move_id in move_ids:
-      _logger.warning("El recibo a procesar: {}".format(move_id.invoice_payment_ref))
+      _logger.warning("El recibo: {} se esta procesando".format(move_id.invoice_payment_ref))
       if move_id.invoice_payment_ref != last:
         last = move_id.invoice_payment_ref
         continue
       else:
-        _logger.warning("Se cancelo el recibo: {}".format(move_id.invoice_payment_ref))
         move_id.button_draft()
         move_id.button_cancel()
