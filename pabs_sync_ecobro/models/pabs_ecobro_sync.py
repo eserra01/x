@@ -499,7 +499,7 @@ class PABSEcobroSync(models.Model):
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
           #'detalle' : e,
-          'detalle' : e
+          'detalle' : str(e).replace('"','').replace("'",'')
         })
         continue
       try:
@@ -517,8 +517,7 @@ class PABSEcobroSync(models.Model):
         fails.append({
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
-          #'detalle' : e,
-          'detalle' : "No se pudo cancelar el pago"
+          'detalle' : str(e).replace("'",'').replace('"', ''),
         })
       ### SE TERMINA LA ITERACIÓN DE LOS PAGOS
       
