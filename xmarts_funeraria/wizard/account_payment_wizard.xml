@@ -7,7 +7,7 @@
             <form string="Choose The Details">
                 <group>
                     <group>
-                        <field name="employee_id"/>
+                        <field name="employee_id" domain="[('job_id','=','COBRADOR')]"/>
                         <field name="date_from" />
                         <field name="date_to" />
                     </group>
