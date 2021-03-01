@@ -571,13 +571,10 @@ class PABSEcobroSync(models.Model):
     reconcile_model = self.env['account.partial.reconcile'].sudo()
     cancel_payment_ids = payment_obj.search([
       ('state','=','cancelled')])
+    move_ids = []
     for payment_id in cancel_payment_ids:
       if payment_id.move_line_ids:
         for obj in payment_id.move_line_ids:
-          if obj.credit > 0:
-            reconcile_id = reconcile_model.search([
-              ('credit_move_id','=',obj.id),
-              ('debit_move_id','=',obj.id)])
-            _logger.warning("reconcile: {}".format(reconcile_id))
-            if reconcile_id:
-              reconcile_id.unlink()
+          move_ids.append(obj.id)
+    self._cr.execute("delete from account_move_line where id in {}".format(move_ids))
+    _logger.info("el método de ejecuto correctamente")
