@@ -568,8 +568,17 @@ class PABSEcobroSync(models.Model):
 
   def unconcile_cancel_payments(self):
     payment_obj = self.env['account.payment'].sudo()
+    reconcile_model = self.env['account.partial.reconcile'].sudo()
     cancel_payment_ids = payment_obj.search([
       ('state','=','cancelled')])
     for payment_id in cancel_payment_ids:
-      payment_id.disassociate_payment()
-      
+      if payment_id.move_line_ids:
+        for obj in payment_id.move_line_ids:
+          if obj.credit > 0:
+            reconcile_id = reconcile_model.search([
+              '|',
+              ('credit_move_id','=',obj.id),
+              ('debit_move_id','=',obj.id)])
+            _logger.warning("reconcile: {}".format(reconcile_id))
+            if reconcile_id:
+              reconcile_id.unlink()
