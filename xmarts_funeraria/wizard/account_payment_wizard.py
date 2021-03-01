@@ -89,6 +89,7 @@ class ReportAttendanceRecap(models.AbstractModel):
 
             #Consultar todos los pagos entre dos fechas
             payment = self.env['account.payment'].search([
+                    ('state','in',('posted','reconciled')),
                     ('payment_date', '>=', date_start),
                     ('payment_date', '<=', date_end),
                 ])
@@ -107,6 +108,7 @@ class ReportAttendanceRecap(models.AbstractModel):
                             #Consultar los recibos del cobrador
                             pp = self.env['account.payment'].search([
                                     ('debt_collector_code', '=', p.debt_collector_code.name),
+                                    ('state','in',('posted','reconciled')),
                                     ('payment_date', '>=', date_start),
                                     ('payment_date', '<=', date_end),
                                 ])
