@@ -584,4 +584,5 @@ class PABSEcobroSync(models.Model):
         move_id.button_draft()
         move_id.button_cancel()
         _logger.warning("Pago desasentado correctamente")
+        self._cr.commit()
 
