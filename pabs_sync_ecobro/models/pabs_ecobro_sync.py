@@ -583,3 +583,4 @@ class PABSEcobroSync(models.Model):
         account_move.button_draft()
         account_move.button_cancel()
     _logger.info("el método de ejecuto correctamente")
+    _logger.info("Registros procesados: {}".format(move_ids))
