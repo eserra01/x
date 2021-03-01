@@ -576,7 +576,7 @@ class PABSEcobroSync(models.Model):
       if payment_id.move_line_ids:
         for obj in payment_id.move_line_ids:
           record_ids.append(obj.move_id.id)
-    move_ids = set(records_ids)
+    move_ids = set(record_ids)
     raise ValidationError((
       "Registros recibidos: {}".format(move_ids)))
     _logger.info("el método de ejecuto correctamente")
