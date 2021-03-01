@@ -478,21 +478,6 @@ class PABSEcobroSync(models.Model):
           lambda p: p.credit > 0)[0]
         ### AGREGAMOS LA LINEA DEL PAGO PARA CONCILIAR
         reconcile.update({'payment' : payment_line.id})
-        ### EJECUTAMOS LA CONCILIACIÓN
-        conciliation = self.reconcile_all(reconcile)
-        if conciliation:
-          done.append({
-            "afectacionID": rec['afectacionID'],
-            "estatus":1,
-            "detalle" : "Afectado Correctamente",
-          })
-        else:
-          _logger.warning("no se concilió el pago y la factura")
-          done.append({
-            "afectacionID": rec['afectacionID'],
-            "estatus":1,
-            "detalle" : "Afectado sin conciliar",
-          })
         
       ### SI HUBÓ ALGÚN PROBLEMA LO AGREGARÁ A FAIL
       except Exception as e:
@@ -508,10 +493,29 @@ class PABSEcobroSync(models.Model):
         if rec['status'] == '7':
           payment_id.cancel()
           done.append({
-          "afectacionID": rec['afectacionID'],
-          "estatus":1,
-          "detalle" : "Cancelado Correctamente",
-        })
+            "afectacionID": rec['afectacionID'],
+            "estatus":1,
+            "detalle" : "Cancelado Correctamente",
+          })
+          continue
+        elif rec['status'] == '1':
+          ### EJECUTAMOS LA CONCILIACIÓN
+          conciliation = self.reconcile_all(reconcile)
+          if conciliation:
+            done.append({
+              "afectacionID": rec['afectacionID'],
+              "estatus":1,
+              "detalle" : "Afectado Correctamente",
+            })
+            continue
+          else:
+            _logger.warning("no se concilió el pago y la factura")
+            done.append({
+              "afectacionID": rec['afectacionID'],
+              "estatus":1,
+              "detalle" : "Afectado sin conciliar",
+            })
+            continue
         ### SI SE CREO Y RECONCILIO CORRECTAMENTE SE AGREGA A LA LISTA "DONE"
         
       except Exception as e:
@@ -520,6 +524,7 @@ class PABSEcobroSync(models.Model):
           'estatus' : 2,
           'detalle' : str(e).replace("'",'').replace('"', ''),
         })
+        continue
       ### SE TERMINA LA ITERACIÓN DE LOS PAGOS
       
     ### AL FINALIZAR DE PROCESAR TODA LA INFORMACIÓN
