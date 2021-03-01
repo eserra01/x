@@ -565,3 +565,11 @@ class PABSEcobroSync(models.Model):
     except Exception as e:
       self._cr.rollback()
       _logger.warning("Hubo un problema con la petición al webservice, mensaje: {}".format(e))
+
+  def unconcile_cancel_payments(self):
+    payment_obj = self.env['account.payment'].sudo()
+    cancel_payment_ids = payment_obj.search([
+      ('state','=','cancelled')])
+    for payment_id in cancel_payment_ids:
+      payment_id.disassociate_payment()
+      
