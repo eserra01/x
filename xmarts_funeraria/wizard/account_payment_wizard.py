@@ -50,6 +50,7 @@ class ReportAttendanceRecap(models.AbstractModel):
         if employee:
             #Consultar los pagos del cobrador entre dos fechas
             payment = self.env['account.payment'].search([
+                    ('state','in',('posted','reconciled')),
                     ('debt_collector_code', '=', employee),
                     ('payment_date', '>=', date_start),
                     ('payment_date', '<=', date_end),
