@@ -568,7 +568,7 @@ class PABSEcobroSync(models.Model):
 
   def unconcile_cancel_payments(self):
     payment_obj = self.env['account.payment'].sudo()
-    reconcile_model = self.env['account.partial.reconcile'].sudo()
+    account_move_obj = self.env['account.move'].sudo()
     cancel_payment_ids = payment_obj.search([
       ('state','=','cancelled')])
     record_ids = []
@@ -577,6 +577,6 @@ class PABSEcobroSync(models.Model):
         for obj in payment_id.move_line_ids:
           record_ids.append(obj.move_id.id)
     move_ids = set(record_ids)
-    raise ValidationError((
-      "Registros recibidos: {}".format(move_ids)))
+    for move_id in move_ids:
+      account_move = account_move_obj.browse(move_id).button_draft().button_cancel()
     _logger.info("el método de ejecuto correctamente")
