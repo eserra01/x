@@ -7,7 +7,7 @@ class PabsContract(models.Model):
 
     def payments(self, ids):
         for rec in self:
-            payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment')])
+            payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment'),('state','in',('posted','reconciled'))])
             if payment:
                 pay = []
                 for p in payment:
@@ -38,7 +38,7 @@ class PabsContract(models.Model):
 
             if rec.way_to_payment == 'weekly':
                 
-                payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment')])
+                payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment'),('state','in',('posted','reconciled'))])
                 paid = 0
                 if payment:
                     for p in payment:
@@ -97,7 +97,7 @@ class PabsContract(models.Model):
             elif rec.way_to_payment == 'biweekly':
 
             
-                payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment')])
+                payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment'),('state','in',('posted','reconciled'))])
                 paid = 0
                 if payment:
                     for p in payment:
@@ -203,7 +203,7 @@ class PabsContract(models.Model):
             elif rec.way_to_payment == 'monthly':
 
             
-                payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment')])
+                payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment'),('state','in',('posted','reconciled'))])
                 paid = 0
                 if payment:
                     for p in payment:

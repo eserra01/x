@@ -47,7 +47,7 @@ class ReportCarnetPagoRango(models.AbstractModel):
         #Ingresar cada contrato a la lista
         for con in contract_ids:
             #Obtener dato del ultimo abono
-            last_payment = self.env['account.payment'].search([('contract','=',con.id)], limit=1, order="id desc")
+            last_payment = self.env['account.payment'].search([('contract','=',con.id),('state','in',('posted','reconciled'))], limit=1, order="id desc")
 
             fecha_recibo = ""
             if last_payment.date_receipt:
