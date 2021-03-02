@@ -96,7 +96,7 @@
 
                 <!-- EXCEDENTE -->
                 <t t-foreach="doc.payment_ids" t-as="recibo">
-                  <tr t-if="recibo['reference'] == 'surplus'">
+                  <tr t-if="recibo['reference'] == 'surplus' and recibo['state'] in ('posted','reconciled')">
                     <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
                     <td class="text-center"><span/><t t-esc="recibo['Ecobro_receipt']"/></td>
                     <td class="text-center"><span>$<t t-esc="recibo['amount']"/></span></td>
@@ -109,7 +109,7 @@
 
                 <!-- BONO -->
                 <t t-foreach="doc.refund_ids" t-as="nota">
-                  <tr t-if="nota['type'] == 'out_refund'">
+                  <tr t-if="nota['type'] == 'out_refund' and nota['state'] == 'posted'">
                     <td class="text-center"><span/><t t-esc="nota['date']"/></td>
                     <td class="text-center"><span/></td>
                     <td class="text-center"><span>$<t t-esc="nota['amount_total']"/></span></td>
@@ -122,7 +122,7 @@
 
                 <!-- ABONOS -->
                 <t t-foreach="doc.payment_ids" t-as="recibo">
-                  <tr t-if="recibo['reference'] == 'payment'">
+                  <tr t-if="recibo['reference'] == 'payment' and recibo['state'] in ('posted','reconciled')">
                     <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
                     <td class="text-center"><span/><t t-esc="recibo['Ecobro_receipt']"/></td>
                     <td class="text-center"><span>$<t t-esc="recibo['amount']"/></span></td>
