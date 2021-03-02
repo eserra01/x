@@ -132,8 +132,8 @@ class PabsReportXLSX(models.AbstractModel):
       count+=1
       neightborhood = ""
       if contract_id.neighborhood_id:
-        neighborhood = contract_id.neighborhood_id.name
-      sheet.write(rec_index,count,neighborhood or "")
+        neightborhood = contract_id.neighborhood_id.name
+      sheet.write(rec_index,count,neightborhood or "")
       count+=1
       sheet.write(rec_index,count,contract_id.municipality_id.name or "")
       count+=1
