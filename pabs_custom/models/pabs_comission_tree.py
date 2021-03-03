@@ -262,7 +262,7 @@ class ComissionTree(models.Model):
         for salida in salida_comisiones:
 
             #Obtener registro en el árbol de comisiones
-            com = arbol.filtered_domain(['&', ('comission_agent_id', '=', salida.comission_agent_id.id), ('job_id', '=', salida.job_id.id)], limit = 1)
+            com = arbol.filtered_domain(['&', ('comission_agent_id', '=', salida.comission_agent_id.id), ('job_id', '=', salida.job_id.id)])
 
             #Calcular nuevos montos
             comisionRestante = com.remaining_commission + salida.commission_paid
