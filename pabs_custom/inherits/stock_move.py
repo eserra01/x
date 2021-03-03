@@ -82,11 +82,14 @@ class StockMove(models.Model):
   @api.onchange('inversion_inicial','toma_comision')
   def _calc_amount_received(self):
     for rec in self:
-      res = (float(rec.inversion_inicial) - float(rec.toma_comision))
-      if res < rec.papeleria:
-        raise ValidationError((
-          "El importe recibido debe ser mayor o igual a la papelería"))
-      rec.amount_received = res
+      if not rec.origen_solicitud in ('cancelada','extravio','sobrantes'):
+        res = (float(rec.inversion_inicial) - float(rec.toma_comision))
+        """if res < rec.papeleria:
+          raise ValidationError((
+            "El importe recibido debe ser mayor o igual a la papelería"))"""
+        rec.amount_received = res
+      else:
+        rec.amount_received = 0
 
 
   ### Candado para evitar que se dupliquen series por error y siempre se generen las cantidades solicitadas
