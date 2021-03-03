@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="pabs_transfer_wizard_view" model="ir.ui.view">
+    <field name="name">pabs.transfer.wizard.view</field>
+    <field name="model">pabs.transfer</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <p>
+            Transferir solicitudes a Canceladas, Extraviadas o Sobrantes
+          </p>
+          <group>
+            <field name="transfer_line_ids" nolabel="1">
+              <tree editable="top">
+                <field name="lot_id" invisible="1"/>
+                <field name="series"/>
+                <field name="origin"/>
+                <field name="location_id" attrs="{'readonly' : [('lot_id','!=',False)]}" required="1"/>
+                <field name="location_dest_id" attrs="{'readonly' : [('lot_id','!=',False)]}" required="1"/>
+              </tree>
+            </field>
+          </group>
+        </sheet>
+        <footer>
+          <button name="generate_transfer" string="Transferir" type="object" class="btn-primary"/>
+          ó 
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_pabs_transfer" model="ir.actions.act_window">
+    <field name="name">Devolución de Solicitudes</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.transfer</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_transfer_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+
+</odoo>
