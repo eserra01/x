@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pabs_transfer,access.pabs.transfer,pabs_transfers.model_pabs_transfer,pabs_custom.secretary_profile,1,1,1,0
+access_pabs_transfer_manager,access.pabs.transfer.manager,pabs_transfers.model_pabs_transfer,pabs_custom.admin_profile,1,1,1,1
+access_pabs_transfer_line,access.pabs.transfer.line,pabs_transfers.model_pabs_transfer_line,pabs_custom.secretary_profile,1,1,1,0
+access_pabs_transfer_line_manager,access.pabs.transfer.line.manager,pabs_transfers.model_pabs_transfer_line,pabs_custom.admin_profile,1,1,1,1

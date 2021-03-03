@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<menuitem id="menu_cancel_transfers" name="Devolución de solicitudes" action="action_pabs_transfer" parent="pabs_custom.menu_action_request" sequence="1" groups="pabs_custom.admin_profile,pabs_custom.secretary_profile"/>
+
+</odoo>
