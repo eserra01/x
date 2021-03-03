@@ -6,7 +6,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-class StockMove(models.Model):
+class AcccountMove(models.Model):
   _inherit = 'account.move'
 
   contract_id = fields.Many2one(comodel_name='pabs.contract', string='Contrato')
@@ -16,7 +16,7 @@ class StockMove(models.Model):
   def action_post(self):
     comission_tree_obj = self.env['pabs.comission.tree']
     context = self._context
-    res = super(StockMove, self).action_post()
+    res = super(AcccountMove, self).action_post()
     if context.get('investment_bond'):
       NumeroContrato = self.contract_id.id,
       MontoPago = self.amount_total
@@ -29,4 +29,13 @@ class StockMove(models.Model):
     return self.env['account.payment']\
       .with_context(default_contract=self.contract_id.id,active_ids=self.ids, active_model='account.move', active_id=self.id)\
       .action_register_payment()
-      
+
+  def button_cancel(self):
+    comission_tree_obj = self.env['pabs.comission.tree']
+    res = super(AcccountMove, self).button_cancel()
+    if self.type == 'out_refund':
+      if self.contract_id:
+        NumeroContrato = self.contract_id.id,
+        comission_tree_obj.RevertirSalidas(
+          RefundID=self.id,NumeroContrato=NumeroContrato)
+    return res
