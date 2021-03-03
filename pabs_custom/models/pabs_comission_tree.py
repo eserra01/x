@@ -227,10 +227,10 @@ class ComissionTree(models.Model):
                     break
         
     #Revierte las comisiones generadas por un pago. Actualiza los montos en el arbol de comisiones. Las salidas permanecen en el pago cancelado.
-    def RevertirSalidas(self, IdPago, NumeroContrato):
+    def RevertirSalidas(self, IdPago, NumeroContrato, RefundID = False):
 
         #Obtener y validar información del contrato
-        contrato = self.env['pabs.contract'].browse(NumeroContrato)
+        contrato = self.env['pabs.contract'].search([('name', '=', NumeroContrato)])
 
         if not contrato.id:
             raise ValidationError("No se encontró el contrato {}".format(NumeroContrato))
@@ -242,7 +242,12 @@ class ComissionTree(models.Model):
             raise ValidationError("No se encontro el árbol de comisiones")
 
         #Obtener y validar información de salida de comisiones
-        salida_comisiones = self.env['pabs.comission.output'].search([('payment_id', '=', IdPago)])
+        if IdPago:
+            salida_comisiones = self.env['pabs.comission.output'].search([('payment_id', '=', IdPago)])
+        elif RefundID:
+            salida_comisiones = self.env['pabs.comission.output'].search([('refund_id', '=', RefundID)])
+        else:
+            raise ValidationError("No se envió el ID del pago o de la nota")
 
         if not salida_comisiones:
             raise ValidationError("No se encontraron salidas de comisiones del pago")
@@ -257,7 +262,7 @@ class ComissionTree(models.Model):
         for salida in salida_comisiones:
 
             #Obtener registro en el árbol de comisiones
-            com = arbol.search(['&', ('comission_agent_id', '=', salida.comission_agent_id.id), ('job_id', '=', salida.job_id.id)], limit = 1)
+            com = arbol.filtered_domain(['&', ('comission_agent_id', '=', salida.comission_agent_id.id), ('job_id', '=', salida.job_id.id)], limit = 1)
 
             #Calcular nuevos montos
             comisionRestante = com.remaining_commission + salida.commission_paid
@@ -272,3 +277,4 @@ class ComissionTree(models.Model):
                     com.write({"actual_commission_paid":comisionRealPagada})
             else:
                 com.write({"commission_paid":comisionPagada, "actual_commission_paid":comisionRealPagada, "remaining_commission":comisionRestante})
+                
