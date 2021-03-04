@@ -82,7 +82,8 @@
 
               <tbody>
                 <!-- PAPELERIA -->
-                <t t-foreach="doc.payment_ids" t-as="recibo">
+                <t t-set="payment_ids" t-value="sorted(doc.payment_ids, key=lambda k: k.payment_date)"/>
+                <t t-foreach="payment_ids" t-as="recibo">
                   <tr t-if="recibo['reference'] == 'stationary'">
                     <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
                     <td class="text-center"><span/><t t-esc="recibo['Ecobro_receipt']"/></td>
@@ -95,7 +96,7 @@
                 </t>
 
                 <!-- EXCEDENTE -->
-                <t t-foreach="doc.payment_ids" t-as="recibo">
+                <t t-foreach="payment_ids" t-as="recibo">
                   <tr t-if="recibo['reference'] == 'surplus' and recibo['state'] in ('posted','reconciled')">
                     <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
                     <td class="text-center"><span/><t t-esc="recibo['Ecobro_receipt']"/></td>
@@ -121,7 +122,7 @@
                 </t>
 
                 <!-- ABONOS -->
-                <t t-foreach="doc.payment_ids" t-as="recibo">
+                <t t-foreach="payment_ids" t-as="recibo">
                   <tr t-if="recibo['reference'] == 'payment' and recibo['state'] in ('posted','reconciled')">
                     <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
                     <td class="text-center"><span/><t t-esc="recibo['Ecobro_receipt']"/></td>
