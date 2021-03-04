@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pabs_collector_report_view" model="ir.ui.view">
+		<field name="name">pabs.collector.report.view</field>
+		<field name="model">pabs.collector.report.wizard</field>
+		<field name="arch" type="xml">
+			<form string="Resumen Por Cobrador">
+        <group coslpan="2">
+          <group>
+            <field name="first_date"/>
+          </group>
+          <group>
+            <field name="end_date"/>
+          </group>
+          <center><h3>Generación de reporte de cobranza por cobrador</h3></center><br/>
+        </group>
+        <footer>
+          <button name="get_collectors_report" string="Imprimir" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+		</field>
+	</record>
+
+    <record id="action_pabs_collector_report" model="ir.actions.act_window">
+        <field name="name">Resumen de Cobranza por Cobrador</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pabs.collector.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="pabs_collector_report_view"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem 
+    action="action_pabs_collector_report" 
+    id="collection_report_resume"
+    name="Resumen de Cobranza por Cobrador" 
+    parent="xmarts_funeraria.report_root_menu"
+    sequence="7"/>
+</odoo>
