@@ -569,11 +569,11 @@ class PABSContracts(models.Model):
         raise ValidationError(("El A.S {} no cuenta con un arbol de comisiones".format(self.employee_id.name)))
 
       ajuste_por_sueldo = 0
-      contratoEsSueldo = (self.payment_scheme_id.name == "Sueldo")
+      contratoEsSueldo = (self.payment_scheme_id.name == "SUELDO")
 
       ### RECORRER TODAS LAS LINEAS DEL DETALLE DE LA PLANTILLA e insertar el registro
       for line in comission_template_id:
-        if line.job_id.name != 'Fideicomiso':
+        if line.job_id.name != 'FIDEICOMISO':
           data = {
             'contract_id' : self.id,
             'pay_order' : line.pay_order,
