@@ -24,6 +24,11 @@ class ContractsElaboratedW1zard(models.TransientModel):
     month = MONTHS.get(self.date_contract.strftime('%B'))
     year = self.date_contract.strftime('%Y')"""
 
+    params = {
+    'start_date' : self.date_contract,
+    'end_date': self.date_end
+    }
+
       ### PARAMETROS DE BUSQUEDA EN LA FECHA
     start_date = '{} 00:00:00'.format(self.date_contract)
     end_date = '{} 23:59:59'.format(self.date_end)
@@ -78,6 +83,7 @@ class ContractsElaboratedW1zard(models.TransientModel):
       })
     
     data = {
+      'params' : params
       'fecha' : self.date_contract,
       'headers' : warehouse_names,
       'data' : contract_data
