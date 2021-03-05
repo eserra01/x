@@ -62,70 +62,76 @@
                     </thead>
 
                     <tbody>
-                        <!-- CODIGO -->
-                        <t t-foreach="codigos" t-as="codigo">
-                            
-                            <!-- PLAN - ASISTENTE -->
-                            <t t-foreach="codigo.get('planes')" t-as="plan">
-                                <tr>
-                                    <td colspan="8" style="border-bottom: 1px solid black; font-weight: bold;">Promotor: <span t-esc="plan.get('asistente_plan')" /></td>
-                                </tr>
+                        <!-- OFICINAS -->
+                        <t t-foreach="oficinas" t-as="oficina">
+                            <td colspan="8"><center><h2 t-esc="oficina.get('nombre_oficina')"></h2></center></td>
 
-                                <!-- <tr><td colspan="8"><hr style="border: 1px solid black;"/></td></tr> -->
+                            <!-- CODIGO -->
+                            <t t-foreach="oficina.get('codigos')" t-as="codigo">
 
-                                <!-- COBRADORES -->
-                                <t t-foreach="plan.get('cobradores')" t-as="cobrador">
-                                    
-                                    <!-- PAGOS -->
-                                    <t t-foreach="cobrador.get('pagos')" t-as="pago">
+                                <!-- PLAN - ASISTENTE -->
+                                <t t-foreach="codigo.get('planes')" t-as="plan">
+                                    <tr>
+                                        <td colspan="8" style="border-bottom: 1px solid black; font-weight: bold;">Promotor: <span t-esc="plan.get('asistente_plan')" /></td>
+                                    </tr>
+
+                                    <!-- <tr><td colspan="8"><hr style="border: 1px solid black;"/></td></tr> -->
+
+                                    <!-- COBRADORES -->
+                                    <t t-foreach="plan.get('cobradores')" t-as="cobrador">
+                                        
+                                        <!-- PAGOS -->
+                                        <t t-foreach="cobrador.get('pagos')" t-as="pago">
+                                            <tr>
+                                                <td class="dato_centrado"><div t-esc="pago.get('fecha_recibo')"></div></td>
+                                                <td class="dato_centrado"><div t-esc="pago.get('fecha_oficina')"></div></td>
+                                                <td class="dato_centrado"><div t-esc="pago.get('contrato')"></div></td>
+                                                <td class="dato_centrado"><div t-esc="pago.get('recibo')"></div></td>
+                                                <td><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%" 
+                                                        t-esc="pago.get('cliente')"></div></td>
+                                                <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('importe'))"></span></td>
+                                                <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_cobrador'))"></span></td>
+                                                <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_asistente'))"></span></td>
+                                            </tr>
+                                        </t>
+                                        <!-- FIN PAGOS -->
+
+                                        <!-- subtotales por cobrador -->
                                         <tr>
-                                            <td class="dato_centrado"><div t-esc="pago.get('fecha_recibo')"></div></td>
-                                            <td class="dato_centrado"><div t-esc="pago.get('fecha_oficina')"></div></td>
-                                            <td class="dato_centrado"><div t-esc="pago.get('contrato')"></div></td>
-                                            <td class="dato_centrado"><div t-esc="pago.get('recibo')"></div></td>
-                                            <td><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%" 
-                                                    t-esc="pago.get('cliente')"></div></td>
-                                            <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('importe'))"></span></td>
-                                            <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_cobrador'))"></span></td>
-                                            <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_asistente'))"></span></td>
+                                            <td></td>
+                                            <td colspan="2" style="font-weight: bold;">Comisión cobrador:</td>
+                                            <td colspan="3" style="font-weight: bold; "><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%" 
+                                                    t-esc="cobrador.get('cobrador')"></div></td>
+                                            <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(cobrador.get('subtotal_cobrador'))"></span></td>
+                                            <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(cobrador.get('subtotal_asistente'))"></span></td>
                                         </tr>
                                     </t>
-                                    <!-- FIN PAGOS -->
+                                    <!-- FIN COBRADORES -->
 
-                                    <!-- subtotales por cobrador -->
+                                    <!-- Subtotales por plan -->
                                     <tr>
-                                        <td></td>
-                                        <td colspan="2" style="font-weight: bold;">Comisión cobrador:</td>
-                                        <td colspan="3" style="font-weight: bold; "><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%" 
-                                                t-esc="cobrador.get('cobrador')"></div></td>
-                                        <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(cobrador.get('subtotal_cobrador'))"></span></td>
-                                        <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(cobrador.get('subtotal_asistente'))"></span></td>
+                                        <td colspan="6">&amp;nbsp;&amp;nbsp;</td>
+                                        <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(plan.get('subtotal_plan_cobrador'))"></span></td>
+                                        <td class="dato_centrado" style="border-top-style: solid;">$<span t-esc="'{0:,.2f}'.format(plan.get('subtotal_plan_asistente'))"></span></td>
                                     </tr>
                                 </t>
-                                <!-- FIN COBRADORES -->
+                                <!-- FIN PLANES -->
+                                
+                                <tr><td colspan="8">&amp;nbsp;&amp;nbsp;</td></tr>
 
-                                <!-- Subtotales por plan -->
+                                <!-- total código -->
                                 <tr>
-                                    <td colspan="6">&amp;nbsp;&amp;nbsp;</td>
-                                    <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(plan.get('subtotal_plan_cobrador'))"></span></td>
-                                    <td class="dato_centrado" style="border-top-style: solid;">$<span t-esc="'{0:,.2f}'.format(plan.get('subtotal_plan_asistente'))"></span></td>
+                                    <td colspan="6"></td>
+                                    <td class="dato_bold">Total:</td>
+                                    <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(codigo.get('total_codigo'))"></span></td>
                                 </tr>
+
+                                <tr><td colspan="8"><hr style="border: 1px dashed black;"/></td></tr>
+                                <tr><td colspan="8">&amp;nbsp;&amp;nbsp;</td></tr>
                             </t>
-                            <!-- FIN PLANES -->
-                            
-                            <tr><td colspan="8">&amp;nbsp;&amp;nbsp;</td></tr>
-
-                            <!-- total código -->
-                            <tr>
-                                <td colspan="6"></td>
-                                <td class="dato_bold">Total:</td>
-                                <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(codigo.get('total_codigo'))"></span></td>
-                            </tr>
-
-                            <tr><td colspan="8"><hr style="border: 1px dashed black;"/></td></tr>
-                            <tr><td colspan="8">&amp;nbsp;&amp;nbsp;</td></tr>
+                            <!-- FIN CODIGOS -->
                         </t>
-                        <!-- FIN CODIGOS -->
+                        <!-- FIN OFICINAS -->
 
                         <!-- TOTAL COMISIONES -->
                         <tr>
