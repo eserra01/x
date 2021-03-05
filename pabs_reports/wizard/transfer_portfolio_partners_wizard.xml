@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="transfer_portfolio_partners_wizard" model="ir.ui.view">
+		<field name="name">transfer.portfolio.partners.wziard</field>
+		<field name="model">pabs.transfer.portfolio.partners</field>
+		<field name="arch" type="xml">
+			<form string="Transferencia de Cartera">
+        <center><h3>Transferencia de Cartera de Clientes</h3></center><br/>
+        <group coslpan="2">
+          <group>
+            <field name="collector_origin_id" domain="[('job_id','=','COBRADOR')]"/>
+          </group>
+          <group>
+            <field name="collector_dest_id" domain="[('job_id','=','COBRADOR')]"/>
+          </group>
+        </group>
+        <footer>
+          <button name="transfer_parnters" string="Transferir Cartera" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+		</field>
+	</record>
+
+    <record id="action_transfer_portfolio_partners" model="ir.actions.act_window">
+        <field name="name">Transferencia de Cartera</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pabs.transfer.portfolio.partners</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="transfer_portfolio_partners_wizard"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem 
+    action="action_transfer_portfolio_partners" 
+    id="transfer_portfolio_partners_menu"
+    name="Transferencia de Cartera" 
+    parent="xmarts_funeraria.report_root_menu"
+    groups="pabs_reports.transfer_portfolio_partners_group"
+    sequence="7"/>
+</odoo>

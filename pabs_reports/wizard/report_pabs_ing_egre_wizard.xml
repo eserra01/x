@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_report_ingre_egre_inherit" model="ir.ui.view">
+    <field name="name">Reporte ingresos y egresos inherit</field>
+    <field name="model">report.pabs.ing.egre</field>
+    <field name="inherit_id" ref="xmarts_funeraria.view_wizar_report_payroll"/>
+    <field name="arch" type="xml">
+      <xpath expr="//button[@name='filter']" position="after">
+        or
+        <button name='print_xls_report' string='Exportar XLSX' type="object" icon="fa-windows"/>
+      </xpath>
+    </field>
+  </record>
+
+  <report
+    id="ingre_egre_report_xlsx"
+    model="report.pabs.ing.egre"
+    string="Reporte de Ingresos y Egresos XLSX"
+    report_type="xlsx"
+    name="pabs_reports.ingresos_egresos_report_xlsx"
+    file="pabs_reports.ingresos_egresos_report_xlsx"
+    attachment_use="False"
+    />
+  
+</odoo>

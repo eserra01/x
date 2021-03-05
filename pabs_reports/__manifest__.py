@@ -15,9 +15,13 @@
     'wizard/pabs_acumulated_report_wizard.xml',
     'wizard/pabs_daily_helps_wizard.xml',
     'wizard/pabs_collector_report_wizard.xml',
+    'wizard/report_pabs_ing_egre_wizard.xml',
+    'wizard/transfer_portfolio_partners_wizard.xml',
     'views/menus.xml',
     'reports/elaborated_contracts.xml',
     'reports/pabs_collector_report_template.xml',
+    'security/security.xml',
+    'security/ir.model.access.csv',
     
     ],
   'installable': True,
