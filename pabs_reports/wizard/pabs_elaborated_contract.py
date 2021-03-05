@@ -83,8 +83,7 @@ class ContractsElaboratedW1zard(models.TransientModel):
       })
     
     data = {
-      'params' : params
-      'fecha' : self.date_contract,
+      'params' : params,
       'headers' : warehouse_names,
       'data' : contract_data
     }
@@ -96,17 +95,15 @@ class ElaboratedContract(models.AbstractModel):
   @api.model
   def _get_report_values(self, docids, data):
     headers = data.get('headers')
-    data = data.get('data')
-    date = data.get('fecha')
     logo = self.env.user.company_id.logo
     user = self.env.user.name
-
+    info = data['data']
     return {
       'user' : user,
-      'date' : date,
       'logo' : logo,
       'headers' : headers,
-      'data' : data
+      'data' : data,
+      'info' : info,
     }
 
 
