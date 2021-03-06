@@ -38,11 +38,11 @@
                         }
                     </style>
                     <t t-if="doc.type_transfer ==  'as-ov'">
-                        <div class="row">
-                             <div class="column-left">
+                        <div style="content: ""; display: table; clear: both;">
+                             <div style="float: left; width: 25%; padding: 10px;">
                                 <img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="width:100px;"/>
                             </div>
-                            <div class="column-right">
+                            <div style="float: left; width: 75%; padding: 10px;">
                                 <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">RECEPCIÓN DE SOLICITUDES</span><br/>
                                 <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">** PROMOTOR A OFICINA **</span><br/>
                             </div>
@@ -127,14 +127,14 @@
                         
                         <!-- FIRMAS -->
 
-                        <div class="row">
-                            <div class="column">
+                        <div style="content: ""; display: table; clear: both;">
+                            <div style="float: left; width: 50%; padding: 10px;">
                                 <center>
                                     _________________________ <br/>
                                     <span style="margin-left: 10px;">Firma Asistente</span>
                                 </center>
                             </div>
-                            <div class="column">
+                            <div style="float: left; width: 50%; padding: 10px;">
                                 <center>
                                     _________________________ <br/>
                                     <span style="margin-left: 10px;">Firma Asistente</span> 
