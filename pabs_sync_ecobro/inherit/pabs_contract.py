@@ -14,7 +14,7 @@ class PABSContract(models.Model):
     employee_obj = self.env['hr.employee']
 
     ### Buscamos todos los contratos que sean de tipo "Sueldo"
-    contract_ids = contrat_obj.search([
+    contract_ids = contract_obj.search([
       ('payment_scheme_id','=','SUELDO')])
 
     ### RECORREMOS LOS CONTRATOS
