@@ -130,13 +130,14 @@
                             <div style="float: left; width: 50%; padding: 10px;">
                                 <center>
                                     _________________________ <br/>
-                                    <span style="margin-left: 10px;">Firma Asistente</span>
+                                    <span style="margin-left: 10px;">Firma Asistente</span><br/>
+                                    <span t-esc="doc.employee_id.name or ''"/>
                                 </center>
                             </div>
                             <div style="float: left; width: 50%; padding: 10px;">
                                 <center>
                                     _________________________ <br/>
-                                    <span style="margin-left: 10px;">Firma Asistente</span> 
+                                    <span style="margin-left: 10px;">Firma Secretaria</span> 
                                 </center>
                             </div>
                         </div>
