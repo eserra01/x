@@ -1,0 +1,142 @@
+<odoo>
+  <data>
+
+    <template id="delinquent_customer_report_template">
+      <t t-call="web.basic_layout">
+        <div class="page">
+          <style>
+            .contenedor{
+                width:49.5%;
+                display:inline-block;
+                margin:auto;
+                height:49.5%;
+            }
+
+            thead.encabezado{
+                text-align: center;
+                font-weight: bold;
+            }
+
+            table {
+                border-collapse: collapse;
+            }
+
+            * {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 10pt;
+                box-sizing: border-box;
+            }
+
+            .column {
+              float: left;
+              width: 50%;
+              padding: 10px;
+              height: 300px; /* Should be removed. Only for demonstration */
+            }
+
+            /* Clear floats after the columns */
+            .row:after {
+              content: "";
+              display: table;
+              clear: both;
+            }
+          </style>
+          <div>
+            <!-- LOGO -->
+            <div style="float: left; width: 15%; text-align: center;">
+              <img t-if="logo" t-att-src="'data:image/png;base64,%s' % to_text(logo)" alt="logoPABS" height="100px"/>
+            </div>
+
+            <div style=" width: 85%;  text-align: left;">
+
+              <!-- TITULO DEL REPORTE -->
+              <div style="font-size:15pt; color:#000000;  font-weight:bold; text-align: CENTER;">
+                  <br/>
+                  PROGRAMA DE APOYO DE BENEFICIO SOCIAL
+                  <br/>
+                    REPORTE DETALLADO DE MOROSOS
+                  <br/>
+                  FECHA: <span t-esc="date" t-options='{"widget": "date"}'/>
+                  <br/>
+              </div>
+            </div>
+
+            <table style="border-collapse: collapse; width: 100%;">
+              <thead class="encabezado">
+                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Contrato</th>
+                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Cliente</th>
+                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Domicilio</th>
+                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Colonia</th>
+                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Localidad</th>
+                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Ultimo Abono</th>
+                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Periodo</th>
+              </thead>
+              <t t-foreach="data.keys()" t-as="collector">
+                <tbody>
+                  <tr>
+                    <td colspan="7">
+                      <span t-esc="collector" style="text-align: center; font-weight: bold;"/>
+                    </td>
+                  </tr>
+                  <tr t-foreach="data[collector]" t-as="line">
+                    <td>
+                      <span t-esc="line['contract_name']"/>
+                    </td>
+                    <td>
+                      <span t-esc="line['partner_name']"/>
+                    </td>
+                    <td>
+                      <span t-esc="line['address']"/>
+                    </td>
+                    <td>
+                      <span t-esc="line['colony']"/>
+                    </td>
+                    <td>
+                      <span t-esc="line['municipality']"/>
+                    </td>
+                    <td>
+                      <span t-esc="line['last_payment']"/>
+                    </td>
+                    <td>
+                      <span t-esc="line['period']"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="7" style="font-size: 20px; text-align: center; font-weight: bold;">
+                      <t t-set="count" t-value="len(data[collector])"/>
+                      Total de Contratos: <span t-esc="count" style="font-size: 20px; text-align: center; font-weight: bold;"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </t>
+            </table>
+
+            <div class="footer">
+              <div class="row">
+                <div class="col-xs-2 pull-left">
+                  <center>
+                    <small>
+                      <span>Pagina</span>
+                      <span class="page" />
+                        de
+                      <span class="topage" />
+                    </small>
+                  </center>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </t>
+    </template>
+
+    <report id="delinquent_customer_report" 
+      string="Reporte detallado de morosos" 
+      model="pabs.delinquent.customer" 
+      report_type="qweb-pdf" 
+      name="pabs_reports.delinquent_customer_report_template"
+      
+      file="pabs_reports.delinquent_customer_report_template"/>
+
+  </data>
+</odoo>

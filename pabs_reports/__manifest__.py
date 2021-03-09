@@ -19,9 +19,11 @@
     'wizard/pabs_collector_report_wizard.xml',
     'wizard/report_pabs_ing_egre_wizard.xml',
     'wizard/transfer_portfolio_partners_wizard.xml',
-    'views/menus.xml',
+    'wizard/delinquent_customer_wizard.xml',
     'reports/elaborated_contracts.xml',
     'reports/pabs_collector_report_template.xml',
+    'reports/delinquent_customer_template.xml',
+    'views/menus.xml',
     
     ],
   'installable': True,

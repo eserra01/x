@@ -16,5 +16,11 @@
     parent="pabs_contracts_elaborated"
     sequence="1"/>
 
+  <menuitem
+    id="delinquent_customers_report"
+    name="Reporte detallado de Morosos"
+    parent="pabs_contracts_elaborated"
+    sequence="2"
+    action="delinquent_customer_report"/>
 
 </odoo>

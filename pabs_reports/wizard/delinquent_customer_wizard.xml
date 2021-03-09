@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_delinquent_customer_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.delinquent.customer.wizard.view</field>
+		<field name="model">pabs.delinquent.customer</field>
+		<field name="arch" type="xml">
+			<form string="Generar Reporte de Morosos">
+        <h3>Generar Reporte de Morosos</h3>
+        <footer>
+          <button name="generate_pdf_report" string="Generar PDF" type="object" class="btn-primary"/>
+          ó
+          <button name='generate_xls_report' string='Exportar XLSX' type="object" icon="fa-windows"/>
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+			</form>
+		</field>
+	</record>
+
+  <record id="action_pabs_delinquent_customer_report_action" model="ir.actions.act_window">
+    <field name="name">Generar Reporte de Morosos</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.delinquent.customer</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_delinquent_customer_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    action="action_pabs_delinquent_customer_report_action" 
+    id="delinquent_customer_menu"
+    name="Generar Reporte de Morosos" 
+    parent="xmarts_funeraria.report_root_menu"
+    sequence="7"/>
+
+  <report
+    id="delinquent_customer_xlsx_report"
+    model="pabs.delinquent.customer"
+    string="Generar Reporte de Morosos XLSX"
+    report_type="xlsx"
+    name="pabs_reports.delinquent_customer_xls"
+    file="pabs_reports.delinquent_customer_xls"
+    attachment_use="False"
+    />
+    
+</odoo>

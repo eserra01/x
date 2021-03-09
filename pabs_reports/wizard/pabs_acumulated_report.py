@@ -53,6 +53,7 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
     closing_obj = self.env['closing.transfer.registry']
     contract_obj = self.env['pabs.contract']
     stock_move_obj = self.env['stock.move']
+    picking_obj = self.env['stock.picking']
 
     ### GUARDAMOS LOS PARAMETROS
     start_date = data.get('start_date')
@@ -63,11 +64,21 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
       closing_ids = closing_obj.search([
         ('date','>=',start_date),
         ('date','<=',end_date)],order="date")
+      picking_ids = picking_obj.search([
+        ('state','=','done'),
+        ('origin','in',('cancelada','extravio')),
+        ('date_done','>=',start_date),
+        ('date_done','<=',end_date)],order="date_done")
       report_name = "Reporte de Acumulados {} - {}".format(start_date,end_date)
+
     ### SI SOLAMENTE AGREGA UNA FECHA
     else:
       closing_ids = closing_obj.search([
         ('date','=',start_date)], order="date")
+      picking_ids = picking_obj.search([
+        ('state','=','done'),
+        ('origin','in',('cancelada','extravio')),
+        ('date_done','<=',start_date)],order="date_done")
       report_name = "Reporte de Acumulados de {}".format(start_date)
 
     ### SI NO SE ENCONTRARON REGISTROS COINCIDENTES
@@ -88,6 +99,29 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
       sheet.write(0,row,row_data,bold_format)
 
     count = 1
+    for picking_id in picking_ids:
+      for line in picking_id.move_line_ids_without_package:
+        sheet.write(count, 0, picking_id.date_done or "", date_format)
+        sheet.write(count, 1, line.lot_id.employee_id.barcode or "")
+        sheet.write(count, 2, line.lot_id.employee_id.name or "")
+        sheet.write(count, 3, picking_id.location_dest_id.get_warehouse().name)
+        sheet.write(count, 4, "COOPERATIVA PABS")
+        sheet.write(count, 5, line.product_id.name or "")
+        sheet.write(count, 6, int(line.lot_id.name[6:]) or "")
+        if picking_id.origin == 'cancelada':
+          status = 'C'
+        elif picking_id.origin == 'extravio':
+          status = 'E'
+        sheet.write(count, 7, status or "")
+        sheet.write(count, 8, 0, money_format)
+        sheet.write(count, 9, 0, money_format)
+        sheet.write(count, 10, 0, money_format)
+        sheet.write(count, 11, 0, money_format)
+        sheet.write(count, 12, "")
+        sheet.write(count, 13, "")
+        sheet.write(count, 14, "")
+        sheet.write(count, 15, "")
+        count+=1
     for closing_id in closing_ids:
       for line in closing_id.picking_id.move_line_ids_without_package:
         sheet.write(count, 0, closing_id.date or "", date_format)
