@@ -154,6 +154,10 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
     logo = self.env.user.company_id.logo
     date = data.get('data') or fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
 
+    ### BUSCAMOS TODOS LOS CONTRATOS
+    all_contracts = contract_obj.search([
+      ('state','=','contract')])
+
     ### BUSCAMOS LOS CONTRATOS SEMANALES QUE TENGAN MAS DE 14 DÍAS SIN ABONAR
     contract_week_ids = all_contracts.filtered(
       lambda k: k.way_to_payment == 'weekly').filtered(
