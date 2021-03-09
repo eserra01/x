@@ -154,21 +154,20 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
     logo = self.env.user.company_id.logo
     date = data.get('data') or fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
 
-    ### BUSCAMOS TODOS LOS CONTRATOS QUE TIENEN MÁS DE 14 DÍAS SIN ABONAR
-    contract_week_ids = contract_obj.search([
-      ('state','=','contract'),
-      ('way_to_payment','=','weekly'),
-      ('days_without_payment','>=',14)])
+    ### BUSCAMOS LOS CONTRATOS SEMANALES QUE TENGAN MAS DE 14 DÍAS SIN ABONAR
+    contract_week_ids = all_contracts.filtered(
+      lambda k: k.way_to_payment == 'weekly').filtered(
+      lambda k : k.days_without_payment >= 14)
 
-    contract_biweekly_ids = contract_obj.search([
-      ('state','=','contract'),
-      ('way_to_payment','=','biweekly'),
-      ('days_without_payment','>=',30)])
+    ### BUSCAMOS LOS CONTRATOS QUINCENALES QUE TENGAN MÁS DE 30 DÍAS SIN ABONAR
+    contract_biweekly_ids = all_contracts.filtered(
+      lambda k: k.way_to_payment == 'biweekly').filtered(
+      lambda k: k.days_without_payment >= 30)
 
-    contract_monthly_ids = contract_obj.search([
-      ('state','=','contract'),
-      ('way_to_payment','=','monthly'),
-      ('days_without_payment','>=',60)])
+    ### BUSCAMOS LOS CONTRATOS MENSUALES QUE TENGAN MÁS DE 60 DÍAS SIN ABONAR
+    contract_monthly_ids = all_contracts.filtered(
+      lambda k: k.way_to_payment == 'monthly').filtered(
+      lambda k: k.days_without_payment >= 60)
 
     contract_ids = contract_week_ids + contract_biweekly_ids + contract_monthly_ids
 
