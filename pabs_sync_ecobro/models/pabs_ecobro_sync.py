@@ -254,7 +254,7 @@ class PABSEcobroSync(models.Model):
               rec['serie'],rec['no_contrato'],rec['error']))
         ### SI NO HAY NINGUN ERROR
         else:
-          _logger.info("Información Recibida: {}".format(response.text))
+          _logger.info("Información Recibida: {}".format(response))
           ### ENVIAR MENSAJE DE SINCRONIZACIÓN EXITOSA
           _logger.info("Sincronización de Contratos Exitosa!!")
       ### SI NO SE ENVÍA INFORMACIÓN
