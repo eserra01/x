@@ -230,6 +230,8 @@ class PABSEcobroSync(models.Model):
         'saldo' : contract_id.balance or 0,
         'abonado' : contract_id.paid_balance or 0,
       })
+    _logger.info("Contrato: {}".format(contract_id.name))
+    _logger.info("Cobrador: {}-{}".format(contract_id.debt_collector.barcode,contract_id.debt_collector.name))
     ### MANEJO DE ERRORES AL ENVIAR AL WEB SERVICE
     try:
       ### SI EXISTE ALGÚN DATO POR SINCRONIZAR
@@ -238,6 +240,7 @@ class PABSEcobroSync(models.Model):
         data = {
           'contratos' : contract_info
         }
+        _logger.info("Información Enviada: {}".format(data))
         ### ENVIAR LA PETICIÓN
         req = requests.post(url, json=data)
         ### RECIBIENDO RESPUESTA
@@ -251,6 +254,7 @@ class PABSEcobroSync(models.Model):
               rec['serie'],rec['no_contrato'],rec['error']))
         ### SI NO HAY NINGUN ERROR
         else:
+          _logger.info("Información Recibida: {}".format(response.text))
           ### ENVIAR MENSAJE DE SINCRONIZACIÓN EXITOSA
           _logger.info("Sincronización de Contratos Exitosa!!")
       ### SI NO SE ENVÍA INFORMACIÓN
