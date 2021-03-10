@@ -230,8 +230,8 @@ class PABSEcobroSync(models.Model):
         'saldo' : contract_id.balance or 0,
         'abonado' : contract_id.paid_balance or 0,
       })
-    _logger.info("Contrato: {}".format(contract_id.name))
-    _logger.info("Cobrador: {}-{}".format(contract_id.debt_collector.barcode,contract_id.debt_collector.name))
+      _logger.info("Contrato: {}".format(contract_id.name))
+      _logger.info("Cobrador: {}-{}".format(contract_id.debt_collector.barcode,contract_id.debt_collector.name))
     ### MANEJO DE ERRORES AL ENVIAR AL WEB SERVICE
     try:
       ### SI EXISTE ALGÚN DATO POR SINCRONIZAR
