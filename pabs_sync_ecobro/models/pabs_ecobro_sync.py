@@ -220,7 +220,7 @@ class PABSEcobroSync(models.Model):
         'estatus' : self.get_estatus(contract_id),
         'fecha_ultimo_abono' : self.calc_last_payment(contract_id),
         'monto_atrasado' : contract_id.late_amount or 0,
-        'fecha_primer_abono' : contract_id.date_first_payment.strftime('%Y-%m-%d'),
+        'fecha_primer_abono' : contract_id.date_first_payment.strftime('%Y-%m-%d') if contract_id.date_first_payment else "",
         'fecha_reactivacion' : contract_id.reactivation_date.strftime('%Y-%m-%d') if contract_id.reactivation_date else "",
         'detalle_servicio' : '',
         'solicitud' : contract_id.lot_id.name or '',
