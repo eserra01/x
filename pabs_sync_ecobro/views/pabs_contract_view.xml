@@ -10,4 +10,13 @@
       </xpath>
     </field>
   </record>
+
+  <record id="contract_status_form_view_inherit" model="ir.ui.view">
+    <field name="name">contract.status.form.view.inherit</field>
+    <field name="model">pabs.contract.status</field>
+    <field name="inherit_id" ref="pabs_custom.contract_status_form_view"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='status']" position="after"/>
+    </field>
+  </record>
 </odoo>

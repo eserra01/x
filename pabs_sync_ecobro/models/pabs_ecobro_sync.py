@@ -217,7 +217,7 @@ class PABSEcobroSync(models.Model):
         'forma_pago_actual' : way_payment,
         'monto_pago_actual' : contract_id.payment_amount or 0,
         'cobradorID' : contract_id.debt_collector.ecobro_id or contract_id.debt_collector.id,
-        'estatus' : self.get_estatus(contract_id),
+        'estatus' : contract_id.contract_status_item.ecobro_code or 1,
         'fecha_ultimo_abono' : self.calc_last_payment(contract_id),
         'monto_atrasado' : contract_id.late_amount or 0,
         'fecha_primer_abono' : contract_id.date_first_payment.strftime('%Y-%m-%d') if contract_id.date_first_payment else "",
