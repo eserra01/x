@@ -23,7 +23,7 @@ class PABSEcobroSync(models.Model):
 
   def get_url(self, path):
     ### INSTANCIACIÓN DE OBJETOS
-    param_obj = self.env['ir.config_parameter']
+    param_obj = self.env['ir.config_parameter'].sudo()
     ### OBTENER PARAMETRO DE DATOS DE PRUEBA
     demo = param_obj.get_param('testing_ecobro')
     ### OBTENER PARAMETRO DE IP DE ECOBRO
@@ -48,7 +48,7 @@ class PABSEcobroSync(models.Model):
 
   def sync_collectors(self):
     ### INSTANCIACIÓN DE OBJECTOS
-    debt_collector_obj = self.env['pabs.comission.debt.collector']
+    debt_collector_obj = self.env['pabs.comission.debt.collector'].sudo()
     ### MANDAR A LLAMAR LA URL DE COBRADORES
     url = self.get_url("COBRADORES")
     ### SI NO GENERA LA URL
@@ -175,7 +175,7 @@ class PABSEcobroSync(models.Model):
 
   def sync_contracts(self):
     ### INSTANCIACIÓN DE OBJECTOS
-    contract_obj = self.env['pabs.contract']
+    contract_obj = self.env['pabs.contract'].sudo()
     ### MANDAR A LLAMAR LA URL DE CONTRATOS
     url = self.get_url("CONTRATOS")
     ### SI NO GENERA LA URL
@@ -240,6 +240,7 @@ class PABSEcobroSync(models.Model):
         data = {
           'contratos' : contract_info
         }
+        _logger.warning("La cantidad de contratos enviados es: {}".format(len(contract_info)))
         _logger.info("Información Enviada: {}".format(data))
         ### ENVIAR LA PETICIÓN
         req = requests.post(url, json=data)
@@ -288,12 +289,12 @@ class PABSEcobroSync(models.Model):
 
   def get_pending_payments(self):
     ### DECLARACIÓN DE OBJETOS
-    contract_obj = self.env['pabs.contract']
-    account_obj = self.env['account.move']
-    journal_obj = self.env['account.journal']
-    payment_method_obj = self.env['account.payment.method']
-    payment_obj = self.env['account.payment']
-    hr_employee_obj = self.env['hr.employee']
+    contract_obj = self.env['pabs.contract'].sudo()
+    account_obj = self.env['account.move'].sudo()
+    journal_obj = self.env['account.journal'].sudo()
+    payment_method_obj = self.env['account.payment.method'].sudo()
+    payment_obj = self.env['account.payment'].sudo()
+    hr_employee_obj = self.env['hr.employee'].sudo()
     ### DICCIONARIO DE RECONCILIACIÓN
     reconcile = {}
     ### MANDAR A LLAMAR LA URL DE PAGOS PENDIENTES
@@ -588,4 +589,3 @@ class PABSEcobroSync(models.Model):
         move_id.button_cancel()
         _logger.warning("Pago desasentado correctamente")
         self._cr.commit()
-
