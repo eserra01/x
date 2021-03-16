@@ -617,7 +617,8 @@ class PABSEcobroSync(models.Model):
     ### ESCRIBIMOS EL ESTATUS ACTIVO EN TODOS LOS REGISTROS QUE SE ENCONTRARON
     contract_ids.write({
       'contract_status_item' : status_active_id.id,
-      'contract_status_reason' : status_reason_id.id
+      'contract_status_reason' : status_reason_id.id,
+      'reactivation_date' : False,
     })
 
     _logger.info("Se reactivaron {} contratos el día de hoy: {}".format(len(contract_ids), today))
