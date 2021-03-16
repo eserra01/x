@@ -4,6 +4,7 @@ from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 import logging
 import requests
+from dateutil import tz
 #import threading
 import json
 
@@ -576,16 +577,50 @@ class PABSEcobroSync(models.Model):
       self._cr.rollback()
       _logger.warning("Hubo un problema con la petición al webservice, mensaje: {}".format(e))
 
-  def unconcile_cancel_payments(self):
-    payment_obj = self.env['account.payment'].sudo()
-    account_move_obj = self.env['account.move'].sudo()
-    cancel_payment_ids = payment_obj.search([
-      ('state','=','cancelled')])
-    for payment_id in cancel_payment_ids:
-      move_id = account_move_obj.search([
-        ('name','=',payment_id.move_name)],limit=1)
-      if move_id:
-        move_id.button_draft()
-        move_id.button_cancel()
-        _logger.warning("Pago desasentado correctamente")
-        self._cr.commit()
+  def reactivate_contract(self):
+    ### DECLARAMOS LOS OBJECTOS
+    contract_obj = self.env['pabs.contract']
+    contract_status_obj = self.env['pabs.contract.status']
+    contract_status_reason_obj = self.env['pabs.contract.status.reason']
+
+    ### TRAEMOS LA FECHA ACTUAL
+    today = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
+
+    ### BUSCAMOS EL ESTATUS SUPENSIÓN TEMPORAL
+    status_id = contract_status_obj.search([
+      ('ecobro_code','=',5)],limit=1)
+
+    ### VALIDAMOS QUE HAYA TRAÍDO UN REGISTRO
+    if not status_id:
+      raise ValidationError((
+        "No se encontró el estatus '5' - suspensión temporal, favor de verificar los estatus"))
+
+    ### BUSCAMOS EL ESTATUS ACTIVO
+    status_active_id = contract_status_obj.search([
+      ('ecobro_code','=',1)],limit=1)
+
+    ### BUSCAMOS LA RAZÓN DE ACTIVO
+    status_reason_id = contract_status_reason_obj.search([
+      ('reason','=','ACTIVO'),
+      ('status_id','=',status_active_id.id)])
+
+    ### VALIDAMOS QUE HAYA TRAÍDO UN REGISTRO
+    if not status_active_id:
+      raise ValidationError((
+        "No se encontró el estatus '1' - Activo, favor de verificar los estatus"))
+
+    ### BUSCAMOS LOS CONTRATOS QUE SE TENGAN QUE REACTIVAR HOY, O ANTERIOR A HOY
+    contract_ids = contract_obj.search([
+      ('contract_status_item','=',status_id.id),
+      ('reactivation_date','<=',today)])
+
+    ### ESCRIBIMOS EL ESTATUS ACTIVO EN TODOS LOS REGISTROS QUE SE ENCONTRARON
+    contract_ids.write({
+      'contract_status_item' : status_active_id.id,
+      'contract_status_reason' : status_reason_id.id
+    })
+
+    _logger.info("Se reactivaron {} contratos el día de hoy: {}".format(len(contract_ids), today))
+    contract_names = contract_ids.mapped('name')
+    _logger.info("Los contratos que se procesaron son: {}".format(contract_names))
+
