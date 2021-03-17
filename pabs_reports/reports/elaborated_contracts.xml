@@ -36,7 +36,6 @@
                           float: left;
                           width: 50%;
                           padding: 10px;
-                          height: 300px; /* Should be removed. Only for demonstration */
                         }
 
                         /* Clear floats after the columns */
@@ -62,7 +61,7 @@
                                         <br/>
                                         CORTE DE CONTRATOS ELABORADOS
                                         <br/>
-                                        FECHA:<span> <span t-esc="data['params']['start_date']" t-options='{"widget": "date"}'/> - <span t-esc="data['params']['end_date']" t-options='{"widget": "date"}'/></span>
+                                        FECHA:<span> <span t-esc="data['params']['start_date']" t-options="{&quot;widget&quot;: &quot;date&quot;}"/> - <span t-esc="data['params']['end_date']" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></span>
                                         <br/>
                                     </div>
                                 </div>
@@ -106,7 +105,7 @@
                                 <tbody style="color:#000000; font-weight:normal; text-align: center;" t-foreach="info[header]" t-as="line">
                                 
                                     
-                                    <tr >
+                                    <tr>
                                         <td><span t-esc="line['contract']"/></td>
                                         <td><span t-esc="line['product_id']"/></td>
                                         <td><span t-esc="line['price']"/></td>
@@ -152,12 +151,12 @@
                                     </thead>
                                     <tbody style="">
                                         <tr>
-                                            <td><span t-esc = "tot_contratos"/> </td>
+                                            <td><span t-esc="tot_contratos"/> </td>
                                             <td> <span t-esc="tot_plan"/> </td>
-                                            <td><span t-esc ="tot_inv_ini"/></td>
-                                            <td><span t-esc ="tot_exc"/></td>
-                                            <td><span t-esc ="tot_importe_ini"/></td>
-                                            <td><span t-esc ="tot_bono"/></td>
+                                            <td><span t-esc="tot_inv_ini"/></td>
+                                            <td><span t-esc="tot_exc"/></td>
+                                            <td><span t-esc="tot_importe_ini"/></td>
+                                            <td><span t-esc="tot_bono"/></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -178,26 +177,29 @@
                                     </thead>
                                     <tbody style="">
                                         <tr>
-                                            <td><span t-esc = "tot_contratos_"/> </td>
+                                            <td><span t-esc="tot_contratos_"/> </td>
                                             <td> <span t-esc="tot_plan_"/> </td>
-                                            <td><span t-esc ="tot_inv_ini_"/></td>
-                                            <td><span t-esc ="tot_exc_"/></td>
-                                            <td><span t-esc ="tot_importe_ini_"/></td>
-                                            <td><span t-esc ="tot_bono_"/></td>
+                                            <td><span t-esc="tot_inv_ini_"/></td>
+                                            <td><span t-esc="tot_exc_"/></td>
+                                            <td><span t-esc="tot_importe_ini_"/></td>
+                                            <td><span t-esc="tot_bono_"/></td>
                                         </tr>
                                     </tbody>
                                 </table>
                         </div>
+                        
+                        <br/>
+                        <br/>
                
                         <!-- FIRMAS -->
-                        <div class="row">
-                            <div class="column">
+                        <div style="display: table; clear: both;width : 100%">
+                            <div style="float: left; width: 50%; padding: 10px;">
                                 <center>
                                 _________________________ <br/>
                                 <span t-esc="user.name"/>
                                 </center>
                             </div>
-                            <div class="column">
+                            <div style="float: left; width: 50%; padding: 10px;">
                                 <center>
                                 _________________________ <br/>
                                 <span>FIRMA REVISO/ AUTORIZÓ</span>
@@ -206,8 +208,7 @@
                         </div>                            
                             
                     </div>
-                </div>
-        
+                </div>    
       
             </t>
         </template>

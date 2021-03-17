@@ -7,3 +7,4 @@ from . import pabs_collector_report_wizard
 from . import report_pabs_ing_egre_xlsx
 from . import pabs_transfer_portfolio_partners
 from . import delinquent_customer
+from . import pabs_commissions_recovery

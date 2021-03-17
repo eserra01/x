@@ -1,0 +1,134 @@
+<odoo>
+  <data>
+    <template id="commissions_recovery_pdf_template">
+      <t t-call="web.basic_layout">
+        <div class="page">
+          <style>
+            table, td, th{
+                padding: 3px;
+                font-size: 9pt;
+                text-align : center;
+            }
+
+            thead.encabezado{
+                text-align: center;
+                font-weight: bold;
+                border-bottom: 1px solid black;
+            }
+
+            .subtotal {
+                text-align : center;
+                font-weight : bold;
+                border-top: 1px solid black;
+            }
+
+            table {
+                border-collapse: collapse;
+            }
+
+            * {
+                font-family: Arial, Helvetica, sans-serif;
+                font-size: 10pt;
+                box-sizing: border-box;
+            }
+
+            .column {
+              float: left;
+              width: 50%;
+              padding: 10px;
+            }
+
+            /* Clear floats after the columns */
+            .row:after {
+              display: table;
+              clear: both;
+            }
+          </style>
+          <div>
+            <div>
+              <!-- LOGO -->
+              <div style="float: left; width: 15%; text-align: center;">
+                <img t-if="logo" t-att-src="'data:image/png;base64,%s' % to_text(logo)" alt="logoPABS" height="100px"/>
+              </div>
+
+              <div style=" width: 85%;  text-align: left;">
+                <!-- TITULO DEL REPORTE -->
+                <div style="font-size:15pt; color:#000000;  font-weight:bold; text-align: CENTER;">
+                    <br/>
+                    PROGRAMA DE APOYO DE BENEFICIO SOCIAL
+                    <br/>
+                    VENTAS DIRECTAS
+                    <br/>
+                    FECHA:<span> <span t-esc="data['start_date']" t-options="{&quot;widget&quot;: &quot;date&quot;}"/> - <span t-esc="data['end_date']" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></span>
+                    <br/>
+                </div>
+              </div>
+
+              <t t-foreach="info.keys()" t-as="employee_id">
+                <p><strong>Promotor: <t t-esc="employee_id"/></strong></p>
+                <table style="border-collapse: collapse; width: 100%;">
+                  <thead class="encabezado">
+                    <th>Fecha Contrato</th>
+                    <th>Contrato</th>
+                    <th>Cliente</th>
+                    <th>Colonia</th>
+                    <th>Localidad</th>
+                    <th>Teléfono</th>
+                    <th>Cobrador</th>
+                    <th>Comisión</th>
+                    <th>Comission Pagada</th>
+                    <th>Comisión X Pagar</th>
+                  </thead>
+                  <t t-set="commission_paid" t-value="0"/>
+                  <t t-set="commission_x_paid" t-value="0"/>
+                  <tbody>
+                    <tr t-foreach="info[employee_id]" t-as="data">
+                      <td><t t-esc="data['date']"/></td>
+                      <td><t t-esc="data['contract']"/></td>
+                      <td><t t-esc="data['partner']"/></td>
+                      <td><t t-esc="data['colony']"/></td>
+                      <td><t t-esc="data['municipality']"/></td>
+                      <td><t t-esc="data['phone']"/></td>
+                      <td><t t-esc="data['collector']"/></td>
+                      <td><t t-esc="'${0:,.2f}'.format(data['commission'])"/></td>
+                      <td><t t-esc="'${0:,.2f}'.format(data['commission_paid'])"/></td>
+                      <td><t t-esc="'${0:,.2f}'.format(data['commission_x_paid'])"/></td>
+                      <t t-set="commission_paid" t-value="commission_paid + data['commission_paid']"/>
+                      <t t-set="commission_x_paid" t-value="commission_x_paid + data['commission_x_paid']"/>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td class="subtotal"><t t-esc="'${0:,.2f}'.format(commission_paid)"/></td>
+                      <td class="subtotal"><t t-esc="'${0:,.2f}'.format(commission_x_paid)"/></td>
+                    </tr>
+                  </tbody>
+
+                </table>
+              </t>
+
+            </div>
+
+          </div>
+
+        </div>
+      </t>
+    </template>
+
+    <report
+      id="commissions_recovery_pdf_report"
+      model="pabs.commissions.recovery"
+      string="Reporte de Comissiones Por Recuperar"
+      report_type="qweb-pdf"
+      name="pabs_reports.commissions_recovery_pdf_template"
+      file="pabs_reports.commissions_recovery_pdf_template"
+      attachment_use="False"/>
+
+  </data>
+</odoo>

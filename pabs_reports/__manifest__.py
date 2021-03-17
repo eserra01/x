@@ -23,6 +23,8 @@
     'reports/elaborated_contracts.xml',
     'reports/pabs_collector_report_template.xml',
     'reports/delinquent_customer_template.xml',
+    'reports/commissions_to_recovery_template.xml',
+    'wizard/pabs_commissions_recovery_wizard.xml',
     'views/menus.xml',
     
     ],
