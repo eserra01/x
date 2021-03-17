@@ -35,7 +35,7 @@
       <xpath expr="//field[@name='job_id']" position="replace">
         <field name="job_id" string="Puesto Laboral"/>
         <field name="date_of_admission" required="True"/>
-        <field name="payment_scheme" attrs="{'required' : [('job_title','in',('COORDINADOR', 'GERENTE DE OFICINA', 'ASISTENTE SOCIAL'))]}"/>
+        <field name="payment_scheme" attrs="{'required' : [('job_title','in',('PRESIDENCIA','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))]}"/>
         <field name="first_payment"/>
       </xpath>
 
@@ -60,7 +60,7 @@
           <div id="o_work_employee_container"> <!-- These two div are used to position org_chart -->
             <group>
               <group string="Oficina de ventas">
-                <field name="warehouse_id" attrs="{'required' : [('job_title','in',('COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))]}" nolabel="1"/>
+                <field name="warehouse_id" attrs="{'required' : [('job_title','in',('PRESIDENCIA','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))]}" nolabel="1"/>
                 <field name="view_location_id" invisible="1"/>
               </group>
               <group string="Ubicaciones">
