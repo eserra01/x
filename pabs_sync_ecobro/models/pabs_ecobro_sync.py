@@ -17,6 +17,9 @@ URL = {
   'CONTRATOS' : '/controlcartera/cargarContratos',
   'RECIBOS_PENDIENTES' : '/controlpagos/obtenerCobrosPorAfectar',
   'ACTUALIZAR_RECIBOS' : '/controlpagos/actualizarCobrosAfectados',
+  'LOG_CONTRATOS' : '/controlodoo/saveLogsContratos',
+  'LOG_COBRADORES' : '/controlodoo/saveLogsCobradores',
+  'LOG_PAGOS' : '/controlodoo/saveLogsPagos',
 }
 
 class PABSEcobroSync(models.Model):
@@ -48,6 +51,8 @@ class PABSEcobroSync(models.Model):
     return url
 
   def sync_collectors(self):
+    ### GENERAMOS LA VARIABLE DE LOS LOGS
+    log = "Sincronización de Cobradores \n"
     ### INSTANCIACIÓN DE OBJECTOS
     debt_collector_obj = self.env['pabs.comission.debt.collector'].sudo()
     ### MANDAR A LLAMAR LA URL DE COBRADORES
@@ -60,15 +65,24 @@ class PABSEcobroSync(models.Model):
       return
     ### BUSCAMOS EN LAS COMISIONES DE COBRADORES TODOS LOS QUE TENGAN ASIGNADAS SERIES
     debt_collector_ids = debt_collector_obj.search([('receipt_series','!=',False)])
+
+    ### CONTAMOS TODOS LOS REGISTROS
+    len_employees = len(debt_collector_ids)
+    ### LO ENVIAMOS A LOS LOGS
+    log+= 'Sincronización de {} Cobradores\n'.format(len_employees)
     ### LISTA DE INFORMACIÓN VACÍA
     employee_data = []
     ### BUSCAMOS EL ESTATUS ACTIVO
     status_id = self.env['hr.employee.status'].search([
       ('name','=','ACTIVO')],limit=1)
     ### SÍ EXISTEN COBRADORES CON SERIES ASIGNADAS, CREAMOS CICLO
-    for debt_collector_id in debt_collector_ids:
+    for index, debt_collector_id in enumerate(debt_collector_ids):
       ### INFORMACIÓN DEL COBRADOR
       employee_id = debt_collector_id.debt_collector_id
+
+      ### AGREGAMOS EL COBRADOR AL LOG
+      log+= 'Cobrador {} de {} \n'.format((index + 1), len_employees)
+      log+= '{} . {} \n'.format(employee_id.barcode, employee_id.name)
 
       ### VALIDAR QUE EL COBRADOR ESTÉ ACTIVO
       if employee_id.employee_status.id == status_id.id:
@@ -80,6 +94,11 @@ class PABSEcobroSync(models.Model):
         'telefono' : employee_id.mobile_phone or "",
         'cobradorID' : int(employee_id.ecobro_id) or employee_id.id
         })
+        log+= 'Estatus: {} Sincronizado con Exito \n'.format(employee_id.employee_status.status)
+      else:
+        log+= 'Estatus: {} No se Sincronizó'.format(employee_id.employee_status.status)
+      log += '\n\n'
+
     ### MANEJADOR DE ERRORES
     try:
       ### SI SE EMPAQUETÓ INFORMACIÓN
@@ -113,40 +132,11 @@ class PABSEcobroSync(models.Model):
     except Exception as e:
       ### ENVIANDO INFORMACIÓN DE ERROR AL LOG
       _logger.warning(e)
-
-  ### POR MEDIO DEL CONTRATO RETORNA EL ID PARA EL SINCRONIZADOR
-  def get_estatus(self, contract_id):
-    ### VERIFICA SI SE ENVIÓ UN CONTRATO
-    if contract_id:
-      ### GUARDANDO EL ESTATUS
-      status = contract_id.contract_status_item
-      ### DECLARANDO EL CÓDIGO DE ESTATUS
-      status_code = 0
-      ### CASTEANDO A MAYUSCULAS EL ESTATUS
-      status_name = status.status
-      ### SI EL ESTATUS ES ACTIVO
-      if status_name == 'ACTIVO':
-        status_code = 1
-      ### SI EL ESTATUS ES REALIZADO
-      elif status_name == 'REALIZADO':
-        status_code = 2
-      ### SI EL ESTATUS ES PAGADO
-      elif status_name == 'PAGADO':
-        status_code = 3
-      ### SI EL ESTATUS ES SUSPENDIDO TEMPORAL
-      elif status_name == 'SUSPENDIDO TEMPORAL':
-        status_code = 4
-      ### SI EL ESTATUS ES SUSPENDIDO POR CANCELAR
-      elif status_name == 'SUSPENDIDO POR CANCELAR':
-        status_code = 5
-      ### SI EL ESTATUS ES VERIFICACION TEMPORAL
-      elif status_name =='VERIFICACION TEMPORAL':
-        status_code = 15
-      ### SI EL ESTATUS ES VERIFICACION SC
-      elif status_name == 'VERIFICACION SC':
-        status_code = 16
-      ### RETORNA EL VALOR DEL CODIGO
-      return status_code
+    try:
+      url_log = self.get_url("LOG_COBRADORES")
+      req_log = requests.post(url_log, log)
+    except Exception as e:
+      _logger.warning(e)
 
   def calc_last_payment(self,contract_id):
     ### VARIABLE DE LA FECHA A RETORNAR
@@ -175,6 +165,8 @@ class PABSEcobroSync(models.Model):
         return 0000-00-00
 
   def sync_contracts(self):
+    ### GENERAR VARIABLE DE LOG
+    log = "Sincronización de Contratos de Odoo \n"
     ### INSTANCIACIÓN DE OBJECTOS
     contract_obj = self.env['pabs.contract'].sudo()
     ### MANDAR A LLAMAR LA URL DE CONTRATOS
@@ -190,10 +182,14 @@ class PABSEcobroSync(models.Model):
       ('state','=','contract'),
       ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO'))])
 
+    ### AGREGAMOS LA CANTIDAD DE CONTRATOS EN EL LOG
+    len_contract = len(contract_ids)
+    log += 'Contratos a sincronizar: {}\n'.format(len_contract)
+
     ### LISTA DE CONTRATOS VACÍA
     contract_info = []
     ### SI SE ENCONTRARÓN REGISTROS SE CICLARÁ
-    for contract_id in contract_ids:
+    for index, contract_id in enumerate(contract_ids):
       ### VALIDANDO LA FORMA DE PAGO ACTUAL: SEMANAL / QUINCENAL / MENSUAL
       if contract_id.way_to_payment == 'weekly':
         way_payment = 1
@@ -202,6 +198,7 @@ class PABSEcobroSync(models.Model):
       elif contract_id.way_to_payment == 'monthly':
         way_payment = 3
       ### AGREGANDO INFORMACIÓN DE CONTRATO A LA LISTA
+      log += 'Contrato {} de {} \n'.format((index + 1), len_contract)
       contract_info.append({
         'contratoID' : int(contract_id.ecobro_id) or contract_id.id,
         'serie' : contract_id.name[0:3],
@@ -231,8 +228,12 @@ class PABSEcobroSync(models.Model):
         'saldo' : contract_id.balance or 0,
         'abonado' : contract_id.paid_balance or 0,
       })
+      ### ESCRIBIMOS EL CONTRATO QUE SE ESTA PROCESANDO
+      log += 'Número de Contrato: {} \n'.format(contract_id.name)
+
       _logger.info("Contrato: {}".format(contract_id.name))
       _logger.info("Cobrador: {}-{}".format(contract_id.debt_collector.barcode,contract_id.debt_collector.name))
+      log += '\n\n'
     ### MANEJO DE ERRORES AL ENVIAR AL WEB SERVICE
     try:
       ### SI EXISTE ALGÚN DATO POR SINCRONIZAR
@@ -267,6 +268,11 @@ class PABSEcobroSync(models.Model):
     except Exception as e:
       ### ENVIANDO INFORMACIÓN DE ERROR AL LOG
       _logger.warning(e)
+    try:
+      url_log = self.get_url("LOG_CONTRATOS")
+      req_log = requests.post(url_log, log)
+    except Exception as e:
+      _logger.warning(e)
 
   ### CONCILIAR LOS DOCUMENTOS
   def reconcile_all(self, reconcile={}):
@@ -289,6 +295,8 @@ class PABSEcobroSync(models.Model):
     return False
 
   def get_pending_payments(self):
+    ### GENERANDO LA VARIABLE DE LOG
+    log = 'Sincronización de Pagos \n'
     ### DECLARACIÓN DE OBJETOS
     contract_obj = self.env['pabs.contract'].sudo()
     account_obj = self.env['account.move'].sudo()
@@ -306,10 +314,10 @@ class PABSEcobroSync(models.Model):
       _logger.warning("No se ha configurado ninguna IP de sincronización con ecobro")
       ### FINALIZA EL MÉTODO
       return
-    ### SE ENVIA LA PETICIÓN PARA RECIBIR LOS PAGOS
-    req = requests.post(url_pending)
-    ### CASTEANDO A JSON LA RESPUESTA
     try:
+      ### SE ENVIA LA PETICIÓN PARA RECIBIR LOS PAGOS
+      req = requests.post(url_pending)
+      ### CASTEANDO A JSON LA RESPUESTA
       response = json.loads(req.text)
     except Exception as e:
       _logger.warning("Información recibida: {}".format(e))
@@ -328,9 +336,13 @@ class PABSEcobroSync(models.Model):
     payment_method_id = payment_method_obj.search([
       ('payment_type','=','inbound'),
       ('code','=','manual')],limit=1)
+    ### CANTIDAD DE PAGOS RECIBIDOS
+    len_payments = len(response['result'])
     ### RECORRER LA RESPUESTA
-    _logger.info("Registros a procesar: {}".format(len(response['result'])))
-    for rec in response['result']:
+    _logger.info("Registros a procesar: {}".format(len_payments))
+    for index, rec in enumerate(response['result']):
+      ### CONTANDO EL PAGO QUE SE ESTA GENERANDO
+      log += 'Pago {} de {} \n'.format((index + 1), len_payments)
       ### CONCATENAR LA SERIE CON EL NUMERO DE CONTRATO
       contract_name = "{}{}".format(rec['serie'],rec['no_contrato'])
       ### BUSCAR EL COBRADOR
@@ -338,6 +350,9 @@ class PABSEcobroSync(models.Model):
       collector_id = hr_employee_obj.search(['|',
         ('ecobro_id','=',rec['no_cobrador']),
         ('id','=',rec['no_cobrador'])],limit=1)
+
+      ### AGREGAMOS LA INFORMACIÓN DEL PAGO AL LOG
+      log += 'Número de Contrato: {}\n'.format(contract_name)
 
       ### VALIDAMOS QUE HAYA ENCONTRADO UN COBRADOR
       if not collector_id:
@@ -347,7 +362,10 @@ class PABSEcobroSync(models.Model):
           'estatus' : 2,
           'detalle' : "No se pudo encontrar el cobrador"
         })
+        log += 'No se pudo encontrar el Cobrador: {} \n'.format(rec['no_cobrador'])
         continue
+
+      log += 'Cobrador: {} \n'.format(collector_id.name)
 
       ### Validar que el recibo no esté afectado
       ecobro_number = "{}{}".format(rec['serie_recibo'],rec['no_recibo'])
@@ -356,6 +374,8 @@ class PABSEcobroSync(models.Model):
         ('state','in',['posted','sent','reconciled'])
       ])
 
+      log += 'Número de recibo: {} \n'.format(ecobro_number)
+
       ### VERIFICAMOS LA CANTIDAD DE RECIBOS ENCONTRADOS
       if len(recibo_afectado) > 1:
         fail.append({
@@ -363,6 +383,7 @@ class PABSEcobroSync(models.Model):
           'estatus' : 2,
           'detalle' : "Se encontro {} recibos".format(len(recibo_afectado))
         })
+        log += 'Estatus: Se econtraron {} recibos \n'.format(len(recibo_afectado))
         continue
 
       ### IMPRIMIMOS EL NUMERO DE RECIBO
@@ -381,6 +402,7 @@ class PABSEcobroSync(models.Model):
             'estatus' : 1,
             'detalle' : "El recibo ya existe. No se realizo afectacion"
           })
+          log += 'Estatus: El recibo fue afectado previamente \n'
           continue
 
       ### SI LO ENVIAN A CANCELAR Y YA EXISTE EL MOVIMIENTO, LO CANCELA
@@ -393,6 +415,7 @@ class PABSEcobroSync(models.Model):
             'estatus' : 1,
             'detalle' : "Se cancelo el recibo correctamente"
           })
+          log += 'Estatus: Se cancelo el recibo correctamente \n'
           continue
 
 
@@ -407,6 +430,7 @@ class PABSEcobroSync(models.Model):
           'estatus' : 2,
           'detalle' : "No se encontró el contrato"
         })
+        log += 'Estatus: No se encontró el contrato al que debe de afectar \n'
         ### CONTINUA CON EL SIGUIENTE REGISTRO
         continue
       ### BUSCANDO LA/LAS FACTURA QUE VA A AFECTAR
@@ -420,6 +444,7 @@ class PABSEcobroSync(models.Model):
           'estatus' : 2,
           'detalle' : "No se encontro la factura"
         })
+        log += 'Estatus: Se econtró la factura para aplicar el pago \n'
         continue
 
       ### Obtener el saldo del contrato
@@ -435,6 +460,7 @@ class PABSEcobroSync(models.Model):
           'estatus' : 2,
           'detalle' : message
         })
+        log += 'Estatus: El monto del recibo: {} es mayor que el saldo del contrato: {}'.format(float(rec['monto']), saldo)
         continue
 
       ##### PENDIENTE trabajar con mas de una factura #####
@@ -492,6 +518,7 @@ class PABSEcobroSync(models.Model):
           #'detalle' : e,
           'detalle' : str(e).replace('"','').replace("'",'')
         })
+        log += 'Estatus: {}\n'.format(e)
         continue
       try:
         ### SI EL ESTATÚS ES PARA CANCELAR EL PAGO PROCESADO PREVIAMENTE SE DEBERÁ CANCELAR
@@ -502,6 +529,7 @@ class PABSEcobroSync(models.Model):
             "estatus":1,
             "detalle" : "Cancelado Correctamente",
           })
+          log += 'Estatus: Se canceló el pago correctamente \n'
           continue
         elif rec['status'] == '1':
           ### EJECUTAMOS LA CONCILIACIÓN
@@ -512,6 +540,7 @@ class PABSEcobroSync(models.Model):
               "estatus":1,
               "detalle" : "Afectado Correctamente",
             })
+            log += 'Estatus: Correcto! \n'
             continue
           else:
             _logger.warning("no se concilió el pago y la factura")
@@ -520,6 +549,7 @@ class PABSEcobroSync(models.Model):
               "estatus":1,
               "detalle" : "Afectado sin conciliar",
             })
+            log += 'Estatus: Se creó el pago, pero no se concilió \n'
             continue
         ### SI SE CREO Y RECONCILIO CORRECTAMENTE SE AGREGA A LA LISTA "DONE"
         
@@ -529,8 +559,10 @@ class PABSEcobroSync(models.Model):
           'estatus' : 2,
           'detalle' : str(e).replace("'",'').replace('"', ''),
         })
+        log += 'Estatus: {} \n'.format(e)
         continue
       ### SE TERMINA LA ITERACIÓN DE LOS PAGOS
+      log += '\n\n'
       
     ### AL FINALIZAR DE PROCESAR TODA LA INFORMACIÓN
 
@@ -576,6 +608,11 @@ class PABSEcobroSync(models.Model):
     except Exception as e:
       self._cr.rollback()
       _logger.warning("Hubo un problema con la petición al webservice, mensaje: {}".format(e))
+    try:
+      url_log = self.get_url("LOG_PAGOS")
+      req_log = requests.post(url_log, log)
+    except Exception as e:
+      _logger.warning(e)
 
   def reactivate_contract(self):
     ### DECLARAMOS LOS OBJECTOS
