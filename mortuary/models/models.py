@@ -2,6 +2,7 @@
 from datetime import datetime
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from dateutil import tz
 # from odoo.exceptions import ValidationError
 
 
@@ -204,7 +205,7 @@ class Mortuary(models.Model):
     ii_servicio = fields.Many2one("ii.servicio", string="Servicio")
     ii_finado = fields.Char(string="Finado", required=True)
     ii_fecha_creacion = fields.Date(
-        string="Fecha creacion", readonly=True, default=fields.Date.today,
+        string="Fecha creacion", readonly=True, default=fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')),
         copy=False)
     ii_hora_creacion = fields.Char(
         string="Hora creacion",
@@ -375,7 +376,7 @@ class Mortuary(models.Model):
 
     @api.model
     def create(self, vals):
-        vals['ii_hora_creacion'] = "{}:{}".format(datetime.now().hour - 6, datetime.now().minute)
+        vals['ii_hora_creacion'] = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')).strftime('%H:%M')
         result = super(Mortuary, self).create(vals)
         return result
 
