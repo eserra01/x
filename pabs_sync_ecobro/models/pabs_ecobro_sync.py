@@ -295,8 +295,7 @@ class PABSEcobroSync(models.Model):
     return False
 
   def get_pending_payments(self):
-    ### GENERANDO LA VARIABLE DE LOG
-    log = 'Sincronización de Pagos \n'
+    log = False
     ### DECLARACIÓN DE OBJETOS
     contract_obj = self.env['pabs.contract'].sudo()
     account_obj = self.env['account.move'].sudo()
@@ -338,6 +337,9 @@ class PABSEcobroSync(models.Model):
       ('code','=','manual')],limit=1)
     ### CANTIDAD DE PAGOS RECIBIDOS
     len_payments = len(response['result'])
+    if len_payments > 0:
+      ### GENERANDO LA VARIABLE DE LOG
+      log = 'Sincronización de Pagos \n'
     ### RECORRER LA RESPUESTA
     _logger.info("Registros a procesar: {}".format(len_payments))
     for index, rec in enumerate(response['result']):
@@ -608,11 +610,12 @@ class PABSEcobroSync(models.Model):
     except Exception as e:
       self._cr.rollback()
       _logger.warning("Hubo un problema con la petición al webservice, mensaje: {}".format(e))
-    try:
-      url_log = self.get_url("LOG_PAGOS")
-      req_log = requests.post(url_log, log)
-    except Exception as e:
-      _logger.warning(e)
+    if log:
+      try:
+        url_log = self.get_url("LOG_PAGOS")
+        req_log = requests.post(url_log, log)
+      except Exception as e:
+        _logger.warning(e)
 
   def reactivate_contract(self):
     ### DECLARAMOS LOS OBJECTOS
