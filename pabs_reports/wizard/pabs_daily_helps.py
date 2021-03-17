@@ -6,6 +6,7 @@ from dateutil import tz
 import logging
 
 HEADERS = [
+  'Oficina',
   'Feche de Contrato',
   'Contrato',
   'N. Solicitud',
@@ -113,6 +114,8 @@ class PabsReportXLSX(models.AbstractModel):
     for rec_index,contract_id in enumerate(contract_ids):
       rec_index+=1
       count = 0
+      sheet.write(rec_index,count, contract_id.lot_id.warehouse_id.name or "")
+      count+=1
       sheet.write(rec_index,count,contract_id.invoice_date or "",date_format)
       count+=1
       sheet.write(rec_index,count,contract_id.name or "")
