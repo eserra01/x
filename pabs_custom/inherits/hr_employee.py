@@ -256,7 +256,7 @@ class HrEmployee(models.Model):
           "No puedes dar de alta el código de empleado {} por que ya existe".format(vals.get('barcode'))))
       if vals.get('job_id'):
         job_ids = job_obj.search([
-          ('name','in',('PRESIDENCIA','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))])
+          ('name','in',('PRESIDENCIA','DIRECTOR NACIONAL','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))])
         if vals.get('job_id') in job_ids.ids:
           ### validación para seleccionar automáticamente las ubicaciones correspondientes
           if vals.get('warehouse_id'):

@@ -35,7 +35,7 @@
       <xpath expr="//field[@name='job_id']" position="replace">
         <field name="job_id" string="Puesto Laboral"/>
         <field name="date_of_admission" required="True"/>
-        <field name="payment_scheme" attrs="{'required' : [('job_title','in',('PRESIDENCIA','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))]}"/>
+        <field name="payment_scheme" attrs="{'required' : [('job_title','in',('PRESIDENCIA''DIRECTOR NACIONAL','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))]}"/>
         <field name="first_payment"/>
       </xpath>
 
