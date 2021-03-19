@@ -27,7 +27,7 @@
       <xpath expr="//field[@name='payment_date']" position="after">
           <field name="date_receipt"/>
           <field name="reference"/>
-          <field name="Ecobro_receipt"/>
+          <field name="ecobro_receipt"/>
           <field name="debt_collector_code" domain="[('job_id.name','=','COBRADOR')]"/>
         </xpath>
 
