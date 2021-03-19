@@ -494,7 +494,7 @@ class PABSEcobroSync(models.Model):
         'date_receipt' : rec['fecha_recibo'],
         'payment_date' : rec['fecha_oficina'],
         'ecobro_affect_id' : rec['afectacionID'], 
-        'Ecobro_receipt' : ecobro_number,
+        'ecobro_receipt' : ecobro_number,
         'journal_id' : cash_journal_id.id,
         'payment_method_id' : payment_method_id.id,
       }

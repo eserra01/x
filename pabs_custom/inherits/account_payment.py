@@ -23,7 +23,7 @@ class account_Payment(models.Model):
 
     reference = fields.Selection(selection  = REFERENCE, string="Referencia",required = True)
 
-    Ecobro_receipt = fields.Char(string="Recibo Ecobro")
+    ecobro_receipt = fields.Char(string="Recibo Ecobro")
 
     debt_collector_code = fields.Many2one(comodel_name = 'hr.employee' ,string="Cobrador")
 
