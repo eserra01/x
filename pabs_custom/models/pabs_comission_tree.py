@@ -275,7 +275,7 @@ class ComissionTree(models.Model):
             #Si es cobrador y se quedó sin comisión: eliminar el registro del árbol. De lo contrario, actualizar.
             if com.job_id.id == id_cargo_cobrador:
                 if comisionRealPagada == 0:
-                    query = "DELETE FROM pabs_comission_tree WHERE id IN {}".format(com.ids)
+                    query = "DELETE FROM pabs_comission_tree WHERE id IN {}".format(tuple(com.ids))
                     self._cr.execute(query)
                     self._cr.commit()
                 else:
