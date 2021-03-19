@@ -55,8 +55,8 @@ class ReportCarnetPagoRango(models.AbstractModel):
             else:
                 fecha_recibo = fields.Date.to_string(last_payment.payment_date)
             
-            if last_payment.Ecobro_receipt:
-                recibo = last_payment.Ecobro_receipt
+            if last_payment.ecobro_receipt:
+                recibo = last_payment.ecobro_receipt
             else:
                 recibo = ""
 

@@ -13,7 +13,7 @@ class PabsContract(models.Model):
                 for p in payment:
                     vals = {
                         'payment_date' :  p.payment_date,
-                        'Ecobro_receipt' :  p.Ecobro_receipt,
+                        'ecobro_receipt' :  p.ecobro_receipt,
                         'amount' :  p.amount,
                         'debt_collector_code' :  p.debt_collector_code.name,
                         'reference' :  p.reference,

@@ -50,7 +50,7 @@
                         <td class="text-center"><span t-esc="doc['date_receipt']"/></td>
                         <td class="text-center"><span t-esc="doc['payment_date']"/></td>
                         <td class="text-center"><span t-esc="doc['contract']"/></td>
-                        <td class="text-center"><span t-esc="doc['Ecobro_receipt']"/></td>
+                        <td class="text-center"><span t-esc="doc['ecobro_receipt']"/></td>
                         <td class="text-center"><span t-esc="doc['partner']"/></td>
                         <td class="text-center">$<span t-esc="doc['amount']"/></td>
                       </tr>
@@ -115,7 +115,7 @@
                           <td class="text-center"><span t-esc="doc['date_receipt']"/></td>
                           <td class="text-center"><span t-esc="doc['payment_date']"/></td>
                           <td class="text-center"><span t-esc="doc['contract']"/></td>
-                          <td class="text-center"><span t-esc="doc['Ecobro_receipt']"/></td>
+                          <td class="text-center"><span t-esc="doc['ecobro_receipt']"/></td>
                           <td class="text-center"><span t-esc="doc['partner']"/></td>
                           <td class="text-center">$<span t-esc="doc['amount']"/></td>
                         </tr>

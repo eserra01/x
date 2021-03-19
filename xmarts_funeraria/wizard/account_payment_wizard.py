@@ -69,7 +69,7 @@ class ReportAttendanceRecap(models.AbstractModel):
                     'date_receipt': pay.date_receipt,
                     'payment_date': pay.payment_date,
                     'contract': pay.contract.name,
-                    'Ecobro_receipt': pay.Ecobro_receipt,
+                    'ecobro_receipt': pay.ecobro_receipt,
                     'partner': pay.contract.full_name,
                     'amount': pay.amount,
                 })
@@ -125,7 +125,7 @@ class ReportAttendanceRecap(models.AbstractModel):
                                     'date_receipt': pay.date_receipt,
                                     'payment_date': pay.payment_date,
                                     'contract': pay.contract.name,
-                                    'Ecobro_receipt': pay.Ecobro_receipt,
+                                    'ecobro_receipt': pay.ecobro_receipt,
                                     'partner': pay.contract.full_name,
                                     'amount': pay.amount,
                                 })

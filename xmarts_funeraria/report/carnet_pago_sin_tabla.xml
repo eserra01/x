@@ -123,7 +123,7 @@
                             <t t-set="fecha_recibo" t-value="abono.payment_date"/>
                         </t>
 
-                        <t t-set="recibo" t-value="abono.Ecobro_receipt"/>    
+                        <t t-set="recibo" t-value="abono.ecobro_receipt"/>    
                         <t t-set="monto" t-value="abono.amount"/>
                         <t t-set="cobrador" t-value="abono.debt_collector_code.name"/>
                     </t>

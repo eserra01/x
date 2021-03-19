@@ -110,7 +110,7 @@ class ReportComisionesPromotores(models.AbstractModel):
         lista_salidas_error = ""
         for pago in salidas:
             if not pago.comission_agent_id:
-                lista_salidas_error = "No se tiene un empleado asignado a la salida de comisiones en el recibo {}\n".format(pago.Ecobro_receipt)
+                lista_salidas_error = "No se tiene un empleado asignado a la salida de comisiones en el recibo {}\n".format(pago.ecobro_receipt)
 
         if lista_salidas_error != "":
             raise ValidationError(lista_salidas_error)
@@ -170,7 +170,7 @@ class ReportComisionesPromotores(models.AbstractModel):
                                 'fecha_recibo': fields.Date.to_string(pago.payment_id.date_receipt),
                                 'fecha_oficina': fields.Date.to_string(pago.payment_id.payment_date),
                                 'contrato': pago.payment_id.contract.name,
-                                'recibo': pago.payment_id.Ecobro_receipt,
+                                'recibo': pago.payment_id.eEcobro_receipt,
                                 'cliente': pago.payment_id.contract.full_name,
                                 'importe': pago.payment_id.amount,
                                 'comision_cobrador': pago.commission_paid - pago.actual_commission_paid,
@@ -212,7 +212,7 @@ class ReportComisionesPromotores(models.AbstractModel):
                                     'fecha_recibo': fields.Date.to_string(pago.payment_id.date_receipt),
                                     'fecha_oficina': fields.Date.to_string(pago.payment_id.payment_date),
                                     'contrato': pago.payment_id.contract.name,
-                                    'recibo': pago.payment_id.Ecobro_receipt,
+                                    'recibo': pago.payment_id.eEcobro_receipt,
                                     'cliente': pago.payment_id.contract.full_name,
                                     'importe': pago.payment_id.amount,
                                     'comision_cobrador': pago.commission_paid - pago.actual_commission_paid,

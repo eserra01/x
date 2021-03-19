@@ -86,7 +86,7 @@
                 <t t-foreach="payment_ids" t-as="recibo">
                   <tr t-if="recibo['reference'] == 'stationary'">
                     <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
-                    <td class="text-center"><span/><t t-esc="recibo['Ecobro_receipt']"/></td>
+                    <td class="text-center"><span/><t t-esc="recibo['ecobro_receipt']"/></td>
                     <td class="text-center"><span>$<t t-esc="recibo['amount']"/></span></td>
                     <td class="text-center"><span/><t t-esc="recibo['debt_collector_code'].name"/></td>
                     <td>INVERSIÓN INICIAL</td>
@@ -99,7 +99,7 @@
                 <t t-foreach="payment_ids" t-as="recibo">
                   <tr t-if="recibo['reference'] == 'surplus' and recibo['state'] in ('posted','reconciled')">
                     <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
-                    <td class="text-center"><span/><t t-esc="recibo['Ecobro_receipt']"/></td>
+                    <td class="text-center"><span/><t t-esc="recibo['ecobro_receipt']"/></td>
                     <td class="text-center"><span>$<t t-esc="recibo['amount']"/></span></td>
                     <td class="text-center"><span/><t t-esc="recibo['debt_collector_code'].name"/></td>
                     <td>EXCEDENTE INVERSIÓN INICIAL</td>
@@ -125,7 +125,7 @@
                 <t t-foreach="payment_ids" t-as="recibo">
                   <tr t-if="recibo['reference'] == 'payment' and recibo['state'] in ('posted','reconciled')">
                     <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
-                    <td class="text-center"><span/><t t-esc="recibo['Ecobro_receipt']"/></td>
+                    <td class="text-center"><span/><t t-esc="recibo['ecobro_receipt']"/></td>
                     <td class="text-center"><span>$<t t-esc="recibo['amount']"/></span></td>
                     <td class="text-center"><span/><t t-esc="recibo['debt_collector_code'].name"/></td>
                     <td>ABONO</td>
