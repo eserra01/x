@@ -94,9 +94,9 @@ class PABSEcobroSync(models.Model):
         'telefono' : employee_id.mobile_phone or "",
         'cobradorID' : int(employee_id.ecobro_id) or employee_id.id
         })
-        log+= 'Estatus: {} Sincronizado con Exito \n'.format(employee_id.employee_status.status)
+        log+= 'Estatus: {} Sincronizado con Exito \n'.format(employee_id.employee_status.name)
       else:
-        log+= 'Estatus: {} No se Sincronizó'.format(employee_id.employee_status.status)
+        log+= 'Estatus: {} No se Sincronizó'.format(employee_id.employee_status.name)
       log += '\n\n'
 
     ### MANEJADOR DE ERRORES
