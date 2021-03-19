@@ -207,18 +207,19 @@ class PabsIngreEgreReportXLSX(models.AbstractModel):
       sheet.write(count, 1, emp.barcode)
 
       for cargo in cargos_de_salidas:
-          #Filtrar las salidas por cargo
-          salidas_por_cargo = salidas_por_codigo.filtered_domain([('job_id','=',cargo.id)])
-          
-          nombre_comisionista = "{} - ({})".format(emp.name, cargo.name)
-          total_cargo = 0
-          for salida in salidas_por_cargo:
-              total_cargo = total_cargo + salida.actual_commission_paid
+        #Filtrar las salidas por cargo
+        salidas_por_cargo = salidas_por_codigo.filtered_domain([('job_id','=',cargo.id)])
+        
+        nombre_comisionista = "{} - ({})".format(emp.name, cargo.name)
+        total_cargo = 0
+        for salida in salidas_por_cargo:
+            total_cargo = total_cargo + salida.actual_commission_paid
 
-          sheet.write(count, 2, nombre_comisionista)
-          sheet.write(count, 3, total_cargo, money_format)
-          total_egresos = total_egresos + total_cargo
-          #Fin de iteración por cargos de un empleado
+        sheet.write(count, 2, nombre_comisionista)
+        sheet.write(count, 3, total_cargo, money_format)
+        total_egresos = total_egresos + total_cargo
+        count+=1
+        #Fin de iteración por cargos de un empleado
 
     #### INSERTAMOS EL TOTAL DE EGRESOS
     count+=1
