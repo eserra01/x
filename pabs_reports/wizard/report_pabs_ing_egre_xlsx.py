@@ -156,7 +156,7 @@ class PabsIngreEgreReportXLSX(models.AbstractModel):
     lista_salidas_error = ""
     for pago in salidas:
       if not pago.comission_agent_id:
-        lista_salidas_error = "No se tiene un empleado asignado a la salida de comisiones en el recibo {}\n".format(pago.Ecobro_receipt)
+        lista_salidas_error = "No se tiene un empleado asignado a la salida de comisiones en el recibo {}\n".format(pago.ecobro_receipt)
 
     if lista_salidas_error != "":
         raise ValidationError(lista_salidas_error)
