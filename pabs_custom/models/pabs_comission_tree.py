@@ -3,6 +3,9 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class ComissionTree(models.Model):
     """Modelo que contiene los árboles de comisión de los contratos"""
@@ -272,7 +275,9 @@ class ComissionTree(models.Model):
             #Si es cobrador y se quedó sin comisión: eliminar el registro del árbol. De lo contrario, actualizar.
             if com.job_id.id == id_cargo_cobrador:
                 if comisionRealPagada == 0:
-                    com.unlink()
+                    query = "DELETE FROM pabs_comission_tree WHERE id IN {}".format(com.ids)
+                    self._cr.execute(query)
+                    self._cr.commit()
                 else:
                     com.write({"actual_commission_paid":comisionRealPagada})
             else:
