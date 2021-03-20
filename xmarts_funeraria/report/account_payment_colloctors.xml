@@ -164,8 +164,6 @@
         name="xmarts_funeraria.collectors"
         file="xmarts_funeraria.collectors"
         report_type="qweb-pdf"
-        print_report_name="'Cobradores por pagar'"
-        paperformat="xmarts_funeraria.paperformat_report_collectors"
-        />
+        print_report_name="'Cobradores por pagar'"/>
 
 </odoo>
