@@ -92,7 +92,7 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
     ### AGREGAMOS FORMATOS
     bold_format = workbook.add_format({'bold': True,'bg_color': '#2978F8'})
     date_format = workbook.add_format({'num_format': 'dd/mm/yy'})
-    money_format = workbook.add_format({'num_format': '$#,##0'})
+    money_format = workbook.add_format({'num_format': '$#,##0.00'})
 
     ### INGRESAMOS LOS ENCABEZADOS
     for row, row_data in enumerate(HEADERS):

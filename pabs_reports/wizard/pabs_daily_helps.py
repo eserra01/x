@@ -106,7 +106,7 @@ class PabsReportXLSX(models.AbstractModel):
     ### AGREGAMOS FORMATOS
     bold_format = workbook.add_format({'bold': True})
     date_format = workbook.add_format({'num_format': 'dd/mm/yy'})
-    money = workbook.add_format({'num_format': '$#,##0'})
+    money = workbook.add_format({'num_format': '$#,##0.00'})
     ### INSERTAMOS LOS ENCABEZADOS PARA EL FORMATO
     for index, val in enumerate(HEADERS):
       sheet.write(0,index,val,bold_format)

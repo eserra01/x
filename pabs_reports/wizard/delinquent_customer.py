@@ -184,7 +184,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
     ### AGREGAMOS FORMATOS
     bold_format = workbook.add_format({'bold': True,'bg_color': '#2978F8'})
     date_format = workbook.add_format({'num_format': 'dd/mm/yy'})
-    money_format = workbook.add_format({'num_format': '$#,##0'})
+    money_format = workbook.add_format({'num_format': '$#,##0.00'})
 
     ### DICCIONARIO QUE CONTENDRÁ TODA LA INFORMACIÓN DEL REPORTE
     data = {}
