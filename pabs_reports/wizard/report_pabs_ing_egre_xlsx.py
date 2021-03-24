@@ -44,7 +44,7 @@ class PabsIngreEgreReportXLSX(models.AbstractModel):
     bold_format = workbook.add_format({'bold' : True})
     header_format = workbook.add_format({'bold' : True,'bg_color': '#2978F8'})
     money_format = workbook.add_format({'num_format': '$#,##0'})
-    subtotal_format = workbook.add_format({'top' : 2, 'bold' : True, 'num_format': '$#,##0'})
+    subtotal_format = workbook.add_format({'top' : 2, 'bold' : True, 'num_format': '$#,##0.00'})
 
 
     ### ESCRIBIMOS EL ENCABEZADO DE LA PAGINA
