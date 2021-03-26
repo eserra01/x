@@ -204,9 +204,8 @@ class PabsIngreEgreReportXLSX(models.AbstractModel):
       cargos_de_salidas = salidas_por_codigo.mapped(lambda salida: salida.job_id)
 
       registro_empleado = {}
-      sheet.write(count, 1, emp.barcode)
-
       for cargo in cargos_de_salidas:
+        sheet.write(count, 1, emp.barcode)
         #Filtrar las salidas por cargo
         salidas_por_cargo = salidas_por_codigo.filtered_domain([('job_id','=',cargo.id)])
         
