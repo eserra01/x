@@ -230,7 +230,7 @@ class ComissionTree(models.Model):
                     break
         
     #Revierte las comisiones generadas por un pago. Actualiza los montos en el arbol de comisiones. Las salidas permanecen en el pago cancelado.
-    def RevertirSalidas(self, IdPago = False, NumeroContrato, RefundID = False):
+    def RevertirSalidas(self, IdPago, NumeroContrato, RefundID = False):
 
         #Obtener y validar información del contrato
         contrato = self.env['pabs.contract'].browse(NumeroContrato)
