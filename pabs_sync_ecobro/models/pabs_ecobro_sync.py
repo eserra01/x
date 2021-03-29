@@ -229,9 +229,9 @@ class PABSEcobroSync(models.Model):
       })
       ### ESCRIBIMOS EL CONTRATO QUE SE ESTA PROCESANDO
       log += 'Número de Contrato: {} \n'.format(contract_id.name)
-
       _logger.info("Contrato: {}".format(contract_id.name))
       _logger.info("Cobrador: {}-{}".format(contract_id.debt_collector.barcode,contract_id.debt_collector.name))
+      log += 'Estatus enviado: {}'.format(contract_id.contract_status_item.ecobro_code)
       log += '\n\n'
     ### MANEJO DE ERRORES AL ENVIAR AL WEB SERVICE
     try:
@@ -794,3 +794,4 @@ class PABSEcobroSync(models.Model):
       except Exception as e:
         ### lO ENVIAMOS AL LOG DE ODOO
         _logger.warning(e)
+
