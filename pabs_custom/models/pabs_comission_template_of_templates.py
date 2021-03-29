@@ -16,6 +16,10 @@ class ComissionTemplateOfTemplates(models.Model):
 
     active = fields.Boolean(string = "Activo", default = "True", required="True", tracking=True)
 
+    company_id = fields.Many2one(
+        'res.company', 'Compañia', required=True,
+        default=lambda s: s.env.company.id, index=True)
+
     # No permitir registrar dos cargos en la misma plantilla (la llave se compone de id_plan, id_cargo)
     _sql_constraints = [
         ('unique_template_entry',

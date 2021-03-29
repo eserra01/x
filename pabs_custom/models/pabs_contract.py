@@ -149,6 +149,10 @@ class PABSContracts(models.Model):
   service_detail = fields.Selection(selection=SERVICE, string='Detalle de servicio', default="unrealized", required="1")
   debt_collector = fields.Many2one(comodel_name="hr.employee", string='Nombre del cobrador')
   contract_status = fields.Selection(selection=STATUS, string='Estatus de contrato', tracking=True)
+
+  company_id = fields.Many2one(
+    'res.company', 'Compañia', required=True,
+    default=lambda s: s.env.company.id, index=True)
   
   #Al elegir un estatus diferente borrar el motivo actual
   @api.onchange('contract_status_item')
@@ -235,7 +239,7 @@ class PABSContracts(models.Model):
   @api.onchange('amount_received','stationery')
   def _calc_excedent(self):
     for rec in self:
-      rec.excedent = (float(rec.initial_investment) - float(rec.stationery))
+      rec.excedent = (float(rec.amount_received) - float(rec.stationery))
 
   @api.onchange('initial_investment','comission')
   def _calc_amount_received(self):
@@ -868,6 +872,7 @@ class PABSContracts(models.Model):
                 reconcile.update({
                   'excedent' : line2.id})
         ### NOTA DE CREDITO POR BONO PABS
+        _logger.warning("El bono por inversión inicial es: {}".format(previous.investment_bond))
         if previous.investment_bond > 0:
           refund_data = {
             'date' : previous.invoice_date,

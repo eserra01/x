@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data noupdate="0"> 
+  <data noupdate="1"> 
 
     <!-- Categoría Call Center -->
     <record id="call_center_category" model="ir.module.category">
@@ -59,14 +59,12 @@
         <field name="name">Contratos</field>
         <field name="category_id" ref="pabs_custom.pabs_category"/>
         <field name="menu_access" eval="[(4, ref('account.menu_action_move_out_refund_type')),(4, ref('stock.all_picking')),(4,ref('account_accountant.menu_accounting')),(4, ref('account.menu_action_account_payments_receivable')),(4,ref('stock.menu_stock_root')),(4,ref('hr.menu_hr_root'))]"/>
-        <!--<field name="view_access" eval="[(4, ref('sale.account_invoice_form')),(4, ref('sale.view_sale_advance_payment_inv')),(4, ref('account.view_move_form')), (4, ref('pabs_custom.comission_template_form_view')), (4, ref('pabs_custom.comission_tree_form_view')), (4, ref('pabs_custom.precontract_form_view')), (4, ref('pabs_custom.contract_form_view')), (4, ref('hr.view_employee_form')), (4, ref('pabs_custom.pabs_single_contract_view')), (4, ref('stock.view_move_form')), (4, ref('pabs_custom.comission_output_tree_view')), (4, ref('pabs_custom.contract_tree_view')), (4, ref('hr.view_employee_tree')), (4, ref('pabs_custom.pabs_bonus_tree_view'))]"/>-->
     </record>
 
     <record id="secretary_profile" model="res.groups">
         <field name="name">Secretarías</field>
         <field name="category_id" ref="pabs_custom.pabs_category"/>
         <field name="menu_access" eval="[(4, ref('stock.all_picking')), (4,ref('stock.menu_stock_root'))]"/>
-        <!--<field name="view_access" eval="[(4, ref('stock.view_picking_form')), (4, ref('pabs_custom.precontract_form_view')), (4, ref('pabs_custom.pabs_single_contract_view')), (4, ref('hr.view_employee_form'))]"/>-->
     </record>
 
     <record id="collection_profile" model="res.groups">
@@ -79,59 +77,82 @@
       <field name="category_id" ref="pabs_custom.pabs_category"/>
     </record>
 
-   <!--  <record  id ="funeral_recepcionist" model="res.groups">
-         <field name="name">Recepcionista</field>
-         <field name="category_id" ref="pabs_custom.mortuary_category"></field>
-       </record>
-   
-       <record id="group_mortuary_manager" model="res.groups">
-           <field name="name">Administrador</field>
-           <field name="implied_ids" eval="[(4, ref('pabs_custom.funeral_recepcionist'))]"/>
-           <field name="category_id" ref="pabs_custom.mortuary_category"/>
-       </record>
-   
-       <record id="contracts_category" model="ir.module.category">
-         <field name="name">Contratos</field>
-       </record>
-   
-       <record id="group_contracts_user" model="res.groups">
-         <field name="name">Usuario</field>
-         <field name="category_id" ref="pabs_custom.contracts_category"/>
-       </record>
-   
-       <record id="group_contracts_manager" model="res.groups">
-           <field name="name">Administrador</field>
-           <field name="implied_ids" eval="[(4, ref('pabs_custom.group_contracts_user'))]"/>
-           <field name="category_id" ref="pabs_custom.contracts_category"/>
-       </record>
-   
-       <record model="res.users" id="base.user_root">
-         <field eval="[(4,ref('pabs_custom.group_contracts_manager'))]" name="groups_id"/>
-       </record>
-   
-       <record model="res.users" id="base.user_admin">
-         <field eval="[(4,ref('pabs_custom.group_contracts_manager'))]" name="groups_id"/>
-       </record>
-      
-       <record model="ir.module.category" id="arching_category">
-           <field name="name">Arqueo</field>
-       </record>
-   
-       <record id="arching_group_user" model="res.groups">
-           <field name="name">Usuario</field>
-           <field name="category_id" ref="arching_category"/>
-           <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-       </record>
-   
-       <record id="arching_group_manager" model="res.groups">
-           <field name="name">Administrador</field>
-           <field name="category_id" ref="arching_category"/>
-           <field name="implied_ids" eval="[(4, ref('arching_group_user'))]"/>
-           <field name="users" eval="[(4, ref('base.user_root'))]"/>
-       </record>
-   
-       <record id="base.user_admin" model="res.users">
-           <field name="groups_id" eval="[(4, ref('pabs_custom.arching_group_manager'))]"/>
-       </record> -->
+    <record model="ir.rule" id="closing_transfer_registry_rule">
+      <field name="name">Cortes multi-company</field>
+      <field name="model_id" search="[('model','=','closing.transfer.registry')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="colonias_rule">
+      <field name="name">colonias multi-company</field>
+      <field name="model_id" search="[('model','=','colonias')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="pabs_arching_rule">
+      <field name="name">arqueos multi-company</field>
+      <field name="model_id" search="[('model','=','pabs.arching')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="pabs_bonus_rule">
+      <field name="name">bonus multi-company</field>
+      <field name="model_id" search="[('model','=','pabs.bonus')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="pabs_comission_debt_collector_rule">
+      <field name="name">Comisiones de Cobrador multi-company</field>
+      <field name="model_id" search="[('model','=','pabs.comission.debt.collector')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="pabs_comission_output_rule">
+      <field name="name">Salidas de Comisiones multi-company</field>
+      <field name="model_id" search="[('model','=','pabs.comission.output')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="pabs_comission_template_rule">
+      <field name="name">Plantilla de Arboles de comisiones multi-company</field>
+      <field name="model_id" search="[('model','=','pabs.comission.template')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="pabs_comission_template_of_templates_rule">
+      <field name="name">Plantilla de Plantillas multi-company</field>
+      <field name="model_id" search="[('model','=','pabs.comission.template.of.templates')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="pabs_comission_tree_rule">
+      <field name="name">Plantilla de Contratos multi-company</field>
+      <field name="model_id" search="[('model','=','pabs.comission.tree')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="pabs_contract_rule">
+      <field name="name">Contratos multi-company</field>
+      <field name="model_id" search="[('model','=','pabs.contract')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="pabs_recluitment_induction_rule">
+      <field name="name">inducciones multi-company</field>
+      <field name="model_id" search="[('model','=','pabs.recluitment.induction')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
 </data>
 </odoo>

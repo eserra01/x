@@ -43,6 +43,10 @@ class PabsArching(models.Model):
   line_ids = fields.One2many(comodel_name='pabs.arching.line', inverse_name='arching_id', string='Solicitudes')
   cantidad_escaneadas = fields.Integer(string="Solicitudes escaneadas")
 
+  company_id = fields.Many2one(
+    'res.company', 'Compañia', required=True,
+    default=lambda s: s.env.company.id, index=True)
+
   #PENDIENTE Caja texto donde se coloca la solicitud que se registrará
   #solicitud = fields.Char(string="Solicitud", store=False)
 

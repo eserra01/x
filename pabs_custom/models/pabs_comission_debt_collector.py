@@ -16,6 +16,9 @@ class ComissionDebtCollector(models.Model):
     effectiveness = fields.Float(string="Efectividad", default = 0, tracking=True)
     has_salary = fields.Boolean(string = "Es de sueldo", default = False, tracking=True)
     receipt_series = fields.Char(string = "Serie de recibos", tracking = True)
+    company_id = fields.Many2one(
+        'res.company', 'Compañia', required=True,
+        default=lambda s: s.env.company.id, index=True)
 
     #Serie unica de recibos
     _sql_constraints = [

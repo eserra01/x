@@ -25,6 +25,10 @@ class ComissionTree(models.Model):
     commission_paid = fields.Float(string="Comision pagada", default = 0)#, readonly=True)
     actual_commission_paid = fields.Float(string="Comision real pagada", default = 0)#, readonly=True)
 
+    company_id = fields.Many2one(
+        'res.company', 'Compañia', required=True,
+        default=lambda s: s.env.company.id, index=True)
+
     _sql_constraints = [
         ('unique_comission_entry',
         'UNIQUE(contract_id, pay_order, job_id)',

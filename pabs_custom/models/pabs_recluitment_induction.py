@@ -9,3 +9,7 @@ class PABSInductions(models.Model):
   ### Declaración de campos
   name = fields.Char(string='Inducción Impartida Por',
     required=True)  
+
+  company_id = fields.Many2one(
+    'res.company', 'Compañia', required=True,
+    default=lambda s: s.env.company.id, index=True)

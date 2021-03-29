@@ -27,6 +27,10 @@ class ComissionTemplate(models.Model):
 
     start_date = fields.Date(string="Fecha de inicio", default=fields.Date.today(), tracking=True)
 
+    company_id = fields.Many2one(
+        'res.company', 'Compañia', required=True,
+        default=lambda s: s.env.company.id, index=True)
+
     ### 100%: No permitir registrar dos cargos en el mismo árbol de comisión (la llave se compone de id_empleado, id_plan, id_cargo)
     _sql_constraints = [
         ('unique_comission_entry',

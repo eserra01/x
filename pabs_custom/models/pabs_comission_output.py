@@ -20,3 +20,7 @@ class ComissionOutput(models.Model):
     # Fecha_oficina relacionado al pago
     payment_date = fields.Date(comodel_name='account.payment', related="payment_id.payment_date", string='Fecha de oficina')
     payment_status = fields.Selection(comodel_name='account.payment', related="payment_id.state", string='Estatus')
+
+    company_id = fields.Many2one(
+        'res.company', 'Compañia', required=True,
+        default=lambda s: s.env.company.id, index=True)

@@ -15,6 +15,10 @@ class ClosingTransferRegistry(models.Model):
   
   date = fields.Date(string='Fecha de Corte')
 
+  company_id = fields.Many2one(
+    'res.company', 'Compañia', required=True,
+    default=lambda s: s.env.company.id, index=True)
+
   def unlink(self):
     picking_obj = self.env['stock.picking']
     return_picking = self.env['stock.return.picking']

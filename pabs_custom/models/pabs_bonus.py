@@ -18,6 +18,10 @@ class BonusPabs(models.Model):
   bonus = fields.Float(string='Valor asignado',
     required=True)
 
+  company_id = fields.Many2one(
+    'res.company', 'Compañia', required=True,
+    default=lambda s: s.env.company.id, index=True)
+
   @api.model
   def create(self, vals):
     min_value = vals.get('min_value')
