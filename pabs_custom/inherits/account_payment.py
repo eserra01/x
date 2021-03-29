@@ -122,4 +122,10 @@ class account_Payment(models.Model):
       for rec in self:
         if rec.contract:
           rec.partner_id = rec.contract_id.partner_id.id
-        
+
+    _sql_constraints = [
+      ('unique_ecobro_payment',
+      'UNIQUE(ecobro_receipt, company_id)',
+      'No se puede crear el registro: ya existe el pago en el sistema -> [ecobro_receipt, company_id]'),
+    ]
+    
