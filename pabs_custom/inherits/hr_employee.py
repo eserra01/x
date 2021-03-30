@@ -339,7 +339,7 @@ class HrEmployee(models.Model):
     ### BUSCAMOS EL PUESTO DE TRABAJO DEL EMPLEADO
     job_id = vals.get('job_id') or self.job_id.id
     ### VERIFICAMOS SI NO HUBO MODIFICACIÓN DE OFICINA O DE PUESTO DE TRABAJO
-    if vals.get('warehouse_id') and job_id == asistant_job_id::
+    if vals.get('warehouse_id') and job_id == asistant_job_id:
       ### NOS INSTANCIAMOS SOBRE EL ALMACÉMN
       warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
       ### CAMBIAMOS LA UBICACIÓN LOCAL DE ALMACÉN
