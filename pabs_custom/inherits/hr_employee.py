@@ -326,10 +326,20 @@ class HrEmployee(models.Model):
     ### Declaración de objetos
     warehouse_obj = self.env['stock.warehouse']
     picking_type_obj = self.env['stock.picking.type']
+    job_obj = self.env['hr.job']
+    ### BUSCAMOS EL JOB ID
+    asistant_job_id = job_obj.search([('name','=','ASISTENTE SOCIAL')])
+    ### SI NO ESTA
+    if not asistant_job_id:
+      ### ENVIAMOS MENSAJE DE ERROR
+      raise ValidationError((
+        "No se encontró el puesto de trabajo de asistente social"))
     ### GUARDAMOS EL ALMACÉN ANTERIOR
     last_warehouse_id = self.warehouse_id
-    ### VERIFICAMOS SI NO HUBO MODIFICACIÓN DE OFICINA
-    if vals.get('warehouse_id'):
+    ### BUSCAMOS EL PUESTO DE TRABAJO DEL EMPLEADO
+    job_id = vals.get('job_id') or self.job_id.id
+    ### VERIFICAMOS SI NO HUBO MODIFICACIÓN DE OFICINA O DE PUESTO DE TRABAJO
+    if vals.get('warehouse_id') and job_id == asistant_job_id::
       ### NOS INSTANCIAMOS SOBRE EL ALMACÉMN
       warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
       ### CAMBIAMOS LA UBICACIÓN LOCAL DE ALMACÉN
