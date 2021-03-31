@@ -40,6 +40,7 @@
         'wizard/comisiones_por_recuperar.xml',
         'report/rpt_comisiones_por_recuperar.xml',
         'views/hr_employee.xml',
+        'views/stock_picking_view.xml',
         'report/arqueo.xml',
         'report/carnet_pago.xml',
         'report/carnet_pago_sin_tabla.xml',

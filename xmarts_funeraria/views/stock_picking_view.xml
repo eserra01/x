@@ -1,0 +1,16 @@
+<odoo>
+  <data>
+   <record model="ir.ui.view" id="print_picking_reports">
+    <field name="name">print.picking.reports</field>
+    <field name="model">stock.picking</field>
+    <field name="inherit_id" ref="stock.view_picking_form"/>
+    <field name="arch" type="xml">
+
+      <xpath expr="//button[@name='%(stock.action_report_delivery)d']" position="replace">
+        <button name="print_ticket" string="Imprimir Ticket" attrs="{'invisible': [('state', '!=', 'done')]}" type="object" class="oe_highlight"/>
+      </xpath>
+      
+    </field>
+   </record>
+ </data>
+</odoo>
