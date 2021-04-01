@@ -788,7 +788,7 @@ class PABSContracts(models.Model):
 
         #Asignar asistente de venta PRODUCCION
         vals['sale_employee_id'] = previous.employee_id
-        vals['invoice_date'] = self.invoice_date
+        vals['invoice_date'] = '2021-03-31'
 
         previous.write(vals)
         invoice_id = self.create_invoice(previous)
