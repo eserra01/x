@@ -138,7 +138,7 @@ class PABSContracts(models.Model):
 #Datos contables
   balance = fields.Float(string="Saldo", compute="_calc_balance")
   paid_balance = fields.Float(string="Abonado", compute="_calc_paid_balance")
-  invoice_date = fields.Date(string='Fecha de creación', default=fields.Date.today())
+  invoice_date = fields.Date(string='Fecha de creación', default='2021-03-31')
 
   allow_create = fields.Boolean(string='¿Permitir Crear Factura?')
   allow_edit = fields.Boolean(string='¿Permitir Modificar?')
