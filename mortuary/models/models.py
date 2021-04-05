@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
-from dateutil import tz
+import pytz
 # from odoo.exceptions import ValidationError
+tz = pytz.timezone('America/Mexico_City')
 
 
 class IiServicio(models.Model):
@@ -205,7 +206,7 @@ class Mortuary(models.Model):
     ii_servicio = fields.Many2one("ii.servicio", string="Servicio")
     ii_finado = fields.Char(string="Finado", required=True)
     ii_fecha_creacion = fields.Date(
-        string="Fecha creacion", readonly=True, default=fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')),
+        string="Fecha creacion", readonly=True, default=datetime.now(tz),
         copy=False)
     ii_hora_creacion = fields.Char(
         string="Hora creacion",
@@ -376,7 +377,7 @@ class Mortuary(models.Model):
 
     @api.model
     def create(self, vals):
-        vals['ii_hora_creacion'] = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')).strftime('%H:%M')
+        vals['ii_hora_creacion'] = datetime.now(tz).strftime('%H:%M')
         result = super(Mortuary, self).create(vals)
         return result
 
