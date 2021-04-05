@@ -138,7 +138,7 @@ class PABSContracts(models.Model):
 #Datos contables
   balance = fields.Float(string="Saldo", compute="_calc_balance")
   paid_balance = fields.Float(string="Abonado", compute="_calc_paid_balance")
-  invoice_date = fields.Date(string='Fecha de creación', default='2021-03-31')
+  invoice_date = fields.Date(string='Fecha de creación', default=fields.Date.today())
 
   allow_create = fields.Boolean(string='¿Permitir Crear Factura?')
   allow_edit = fields.Boolean(string='¿Permitir Modificar?')
@@ -788,7 +788,7 @@ class PABSContracts(models.Model):
 
         #Asignar asistente de venta PRODUCCION
         vals['sale_employee_id'] = previous.employee_id
-        vals['invoice_date'] = '2021-03-31'
+        vals['invoice_date'] = fields.Date.today()
 
         previous.write(vals)
         invoice_id = self.create_invoice(previous)
