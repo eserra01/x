@@ -278,8 +278,7 @@ class ComissionTree(models.Model):
 
             #Si es cobrador y se quedó sin comisión: eliminar el registro del árbol. De lo contrario, actualizar.
             if com.job_id.id == id_cargo_cobrador:
-                if comisionRealPagada > 0:
-                    com.write({"actual_commission_paid":comisionRealPagada})
+                com.write({"actual_commission_paid":comisionRealPagada})
             else:
                 com.write({"commission_paid":comisionPagada, "actual_commission_paid":comisionRealPagada, "remaining_commission":comisionRestante})
                 
