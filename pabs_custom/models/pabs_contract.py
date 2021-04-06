@@ -151,7 +151,6 @@ class PABSContracts(models.Model):
   contract_status = fields.Selection(selection=STATUS, string='Estatus de contrato', tracking=True)
 
   company_id = fields.Many2one(
-    tracking=True,
     'res.company', 'Compañia', required=True,
     default=lambda s: s.env.company.id, index=True)
   
