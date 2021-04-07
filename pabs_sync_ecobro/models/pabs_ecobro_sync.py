@@ -288,6 +288,7 @@ class PABSEcobroSync(models.Model):
         'codigo_promotor' : contract_id.sale_employee_id.barcode or contract_id.employee_id.barcode,
         'saldo' : contract_id.balance or 0,
         'abonado' : contract_id.paid_balance or 0,
+        'telefono' : contract_id.phone_toll or "",
       })
       ### ESCRIBIMOS EL CONTRATO QUE SE ESTA PROCESANDO
       log += 'Número de Contrato: {} \n'.format(contract_id.name)
