@@ -2,6 +2,7 @@
 
 from odoo import http
 from odoo.http import request, Response
+import datetime
 import json
 import logging
 
@@ -22,8 +23,12 @@ class APIREST(http.Controller):
         for res in cr.fetchall():
           data = {}
           for ind, rec in enumerate(headers):
+            if isinstance(res[ind], datetime.date):
+              value = res[ind].strftime("%d/%m/%Y")
+            else:
+              value = res[ind]
             data.update({
-              headers[ind] : res[ind]
+              headers[ind] : value
             })
           records.append(data)
           response = {
