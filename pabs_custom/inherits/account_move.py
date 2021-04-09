@@ -37,5 +37,5 @@ class AcccountMove(models.Model):
       if self.contract_id:
         NumeroContrato = self.contract_id.id,
         comission_tree_obj.RevertirSalidas(
-          RefundID=self.id,NumeroContrato=NumeroContrato)
+          IdPago=False,RefundID=self.id,NumeroContrato=NumeroContrato)
     return res
