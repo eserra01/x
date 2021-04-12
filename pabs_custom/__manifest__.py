@@ -44,6 +44,7 @@
     'wizard/pabs_status_stock_view.xml',
     'views/pabs_contract_status_view.xml',
     'views/pabs_contract_status_reason_view.xml',
+    'views/res_config_settings_view.xml',
     'wizard/pabs_closing_transfer_wizard_view.xml',
     'wizard/fix_stock_move_wizard_view.xml',
     'wizard/pabs_single_contract_wizard_view.xml',

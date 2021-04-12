@@ -138,7 +138,7 @@ class PABSContracts(models.Model):
 #Datos contables
   balance = fields.Float(tracking=True, string="Saldo", compute="_calc_balance")
   paid_balance = fields.Float(tracking=True, string="Abonado", compute="_calc_paid_balance")
-  invoice_date = fields.Date(tracking=True, string='Fecha de creación', default=fields.Date.today())
+  invoice_date = fields.Date(tracking=True, string='Fecha de creación', default=lambda r: r.calc_invoice_date())
 
   allow_create = fields.Boolean(tracking=True, string='¿Permitir Crear Factura?')
   allow_edit = fields.Boolean(tracking=True, string='¿Permitir Modificar?')
@@ -154,6 +154,17 @@ class PABSContracts(models.Model):
     'res.company', 'Compañia', required=True,
     default=lambda s: s.env.company.id, index=True)
   
+  def calc_invoice_date(self):
+    params = self.env['ir.config_parameter'].sudo()
+    actually_day = params.get_param('pabs_custom.actually_day')
+    last_day = params.get_param('pabs_custom.last_day')
+    if actually_day:
+      if last_day:
+        return last_day
+    else:
+      return fields.Date.today()
+
+
   #Al elegir un estatus diferente borrar el motivo actual
   @api.onchange('contract_status_item')
   def check_status_reason(self):
@@ -458,7 +469,7 @@ class PABSContracts(models.Model):
       self.phone_toll = contract_id.phone
 
       #Datos contables
-      self.invoice_date = contract_id.invoice_date
+      self.invoice_date = contract_id.calc_invoice_date()
       self.service_detail = contract_id.service_detail
       self.product_code = contract_id.product_code
       self.status_of_contract = contract_id.status_of_contract
@@ -788,7 +799,7 @@ class PABSContracts(models.Model):
 
         #Asignar asistente de venta PRODUCCION
         vals['sale_employee_id'] = previous.employee_id
-        vals['invoice_date'] = fields.Date.today()
+        vals['invoice_date'] = self.calc_invoice_date()
 
         previous.write(vals)
         invoice_id = self.create_invoice(previous)
