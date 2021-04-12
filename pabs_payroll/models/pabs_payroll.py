@@ -2,7 +2,8 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from odoo.addons.pabs_payroll.models.pabs_payroll_high_investment import VALUES
-from datetime import datetime
+from datetime import datetime, timedelta
+import xml.etree.ElementTree as etree
 
 STATES = [
   ('draft','Borrador'),
@@ -61,7 +62,7 @@ class PabsPayroll(models.Model):
     inverse_name='payroll_id',
     string='Inversión Alta')
 
-  support_total = fields.Float(string='Total Apoyo', store=True, readonly=True,
+  support_total = fields.Float(string='Total Apoyo', readonly=True,
         compute='_calc_support',
         inverse='_inverse_support_total')
 
@@ -80,27 +81,21 @@ class PabsPayroll(models.Model):
       permanence_total = sum(rec.support_ids.mapped('permanence_bonus'))
       total = productivity_total + five_hundred_total + permanence_total
       rec.support_total = total
-
-  # @api.depends(
-  #   'high_investment_ids.five_hundred_bonus',
-  #   'high_investment_ids.one_thousand_bonus')
-  # def _calc_high_investment_total(self):
-  #   for rec in self:
-  #     five_hundred_bonus = sum(rec.high_investment_ids.mapped('five_hundred_bonus'))
-  #     one_thousand_bonus = sum(rec.high_investment_ids.mapped('one_thousand_bonus'))
-  #     total = five_hundred_bonus + one_thousand_bonus
-  #     rec.high_investment_total = total
   
   def _calc_week_number(self):
     today = datetime.today()
     week_number = (int(today.strftime("%U")) - 1)
     if week_number < 10:
       week_number = str(week_number).zfill(2)
+    else:
+      week_number = str(week_number)
     self.week_number = week_number
     return week_number
 
   @api.onchange('week_number')
   def calc_dates(self):
+    registry_obj = self.env['pabs.payroll.registry']
+    res = {}
     year = fields.Date.today().year
     week_config_obj = self.env['week.number.config']
     year_config_obj = self.env['week.year']
@@ -126,18 +121,41 @@ class PabsPayroll(models.Model):
           }
         rec.first_date = record.first_date
         rec.end_date = record.end_date
+    ### IDS DE LOS ALMACENES
+    warehouse_ids = registry_obj._get_warehouse_ids()
+    res['domain'] = {'warehouse_id': [('id', 'in', tuple(warehouse_ids) )], } 
+    return res
 
   def validate(self):
-    sequence_obj = self.env['ir.sequence']
-    self.name = sequence_obj.next_by_code('pabs.payroll')
+    ### CREAR OBJETO DE REGISTRO
+    registry_obj = self.env['pabs.payroll.registry']
+    registry_ids = registry_obj.search([
+      ('warehouse_id','=',self.warehouse_id.id),
+      ('week_number','=',self.week_number)])
+    if not registry_ids:
+      warehouse_ids = registry_obj._get_warehouse_ids()
+      for warehouse_id in warehouse_ids:
+        rec_data = {
+          'warehouse_id' : warehouse_id,
+          'week_number' : self.week_number,
+        }
+        if warehouse_id == self.warehouse_id.id:
+          rec_data.update({
+            'payroll_id' : self.id,
+          })
+        registry_obj.create(rec_data)
+    else:
+      registry_ids.payroll_id = self.id
     self.state = 'to review'
+    self.name = 'Nómina {} {}'.format(
+      self.warehouse_id.name, 
+      dict(self._fields['week_number'].selection).get(self.week_number))
+
 
   @api.model
   def create(self, vals):
     week_config_obj = self.env['week.number.config']
     year_config_obj = self.env['week.year']
-    vals['name'] = self.env['ir.sequence'].next_by_code(
-      'pabs.payroll')
     year = fields.Date.today().year
     year_id = year_config_obj.search([
       ('name','=',year)],limit=1)
@@ -153,7 +171,12 @@ class PabsPayroll(models.Model):
     self.high_investment_ids = [(5,0,0)]
     contract_obj = self.env['pabs.contract']
     initial_investment = []
+    supports = []
+    ### SE SUMAN 12 SEMANAS (3 MESES)
+    limit_days = timedelta(weeks=12)
     if self.warehouse_id and self.first_date and self.end_date:
+      payment_scheme = self.env['pabs.payment.scheme'].search([
+        ('name','=','COMISION')])
       all_contracts = contract_obj.search([
         ('state','=','contract'),
         ('invoice_date','>=',self.first_date),
@@ -163,31 +186,46 @@ class PabsPayroll(models.Model):
         if self.warehouse_id.id == employee_id.warehouse_id.id:
           five_hundred = 0
           one_thousand = 0
+          sup = 0
           contract_ids = all_contracts.filtered(lambda x : x.employee_id.id == employee_id.id)
           for contract_id in contract_ids:
             if contract_id.initial_investment >= 500 and contract_id.initial_investment < 1000:
               five_hundred += 1
             elif contract_id.initial_investment >= 1000:
               one_thousand += 1
-          initial_investment.append([0,0,{
-            'employee_id' : employee_id.id,
-            'five_hundred_investment' : five_hundred,
-            'one_thousand_investment' : one_thousand,
-            'five_hundred_bonus' : float(five_hundred * VALUES['500']),
-            'one_thousand_bonus' : float(one_thousand * VALUES['1000']),
-          }])
+            ### APOYOS
+            if employee_id.payment_scheme.id == payment_scheme.id:
+              limit_date = employee_id.date_of_admission + limit_days
+              if contract_id.invoice_date <= limit_date:
+                sup += 1
+
+          if five_hundred or one_thousand:
+            initial_investment.append([0,0,{
+              'employee_id' : employee_id.id,
+              'five_hundred_investment' : five_hundred,
+              'one_thousand_investment' : one_thousand,
+              'five_hundred_bonus' : float(five_hundred * VALUES['500']),
+              'one_thousand_bonus' : float(one_thousand * VALUES['1000']),
+            }])
+          ### VALIDAMOS LA CANTIDAD DE APOYOS
+          if sup == 1:
+            supports.append([0,0,{
+              'employee_id' : employee_id.id,
+              'five_hundred_support' : 250,
+            }])
+          elif sup >= 2:
+            supports.append([0,0,{
+              'employee_id' : employee_id.id,
+              'five_hundred_support' : 500,
+            }])
     if initial_investment:
       self.high_investment_ids = initial_investment
+    if supports:
+      self.support_ids = supports
 
-  @api.constrains('warehouse_id','week_number')
-  def check_payroll_duplicate(self):
-    payroll_obj = self.env['pabs.payroll']
-    for rec in self:
-      qty = payroll_obj.search_count([
-        ('warehouse_id','=',rec.warehouse_id.id),
-        ('week_number','=',rec.week_number)])
-      if qty > 1:
-        raise ValidationError(
-          "No se puede crear el registro: ya se creó un registro previo Oficina: {} {}".format(
-            rec.warehouse_id.name,
-            dict(rec._fields['week_number'].selection).get(rec.week_number)))
+  _sql_constraints = [
+    ('unique_warehouse_on_week',
+      'UNIQUE(week_number, warehouse_id)',
+      'No se puede crear el registro: solo puede existir un registro de esa oficina de ventas por Semana'),
+    ]
+    

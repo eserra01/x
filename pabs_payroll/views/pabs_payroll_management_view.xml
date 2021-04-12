@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="pabs_payroll_management_form_view" model="ir.ui.view">
+    <field name="name">pabs.payroll.management.form.view</field>
+    <field name="model">pabs.payroll.management</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <button name="validate" class="btn-primary" string="Validar" type="object" attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+          <button name="print_report" class="btn-primary" type="object" string="Imprimir Prenomina" attrs="{'invisible' : [('state','!=','draft')]}"/>
+          <button name="print_report" class="btn-primary" type="object" string="Imprimir Nómina" attrs="{'invisible' : [('state','!=','to review')]}"/>
+          <button name="update_records" string='Actualizar' type="object"/>
+          <field name="state" widget="statusbar" statusbar_visible="draft,to review,done"/>
+        </header>
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" type="object" name="get_external_records" icon="fa-external-link">
+              <field name="record_count" widget="statinfo"/>    
+            </button>
+          </div>
+          <div class="oe_title">
+            <span class="o_form_label" attrs="{'invisible': [('state','in',('draft'))]}">Nómina n°</span>
+            <h1>
+              <field name="name" readonly="1"/>
+            </h1>
+        </div>
+          <group>
+            <group>
+              <field name="user_id" readonly="1"/>
+            </group>
+            <group>
+              <field name="week_number" attrs="{'readonly' : [('state','!=','draft')]}"/>
+              <label for="first_date" string="Rango de fechas"/>
+              <div class="o_row">
+                <field name="first_date" readonly="1"/> Al 
+                <field name="end_date" readonly="1"/>
+              </div>
+            </group>
+          </group>
+          <notebook>
+            <page string="Percepciones">
+              <field name="perception_ids">
+                <tree>
+                  <field name="employee_id"/>
+                  <field name="job_id"/>
+                  <field name="scheme_id"/>
+                  <field name="salary" sum="salary" optional="show"/>
+                  <field name="seventh_day" sum="seventh_day" optional="show"/>
+                  <field name="extra" sum="extra" optional="hide"/>
+                  <field name="fest_day" sum="fest_day" optional="hide"/>
+                  <field name="commission" sum="commission" optional="hide"/>
+                  <field name="retroactive" sum="retroactive" optional="hide"/>
+                  <field name="waranty_commission" sum="waranty_commission" optional="hide"/>
+                  <field name="support_training" sum="support_training" optional="hide"/>
+                  <field name="bond_tip_sale" sum="bond_tip_sale" optional="hide"/>
+                  <field name="salary_assistant" sum="salary_assistant" optional="hide"/>
+                  <field name="support_period" sum="support_period" optional="hide"/>
+                  <field name="gratification" sum="gratification" optional="hide"/>
+                  <field name="referral_bonus" sum="referral_bonus" optional="hide"/>
+                  <field name="inv_investment" sum="inv_investment" optional="hide"/>
+                  <field name="effective_bonus" sum="effective_bonus" optional="hide"/>
+                  <field name="sunday_premium" sum="sunday_premium" optional="hide"/>
+                  <field name="vacation_pay" sum="vacation_pay" optional="hide"/>
+                  <field name="productivity_bonus" sum="productivity_bonus" optional="hide"/>
+                  <field name="fuel_support" sum="fuel_support" optional="hide"/>
+                  <field name="rif_support" sum="rif_support" optional="hide"/>
+                  <field name="monthly_bouns" sum="monthly_bouns" optional="hide"/>
+                  <field name="food_allowances" sum=" food_allowances" optional="hide"/>
+                  <field name="loan" sum="loan" optional="hide"/>
+                  <field name="loan_company" sum="loan_company" optional="hide"/>
+                  <field name="change" sum="change" optional="hide"/>
+                  <field name="total" sum="total" optional="show"/>
+                </tree>
+              </field>
+            </page>
+            <page string='Deducciones'>
+              <field name="deduction_ids">
+                <tree>
+                  <field name="employee_id"/>
+                  <field name="imss" sum="imss" optional="show"/>
+                  <field name="discount_tip_sale" sum="discount_tip_sale" optional="hide"/>
+                  <field name="saving_bank" sum="saving_bank" optional="hide"/>
+                  <field name="sparkasse_loan" sum="sparkasse_loan" optional="hide"/>
+                  <field name="probenso_loan" sum="probenso_loan" optional="show"/>
+                  <field name="company_loan" sum="company_loan" optional="show"/>
+                  <field name="saving_fund" sum="saving_fund" optional="hide"/>
+                  <field name="infonavit" sum="infonavit" optional="hide"/>
+                  <field name="funeral_package" sum="funeral_package" optional="show"/>
+                  <field name="anticipated_sales_comission" sum="anticipated_sales_comission" optional="hide"/>
+                  <field name="total" sum="total"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="pabs_payroll_management_tree_view" model="ir.ui.view">
+    <field name="name">pabs.payroll.management.tree.view</field>
+    <field name="model">pabs.payroll.management</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="user_id"/>
+        <field name="week_number"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="pabs_payroll_management_form_action" model="ir.actions.act_window">
+    <field name="name">Crear Incidencia</field>
+    <field name="res_model">pabs.payroll.management</field>
+    <field name="view_mode">form</field>
+  </record>
+
+  <record id="pabs_payroll_management_consult_action" model="ir.actions.act_window">
+    <field name="name">Consultar Incidencias</field>
+    <field name="res_model">pabs.payroll.management</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <record id="tree_payroll_registry" model="ir.ui.view">
+    <field name="name">tree.payroll.registry</field>
+    <field name="model">pabs.payroll.registry</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="warehouse_id"/>
+        <field name="secretary"/>
+        <field name="contract"/>
+        <field name="collection"/>
+      </tree>
+    </field>
+  </record>
+</odoo>

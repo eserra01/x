@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 class PabsPayrollSalary(models.Model):
   _name = 'pabs.payroll.salary'
 
-  payroll_id = fields.Many2one(comodel_name='pabs.payroll.collection',
+  payroll_id = fields.Many2one(comodel_name='pabs.payroll.contract',
     string='Nómina')
 
   employee_id = fields.Many2one(comodel_name='hr.employee',

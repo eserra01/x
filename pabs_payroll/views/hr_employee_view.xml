@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="inherit_hr_employee_view" model="ir.ui.view">
+    <field name="name">inherit.hr.employee.view</field>
+    <field name="model">hr.employee</field>
+    <field name="inherit_id" ref="hr.view_employee_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//notebook" position="inside">
+        <page string="Información de nómina" groups="pabs_custom.administrative_management_profile, pabs_custom.admin_profile">
+          <group>
+            <group>
+              <field name="salary_base"/>
+            </group>
+            <group>
+              <field name="own_contracts" readonly="1">
+                <tree>
+                  <field name="name"/>
+                  <field name="full_name" string='Titular'/>
+                  <field name="payment_amount"/>
+                  <field name="way_to_payment"/>
+                  <field name="contract_status_item"/>
+                </tree>
+              </field>
+            </group>
+          </group>
+        </page>
+      </xpath>
+    </field>
+  </record>
+</odoo>

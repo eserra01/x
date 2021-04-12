@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<report
+    id="prepayroll_report_xlsx"
+    model="pabs.payroll.management"
+    string="Nómina XLSX"
+    report_type="xlsx"
+    name="pabs_payroll.pabs_payroll_xlsx_report"
+    file="pabs_payroll.pabs_payroll_xlsx_report"
+    attachment_use="False"
+    />
+</odoo>

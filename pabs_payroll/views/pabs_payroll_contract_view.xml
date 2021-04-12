@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-  <record id="pabs_payroll_collection_form_view" model="ir.ui.view">
-    <field name="name">pabs.payroll.collection.form.view</field>
-    <field name="model">pabs.payroll.collection</field>
+  <record id="pabs_payroll_contract_form_view" model="ir.ui.view">
+    <field name="name">pabs.payroll.contract.form.view</field>
+    <field name="model">pabs.payroll.contract</field>
     <field name="arch" type="xml">
       <form>
         <header>
@@ -32,7 +32,17 @@
             </group>
           </group>
           <notebook>
-            <page string='Complementos'>
+            <page string='Sueldos'>
+              <field name="salary_ids" attrs="{'readonly' : [('state','!=','draft')]}">
+                <tree editable="top">
+                  <field name="employee_id" domain="[('job_id','=','ASISTENTE SOCIAL'),('warehouse_id','=',parent.warehouse_id),('payment_scheme','=','SUELDO')]"/>
+                  <field name="contract1_id" domain="[('state','=','contract'),('employee_id','=',employee_id),('id','!=',contract2_id)]"/>
+                  <field name="contract2_id"  domain="[('state','=','contract'),('employee_id','=',employee_id),('id','!=',contract1_id)]"/>
+                  <field name="salary" widget='monetary' options="{'currency': %(base.MXN)d}" sum="salary"/>
+                </tree>
+              </field>
+            </page>
+            <!--<page string='Complementos'>
               <field name="complement_ids">
                 <tree editable="top">
                   <field name="contract_id" domain="[('state','=','contract')]"/>
@@ -46,6 +56,17 @@
                   <field name="comment"/>
                 </tree>
               </field>
+            </page>-->
+            <page string='Inv. alta det'>
+              <field name="high_investment_det_ids">
+                <tree editable="top">
+                  <field name="contract_id" domain="[('state','=','contract')]"/>
+                  <field name="employee_id" domain="[('job_id','=','ASISTENTE SOCIAL'),('warehouse_id','=',parent.warehouse_id)]"/>
+                  <field name="contract_date"/>
+                  <field name="high_investment"/>
+                  <field name="high_investment_bonus"/>
+                </tree>
+              </field>
             </page>
           </notebook>
         </sheet>
@@ -53,9 +74,9 @@
     </field>
   </record>
 
-  <record id="pabs_payroll_collection_tree_view" model="ir.ui.view">
-    <field name="name">pabs.payroll.collection.tree.view</field>
-    <field name="model">pabs.payroll.collection</field>
+  <record id="pabs_payroll_contract_tree_view" model="ir.ui.view">
+    <field name="name">pabs.payroll.contract.tree.view</field>
+    <field name="model">pabs.payroll.contract</field>
     <field name="arch" type="xml">
       <tree>
         <field name="name"/>
@@ -66,15 +87,15 @@
     </field>
   </record>
 
-  <record id="pabs_payroll_collection_form_action" model="ir.actions.act_window">
+  <record id="pabs_payroll_contract_form_action" model="ir.actions.act_window">
     <field name="name">Crear Incidencia</field>
-    <field name="res_model">pabs.payroll.collection</field>
+    <field name="res_model">pabs.payroll.contract</field>
     <field name="view_mode">form</field>
   </record>
 
-  <record id="pabs_payroll_collection_consult_action" model="ir.actions.act_window">
+  <record id="pabs_payroll_contract_consult_action" model="ir.actions.act_window">
     <field name="name">Consultar Incidencias</field>
-    <field name="res_model">pabs.payroll.collection</field>
+    <field name="res_model">pabs.payroll.contract</field>
     <field name="view_mode">tree,form</field>
   </record>
 </odoo>

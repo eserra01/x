@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="pabs_contract_inherit_view_secretary" model="ir.ui.view">
+    <field name="name">pabs.contract.inherit.view.secretary</field>
+    <field name="model">pabs.contract</field>
+    <field name="inherit_id" ref="pabs_custom.contract_form_view_secretary"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='service_detail']" position="after">
+        <field name="owner_id"/>
+        <field name="payroll_discount" attrs="{'invisible' : [('owner_id','=',False)]}"/>
+      </xpath>
+    </field>
+  </record>
+
+  <record id="pabs_contract_inherit_view_management" model="ir.ui.view">
+    <field name="name">pabs.contract.inherit.view.management</field>
+    <field name="model">pabs.contract</field>
+    <field name="inherit_id" ref="pabs_custom.contract_form_view_gerencia"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='service_detail']" position="after">
+        <field name="owner_id"/>
+        <field name="payroll_discount" attrs="{'invisible' : [('owner_id','=',False)]}"/>
+      </xpath>
+    </field>
+  </record>
+
+  <record id="pabs_contract_inherit_view_manager" model="ir.ui.view">
+    <field name="name">pabs.contract.inherit.view.manager</field>
+    <field name="model">pabs.contract</field>
+    <field name="inherit_id" ref="pabs_custom.contract_form_view"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='service_detail']" position="after">
+        <field name="owner_id"/>
+        <field name="payroll_discount" attrs="{'invisible' : [('owner_id','=',False)]}"/>
+      </xpath>
+    </field>
+  </record>
+  
+</odoo>

@@ -7,7 +7,7 @@ class PabsPayrollHighInvestmentDet(models.Model):
   _name = 'pabs.payroll.high.investment.det'
   _description = 'Inversión Alta Detalle Cobranza'
 
-  payroll_id = fields.Many2one(comodel_name='pabs.payroll.collection',
+  payroll_id = fields.Many2one(comodel_name='pabs.payroll.contract',
     string='Nómina')
 
   contract_id = fields.Many2one(comodel_name='pabs.contract',

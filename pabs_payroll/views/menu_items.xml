@@ -48,13 +48,39 @@
     action="pabs_payroll_consult_action"
     sequence="2"/>
 
+  <!-- Menú de Contratos -->
+  <menuitem
+    id="pabs_payroll_contract"
+    name="Contratos"
+    parent="pabs_payroll_menu"
+    groups="pabs_custom.contract_profile,pabs_custom.admin_profile"
+    sequence="2"/>
+
+  <!-- Crear Incidencia para Contratos -->
+  <menuitem
+    id="pabs_payroll_contract_incidence"
+    name="Crear Incidencia"
+    groups="pabs_custom.contract_profile,pabs_custom.admin_profile"
+    parent="pabs_payroll_contract"
+    action="pabs_payroll_contract_form_action"
+    sequence="1"/>
+
+  <!-- Consultar incidencias Contratos -->
+  <menuitem 
+    id="search_pabs_payroll_contract_menu" 
+    name="Consultar Incidencias" 
+    groups="pabs_custom.contract_profile,pabs_custom.admin_profile"
+    parent="pabs_payroll_contract"
+    action="pabs_payroll_contract_consult_action"
+    sequence="2"/>
+
   <!-- Menú de Cobranza -->
   <menuitem
     id="pabs_payroll_collection"
     name="Cobranza"
     parent="pabs_payroll_menu"
     groups="pabs_custom.collection_profile,pabs_custom.admin_profile"
-    sequence="2"/>
+    sequence="3"/>
 
   <!-- Crear Incidencia para Cobranza -->
   <menuitem
@@ -65,7 +91,7 @@
     action="pabs_payroll_collection_form_action"
     sequence="1"/>
 
-  <!-- Consultar incidencias Secretaria -->
+  <!-- Consultar incidencias Cobranza -->
   <menuitem 
     id="search_pabs_payroll_collection_menu" 
     name="Consultar Incidencias" 
@@ -73,5 +99,31 @@
     parent="pabs_payroll_collection"
     action="pabs_payroll_collection_consult_action"
     sequence="2"/>
-      
+  
+  <!-- Menú de Gerencia -->
+  <menuitem
+    id="pabs_payroll_management"
+    name="Gerencia"
+    parent="pabs_payroll_menu"
+    groups="pabs_custom.administrative_management_profile,pabs_custom.admin_profile"
+    sequence="4"/>
+
+  <!-- Crear Incidencia para Gerencia -->
+  <menuitem
+    id="pabs_payroll_management_incidence"
+    name="Crear Incidencia"
+    groups="pabs_custom.administrative_management_profile,pabs_custom.admin_profile"
+    parent="pabs_payroll_management"
+    action="pabs_payroll_management_form_action"
+    sequence="1"/>
+
+  <!-- Consultar incidencias Cobranza -->
+  <menuitem 
+    id="search_pabs_payroll_management_menu" 
+    name="Consultar Incidencias" 
+    groups="pabs_custom.administrative_management_profile,pabs_custom.admin_profile"
+    parent="pabs_payroll_management"
+    action="pabs_payroll_management_consult_action"
+    sequence="2"/>
+    
 </odoo>
