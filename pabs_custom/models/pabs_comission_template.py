@@ -6,17 +6,18 @@ from odoo.exceptions import ValidationError
 class ComissionTemplate(models.Model):
     """Modelo que contiene las plantillas de árbol de comisión de los asistentes"""
     _name = "pabs.comission.template"
+    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = "Plantilla de árboles de comision"
 
     #Al eliminar el empleado se eliminan sus plantillas de comisiones
     #employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, readonly=True, ondelete="cascade")
-    employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, ondelete="cascade")
+    employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, ondelete="cascade", tracking=True)
 
     #plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True, readonly=True)
-    plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True)
+    plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True, tracking=True)
 
     #pay_order = fields.Integer(string="Prioridad", required = True, readonly=True)
-    pay_order = fields.Integer(string="Prioridad", required = True)
+    pay_order = fields.Integer(string="Prioridad", required = True, tracking=True)
 
     #job_id = fields.Many2one(string="Cargo", comodel_name="hr.job", required=True, tracking=True, readonly=True)
     job_id = fields.Many2one(string="Cargo", comodel_name="hr.job", required=True, tracking=True)

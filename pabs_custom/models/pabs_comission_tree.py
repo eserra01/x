@@ -10,20 +10,21 @@ _logger = logging.getLogger(__name__)
 class ComissionTree(models.Model):
     """Modelo que contiene los árboles de comisión de los contratos"""
     _name = "pabs.comission.tree"
+    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = "Árboles de comision de contratos"
 
-    contract_id = fields.Many2one(string="Contrato", comodel_name="pabs.contract")#, readonly=True)
+    contract_id = fields.Many2one(string="Contrato", comodel_name="pabs.contract", tracking=True)#, readonly=True)
     
-    pay_order = fields.Integer(string="Prioridad")
+    pay_order = fields.Integer(string="Prioridad", tracking=True)
 
-    job_id = fields.Many2one(string="Cargo", comodel_name="hr.job")
+    job_id = fields.Many2one(string="Cargo", comodel_name="hr.job", tracking=True)
 
-    comission_agent_id = fields.Many2one(string="Comisionista", comodel_name="hr.employee")
+    comission_agent_id = fields.Many2one(string="Comisionista", comodel_name="hr.employee", tracking=True)
     
-    corresponding_commission = fields.Float(string="Comision correspondiente", default = 0)#, readonly=True)
-    remaining_commission = fields.Float(string="Comision restante", default = 0)#, readonly=True)
-    commission_paid = fields.Float(string="Comision pagada", default = 0)#, readonly=True)
-    actual_commission_paid = fields.Float(string="Comision real pagada", default = 0)#, readonly=True)
+    corresponding_commission = fields.Float(string="Comision correspondiente", default = 0, tracking=True)#, readonly=True)
+    remaining_commission = fields.Float(string="Comision restante", default = 0, tracking=True)#, readonly=True)
+    commission_paid = fields.Float(string="Comision pagada", default = 0, tracking=True)#, readonly=True)
+    actual_commission_paid = fields.Float(string="Comision real pagada", default = 0, tracking=True)#, readonly=True)
 
     company_id = fields.Many2one(
         'res.company', 'Compañia', required=True,

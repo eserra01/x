@@ -7,9 +7,10 @@ from datetime import datetime, timedelta
 class ComissionDebtCollector(models.Model):
     """Modelo que contiene la información de comisiones del cobrador"""
     _name = "pabs.comission.debt.collector"
+    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = "Comisiones de cobradores"
 
-    debt_collector_id = fields.Many2one(string="Cobrador", comodel_name="hr.employee", required=True)
+    debt_collector_id = fields.Many2one(string="Cobrador", comodel_name="hr.employee", required=True, tracking=True)
     comission_percentage = fields.Float(string="Comision", default = 0, tracking=True)
     comission_percentage_with_salary = fields.Float(string="Comision con sueldo", default = 0, tracking=True)
     comission_percentage_pantheon = fields.Float(string="Comision de Panteón", default = 0, tracking=True)
