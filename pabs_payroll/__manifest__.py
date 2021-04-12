@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 {
   'name' : 'Nominas PABS',
   'summary': 'Coded By: Eduardo Serrano(eduardo.serrano@pabsmr.org)',
