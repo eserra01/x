@@ -59,13 +59,20 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
   def _get_report_values(self, docids, data):
     ### DECLARACIÓN DE OBJETOS
     contract_obj = self.env['pabs.contract']
+    status_obj = self.env['pabs.contract.status']
+
     ### BUSCANDO PARAMETROS DE ENCABEZADO
     logo = self.env.user.company_id.logo
     date = data.get('data') or fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
 
+    ### ESTATUS DE CONTRATOS NO PERMITIDOS
+    status_ids = status_obj.search([
+      ('status','in',('ACTIVO','SUSP. TEMPORAL','REALIZADO POR COBRAR','VERIFICACION'))])
+
     ### BUSCAMOS TODOS LOS CONTRATOS
     contract_ids = contract_obj.search([
       ('state','=','contract'),
+      ('contract_status_item','in',status_ids.ids),
       ('way_to_payment','>=',14)]).filtered(
       lambda k: (k.way_to_payment == 'weekly' and k.days_without_payment >= 14) or \
       (k.way_to_payment == 'biweekly' and k.days_without_payment >= 30) or \
