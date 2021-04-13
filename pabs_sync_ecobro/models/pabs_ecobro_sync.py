@@ -355,10 +355,14 @@ class PABSEcobroSync(models.Model):
       contract_name = "{}{}".format(rec['serie'],rec['no_contrato'])
       ### BUSCAR EL COBRADOR
       _logger.info("El cobrador fue: {}".format(rec['no_cobrador']))
-      collector_id = hr_employee_obj.search(['|',
+      collector_id = hr_employee_obj.search([
         ('company_id','=',company_id),
-        ('ecobro_id','=',rec['no_cobrador']),
-        ('id','=',rec['no_cobrador'])],limit=1)
+        ('ecobro_id','=',rec['no_cobrador'])],limit=1)
+
+      if not collector_id:
+        collector_id = hr_employee_obj.search([
+        ('company_id','=',company_id),
+        ('id','=',rec['no_cobrador'])], limit=1)
 
       ### AGREGAMOS LA INFORMACIÓN DEL PAGO AL LOG
       log += 'Número de Contrato: {}\n'.format(contract_name)
