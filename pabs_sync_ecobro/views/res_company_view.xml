@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="sync_ecobro_parameters" model="ir.ui.view">
+    <field name="name">sync.ecobro.parameters</field>
+    <field name="model">res.company</field>
+    <field name="inherit_id" ref="base.view_company_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//notebook" position="inside">
+        <page string="Parametros Ecobro">
+          <group string="Sincronización con Ecobro">
+            <group>
+              <field name="ecobro_ip"/>
+              <field name="extension_path"/>
+            </group>
+          </group>
+        </page>
+      </xpath>
+    </field>
+  </record>
+</odoo>

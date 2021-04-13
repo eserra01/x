@@ -24,19 +24,22 @@ URL = {
 class PABSEcobroSync(models.Model):
   _name = 'pabs.ecobro.sync'
 
-  def get_url(self, path):
+  def get_url(self, company_id, path):
     ### INSTANCIACIÓN DE OBJETOS
-    param_obj = self.env['ir.config_parameter'].sudo()
-    ### OBTENER PARAMETRO DE DATOS DE PRUEBA
-    demo = param_obj.get_param('testing_ecobro')
-    ### OBTENER PARAMETRO DE IP DE ECOBRO
-    ip = param_obj.get_param('ecobro_ip')
-    ### OBTENER LA CIUDAD DE ECOBRO
-    if demo:
-      city = "ecobroSAP_TEST"
+    company_obj = self.env['res.company'].sudo()
+    ### VALIDAMOS QUE TENGA ALGÚN DATO
+    if company_id:
+      ### GENERAMOS EL OBJETO DE LA COMPAÑIA
+      company_id = company_obj.browse(company_id)
+      ### MOSTRAMOS LA COMPAÑIA QUE SE ESTA SINCRONIZANDO...
+      _logger.info("Sincronizando: {}".format(company_id.name))
+    ### SI NO SE ENCUENTRA LA COMPAÑIA
     else:
-      city = param_obj.get_param('ecobro_city')
-    basic_url = "{}/{}".format(ip,city)
+      ### ENVIAMOS MENSAJE DE ERROR
+      raise ValidationError((
+        "No se pudo generar la URL por que no se envió una compañia como parametro"))
+    ### GENERAMOS LA URL BASICA
+    basic_url = "{}/{}".format(company_id.ecobro_ip, company_id.extension_path)
     ### SÍ ENCUENTRA EL PATH
     if URL.get(path):
       ### GENERANDO LA URL PARA LA PETICIÓN
@@ -49,13 +52,13 @@ class PABSEcobroSync(models.Model):
     _logger.warning("La url generada es: {}".format(url))
     return url
 
-  def sync_collectors(self):
+  def sync_collectors(self, company_id):
     ### GENERAMOS LA VARIABLE DE LOS LOGS
     log = "Sincronización de Cobradores \n"
     ### INSTANCIACIÓN DE OBJECTOS
     debt_collector_obj = self.env['pabs.comission.debt.collector'].sudo()
     ### MANDAR A LLAMAR LA URL DE COBRADORES
-    url = self.get_url("COBRADORES")
+    url = self.get_url(company_id, "COBRADORES")
     ### SI NO GENERA LA URL
     if not url:
       ### ENVÍA AL LOG QUE NO SE PUDO CONFIGURAR LA URL
@@ -63,7 +66,9 @@ class PABSEcobroSync(models.Model):
       ### FINALIZA EL MÉTODO
       return
     ### BUSCAMOS EN LAS COMISIONES DE COBRADORES TODOS LOS QUE TENGAN ASIGNADAS SERIES
-    debt_collector_ids = debt_collector_obj.search([('receipt_series','!=',False)])
+    debt_collector_ids = debt_collector_obj.search([
+      ('company_id','=',company_id),
+      ('receipt_series','!=',False)])
 
     ### CONTAMOS TODOS LOS REGISTROS
     len_employees = len(debt_collector_ids)
@@ -163,13 +168,13 @@ class PABSEcobroSync(models.Model):
         ### RETORNA LA FECHA EN FORMATOS DE 0
         return 0000-00-00
 
-  def sync_contracts(self):
+  def sync_contracts(self, company_id=False):
     ### GENERAR VARIABLE DE LOG
     log = "Sincronización de Contratos de Odoo \n"
     ### INSTANCIACIÓN DE OBJECTOS
     contract_obj = self.env['pabs.contract'].sudo()
     ### MANDAR A LLAMAR LA URL DE CONTRATOS
-    url = self.get_url("CONTRATOS")
+    url = self.get_url(company_id, "CONTRATOS")
     ### SI NO GENERA LA URL
     if not url:
       ### ENVÍA AL LOG QUE NO SE PUDO CONFIGURAR LA URL
@@ -178,6 +183,7 @@ class PABSEcobroSync(models.Model):
       return
     ### BUSCAR TODOS LOS CONTRATOS QUE NO ESTÉN EN ESTATUS CANCELADO, PAGADO Ó REALIZADO
     contract_ids = contract_obj.search([
+      ('company_id','=',company_id),
       ('state','=','contract'),
       ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO'))])
 
@@ -226,7 +232,6 @@ class PABSEcobroSync(models.Model):
         'codigo_promotor' : contract_id.sale_employee_id.barcode or contract_id.employee_id.barcode,
         'saldo' : contract_id.balance or 0,
         'abonado' : contract_id.paid_balance or 0,
-        'telefono' : contract_id.phone_toll or "",
       })
       ### ESCRIBIMOS EL CONTRATO QUE SE ESTA PROCESANDO
       log += 'Número de Contrato: {} \n'.format(contract_id.name)
@@ -294,7 +299,7 @@ class PABSEcobroSync(models.Model):
         return True
     return False
 
-  def get_pending_payments(self):
+  def get_pending_payments(self, company_id=False):
     log = False
     ### DECLARACIÓN DE OBJETOS
     contract_obj = self.env['pabs.contract'].sudo()
@@ -306,7 +311,7 @@ class PABSEcobroSync(models.Model):
     ### DICCIONARIO DE RECONCILIACIÓN
     reconcile = {}
     ### MANDAR A LLAMAR LA URL DE PAGOS PENDIENTES
-    url_pending = self.get_url("RECIBOS_PENDIENTES")
+    url_pending = self.get_url(company_id, "RECIBOS_PENDIENTES")
     ### SI NO GENERA LA URL
     if not url_pending:
       ### ENVÍA AL LOG QUE NO SE PUDO CONFIGURAR LA URL
@@ -330,6 +335,7 @@ class PABSEcobroSync(models.Model):
       default_type='out_invoice')._get_default_currency()
     ### OBTENIENDO EL DIARIO POR DEFAULT
     cash_journal_id = journal_obj.search([
+      ('company_id','=',company_id),
       ('type','=','cash')],limit=1)
     ### OBTENIENDO EL METODO DE PAGO
     payment_method_id = payment_method_obj.search([
@@ -350,6 +356,7 @@ class PABSEcobroSync(models.Model):
       ### BUSCAR EL COBRADOR
       _logger.info("El cobrador fue: {}".format(rec['no_cobrador']))
       collector_id = hr_employee_obj.search(['|',
+        ('company_id','=',company_id),
         ('ecobro_id','=',rec['no_cobrador']),
         ('id','=',rec['no_cobrador'])],limit=1)
 
@@ -372,6 +379,7 @@ class PABSEcobroSync(models.Model):
       ### Validar que el recibo no esté afectado
       ecobro_number = "{}{}".format(rec['serie_recibo'],rec['no_recibo'])
       recibo_afectado = payment_obj.search([
+        ('company_id','=',company_id),
         ('ecobro_affect_id','=',rec['afectacionID']),
         ('state','in',['posted','sent','reconciled'])
       ])
@@ -423,6 +431,7 @@ class PABSEcobroSync(models.Model):
 
       ### BUSCAMOS EL CONTRATO QUE SE CONCATENO
       contract_id = contract_obj.search([
+        ('company_id','=',company_id),
         ('name', '=', contract_name)],limit=1)
       ### SI NO ENCUENTRA EL CONTRATO
       if not contract_id:
@@ -569,7 +578,7 @@ class PABSEcobroSync(models.Model):
     ### AL FINALIZAR DE PROCESAR TODA LA INFORMACIÓN
 
     ### BUSCAMOS LA URL PARA ACTUALIZAR LOS PAGOS
-    url_update = self.get_url("ACTUALIZAR_RECIBOS")
+    url_update = self.get_url(company_id, "ACTUALIZAR_RECIBOS")
     ### ENVIANDO LA URL AL LOG
     _logger.warning('URL DE ACTUALIZAR RECIBOS: {}'.format(url_update))
     ### SI NO GENERA LA URL
@@ -739,7 +748,7 @@ class PABSEcobroSync(models.Model):
                   })
                 comission_tree += com
 
-  def contracts_susp_to_cancel(self):
+   def contracts_susp_to_cancel(self):
     log = "Sincronización de SUSP. PARA CANCELAR \n"
     ### DECLARACIÓN DE OBJETOS
     contract_obj = self.env['pabs.contract']

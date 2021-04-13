@@ -12,9 +12,10 @@
     'hr',
     'pabs_custom'],
   'data': [
-    'views/ecobro_settings_view.xml',
+    #'views/ecobro_settings_view.xml',
     'views/hr_employee_view.xml',
     'views/account_payment_view.xml',
+    'views/res_company_view.xml',
     'data/ir_cron.xml',
   ],
   'installable': True,
