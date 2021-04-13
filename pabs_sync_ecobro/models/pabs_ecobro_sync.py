@@ -748,7 +748,7 @@ class PABSEcobroSync(models.Model):
                   })
                 comission_tree += com
 
-   def contracts_susp_to_cancel(self):
+  def contracts_susp_to_cancel(self):
     log = "Sincronización de SUSP. PARA CANCELAR \n"
     ### DECLARACIÓN DE OBJETOS
     contract_obj = self.env['pabs.contract']
