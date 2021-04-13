@@ -621,7 +621,7 @@ class PABSEcobroSync(models.Model):
       _logger.warning("Hubo un problema con la petición al webservice, mensaje: {}".format(e))
     if log:
       try:
-        url_log = self.get_url("LOG_PAGOS")
+        url_log = self.get_url(company_id, "LOG_PAGOS")
         req_log = requests.post(url_log, log)
       except Exception as e:
         _logger.warning(e)
