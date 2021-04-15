@@ -52,7 +52,7 @@ class PABSEcobroSync(models.Model):
     _logger.warning("La url generada es: {}".format(url))
     return url
 
-  def sync_collectors(self, company_id):
+  def sync_collectors(self, company_id=False):
     ### GENERAMOS LA VARIABLE DE LOS LOGS
     log = "Sincronización de Cobradores \n"
     ### INSTANCIACIÓN DE OBJECTOS
@@ -137,7 +137,7 @@ class PABSEcobroSync(models.Model):
       ### ENVIANDO INFORMACIÓN DE ERROR AL LOG
       _logger.warning(e)
     try:
-      url_log = self.get_url("LOG_COBRADORES")
+      url_log = self.get_url(company_id, "LOG_COBRADORES")
       req_log = requests.post(url_log, log)
     except Exception as e:
       _logger.warning(e)
@@ -274,7 +274,7 @@ class PABSEcobroSync(models.Model):
       ### ENVIANDO INFORMACIÓN DE ERROR AL LOG
       _logger.warning(e)
     try:
-      url_log = self.get_url("LOG_CONTRATOS")
+      url_log = self.get_url(company_id, "LOG_CONTRATOS")
       req_log = requests.post(url_log, log)
     except Exception as e:
       _logger.warning(e)
