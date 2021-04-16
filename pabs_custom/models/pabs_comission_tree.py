@@ -136,7 +136,7 @@ class ComissionTree(models.Model):
             raise ValidationError("No se encontró el contrato {}".format(NumeroContrato))
         
         #Obtener y validar información del arbol de comisiones
-        arbol = self.search([('contract_id', '=', contrato.id),('company_id', '=', cotrato.company_id.id)], order='pay_order asc')
+        arbol = self.search([('contract_id', '=', contrato.id),('company_id', '=', contrato.company_id.id)], order='pay_order asc')
 
         if not arbol:
             raise ValidationError("No se encontro el árbol de comisiones")
