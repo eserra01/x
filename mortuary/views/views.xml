@@ -336,6 +336,30 @@
                           </div>
                         </group>
                       </div>
+                      <div>
+                        <group string="Primer obligado de pago">
+                          <field name="podp_nomb" />
+                          <field name="podp_municipio_id" />
+                          <field name="podp_colonia_id"  context="{'municipality_id': podp_municipio_id}"/>
+                          <field name="podp_calle_y_number" />
+                          <div class="o_row">
+                            <div class="o_setting_left_pane">
+                                <label for="podp_tel" class="o_form_label" style="font-weight:bold;"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <field name="podp_tel"/>
+                            </div>
+                          </div>
+                          <div class="o_row">
+                            <div class="o_setting_left_pane">
+                                <label for="podp_relacion_confinad" class="o_form_label" style="font-weight:bold;"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <field name="podp_relacion_confinad"/>
+                            </div>
+                          </div>
+                        </group>
+                      </div>
                     </div>
                     <group string="Precio de servicios adicionales">
                       <field name="psa_servi_adicionals" />
@@ -478,28 +502,6 @@
                         </div>
                       </div>
                       <field name="iv_direccion" />
-                    </group>
-                    <group string="Primer obligado de pago">
-                      <field name="podp_nomb" />
-                      <field name="podp_municipio_id" />
-                      <field name="podp_colonia_id"  context="{'municipality_id': podp_municipio_id}"/>
-                      <field name="podp_calle_y_number" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="podp_tel" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="podp_tel"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="podp_relacion_confinad" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="podp_relacion_confinad"/>
-                        </div>
-                      </div>
                     </group>
                     <group string="Detalle de convenio">
                       <div class="o_row">
