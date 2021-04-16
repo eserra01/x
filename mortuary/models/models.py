@@ -370,7 +370,7 @@ class Mortuary(models.Model):
     ig_panteon = fields.Char(string="Panteón")
 
     cremation_id = fields.Many2one(comodel_name='mortuary.cremation',
-        string='Lugar de Velación')
+        string='Lugar de Cremación')
 
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     revisado = fields.Many2one("ii.llamada", string="Llamada")
