@@ -159,5 +159,13 @@
       action="action_ig_templo"
     />
 
+    <menuitem
+      id="submenu_21"
+      parent="models_menu_main"
+      name="Lugar de Cremación"
+      sequence="21"
+      action="action_mortuary_cremation"
+    />
+
   </data>
 </odoo>

@@ -47,6 +47,7 @@
         'views/carroza.xml',
         'views/ig_proveedor_embalsama.xml',
         'views/ig_templo.xml',
+        'views/mortuary_cremation.xml',
         'views/menus.xml',
         'data/data.xml',
         'report/report_bsf.xml',

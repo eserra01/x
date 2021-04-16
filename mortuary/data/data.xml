@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
         <record id="ii_servicio_pendiente" model="ii.servicio">
             <field name="name">PENDIENTE</field>
             <field name="id">1</field>

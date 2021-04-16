@@ -179,3 +179,10 @@ access_observaciones_management,observaciones.management,model_observaciones,pab
 access_observaciones_agent_call_center,observaciones.agent.call.center,model_observaciones,pabs_custom.agent_call_center_profile,1,0,0,0
 access_observaciones_supervisor_call_center,observaciones.supervisor.call.center,model_observaciones,pabs_custom.supervisor_call_center_profile,1,0,0,0
 access_observaciones,observaciones,model_observaciones,,1,1,1,1
+,,,,,,,
+access_cremation_administrador_call_center,cremation.administrador.call.center,model_mortuary_cremation,pabs_custom.administrator_call_center_profile,1,1,1,1
+access_cremation_receipt,cremation.receipt,model_mortuary_cremation,pabs_custom.reception_mortuary_profile,1,0,0,0
+access_cremation_management,cremation.management,model_mortuary_cremation,pabs_custom.management_mortuary_profile,1,0,0,0
+access_cremation_agent_call_center,cremation.agent.call.center,model_mortuary_cremation,pabs_custom.agent_call_center_profile,1,0,0,0
+access_cremation_supervisor_call_center,cremation.supervisor.call.center,model_mortuary_cremation,pabs_custom.supervisor_call_center_profile,1,0,0,0
+access_cremation,cremation,model_mortuary_cremation,,1,1,1,1

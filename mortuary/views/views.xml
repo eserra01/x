@@ -293,25 +293,50 @@
                       <field name="ds_ataud" />
                       <field name="ds_urna" />
                     </group>
-                    <group string="Contacto 1">
-                      <field name="contact_1_nomb" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="contact_1_tel" class="o_form_label" style="font-weight:bold;" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="contact_1_tel"/>
-                        </div>
+                    <div>
+                      <div>
+                        <group string="Contacto 1">
+                          <field name="contact_1_nomb" />
+                          <div class="o_row">
+                            <div class="o_setting_left_pane">
+                                <label for="contact_1_tel" class="o_form_label" style="font-weight:bold;" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <field name="contact_1_tel"/>
+                            </div>
+                          </div>
+                          <div class="o_row">
+                            <div class="o_setting_left_pane">
+                                <label for="contact_1_relacion_confinad" class="o_form_label" style="font-weight:bold;" />
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <field name="contact_1_relacion_confinad"/>
+                            </div>
+                          </div>
+                        </group>
                       </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="contact_1_relacion_confinad" class="o_form_label" style="font-weight:bold;" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="contact_1_relacion_confinad"/>
-                        </div>
+                      <div>
+                        <group string="Contacto 2">
+                          <field name="contact_2_nomb" />
+                          <div class="o_row">
+                            <div class="o_setting_left_pane">
+                                <label for="contact_2_tel" class="o_form_label" style="font-weight:bold;"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <field name="contact_2_tel"/>
+                            </div>
+                          </div>
+                          <div class="o_row">
+                            <div class="o_setting_left_pane">
+                                <label for="contact_2_relacion_confinad" class="o_form_label" style="font-weight:bold;"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <field name="contact_2_relacion_confinad"/>
+                            </div>
+                          </div>
+                        </group>
                       </div>
-                    </group>
+                    </div>
                     <group string="Precio de servicios adicionales">
                       <field name="psa_servi_adicionals" />
                       <div class="o_row">
@@ -416,25 +441,6 @@
                         </div>
                         <div class="o_setting_right_pane">
                             <field name="psa_otros"/>
-                        </div>
-                      </div>
-                    </group>
-                    <group string="Contacto 2">
-                      <field name="contact_2_nomb" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="contact_2_tel" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="contact_2_tel"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="contact_2_relacion_confinad" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="contact_2_relacion_confinad"/>
                         </div>
                       </div>
                     </group>
@@ -680,6 +686,7 @@
                         </div>
                       </div>
                       <field name="ig_panteon" />
+                      <field name="cremation_id"/>
                     </group>
                   </group>
                 </page>

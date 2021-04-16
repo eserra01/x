@@ -58,6 +58,7 @@ class CsServiConfirm(models.Model):
     _name = 'cs.servi.confirm'
 
     name = fields.Char(string="Nombre")
+
     # [('si', 'Si'),
     # ('no', 'No')],
 
@@ -66,6 +67,8 @@ class DsAtiendeServicio(models.Model):
     _name = 'ds.atiende.servicio'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'ROBERTO GOMEZ PEREZ')],
 
 
@@ -73,6 +76,8 @@ class DsSucursalVelacion(models.Model):
     _name = 'ds.sucursal.velacion'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'LOPEZ MATEOS')],
 
 
@@ -87,6 +92,8 @@ class DsCapilla(models.Model):
     _name = 'ds.capilla'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'PROPIAS')],
 
 
@@ -109,6 +116,8 @@ class DsSucursalQEntregCenizas(models.Model):
     _name = 'ds.sucursal.qentreg.cenizas'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'ACAPULCO')],
 
 
@@ -124,6 +133,8 @@ class DsAtaud(models.Model):
     _name = 'ds.ataud'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'RAMIRO RENTERIA ROBLES')],
 
 
@@ -131,6 +142,8 @@ class DsUrna(models.Model):
     _name = 'ds.urna'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'RAMIRO RENTERIA ROBLES')],
 
 
@@ -145,6 +158,8 @@ class IvLugarVelacion(models.Model):
     _name = 'iv.lugar.velacion'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', ' CAPILLA ')],
 
 
@@ -152,6 +167,8 @@ class IvNombreDeCapilla(models.Model):
     _name = 'iv.nombre.capilla'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'ESPERANZA')],
 
 
@@ -166,6 +183,8 @@ class IrOperativo(models.Model):
     _name = 'ir.operativo'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'JUAN MONTES ROSALES')],
 
 
@@ -173,6 +192,8 @@ class Carroza(models.Model):
     _name = 'carroza'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'JRA5643-300C-NEGRA')],
 
 
@@ -188,6 +209,9 @@ class IgProveedorEmbalsama(models.Model):
     _name = 'ig.proveedor.embalsama'
 
     name = fields.Char(string="Nombre")
+
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'REYNALDO')],
 
 
@@ -195,7 +219,16 @@ class IgTemplo(models.Model):
     _name = 'ig.templo'
 
     name = fields.Char(string="Nombre")
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     # [('0', 'PAULINA RODRIGUEZ GONZALEZ')],#
+
+class PlaceOfCremation(models.Model):
+    _name = 'mortuary.cremation'
+
+    name = fields.Char(string='Nombre')
+
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
 
 class Mortuary(models.Model):
     _name = 'mortuary'
@@ -206,12 +239,11 @@ class Mortuary(models.Model):
     ii_servicio = fields.Many2one("ii.servicio", string="Servicio")
     ii_finado = fields.Char(string="Finado", required=True)
     ii_fecha_creacion = fields.Date(
-        string="Fecha creacion", readonly=True, default=datetime.now(tz),
+        string="Fecha creacion", default=datetime.now(tz),
         copy=False)
     ii_hora_creacion = fields.Char(
         string="Hora creacion",
         tracking=True,
-        readonly=True,
         copy=False)
     ii_llamada = fields.Many2one("ii.llamada", string="Llamada")
     ii_certificamos = fields.Many2one("ii.certificamos", string="Certificamos")
@@ -336,6 +368,9 @@ class Mortuary(models.Model):
     ig_hora_de_misa = fields.Float(string="Hora de misa")
     ig_acta_de_defuncion = fields.Char(string="Acta de defunción")
     ig_panteon = fields.Char(string="Panteón")
+
+    cremation_id = fields.Many2one(comodel_name='mortuary.cremation',
+        string='Lugar de Velación')
 
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
     revisado = fields.Many2one("ii.llamada", string="Llamada")
