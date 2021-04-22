@@ -122,7 +122,7 @@ class StockMove(models.Model):
       if record.series_start:
         product_prefix = record.series_start[0:6]
         pricelist_id = pricelist_item_obj.search([
-            ('prefix_request','=',product_prefix)], 
+            ('prefix_request','=',product_prefix),('company_id','=',self.company_id.id)],
             order="create_date desc",limit=1)
         if not pricelist_id:
           raise ValidationError((
@@ -151,12 +151,12 @@ class StockMove(models.Model):
     for rec in self:
       if rec.codigo_de_activacion_valid:
         lot_id = lot_obj.search([
-          ('name','=',rec.series)],limit=1)
+          ('name','=',rec.series),('company_id','=',self.company_id.id)],limit=1)
         if not lot_id:
           raise ValidationError((
             "No se encontró la solicitud"))
         contract_id = contract_obj.search([
-          ('lot_id','=',lot_id.id)],limit=1)
+          ('lot_id','=',lot_id.id),('company_id','=',self.company_id.id)],limit=1)
         if not contract_id:
           raise ValidationError((
             "La solicitud {} No ha sido activado previamente".format(rec.series)))
@@ -169,12 +169,12 @@ class StockMove(models.Model):
     lot_obj = self.env['stock.production.lot']
     quant_obj = self.env['stock.quant']
     lot_id = lot_obj.search([
-      ('name','=',serie)],limit=1)
+      ('name','=',serie),('company_id','=',self.company_id.id)],limit=1)
     if not lot_id:
       raise ValidationError((
         'No se encontro la solicitud {} en el sistema'.format(serie)))
     quant_id = quant_obj.search([
-      ('lot_id','=',lot_id.id)],limit=1,order="id desc")
+      ('lot_id','=',lot_id.id),('company_id','=',self.company_id.id)],limit=1,order="id desc")
     if location_id != quant_id.location_id:
       raise ValidationError((
         'La solicitud {} no se encuentra en el almacén indicado, se encuentra en {}\n favor de verificarlo'.format(
@@ -200,17 +200,18 @@ class StockMove(models.Model):
                 "No se puede agregar la línea por que ya fue agregada previamente"))
       line = move_obj.search([
         ('series','=',rec.series),
+        ('company_id','=',self.company_id.id),
         ('origen_solicitud','in',('cancelada','extravio'))],limit=1)
       if line:
         raise ValidationError((
           "La solicitud {} no puede ser ingresada por que está {}".format(rec.series,dict(rec._fields['origen_solicitud'].selection).get(rec.origen_solicitud))))
       mode_prod = self.env['stock.production.lot'].search(
-        [('name', '=', str(rec.series))], limit=1)        
+        [('name', '=', str(rec.series)),('company_id','=',self.company_id.id)], limit=1)        
       if rec.series and rec.picking_id.type_transfer == 'ov-as':
         if rec.picking_id.location_dest_id.consignment_location:
           for prodc in mode_prod:
             quant_id = quant_obj.search([
-              ('lot_id','=',prodc.id)],limit=1,order="id desc")
+              ('lot_id','=',prodc.id),('company_id','=',self.company_id.id)],limit=1,order="id desc")
             if quant_id.location_id != rec.location_id:
               raise ValidationError((
                 "La solicitud {} no se encuentrá en el almacén indicado, se encuentra en {}\nfavor de verificarlo".format(
@@ -224,6 +225,7 @@ class StockMove(models.Model):
           for prodc in mode_prod:
             quant_id = quant_obj.search([
               ('lot_id','=',prodc.id),
+              ('company_id','=',self.company_id.id),
               ('quantity','>',0)], order="in_date desc", limit=1)
             if quant_id:
               if quant_id.location_id != location_id:
@@ -233,6 +235,7 @@ class StockMove(models.Model):
             rec.product_uom_qty = 1
             ### VALIDAR SI ESTA ACTIVADA LA SOLICITUD
             contract_id = contract_obj.search([
+              ('company_id','=',self.company_id.id),
               ('lot_id','=',mode_prod.id),
               ('activation_code','!=',False)])
             if not contract_id:
@@ -316,7 +319,7 @@ class StockMove(models.Model):
     else:
       if self.product_id:
         if self.product_id.tracking == 'serial':
-          item_id = pricelist_item_obj.search([('product_id','=',self.product_id.id)],
+          item_id = pricelist_item_obj.search([('product_id','=',self.product_id.id),('company_id','=',self.company_id.id)],
             order="create_date desc",limit=1)
           if item_id:
             self.papeleria = item_id.stationery
@@ -327,7 +330,7 @@ class StockMove(models.Model):
     if self.picking_id.type_transfer == 'as-ov':
       if self.product_id:
         if self.product_id.tracking == 'serial':
-          item_id = pricelist_item_obj.search([('product_id','=',self.product_id.id)],
+          item_id = pricelist_item_obj.search([('product_id','=',self.product_id.id),('company_id','=',self.company_id.id)],
             order="create_date desc",limit=1)
           if item_id:
             self.papeleria = item_id.stationery
@@ -392,14 +395,14 @@ class StockMove(models.Model):
       if vals.get('product_id'):
         product_id = product_obj.browse(vals.get('product_id'))
         if product_id.tracking == 'serial':
-          item_id = pricelist_item_obj.search([('product_id','=',product_id.id)],
+          item_id = pricelist_item_obj.search([('product_id','=',product_id.id),('company_id','=',vals.get('company_id'))],
             order="create_date desc",limit=1)
           if item_id:
             vals['papeleria'] = item_id.stationery
     res = super(StockMove, self).create(vals)
     if vals.get('picking_id'):
       if picking_id.type_transfer in ('ov-as','as-ov'):
-        lot_id = lot_obj.search([('name','=',res.series)],limit=1)
+        lot_id = lot_obj.search([('name','=',res.series),('company_id','=',vals.get('company_id'))],limit=1)
         data = {
           'picking_id' : picking_id.id,
           'move_id': res.id,
@@ -442,7 +445,7 @@ class StockMove(models.Model):
         initial_number = int(initial_number)
         for i in range(0, int(res.product_uom_qty)):
           serie = '{}{}{}'.format(prefix,str(initial_number + i).zfill(padding),suffix)
-          lot_id = lot_obj.search([('name','=',serie)],limit=1) or False
+          lot_id = lot_obj.search([('name','=',serie),('company_id','=',vals.get('company_id'))],limit=1) or False
           data = {
             'picking_id' : picking_id.id,
             'move_id': res.id,
