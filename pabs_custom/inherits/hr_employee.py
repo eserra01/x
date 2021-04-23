@@ -311,7 +311,10 @@ class HrEmployee(models.Model):
           return newEmployee
         else:
           return super(HrEmployee, self).create(vals)
-    return super(HrEmployee, self).create(vals)
+      else:
+        return super(HrEmployee, self).create(vals)
+    else:
+      return super(HrEmployee, self).create(vals)
 
   def name_get(self):
     ### EL formato en el cual mostrará la relación de hr.employee ejem. "V0001 - Eduardo Serrano"
