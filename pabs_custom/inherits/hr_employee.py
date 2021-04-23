@@ -244,75 +244,70 @@ class HrEmployee(models.Model):
     if vals.get('barcode'):
       ### cambia el código de empleado a mayusculas para mantener un estándar
       vals['barcode'] = vals['barcode'].upper()
-      ### Validar que no se repitan los códigos de empleado
-      duplicated = self.search([('barcode','=',vals.get('barcode')),('company_id','=',vals.get('company_id'))])
-      deb_collector = job_obj.search([
-        ('name','=','COBRADOR'),('company_id','=',vals.get('company_id'))],limit=1)
-      if not deb_collector:
-        raise ValidationError((
-          "No se encontró el puesto de cobrador"))
-      if duplicated:
-        raise ValidationError((
-          "No puedes dar de alta el código de empleado {} por que ya existe".format(vals.get('barcode'))))
-      if vals.get('job_id'):
-        job_ids = job_obj.search([
-          ('name','in',('PRESIDENTE','DIRECTOR NACIONAL','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL')),('company_id','=',vals.get('company_id'))])
-        if vals.get('job_id') in job_ids.ids:
-          ### validación para seleccionar automáticamente las ubicaciones correspondientes
-          if vals.get('warehouse_id'):
-            warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
-            view_location_id = warehouse_id.view_location_id
-            ### Buscar la ubicación de contratos
-            contract_location = location_obj.search([
-              ('contract_location','=',True),('company_id','=',vals.get('company_id'))], limit=1)
-            ### Buscar la ubicación de solicitudes
-            request_location = location_obj.search([
-              ('location_id','=',view_location_id.id),
-              ('office_location','=',True),('company_id','=',vals.get('company_id'))],limit=1)
-            ### Sí encuentra una ubicación de solicitudes
-            if request_location:
-              vals['request_location_id'] = request_location.id
-            else:
-              ### Mensaje de error para validar si está bien configurada la ubicación de solicitudes
-              raise ValidationError((
-                "No se pudo encontrar el almacén de solicitudes, favor de ponerse en contacto con sistemas"))
-            ### Sí encuentra una ubicación de contratos.
-            if contract_location:
-              vals['contract_location_id'] = contract_location.id
-            else:
-              ### Mensaje de error para validar si está bien configurada la ubicación de contratos
-              raise ValidationError((
-                "No se pudo encontrar el almacén de contratos, favor de ponerse en contacto con sistemas"))
-            ### Generando valores para la creación de su ubicación
-            location_val = {
-              'name': vals.get('barcode'),
-              'location_id': view_location_id.id,
-              'usage': 'internal',
-              'consignment_location' : True
-            }
-            ### Método para crear la ubicación
-            local_location = location_obj.sudo().create(location_val)
-            ### Agregarlo al diccionario para anexarlo
-            vals['local_location_id'] = local_location.id
-
-            #Insertar registro de empleado
-            newEmployee = super(HrEmployee, self).create(vals)
-
-            #Solo crear plantilla cuando el empleado es del departamento de ventas
-            sales_dept_id = self.env['hr.department'].search([('name','=','VENTAS'),('company_id','=',newEmployee.company_id.id)], limit = 1)
-            if newEmployee['department_id'] == sales_dept_id:
-              self.env['pabs.comission.template'].create_comission_template(newEmployee['id'])
-            return newEmployee
-        elif vals.get('job_id') == deb_collector.id:
-          newEmployee = super(HrEmployee, self).create(vals)
-          comission_debt_collector_obj.create({
-            'debt_collector_id' : newEmployee.id,
-          })
-          return newEmployee
+    ### Validar que no se repitan los códigos de empleado
+    duplicated = self.search([('barcode','=',vals.get('barcode')),('company_id','=',vals.get('company_id'))])
+    deb_collector = job_obj.search([
+      ('name','=','COBRADOR'),('company_id','=',vals.get('company_id'))],limit=1)
+    if not deb_collector:
+      raise ValidationError((
+        "No se encontró el puesto de cobrador"))
+    if duplicated:
+      raise ValidationError((
+        "No puedes dar de alta el código de empleado {} por que ya existe".format(vals.get('barcode'))))
+    job_ids = job_obj.search([
+      ('name','in',('PRESIDENTE','DIRECTOR NACIONAL','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL')),('company_id','=',vals.get('company_id'))])
+    if vals.get('job_id') in job_ids.ids:
+      ### validación para seleccionar automáticamente las ubicaciones correspondientes
+      if vals.get('warehouse_id'):
+        warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
+        view_location_id = warehouse_id.view_location_id
+        ### Buscar la ubicación de contratos
+        contract_location = location_obj.search([
+          ('contract_location','=',True),('company_id','=',vals.get('company_id'))], limit=1)
+        ### Buscar la ubicación de solicitudes
+        request_location = location_obj.search([
+          ('location_id','=',view_location_id.id),
+          ('office_location','=',True),('company_id','=',vals.get('company_id'))],limit=1)
+        ### Sí encuentra una ubicación de solicitudes
+        if request_location:
+          vals['request_location_id'] = request_location.id
         else:
-          return super(HrEmployee, self).create(vals)
-      else:
-        return super(HrEmployee, self).create(vals)
+          ### Mensaje de error para validar si está bien configurada la ubicación de solicitudes
+          raise ValidationError((
+            "No se pudo encontrar el almacén de solicitudes, favor de ponerse en contacto con sistemas"))
+        ### Sí encuentra una ubicación de contratos.
+        if contract_location:
+          vals['contract_location_id'] = contract_location.id
+        else:
+          ### Mensaje de error para validar si está bien configurada la ubicación de contratos
+          raise ValidationError((
+            "No se pudo encontrar el almacén de contratos, favor de ponerse en contacto con sistemas"))
+        ### Generando valores para la creación de su ubicación
+        location_val = {
+          'name': vals.get('barcode'),
+          'location_id': view_location_id.id,
+          'usage': 'internal',
+          'consignment_location' : True
+        }
+        ### Método para crear la ubicación
+        local_location = location_obj.sudo().create(location_val)
+        ### Agregarlo al diccionario para anexarlo
+        vals['local_location_id'] = local_location.id
+
+        #Insertar registro de empleado
+        newEmployee = super(HrEmployee, self).create(vals)
+
+        #Solo crear plantilla cuando el empleado es del departamento de ventas
+        sales_dept_id = self.env['hr.department'].search([('name','=','VENTAS'),('company_id','=',newEmployee.company_id.id)], limit = 1)
+        if newEmployee.department_id.id == sales_dept_id:
+          self.env['pabs.comission.template'].create_comission_template(newEmployee.id)
+        return newEmployee
+    elif vals.get('job_id') == deb_collector.id:
+      newEmployee = super(HrEmployee, self).create(vals)
+      comission_debt_collector_obj.create({
+        'debt_collector_id' : newEmployee.id,
+      })
+      return newEmployee
     else:
       return super(HrEmployee, self).create(vals)
 
