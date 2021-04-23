@@ -233,7 +233,7 @@ class HrEmployee(models.Model):
         full_name = "{} {}".format(full_name,obj.last_name)
       obj.name = full_name
 
-  @api.model
+  """@api.model
   def create(self, vals):
     ### Declaración de objetos
     warehouse_obj = self.env['stock.warehouse']
@@ -314,7 +314,7 @@ class HrEmployee(models.Model):
       else:
         return super(HrEmployee, self).create(vals)
     else:
-      return super(HrEmployee, self).create(vals)
+      return super(HrEmployee, self).create(vals)"""
 
   def name_get(self):
     ### EL formato en el cual mostrará la relación de hr.employee ejem. "V0001 - Eduardo Serrano"
