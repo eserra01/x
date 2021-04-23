@@ -88,20 +88,28 @@ class PABSEcobroSync(models.Model):
       log+= 'Cobrador {} de {} \n'.format((index + 1), len_employees)
       log+= '{} . {} \n'.format(employee_id.barcode, employee_id.name)
 
-      ### VALIDAR QUE EL COBRADOR ESTÉ ACTIVO
-      if employee_id.employee_status.id == status_id.id:
-        ### EMPAQUETANDO INFORMACIÓN DEL COBRADOR
-        employee_data.append({
+      employee_info = {
         'codigo' : employee_id.barcode,
         'nombre' : employee_id.name,
         'serie' : debt_collector_id.receipt_series,
         'telefono' : employee_id.mobile_phone or "",
         'cobradorID' : int(employee_id.ecobro_id) or employee_id.id
+      }
+
+      ### VALIDAR QUE EL COBRADOR ESTÉ ACTIVO
+      if employee_id.employee_status.id == status_id.id:
+        ### EMPAQUETANDO INFORMACIÓN DEL COBRADOR
+        employee_info.update({
+          'vigente' : 1
         })
-        log+= 'Estatus: {} Sincronizado con Exito \n'.format(employee_id.employee_status.name)
+        log+= 'Cobrador:{}\nEstatus: {} Sincronizado con Exito \n'.format(employee_id.employee_status.name,employee_id.employee_status.name)
       else:
-        log+= 'Estatus: {} No se Sincronizó'.format(employee_id.employee_status.name)
+        employee_info.update({
+          'vigente' : 0
+        })
+        log+= 'Cobrador:{}\nEstatus: {} Sincronizado con Exito \n'.format(employee_id.employee_status.name,employee_id.employee_status.name)
       log += '\n\n'
+      employee_data.append(employee_info)
 
     ### MANEJADOR DE ERRORES
     try:
