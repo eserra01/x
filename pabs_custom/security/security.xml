@@ -81,77 +81,84 @@
       <field name="name">Cortes multi-company</field>
       <field name="model_id" search="[('model','=','closing.transfer.registry')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="colonias_rule">
       <field name="name">colonias multi-company</field>
       <field name="model_id" search="[('model','=','colonias')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="pabs_arching_rule">
       <field name="name">arqueos multi-company</field>
       <field name="model_id" search="[('model','=','pabs.arching')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="pabs_bonus_rule">
       <field name="name">bonus multi-company</field>
       <field name="model_id" search="[('model','=','pabs.bonus')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="pabs_comission_debt_collector_rule">
       <field name="name">Comisiones de Cobrador multi-company</field>
       <field name="model_id" search="[('model','=','pabs.comission.debt.collector')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="pabs_comission_output_rule">
       <field name="name">Salidas de Comisiones multi-company</field>
       <field name="model_id" search="[('model','=','pabs.comission.output')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="pabs_comission_template_rule">
       <field name="name">Plantilla de Arboles de comisiones multi-company</field>
       <field name="model_id" search="[('model','=','pabs.comission.template')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="pabs_comission_template_of_templates_rule">
       <field name="name">Plantilla de Plantillas multi-company</field>
       <field name="model_id" search="[('model','=','pabs.comission.template.of.templates')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="pabs_comission_tree_rule">
       <field name="name">Plantilla de Contratos multi-company</field>
       <field name="model_id" search="[('model','=','pabs.comission.tree')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="pabs_contract_rule">
       <field name="name">Contratos multi-company</field>
       <field name="model_id" search="[('model','=','pabs.contract')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="pabs_recluitment_induction_rule">
       <field name="name">inducciones multi-company</field>
       <field name="model_id" search="[('model','=','pabs.recluitment.induction')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="product_category_rule">
+      <field name="name">Categoria de productos</field>
+      <field name="model_id" search="[('model','=','product.category')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
 </data>
