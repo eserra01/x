@@ -302,18 +302,16 @@ class HrEmployee(models.Model):
             sales_dept_id = self.env['hr.department'].search([('name','=','VENTAS')], limit = 1)
             if newEmployee['department_id'] == sales_dept_id:
               self.env['pabs.comission.template'].create_comission_template(newEmployee['id'])
+            return newEmployee
         elif vals.get('job_id') == deb_collector.id:
           newEmployee = super(HrEmployee, self).create(vals)
           comission_debt_collector_obj.create({
             'debt_collector_id' : newEmployee.id,
           })
+          return newEmployee
         else:
-          newEmployee = super(HrEmployee, self).create(vals)
-      else:
-        newEmployee = super(HrEmployee, self).create(vals)
-    else:
-      newEmployee = super(HrEmployee, self).create(vals)
-    return newEmployee
+          return super(HrEmployee, self).create(vals)
+    return super(HrEmployee, self).create(vals)
 
   def name_get(self):
     ### EL formato en el cual mostrará la relación de hr.employee ejem. "V0001 - Eduardo Serrano"
