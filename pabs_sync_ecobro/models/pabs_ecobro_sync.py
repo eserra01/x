@@ -101,12 +101,12 @@ class PABSEcobroSync(models.Model):
         employee_info.update({
           'vigente' : 1
         })
-        log+= 'Cobrador:{}\nEstatus: {} Sincronizado con Exito \n'.format(employee_id.name,employee_id.employee_status.name)
+        log+= 'Código:{}\nCobrador:{}\nEstatus: {} Sincronizado con Exito \n'.format(employee_id.barcode,employee_id.name,employee_id.employee_status.name)
       else:
         employee_info.update({
           'vigente' : 0
         })
-        log+= 'Cobrador:{}\nEstatus: {} Sincronizado con Exito \n'.format(employee_id.name,employee_id.employee_status.name)
+        log+= 'Código:{}\nCobrador:{}\nEstatus: {} Sincronizado con Exito \n'.format(employee_id.barcode,employee_id.name,employee_id.employee_status.name)
       log += '\n\n'
       employee_data.append(employee_info)
 
