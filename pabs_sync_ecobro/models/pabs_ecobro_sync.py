@@ -86,7 +86,6 @@ class PABSEcobroSync(models.Model):
 
       ### AGREGAMOS EL COBRADOR AL LOG
       log+= 'Cobrador {} de {} \n'.format((index + 1), len_employees)
-      log+= '{} . {} \n'.format(employee_id.barcode, employee_id.name)
 
       employee_info = {
         'codigo' : employee_id.barcode,
@@ -102,12 +101,12 @@ class PABSEcobroSync(models.Model):
         employee_info.update({
           'vigente' : 1
         })
-        log+= 'Cobrador:{}\nEstatus: {} Sincronizado con Exito \n'.format(employee_id.employee_status.name,employee_id.employee_status.name)
+        log+= 'Cobrador:{}\nEstatus: {} Sincronizado con Exito \n'.format(employee_id.name,employee_id.employee_status.name)
       else:
         employee_info.update({
           'vigente' : 0
         })
-        log+= 'Cobrador:{}\nEstatus: {} Sincronizado con Exito \n'.format(employee_id.employee_status.name,employee_id.employee_status.name)
+        log+= 'Cobrador:{}\nEstatus: {} Sincronizado con Exito \n'.format(employee_id.name,employee_id.employee_status.name)
       log += '\n\n'
       employee_data.append(employee_info)
 
