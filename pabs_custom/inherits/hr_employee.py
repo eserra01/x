@@ -245,9 +245,9 @@ class HrEmployee(models.Model):
       ### cambia el código de empleado a mayusculas para mantener un estándar
       vals['barcode'] = vals['barcode'].upper()
       ### Validar que no se repitan los códigos de empleado
-      duplicated = self.search([('barcode','=',vals.get('barcode'))])
+      duplicated = self.search([('barcode','=',vals.get('barcode')),('company_id','=',vals.get('company_id'))])
       deb_collector = job_obj.search([
-        ('name','=','COBRADOR')],limit=1)
+        ('name','=','COBRADOR'),('company_id','=',vals.get('company_id'))],limit=1)
       if not deb_collector:
         raise ValidationError((
           "No se encontró el puesto de cobrador"))
@@ -256,7 +256,7 @@ class HrEmployee(models.Model):
           "No puedes dar de alta el código de empleado {} por que ya existe".format(vals.get('barcode'))))
       if vals.get('job_id'):
         job_ids = job_obj.search([
-          ('name','in',('PRESIDENTE','DIRECTOR NACIONAL','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))])
+          ('name','in',('PRESIDENTE','DIRECTOR NACIONAL','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL')),('company_id','=',vals.get('company_id'))])
         if vals.get('job_id') in job_ids.ids:
           ### validación para seleccionar automáticamente las ubicaciones correspondientes
           if vals.get('warehouse_id'):
@@ -264,11 +264,11 @@ class HrEmployee(models.Model):
             view_location_id = warehouse_id.view_location_id
             ### Buscar la ubicación de contratos
             contract_location = location_obj.search([
-              ('contract_location','=',True)], limit=1)
+              ('contract_location','=',True),('company_id','=',vals.get('company_id'))], limit=1)
             ### Buscar la ubicación de solicitudes
             request_location = location_obj.search([
               ('location_id','=',view_location_id.id),
-              ('office_location','=',True)],limit=1)
+              ('office_location','=',True),('company_id','=',vals.get('company_id'))],limit=1)
             ### Sí encuentra una ubicación de solicitudes
             if request_location:
               vals['request_location_id'] = request_location.id
