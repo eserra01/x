@@ -58,7 +58,6 @@ class ComissionTemplate(models.Model):
         for row in template:
             #Obtener el nombre del cargo
             job_name = self.env['hr.job'].search([('id', '=', row['job_id'].id)]).name
-            _logger.warning("Puesto: {}\nCompañia:{}\nMonto:{}".format(job_name,row.company_id.id,row.comission_amount))
 
             if job_name == "PAPELERIA":
                 #Obtener el monto de papeleria
@@ -91,7 +90,7 @@ class ComissionTemplate(models.Model):
                 #Asignar sin personal y con comision 0
                 new_comission = {'employee_id' : myEmployee_id, 'plan_id' : row['plan_id'].id, 'pay_order' : row['pay_order'], 'job_id' : row['job_id'].id, 'comission_agent_id' : '', 'comission_amount' : 0}
                 comission_list.append(new_comission)
-
+        _logger.warning("valores enviados: {}".format(comission_list))
         return comission_list
 
     # Crea la plantilla de comisiones
