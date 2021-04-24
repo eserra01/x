@@ -2,6 +2,9 @@
 
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
+import logging
+
+_logger = logging.getLogger(__name__)
 
 class ComissionTemplate(models.Model):
     """Modelo que contiene las plantillas de árbol de comisión de los asistentes"""
@@ -171,6 +174,7 @@ class ComissionTemplate(models.Model):
     def check_agent_if_amount(self):
         for row in self:
             if row.comission_amount != 0 and not row.comission_agent_id:
+                _logger.waring("agente: {}\nmonto:{}".format(row.comission_agent_id.name,row.comission_amount))
                 raise ValidationError("Elija un empleado antes de asignar un monto")
             
     # 50/100% Solamente crear plantillas de los empleados con X CONDICIONES ||| 50% se creó condición ||| Falta definir quienes (X)
