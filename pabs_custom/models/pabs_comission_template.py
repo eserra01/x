@@ -58,6 +58,7 @@ class ComissionTemplate(models.Model):
         for row in template:
             #Obtener el nombre del cargo
             job_name = self.env['hr.job'].search([('id', '=', row['job_id'].id)]).name
+            _logger.warning("Puesto: {}\nCompañia:{}\nMonto:{}".format(job_name,row.company_id.id,row.comission_amount))
 
             if job_name == "PAPELERIA":
                 #Obtener el monto de papeleria
