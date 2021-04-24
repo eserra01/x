@@ -56,6 +56,15 @@ class account_Payment(models.Model):
     comission_output_ids = fields.One2many(comodel_name="pabs.comission.output", inverse_name="payment_id", string="Salidas de comisiones")
 
     def post(self):
+      contract_status_obj = self.env['pabs.contract.status']
+      contract_status_reason_obj = self.env['pabs.contract.status.reason']
+      ### Estatus Activo
+      status_active_id = contract_status_obj.search([
+        ('ecobro_code','=',1)],limit=1)
+      ### BUSCAMOS LA RAZÓN DE ACTIVO
+      status_reason_id = contract_status_reason_obj.search([
+        ('reason','=','ACTIVO'),
+        ('status_id','=',status_active_id.id)])
       comission_tree_obj = self.env['pabs.comission.tree']
       res = super(account_Payment, self).post()
       context = self._context
@@ -78,6 +87,11 @@ class account_Payment(models.Model):
             IdPago=IdPago, NumeroContrato=NumeroContrato,
             CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
             EsExcedente=False)
+        ### VALIDAMOS SI EL CONTRATO ESTA EN ESTATUS DIFERENTE DE ACTIVO
+        if self.contract.contract_status_item.id != status_active_id.id:
+          ### PONEMOS LOS CONTRATOS EN ACTIVO
+          self.contract.contract_status_item = status_active_id.id
+          self.contract.contract_status_reason = status_reason_id.id
       return res
 
     def disassociate_payment(self):
