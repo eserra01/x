@@ -145,7 +145,7 @@ class ActivationWeb(http.Controller):
         'company_id' : company_id
       })
     contract_id = contract_obj.with_user(request.env.context['uid']).with_context(
-      {'default_company_id' : company_id}).create(kargs)
+      force_company=company_id).create(kargs)
     _logger.warning("Argumentos: {}".format(contract_id))
     if contract_id:
       response = {'result' : {'activation_code' : contract_id.activation_code}}
