@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="main_page_activation">
+    <head>
+      <meta charset="UTF-8"/>
+      <meta name="author" content="Eduardo Serrano"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <link rel="icon" type="image/png" href="/pabs_activation_web/static/src/img/favicon-pabs.png"/>
+        <title>Activacion de Solicitudes</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+      <link rel="stylesheet" href="/pabs_activation_web/static/src/css/style.css" type="text/css" media="screen"/>
+      <script src="https://s.codepen.io/assets/libs/modernizr.js" type="text/javascript"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    </head>
+    <body>
+      <div class="container">
+        <center><h2>Activación de Solicitudes</h2></center>
+        <section class="form-section">
+          <img style="width: 373px;" class="img" src="/pabs_activation_web/static/src/img/Logopabs.png"/>
+          <div class="select_mate" data-mate-select="active">
+            <select id="company" name="company" class="custom-select sources" placeholder="Selecciona una ciudad">
+              <option value="0"></option>
+              <t t-foreach="company_ids" t-as="company_id">
+                <t t-raw="company_id"/>
+              </t>
+            </select>
+            <div class="box">
+              <a id="act_button" href="#" class="btn btn-white btn-animation-1">Activar</a> 
+            </div>
+          </div>
+        </section>
+        <!-- Modal -->
+        <div class="modal fade" id="activation-form" tabindex="-1" role="dialog" aria-labelledby="activation-form" aria-hidden="true" data-backdrop="static">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-body">
+                <div class="form-row">
+                  <form id="activation_form" name="activation_form">
+                    <fieldset class="scheduler-border">
+                      <legend id="modal-title" class="scheduler-border"></legend>
+                      <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">Alta de afiliado</legend>
+                        <div>
+                          <div class="form-group col-md-6">
+                            <label for="agent_id">Agente</label>
+                            <input type="text" class="form-control" id="agent_id" name="agent_id" placeholder="Ej. Claudia FLores"/>
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="lot_id">No. de Solicitud</label>
+                            <input type="text" class="form-control" id="lot_id" name="lot_id" placeholder="Ej. 010105000001" minlength="12" maxlength="12"/>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group col-md-6">
+                            <label id="product_id"/>
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label id="employee_id"/>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group col-md-6" id="schemes">
+                          </div>
+                        </div>
+                      </fieldset>
+                      <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">Datos del afiliado</legend>
+                        <div>
+                          <div class="form-group col-md-4">
+                            <label for="partner_name">Nombre</label>
+                            <input type="text" class="form-control" id="partner_name" name="partner_name" placeholder="Ej. Maria Magdalena"/>
+                          </div>
+                          <div class="form-group col-md-4">
+                            <label for="partner_fname">Apellido Paterno</label>
+                            <input type="text" class="form-control" id="partner_fname" name="partner_fname" placeholder="Ej. Vazquez"/>
+                          </div>
+                          <div class="form-group col-md-4">
+                            <label for="partner_mname">Apellido Materno</label>
+                            <input type="text" class="form-control" id="partner_mname" name="partner_mname" placeholder="Ej. Quintero"/>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group col-md-6">
+                            <label for="birthdate">Fecha de nacimiento</label>
+                            <input type="date" class="form-control" id="birthdate" name="birthdate" placeholder="dd/mm/yyy" min="01/01/1900"/>
+                          </div>
+                          <div class="form-group col-md-6">
+                            <label for="phone">Teléfono</label>
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="Ej. 3318487695"/>
+                          </div>
+                        </div>
+                      </fieldset>
+                      <fieldset class="scheduler-border">
+                        <legend class="scheduler-border">Domicilio</legend>
+                        <div>
+                          <div>
+                            <div class="form-group col-md-6">
+                              <label for="municipality_id">Municipio</label>
+                              <select id="municipality_id" name="municipality_id" class="form-control">
+                                <option></option>
+                              </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                              <label for="neighborhood_id">Colonia</label>
+                              <select id="neighborhood_id" name="neighborhood_id" class="form-control">
+                                <option></option>
+                              </select>
+                            </div>
+                          </div>
+                          <div>
+                            <div class="form-group col-md-4">
+                              <label for="street_name">Calle</label>
+                              <input type="text" id="street_name" name="street_name" class="form-control"/>
+                            </div>
+                            <div class="form-group col-md-4">
+                              <label for="street_number">Número</label>
+                              <input type="text" id="street_number" name="street_number" class="form-control"/>
+                            </div>
+                            <div class="form-group col-md-4">
+                              <label for="between_streets">Entre Calles</label>
+                              <input type="text" id="between_streets" name="between_streets" class="form-control"/>
+                            </div>
+                          </div>
+                          <div>
+                            <div class="form-group">
+                              <label for="comments">Comentarios de activación</label>
+                              <textarea id="comments" name="comments" class="form-control"/>
+                            </div>
+                          </div>
+                        </div>
+                      </fieldset>
+                      <div class="modal-footer">
+                        <h1 id="activation_code"></h1>
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" id="submit" class="btn btn-blue">Activar Solicitud</button>
+                      </div>
+                    </fieldset>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+    
+    <script src="/pabs_activation_web/static/src/js/selection.js"></script>
+    <script src="/pabs_activation_web/static/src/js/activation.js"></script>
+  </template>
+</odoo>
