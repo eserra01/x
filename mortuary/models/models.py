@@ -236,6 +236,8 @@ class Mortuary(models.Model):
     _inherit = 'mail.thread'
 
     name = fields.Char(string="Bitácora", required=True)
+    partner_id = fields.Many2one(comodel_name='res.partner',
+        string='contacto')
     ii_servicio = fields.Many2one("ii.servicio", string="Servicio")
     ii_finado = fields.Char(string="Finado", required=True)
     ii_fecha_creacion = fields.Date(
@@ -412,7 +414,11 @@ class Mortuary(models.Model):
 
     @api.model
     def create(self, vals):
+        partner_obj = self.env['res.partner']
         vals['ii_hora_creacion'] = datetime.now(tz).strftime('%H:%M')
+        if vals['name']:
+            partner_id = partner_obj.create({'name' : vals['name']})
+            vals.update({'partner_id' : partner_id.id})
         result = super(Mortuary, self).create(vals)
         return result
 
@@ -545,6 +551,7 @@ class Mortuary(models.Model):
             'res_model': 'account.move',
             'view_id': self.env.ref('account.view_move_form').id,
             'context': {
+                'default_partner_id' : self.partner_id.id,
                 'default_type': 'out_invoice',
             }
         }
