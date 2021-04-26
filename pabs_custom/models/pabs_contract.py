@@ -317,7 +317,8 @@ class PABSContracts(models.Model):
     vals['contract_status'] = 'active'
     ### Asignación del número de activación
     if not vals.get('activation_code'):
-      vals['activation_code'] = self.env['ir.sequence'].next_by_code(
+      vals['activation_code'] = self.env['ir.sequence'].with_context(
+        force_company=vals['company_id']).next_by_code(
         'pabs.contracts')
       ### Se cambia el estado del registro a "Pre-Contrato"
       
