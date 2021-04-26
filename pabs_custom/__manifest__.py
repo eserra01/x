@@ -41,6 +41,7 @@
     'views/pabs_comission_output.xml',
     'views/account_payment_view.xml',
     'views/pabs_bonus_view.xml',
+    'views/assets.xml',
     'wizard/pabs_status_stock_view.xml',
     'views/pabs_contract_status_view.xml',
     'views/pabs_contract_status_reason_view.xml',
