@@ -13,3 +13,6 @@ class ResLocality(models.Model):
         'res.country.state', 'State',
         domain="[('country_id', '=', country_id)]", required=True)
     code = fields.Char()
+    company_id = fields.Many2one(
+      'res.company', 'Compañia', required=True,
+      default=lambda s: s.env.company.id, index=True)
