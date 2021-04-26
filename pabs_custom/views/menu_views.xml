@@ -75,10 +75,10 @@
   <menuitem id="contract_status_reason" name="Motivos de estatus" parent="contract_status_menu" action="contract_status_reason_action" sequence="2"/>
 
 <!-- MENUS DE CONTRATOS POR PERFIL -->
-  <menuitem id="contract_secretary" name="Contratos (Secretarias)" groups="pabs_custom.admin_profile,pabs_custom.contract_profile,pabs_custom.secretary_profile" parent="service_menu_root" action="action_contract_secretary" sequence="3"/>
-  <menuitem id="contract_call" name="Contratos (Call center)" groups="pabs_custom.admin_profile,pabs_custom.contract_profile,pabs_custom.secretary_profile" parent="service_menu_root" action="action_contract_call" sequence="3"/>
-  <menuitem id="contract_contratos" name="Contratos (Contratos)" groups="pabs_custom.admin_profile,pabs_custom.contract_profile,pabs_custom.secretary_profile" parent="service_menu_root" action="action_contract_contratos" sequence="3"/>
-  <menuitem id="contract_cobranza" name="Contratos (Cobranza)" groups="pabs_custom.admin_profile,pabs_custom.contract_profile,pabs_custom.secretary_profile" parent="service_menu_root" action="action_contract_cobranza" sequence="3"/>
-  <menuitem id="contract_rutas" name="Contratos (Rutas)" groups="pabs_custom.admin_profile,pabs_custom.contract_profile,pabs_custom.secretary_profile" parent="service_menu_root" action="action_contract_rutas" sequence="3"/>
-  <menuitem id="contract_gerencia" name="Contratos (Gerencia)" groups="pabs_custom.admin_profile,pabs_custom.contract_profile,pabs_custom.secretary_profile" parent="service_menu_root" action="action_contract_gerencia" sequence="3"/>
+  <menuitem id="contract_secretary" name="Contratos (Secretarias)" groups="pabs_custom.admin_profile,pabs_custom.secretary_profile" parent="service_menu_root" action="action_contract_secretary" sequence="3"/>
+  <menuitem id="contract_call" name="Contratos (Call center)" groups="pabs_custom.admin_profile,pabs_custom.agent_call_center_profile" parent="service_menu_root" action="action_contract_call" sequence="3"/>
+  <menuitem id="contract_contratos" name="Contratos (Contratos)" groups="pabs_custom.admin_profile,pabs_custom.contract_profile" parent="service_menu_root" action="action_contract_contratos" sequence="3"/>
+  <menuitem id="contract_cobranza" name="Contratos (Cobranza)" groups="pabs_custom.admin_profile,pabs_custom.collection_profile" parent="service_menu_root" action="action_contract_cobranza" sequence="3"/>
+  <menuitem id="contract_rutas" name="Contratos (Rutas)" groups="pabs_custom.admin_profile" parent="service_menu_root" action="action_contract_rutas" sequence="3"/>
+  <menuitem id="contract_gerencia" name="Contratos (Gerencia)" groups="pabs_custom.admin_profile,pabs_custom.administrative_management_profile" parent="service_menu_root" action="action_contract_gerencia" sequence="3"/>
 </odoo>
