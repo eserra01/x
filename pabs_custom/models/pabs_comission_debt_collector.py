@@ -24,7 +24,7 @@ class ComissionDebtCollector(models.Model):
     #Serie unica de recibos
     _sql_constraints = [
         ('unique_receipt_series',
-        'UNIQUE(receipt_series)',
+        'UNIQUE(receipt_series,company_id)',
         'No se puede crear el registro: un cobrador ya tiene asignada esa serie de recibos'),
 
         ('unique_debt_collector',
