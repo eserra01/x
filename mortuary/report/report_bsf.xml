@@ -134,7 +134,7 @@
                                         <strong>NACIMIENTO</strong>
                                         <span class="espac20pt"></span>
                                     </span>
-                                    <label class="text-center border_btn_abj" style="width:58%">1997</label>
+                                    <label class="text-center border_btn_abj" style="width:58%">doc.birthdate</label>
                                 </div>
                             </div>
                             <div class="row" style="width:100%;">

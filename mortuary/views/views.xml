@@ -176,10 +176,18 @@
                 </div>
                 <div class="o_row">
                   <div class="o_setting_left_pane">
-                      <label for="employee_id" class="o_form_label" style="font-weight:bold;"/>
+                    <label for="employee_id" class="o_form_label" style="font-weight:bold;"/>
                   </div>
                   <div class="o_setting_right_pane">
-                      <field name="employee_id"/>
+                    <field name="employee_id"/>
+                  </div>
+                </div>
+                <div class="o_row">
+                  <div class="o_setting_left_pane">
+                    <label for="birthdate" class="o_form_label" style="font-weight:bold;"/>
+                  </div>
+                  <div class="o_setting_right_pane">
+                    <field name="birthdate"/>
                   </div>
                 </div>
               </group>

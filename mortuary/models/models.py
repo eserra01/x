@@ -238,6 +238,7 @@ class Mortuary(models.Model):
     name = fields.Char(string="Bitácora", required=True)
     partner_id = fields.Many2one(comodel_name='res.partner',
         string='contacto')
+    birthdate = fields.Date(string='Fecha de nacimiento')
     ii_servicio = fields.Many2one("ii.servicio", string="Servicio")
     ii_finado = fields.Char(string="Finado", required=True)
     ii_fecha_creacion = fields.Date(
