@@ -544,16 +544,16 @@ class Mortuary(models.Model):
             rec.cs_observacions = comentarios
 
     def btn_create_facturas(self):
+        ctx = {'default_type': 'out_invoice'}
+        if self.partner_id:
+            ctx.update({'default_partner_id' : self.partner_id.id})
         return {
             'name': 'Crear Factura',
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'account.move',
             'view_id': self.env.ref('account.view_move_form').id,
-            'context': {
-                'default_partner_id' : self.partner_id.id,
-                'default_type': 'out_invoice',
-            }
+            'context': ctx
         }
 
     def btn_create_pagos(self):

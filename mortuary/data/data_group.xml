@@ -6,91 +6,98 @@
       <field name="name">Atiende Servicio Funeraria</field>
       <field name="model_id" search="[('model','=','ds.atiende.servicio')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_suc_velacion_rule">
       <field name="name">Sucursal de velación Funeraria</field>
       <field name="model_id" search="[('model','=','ds.sucursal.velacion')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_capilla_rule">
       <field name="name">Capilla Funeraria</field>
       <field name="model_id" search="[('model','=','ds.capilla')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_entrega_cenizas_rule">
       <field name="name">Entrega cenizas Funeraria</field>
       <field name="model_id" search="[('model','=','ds.sucursal.qentreg.cenizas')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_ataud_rule">
       <field name="name">Ataudes Funeraria</field>
       <field name="model_id" search="[('model','=','ds.ataud')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_urna_rule">
       <field name="name">Urnas Funeraria</field>
       <field name="model_id" search="[('model','=','ds.urna')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_lugar_velacion_rule">
       <field name="name">Lugar de Velación Funeraria</field>
       <field name="model_id" search="[('model','=','iv.lugar.velacion')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_capilla_rule">
       <field name="name">Capillas Funeraria</field>
       <field name="model_id" search="[('model','=','iv.nombre.capilla')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_operativos_rule">
       <field name="name">Operativos Funeraria</field>
       <field name="model_id" search="[('model','=','ir.operativo')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_carrozas_rule">
       <field name="name">Carrozas Funeraria</field>
       <field name="model_id" search="[('model','=','carroza')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_prov_embalsama_rule">
       <field name="name">Proveedores de Embalsamo Funeraria</field>
       <field name="model_id" search="[('model','=','ig.proveedor.embalsama')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_templo_rule">
       <field name="name">Templo Funeraria</field>
       <field name="model_id" search="[('model','=','ig.templo')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
     <record model="ir.rule" id="mortuary_cremation_rule">
       <field name="name">Lugar de cremación Funeraria</field>
       <field name="model_id" search="[('model','=','mortuary.cremation')]" model="ir.model"/>
       <field name="global" eval="True"/>
-      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record model="ir.rule" id="mortuary_rule">
+      <field name="name">Funeraria</field>
+      <field name="model_id" search="[('model','=','mortuary')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
   </data>
