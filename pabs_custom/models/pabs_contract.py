@@ -303,8 +303,9 @@ class PABSContracts(models.Model):
 
   @api.model
   def create(self, vals):
+    company_id = vals.get('company_id') or self.env.context.get('company_id') or False
     ### Valida que si ya existe una activación con ese número de serie, no permita generarla nuevamente
-    previous = self.search([('lot_id','=',vals['lot_id'])],limit=1)
+    previous = self.search([('lot_id','=',vals['lot_id']),('company_id','=',company_id)],limit=1)
     if previous:
       if previous.state == 'precontract':
         self.create_contract(vals)
@@ -315,11 +316,11 @@ class PABSContracts(models.Model):
         "No puedes activar una solicitud que ya fue previamente activada"))
     ### Cambia el estatús del contrato a activo
     vals['contract_status'] = 'active'
+    ### IMPRIMIMOS EL CONTEXTO
     ### Asignación del número de activación
     if not vals.get('activation_code'):
-      _logger.warning("La compañia que se va a activar es: {}".format(vals.get('company_id')))
       vals['activation_code'] = self.env['ir.sequence'].with_context(
-        force_company=vals.get('company_id') or 1).next_by_code(
+        force_company=company_id).next_by_code(
         'pabs.contracts')
       ### Se cambia el estado del registro a "Pre-Contrato"
       

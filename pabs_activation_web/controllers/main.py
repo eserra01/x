@@ -135,9 +135,9 @@ class ActivationWeb(http.Controller):
     contract_obj = request.env['pabs.contract'].sudo()
     production_lot_obj = request.env['stock.production.lot'].sudo()
     if kargs:
-      lot_id = production_lot_obj.search([
-        ('name','=',kargs.get('lot_id'))],limit=1)
       company_id = int(kargs.get('company_id'))
+      lot_id = production_lot_obj.search([
+        ('name','=',kargs.get('lot_id')),('company_id','=',company_id)],limit=1)
       kargs.update({
         'lot_id' : lot_id.id,
         'municipality_id' : int(kargs.get('municipality_id')),
@@ -145,8 +145,7 @@ class ActivationWeb(http.Controller):
         'company_id' : company_id
       })
     contract_id = contract_obj.with_user(request.env.context['uid']).with_context({
-      'default_company_id' : company_id}).create(kargs)
-    _logger.warning("Argumentos: {}".format(contract_id))
+      'company_id' : company_id}).create(kargs)
     if contract_id:
       response = {'result' : {'activation_code' : contract_id.activation_code}}
       return Response(json.dumps(response),headers=response_header)
