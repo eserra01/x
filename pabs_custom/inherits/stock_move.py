@@ -207,17 +207,15 @@ class StockMove(models.Model):
       mode_prod = self.env['stock.production.lot'].search(
         [('name', '=', str(rec.series)),('company_id','=',self.company_id.id)], limit=1)        
       if rec.series and rec.picking_id.type_transfer in ('ov-as','cont-ov'):
-        if rec.picking_id.location_dest_id.consignment_location:
-          for prodc in mode_prod:
-            quant_id = quant_obj.search([
-              ('lot_id','=',prodc.id),('company_id','=',self.company_id.id)],limit=1,order="id desc")
-            if quant_id.location_id != rec.location_id:
-              raise ValidationError((
-                "La solicitud {} no se encuentrá en el almacén indicado, se encuentra en {}\nfavor de verificarlo".format(
-                  quant_id.lot_id.name, quant_id.location_id.name_get()[0][1])))
-            raise ValidationError(("valor recibido: {}".format(prodc.product_id.name)))
-            rec.product_id = prodc.product_id.id
-            rec.product_uom_qty = 1
+        for prodc in mode_prod:
+          quant_id = quant_obj.search([
+            ('lot_id','=',prodc.id),('company_id','=',self.company_id.id)],limit=1,order="id desc")
+          if quant_id.location_id != rec.location_id:
+            raise ValidationError((
+              "La solicitud {} no se encuentrá en el almacén indicado, se encuentra en {}\nfavor de verificarlo".format(
+                quant_id.lot_id.name, quant_id.location_id.name_get()[0][1])))
+          rec.product_id = prodc.product_id.id
+          rec.product_uom_qty = 1
       elif rec.series and rec.picking_id.type_transfer == 'as-ov':
         if rec.picking_id.employee_id:
           location_id = rec.picking_id.employee_id.local_location_id
