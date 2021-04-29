@@ -135,7 +135,7 @@ class account_Payment(models.Model):
     def _onchange_contract(self):
       for rec in self:
         if rec.contract:
-          rec.partner_id = rec.contract_id.partner_id.id
+          rec.partner_id = rec.contract.partner_id.id
         
     _sql_constraints = [
       ('unique_ecobro_payment',
