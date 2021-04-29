@@ -399,7 +399,7 @@ class StockMove(models.Model):
             vals['papeleria'] = item_id.stationery
     res = super(StockMove, self).create(vals)
     if vals.get('picking_id'):
-      if picking_id.type_transfer in ('ov-as','as-ov'):
+      if picking_id.type_transfer in ('ov-as','as-ov','cont-ov'):
         lot_id = lot_obj.search([('name','=',res.series),('company_id','=',vals.get('company_id'))],limit=1)
         data = {
           'picking_id' : picking_id.id,
