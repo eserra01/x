@@ -36,7 +36,7 @@
                     <td width="17%"><strong>Fecha de bitácora: </strong></td>
                     <td width="12%"><span t-field="doc.ii_fecha_creacion" /></td>
                     <td width="15%"><strong>Contrato a previsión: </strong></td>
-                    <td width="27%">NO</td>
+                    <td width="27%"><span t-field="doc.tc_no_contrato"/></td>
                   </tr>
                 </table>
 
@@ -45,13 +45,13 @@
                     <td width="7%"><strong>Finado: </strong></td>
                     <td width="51%"><span t-field="doc.ii_finado" /></td>
                     <td width="7%"><strong>Estatus: </strong></td>
-                    <td width="35%">PENDIENTE</td>
+                    <td width="35%"><span t-field="doc.ii_servicio"/></td>
                   </tr>
                   <tr>
                     <td><strong>Atendió: </strong></td>
                     <td><span t-field="doc.ds_atiende_servicio" /></td>
                     <td><strong>Velado en: </strong></td>
-                    <td>PENDIENTE</td>
+                    <td><span t-field="doc.iv_lugar_de_velacion"/></td>
                   </tr>
                 </table>
 
@@ -60,7 +60,7 @@
                     <td width="10%"><strong>Tipo de servicio: </strong></td>
                     <td width="46%"><span t-field="doc.ii_servicio_2" /></td>
                     <td width="10%"><strong>Costo total: </strong></td>
-                    <td width="34%">$PENDIENTE</td>
+                    <td width="34%"></td>
                   </tr>
                 </table>
 
@@ -77,9 +77,6 @@
                   <tr>
                     <td width="7%"><strong>Urna: </strong></td>
                     <td width="49%"><span t-field="doc.ds_urna" /></td>
-                    <td width="10%"><strong>Forma de pago: </strong></td>
-                    <td width="17%">$PENDIENTE</td>
-                    <td width="17%"><span t-field="doc.dc_forma_de_pago" /></td>
                   </tr>
                 </table>
 

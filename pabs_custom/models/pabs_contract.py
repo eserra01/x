@@ -250,7 +250,7 @@ class PABSContracts(models.Model):
   @api.onchange('amount_received','stationery')
   def _calc_excedent(self):
     for rec in self:
-      rec.excedent = (float(rec.amount_received) - float(rec.stationery))
+      rec.excedent = (float(rec.initial_investment) - float(rec.stationery))
 
   @api.onchange('initial_investment','comission')
   def _calc_amount_received(self):
