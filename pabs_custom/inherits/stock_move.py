@@ -206,7 +206,7 @@ class StockMove(models.Model):
           "La solicitud {} no puede ser ingresada por que está {}".format(rec.series,dict(rec._fields['origen_solicitud'].selection).get(rec.origen_solicitud))))
       mode_prod = self.env['stock.production.lot'].search(
         [('name', '=', str(rec.series)),('company_id','=',self.company_id.id)], limit=1)        
-      if rec.series and rec.picking_id.type_transfer == 'ov-as':
+      if rec.series and rec.picking_id.type_transfer in ('ov-as','cont-ov'):
         if rec.picking_id.location_dest_id.consignment_location:
           for prodc in mode_prod:
             quant_id = quant_obj.search([
