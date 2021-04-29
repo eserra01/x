@@ -200,7 +200,6 @@ class StockMove(models.Model):
                 "No se puede agregar la línea por que ya fue agregada previamente"))
       line = move_obj.search([
         ('series','=',rec.series),
-        ('company_id','=',self.company_id.id),
         ('origen_solicitud','in',('cancelada','extravio'))],limit=1)
       if line:
         raise ValidationError((
