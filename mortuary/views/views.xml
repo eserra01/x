@@ -60,6 +60,17 @@
               <button string='Crear pagos' name='btn_create_pagos' type='object' class="btn-primary" groups="pabs_custom.reception_mortuary_profile"/>
           </header>
           <sheet>
+            <div class="oe_button_box" name="button_box">
+              <button type="object" class="oe_stat_button" icon="fa-pencil-square-o" name="action_get_invoices" context="{'default_partner_id': active_id}">
+                <div class="o_form_field o_stat_info">
+                  <span class="o_stat_value">
+                    <field name="total_invoiced" invisible="1"/>
+                    <field name="balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                  </span>
+                  <span class="o_stat_text">Saldo</span>
+                </div>
+              </button>
+            </div>
             <group>
               <group string="Información inicial" priority="1">
                 <div class="o_row">

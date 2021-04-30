@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import pytz
-# from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError
 tz = pytz.timezone('America/Mexico_City')
 
 
@@ -238,6 +238,11 @@ class Mortuary(models.Model):
     name = fields.Char(string="Bitácora", required=True)
     partner_id = fields.Many2one(comodel_name='res.partner',
         string='contacto')
+    balance = fields.Float(string='Saldo',
+        compute="_calc_balance")
+    total_invoiced = fields.Float(string='Total',
+        compute="_calc_total_invoiced")
+
     birthdate = fields.Date(string='Fecha de nacimiento')
     ii_servicio = fields.Many2one("ii.servicio", string="Servicio")
     ii_finado = fields.Char(string="Finado", required=True)
@@ -393,6 +398,50 @@ class Mortuary(models.Model):
         ]
     )
 
+    currency_id = fields.Many2one(string='Moneda', 
+        readonly=True,
+        related='company_id.currency_id')
+
+    def _calc_balance(self):
+        move_obj = self.env['account.move']
+        for rec in self:
+            move_ids = move_obj.search([
+                ('type','=','out_invoice'),
+                ('mortuary_id','=',rec.id)])
+            balance = sum(move_ids.mapped('amount_residual'))
+            rec.balance = balance
+
+    def _calc_total_invoiced(self):
+        move_obj = self.env['account.move']
+        for rec in self:
+            move_ids = move_obj.search([
+                ('type','=','out_invoice'),
+                ('mortuary_id','=',rec.id)])
+            total_invoiced = sum(move_ids.mapped('amount_total'))
+            rec.total_invoiced = total_invoiced
+
+    def action_get_invoices(self):
+        context = dict(self.env.context or {})
+        context.update({'default_partner_id' : self.partner_id})
+        context.update(create=False)
+        act_window = self.env.ref('account.action_move_out_invoice_type').read()[0]
+        act_window.update({
+            'domain' : [('mortuary_id','=',self.id)],
+            'context' : context})
+        return act_window
+        """raise ValidationError("valor : {}".format(act_window))
+        return {
+            'name': 'Consulta de Facturas',
+            'type': 'ir.actions.act_window',
+            'view_type': 'tree,form',
+            'view_mode': 'form',
+            'res_model': 'account.move',
+            'view_id': self.env.ref('account.view_invoice_tree').id,
+            'domain' : [('mortuary_id','=',self.id)],
+            'context' : context
+        }"""
+
+
     @api.constrains('cs_tel', 'contact_1_tel', 'contact_2_tel', 'podp_tel')
     def check_phone_number(self):
         print('------------------------------check_phone_number---------------------------------')
@@ -545,7 +594,9 @@ class Mortuary(models.Model):
             rec.cs_observacions = comentarios
 
     def btn_create_facturas(self):
-        ctx = {'default_type': 'out_invoice'}
+        ctx = {
+            'default_type': 'out_invoice',
+            'default_mortuary_id' : self.id}
         if self.partner_id:
             ctx.update({'default_partner_id' : self.partner_id.id})
         return {
@@ -565,9 +616,57 @@ class Mortuary(models.Model):
             'res_model': 'account.payment',
             'view_id': self.env.ref('account.view_account_payment_form').id,
             'context': {
+                'default_binnacle' : self.id,
+                'default_partner_id' : self.partner_id.id,
+                'default_reference' : 'payment_mortuary',
                 'default_payment_type': 'inbound',
             }
         }
+
+    def get_invoiced_services(self):
+        move_obj = self.env['account.move']
+        data = []
+        if self.balance > 0:
+            move_ids = move_obj.search([
+                ('type','=','out_invoice'),
+                ('mortuary_id','=',self.id)])
+            for move_id in move_ids:
+                for line in move_id.invoice_line_ids:
+                    data.append({
+                        'pricelist' : "${:,.2f}".format(line.price_subtotal),
+                        'name' : line.name,
+                    })
+        return data
+
+    def get_payments(self):
+        payment_obj = self.env['account.payment']
+        move_obj = self.env['account.move']
+        data = []
+        payment_ids = payment_obj = payment_obj.search([
+            ('state','in',('posted','sent','reconciled')),
+            ('binnacle','=',self.id)])
+        move_ids = move_obj.search([
+            ('type','=','out_refund'),
+            ('mortuary_id','=',self.id)])
+        for payment_id in payment_ids:
+            data.append({
+                'date' : payment_id.payment_date,
+                'name' : payment_id.ecobro_receipt or payment_id.name or '',
+                'amount' : "${:,.2f}".format(payment_id.amount or 0),
+                'collector' : payment_id.debt_collector_code.name_get() or '',
+                'ref' : '',
+            })
+        for move_id in move_ids:
+            data.append({
+                'date' : move_id.invoice_date,
+                'name' : move_id.name or '',
+                'amount' : "${:,.2f}".format(move_id.amount_total or 0),
+                'collector' : '',
+                'ref' : '',
+            })
+        data = sorted(data, key=lambda r: r['date'])
+        return data
+
 
 
 class Observaciones(models.Model):
@@ -586,3 +685,9 @@ class Observaciones(models.Model):
         tracking=True,
         readonly=True,
         copy=False)
+
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+
+    mortuary_id = fields.Many2one(comodel_name='mortuary',
+        name='Bitacora')

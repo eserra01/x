@@ -117,7 +117,7 @@ class account_Payment(models.Model):
 
     #Fields mortuary
 
-    binnacle =fields.Many2one(comodel_name = 'pabs.mortuary',string= "Número de bitácora")
+    binnacle =fields.Many2one(comodel_name = 'mortuary',string= "Número de bitácora")
 
     user_create_payment = fields.Many2one(comodel_name = 'hr.employee' ,string="Persona que crea pago")
     
@@ -135,7 +135,13 @@ class account_Payment(models.Model):
     def _onchange_contract(self):
       for rec in self:
         if rec.contract:
-          rec.partner_id = rec.contract.partner_id.id
+          rec.partner_id = rec.contract_id.partner_id.id
+
+    @api.onchange('binnacle')
+    def _onchange_binnacle(self):
+      for rec in self:
+        if rec.binnacle:
+          rec.partner_id = rec.binnacle.partner_id.id
         
     _sql_constraints = [
       ('unique_ecobro_payment',

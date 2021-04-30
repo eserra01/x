@@ -60,23 +60,23 @@
                     <td width="10%"><strong>Tipo de servicio: </strong></td>
                     <td width="46%"><span t-field="doc.ii_servicio_2" /></td>
                     <td width="10%"><strong>Costo total: </strong></td>
-                    <td width="34%"></td>
+                    <td width="34%"><span t-field="doc.total_invoiced" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                   </tr>
                 </table>
 
                 <table width="100%">
                   <tr>
                     <td width="7%"><strong>Ataúd: </strong></td>
-                    <td width="49%"><span t-field="doc.ds_ataud" /></td>
+                    <td width="49%"><span t-field="doc.ds_ataud"/></td>
                     <td width="7%"><strong>Saldo: </strong></td>
-                    <td width="37%"><span t-field="doc.psa_saldo_PABS" /></td>
+                    <td width="37%"><span t-field="doc.balance" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                   </tr>
                 </table>
 
                 <table width="100%">
                   <tr>
                     <td width="7%"><strong>Urna: </strong></td>
-                    <td width="49%"><span t-field="doc.ds_urna" /></td>
+                    <td width="49%"><span t-field="doc.ds_urna"/></td>
                   </tr>
                 </table>
 
@@ -90,6 +90,7 @@
                 <div style="width:99%; margin:auto; border:1px solid black;">
                   <div style="width:100%; margin-top:10px; margin-bottom:10px;" class="text-center"><strong>CONCEPTOS FACTURADOS</strong></div>
                   <hr style="margin-left:2%; margin-right:2%; margin-bottom:10px; margin-top:0px; border:1px solid black;" />
+                  <t t-set="detail" t-value="doc.get_invoiced_services()"/>
 
                   <table width="96%" style="margin:auto; margin-bottom:10px;">
                     <tr>
@@ -98,42 +99,31 @@
                       <th width="4%"></th>
                       <th width="85%">Concepto</th>
                     </tr>
-                    <tr>
-                      <td>$</td>
-                      <td class="text-right">1,000.00</td>
-                      <td></td>
-                      <td>CAMBIO A SERVICIO ELITE</td>
-                    </tr>
-                    <tr>
-                      <td>$</td>
-                      <td class="text-right">0.00</td>
-                      <td></td>
-                      <td>EMBALSAMADO</td>
+                    <tr t-foreach="detail" t-as="line">
+                      <td width="1%"></td>
+                      <td width="10%"><t t-esc="line['pricelist']"/></td>
+                      <td width="4%"></td>
+                      <td width="85%"><t t-esc="line['name']"/></td>
                     </tr>
                   </table>
 
                 </div><br/>
 
+                <t t-set="payments" t-value="doc.get_payments()"/>
                 <table width="100%">
                   <tr>
                     <th width="10%" class="text-center" style=" border-bottom:1px solid black;">Fecha de recibo</th>
                     <th width="10%" class="text-center" style=" border-bottom:1px solid black;">Recibo</th>
-                    <th width="15%" style=" border-bottom:1px solid black;">Importe</th>
-                    <th width="35%" style=" border-bottom:1px solid black;">Cobrador</th>
-                    <th width="30%" style=" border-bottom:1px solid black;">Movimiento</th>
+                    <th width="15%" class="text-center" style=" border-bottom:1px solid black;">Importe</th>
+                    <th width="35%" class="text-center" style=" border-bottom:1px solid black;">Cobrador</th>
+                    <th width="30%" class="text-center" style=" border-bottom:1px solid black;">Movimiento</th>
                   </tr>
-                  <tr>
-                    <td class="text-center">28/01/2021</td>
-                    <td class="text-center">11031216</td>
-                    <td class="">$ 5,000.00</td>
-                    <td class=""></td>
-                    <td class="">PAGOS RECIBIDOS - GDL21ENE2500</td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td class="text-center"><strong>Total:</strong></td>
-                    <td style=" border-top:1px solid black;"><strong>$ 5,000.00</strong></td>
-                    <td colspan="2"></td>
+                  <tr t-foreach="payments" t-as="payment">
+                    <td class="text-center"><t t-esc="payment['date']"/></td>
+                    <td class="text-center"><t t-esc="payment['name']"/></td>
+                    <td class="text-center"><t t-esc="payment['amount']"/></td>
+                    <td class="text-center"><t t-esc="payment['collector']"/></td>
+                    <td class="text-center"><t t-esc="payment['ref']"/></td>
                   </tr>
                 </table>
 
