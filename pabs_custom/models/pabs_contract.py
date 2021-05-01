@@ -571,6 +571,7 @@ class PABSContracts(models.Model):
     comission_tree_obj = self.env['pabs.comission.tree']
     pricelist_obj = self.env['product.pricelist.item']
     ### VALIDA SI EXISTE EL EMPLEADO Y UN PLAN PARA GENERAR
+    raise ValidationError(("Valor recibido: {}\ninvoice:{}".format(self,invoice_id)))
     if self.employee_id and self.name_service:
       ### BUSCA LA LISTA DE PRECIOS
       pricelist_id = pricelist_obj.search([('product_id','=',self.name_service.id)])
@@ -632,7 +633,6 @@ class PABSContracts(models.Model):
           'commission_paid' : 0,
           'actual_commission_paid' : 0,
         }
-        raise ValidationError(("data: {}".format(data)))
         comission_tree_obj.create(data)
 
   #Crea la factura
