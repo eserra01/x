@@ -710,6 +710,7 @@ class PABSContracts(models.Model):
           partner_id = previous.partner_id
           partner_id.write({'name' : previous.name})
         previous.state = 'contract'
+        raise ValidationError("invoice : {}".format(invoice_id))
         previous.create_commision_tree(invoice_id=invoice_id)
         return invoice_id
 
@@ -775,7 +776,6 @@ class PABSContracts(models.Model):
     if vals:
       if vals.get('lot_id'):
         previous = self.search([('lot_id','=',vals['lot_id'])],limit=1)
-        raise ValidationError(("previus: {}".format(previous)))
 
         #### COMIENZA VALIDACIÓN DE COMISIONES Validar que en la plantilla de comisiones el asistente tenga comisión asignada > $0 #####
         if previous.employee_id and previous.name_service:
