@@ -336,7 +336,7 @@ class HrEmployee(models.Model):
       if self.local_location_id:
         warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
         local_location_id = location_obj.browse(self.local_location_id.id)
-        local_location_id.write({'parent_id' : warehouse_id.view_location_id.id})
+        local_location_id.write({'location_id' : warehouse_id.view_location_id.id})
       vals['request_location_id'] = warehouse_id.lot_stock_id.id
     return super(HrEmployee, self).write(vals)
 
