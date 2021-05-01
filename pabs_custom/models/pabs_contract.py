@@ -775,6 +775,7 @@ class PABSContracts(models.Model):
     if vals:
       if vals.get('lot_id'):
         previous = self.search([('lot_id','=',vals['lot_id'])],limit=1)
+        raise ValidationError(("previus: {}".format(previous)))
 
         #### COMIENZA VALIDACIÓN DE COMISIONES Validar que en la plantilla de comisiones el asistente tenga comisión asignada > $0 #####
         if previous.employee_id and previous.name_service:
