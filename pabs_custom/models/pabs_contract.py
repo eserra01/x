@@ -582,7 +582,6 @@ class PABSContracts(models.Model):
         ('employee_id','=',self.employee_id.id),
         ('plan_id','=',pricelist_id.id),
         ('comission_amount','>',0)],order="pay_order")
-      raise ValidationError(("data: {}".format(comission_template_id)))
       ### ENVIA MENSAJE SI NO ENCUENTRA LA PLANTILLA
       if not comission_template_id:
         raise ValidationError(("El A.S {} no cuenta con un arbol de comisiones".format(self.employee_id.name)))
