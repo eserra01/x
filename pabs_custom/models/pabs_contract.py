@@ -905,7 +905,9 @@ class PABSContracts(models.Model):
           }
           refund_id = account_obj.create(refund_data)
           if refund_id:
-            product_id = self.env.ref('pabs_custom.initial_investment_product')
+            product_id = self.env['product.template'].search([
+              ('company_id','=',previous.company_id.id),
+              ('name','=','Bono por inversión inicial')])
             account_id = product_id.property_account_income_id or product_id.categ_id.property_account_income_categ_id
 
             line_data = {
