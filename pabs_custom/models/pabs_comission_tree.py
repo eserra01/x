@@ -62,7 +62,7 @@ class ComissionTree(models.Model):
             id_cargo = self.env['hr.job'].search([('name', '=', "PAPELERIA"),('company_id', '=', contrato.company_id.id)]).id
 
             #Obtener registro de papeleria en el árbol de comisiones
-            registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo), ('company_id', '=', contrato.company_id.id)])
+            registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
 
             if not registro_arbol:
                 raise ValidationError("No se encontro el monto de papeleria en el árbol de comisiones")
