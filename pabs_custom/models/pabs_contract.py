@@ -907,7 +907,7 @@ class PABSContracts(models.Model):
           if refund_id:
             product_id = self.env['product.template'].search([
               ('company_id','=',previous.company_id.id),
-              ('name','=','Bono por inversión inicial')])
+              ('name','=','BONO POR INVERSION INICIAL')])
             account_id = product_id.property_account_income_id or product_id.categ_id.property_account_income_categ_id
 
             line_data = {
