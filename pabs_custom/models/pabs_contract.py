@@ -571,7 +571,6 @@ class PABSContracts(models.Model):
     comission_tree_obj = self.env['pabs.comission.tree']
     pricelist_obj = self.env['product.pricelist.item']
     ### VALIDA SI EXISTE EL EMPLEADO Y UN PLAN PARA GENERAR
-    raise ValidationError(("Valor recibido: {}\ninvoice:{}".format(self,invoice_id)))
     if self.employee_id and self.name_service:
       ### BUSCA LA LISTA DE PRECIOS
       pricelist_id = pricelist_obj.search([('product_id','=',self.name_service.id)])
@@ -583,6 +582,7 @@ class PABSContracts(models.Model):
         ('employee_id','=',self.employee_id.id),
         ('plan_id','=',pricelist_id.id),
         ('comission_amount','>',0)],order="pay_order")
+      raise ValidationError(("data: {}".format(comission_template_id)))
       ### ENVIA MENSAJE SI NO ENCUENTRA LA PLANTILLA
       if not comission_template_id:
         raise ValidationError(("El A.S {} no cuenta con un arbol de comisiones".format(self.employee_id.name)))
