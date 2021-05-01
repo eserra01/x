@@ -65,7 +65,7 @@ class ComissionTree(models.Model):
             registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
 
             if not registro_arbol:
-                raise ValidationError("No se encontro el monto de papeleria en el árbol de comisiones")
+                raise ValidationError("Contrato: {}\nid_cargo:{}\nNo se encontro el monto de papeleria en el árbol de comisiones".format(contrato.name,id_cargo))
 
             #Validar que el monto de pago sea igual al de la papeleria
             if MontoPago != registro_arbol.corresponding_commission:
