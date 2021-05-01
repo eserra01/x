@@ -779,7 +779,7 @@ class PABSContracts(models.Model):
         #### COMIENZA VALIDACIÓN DE COMISIONES Validar que en la plantilla de comisiones el asistente tenga comisión asignada > $0 #####
         if previous.employee_id and previous.name_service:
           #Obtener el puesto de asistente social
-          job_id = self.env['hr.job'].search([('name', '=', 'ASISTENTE SOCIAL')]).id
+          job_id = self.env['hr.job'].search([('name', '=', 'ASISTENTE SOCIAL'),('company_id','=',previous.company_id.id,)]).id
 
           #Obtener la lista de precios
           pricelist_id = pricelist_obj.search([('product_id','=',previous.name_service.id)])
