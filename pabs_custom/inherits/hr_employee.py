@@ -321,6 +321,7 @@ class HrEmployee(models.Model):
   def write(self, vals):
     ### Declaración de objetos
     warehouse_obj = self.env['stock.warehouse']
+    location_obj = self.env['stock.location']
     picking_type_obj = self.env['stock.picking.type']
     job_obj = self.env['hr.job']
     ### BUSCAMOS EL JOB ID
@@ -334,7 +335,8 @@ class HrEmployee(models.Model):
     if vals.get('warehouse_id'):
       if self.local_location_id:
         warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
-        self.local_location_id.parent_id = warehouse_id.view_location_id.id
+        local_location_id = location_obj.browse(self.local_location_id.id)
+        local_location_id.write({'parent_id' : warehouse_id.view_location_id.id})
       vals['request_location_id'] = warehouse_id.lot_stock_id.id
     return super(HrEmployee, self).write(vals)
 
