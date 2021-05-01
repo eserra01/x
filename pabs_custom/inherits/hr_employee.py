@@ -324,58 +324,18 @@ class HrEmployee(models.Model):
     picking_type_obj = self.env['stock.picking.type']
     job_obj = self.env['hr.job']
     ### BUSCAMOS EL JOB ID
-    asistant_job_id = job_obj.search([('name','=','ASISTENTE SOCIAL')])
+    company_id = vals.get('company_id') or self.company_id.id
+    asistant_job_id = job_obj.search([('name','=','ASISTENTE SOCIAL'),('company_id','=',company_id)])
     ### SI NO ESTA
     if not asistant_job_id:
       ### ENVIAMOS MENSAJE DE ERROR
       raise ValidationError((
         "No se encontró el puesto de trabajo de asistente social"))
-    ### GUARDAMOS EL ALMACÉN ANTERIOR
-    last_warehouse_id = self.warehouse_id
-    ### BUSCAMOS EL PUESTO DE TRABAJO DEL EMPLEADO
-    job_id = vals.get('job_id') or self.job_id.id
-    ### VERIFICAMOS SI NO HUBO MODIFICACIÓN DE OFICINA O DE PUESTO DE TRABAJO
-    if vals.get('warehouse_id') and job_id == asistant_job_id:
-      ### NOS INSTANCIAMOS SOBRE EL ALMACÉMN
-      warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
-      ### CAMBIAMOS LA UBICACIÓN LOCAL DE ALMACÉN
-      self.local_location_id.write({'location_id' :warehouse_id.view_location_id.id})
-      ### ENVIAMOS AL MÉTODO ORIGINAL LA NUEVA UBICACIÓN DE SOLICITUDES
-      vals.update({
-        'request_location_id' : warehouse_id.lot_stock_id.id
-      })
-      ### BUSCAMOS TODAS LAS OPERACIONES
-      picking_type_ids = picking_type_obj.search(['|',
-        ('default_location_src_id','=',self.local_location_id.id),
-        ('default_location_dest_id','=',self.local_location_id.id)])
-      ### RECORREMOS TODAS LAS OPERACIONES
-      for picking_type_id in picking_type_ids:
-        ### SI LA UBICACIÓN LOCAL ES LA DE ORIGEN
-        if picking_type_id.default_location_src_id.id == self.local_location_id.id:
-          name = '{} -> {}'.format(self.barcode, warehouse_id.name)
-          ### ESCRIBIMOS EL ALMACÉN, LA UBICACIÓN DESTINO Y LE CAMIAMOS EL NOMBRE
-          picking_type_id.write({
-            'warehouse_id' : warehouse_id.id,
-            'default_location_dest_id' : warehouse_id.wh_receipt_stock_id.id,
-            'name' : name})
-        ### SI LA UBICACIÓN LOCAL ES LA DE DESTINO
-        elif picking_type_id.default_location_dest_id.id == self.local_location_id.id:
-          name = '{} -> {}'.format(warehouse_id.name,self.barcode)
-          ### ESCRIBIMOS EL ALMÁCÉN LA UBICACIÓN ORIGEN Y LE CAMBIAMOS EL NOMBRE
-          picking_type_id.write({
-            'warehouse_id' : warehouse_id.id,
-            'default_location_src_id' : warehouse_id.lot_stock_id.id,
-            'name' : name})
-        ### BUSCAMOS LA SECUENCIA DE ESE PICKING
-        sequence_id = picking_type_id.sequence_id
-        ### REMPLAZAMOS TODO LO QUE TENGA QUE VER CON EL ALMACÉN ANTERIOR POR EL NUEVO
-        sequence_name = sequence_id.name.replace(last_warehouse_id.name, warehouse_id.name)
-        prefix_name = sequence_id.name.replace(last_warehouse_id.code, warehouse_id.code)
-        ### ESCRIBIMOS LA INFORMACIÓN NUEVA
-        sequence_id.write({
-          'name' : sequence_name,
-          'prefix' : prefix_name,
-        })
+    if vals.get('warehouse_id'):
+      if self.local_location:
+        warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
+        self.local_location.parent_id = warehouse_id.view_location_id.id
+      vals['request_location_id'] = warehouse_id.lot_stock_id.id
     return super(HrEmployee, self).write(vals)
 
   @api.model
