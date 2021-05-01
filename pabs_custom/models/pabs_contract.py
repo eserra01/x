@@ -632,6 +632,7 @@ class PABSContracts(models.Model):
           'commission_paid' : 0,
           'actual_commission_paid' : 0,
         }
+        raise ValidationError(("data: {}".format(data)))
         comission_tree_obj.create(data)
 
   #Crea la factura
@@ -710,7 +711,6 @@ class PABSContracts(models.Model):
           partner_id = previous.partner_id
           partner_id.write({'name' : previous.name})
         previous.state = 'contract'
-        raise ValidationError("invoice : {}".format(invoice_id))
         previous.create_commision_tree(invoice_id=invoice_id)
         return invoice_id
 
