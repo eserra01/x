@@ -55,7 +55,7 @@ class ReportAttendanceRecapINGEGRE(models.AbstractModel):
             ('payment_date', '>=', date_start), ('payment_date', '<=', date_end), 
             ('state', 'in', ['posted','sent','reconciled']), 
             ('reference','in',['payment', 'surplus'])
-        ])
+        ]).filtered(lambda r: r.contract.company_id.id == self.env.user.company_id.id)
 
         ingresos_lista_cobradores = []
         ingresos_sin_clasificar = []
