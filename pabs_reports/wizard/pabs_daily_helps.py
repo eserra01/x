@@ -86,6 +86,7 @@ class PabsReportXLSX(models.AbstractModel):
     ### SI AGREGARON FECHA FINAL
     if end_date:
       contract_ids = contract_obj.search([
+        ('company_id','=',self.env.user.company_id.id),
         ('state','=','contract'),
         ('invoice_date','>=',start_date),
         ('invoice_date','<=',end_date)],order="invoice_date")
@@ -93,6 +94,7 @@ class PabsReportXLSX(models.AbstractModel):
     ### SI SOLAMENTE AGREGA UNA FECHA
     else:
       contract_ids = contract_obj.search([
+        ('company_id','=',self.env.user.company_id.id),
         ('state','=','contract'),
         ('invoice_date','=',start_date)], order="invoice_date")
       report_name = "Ayudas Diarias de {}".format(start_date)
