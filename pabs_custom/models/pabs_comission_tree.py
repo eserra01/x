@@ -85,7 +85,7 @@ class ComissionTree(models.Model):
         elif TipoPago == "Bono":
 
             #Obtener id del cargo
-            id_cargo = self.env['hr.job'].search([('name', '=', "FIDEICOMISO"), ('company_id', '=', contrato.company_id.id)]).id
+            id_cargo = self.env['hr.job'].search([('name', '=', "FIDEICOMISO")]).id
 
             #Obtener registro de fideicomiso en el árbol de comisiones
             registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
