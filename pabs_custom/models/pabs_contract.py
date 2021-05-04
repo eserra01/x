@@ -660,6 +660,7 @@ class PABSContracts(models.Model):
         'contract_id' : previous.id,
         'invoice_user_id' : self.env.user.id,
       }
+      raise ValidationError("datos de creación de factura: {}".format(data))
       invoice_id = account_obj.create(data)
       if invoice_id:
         product_id = previous.name_service
@@ -808,7 +809,6 @@ class PABSContracts(models.Model):
 
         previous.write(vals)
         invoice_id = self.create_invoice(previous)
-        raise ValidationError("Creando la factura...")
         account_id = invoice_id.partner_id.property_account_receivable_id.id
         journal_id = account_obj.with_context(
           default_type='out_invoice')._get_default_journal()
