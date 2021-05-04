@@ -660,7 +660,6 @@ class PABSContracts(models.Model):
         'contract_id' : previous.id,
         'invoice_user_id' : self.env.user.id,
       }
-      raise ValidationError("datos de creación de factura: {}".format(data))
       invoice_id = account_obj.create(data)
       if invoice_id:
         product_id = previous.name_service
@@ -697,6 +696,7 @@ class PABSContracts(models.Model):
         }
         account_line_obj.create(partner_line_data)
         invoice_id.action_post()
+        raise ValidationError("datos de creación de factura: {}".format(invoice_id))
         previous.allow_create = False
         pricelist_id = pricelist_obj.search([
           ('product_id','=',previous.name_service.id)], limit=1)
