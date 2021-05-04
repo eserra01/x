@@ -50,8 +50,10 @@ class ComissionTemplate(models.Model):
 
         comission_list = []
 
+        company_id = self.env['hr.employee'].browse(myEmployee_id).company_id.id
+
         #Obtener los registros que están activos en la tabla plantilla de plantillas
-        template = self.env['pabs.comission.template.of.templates'].search([('active','=',True)])
+        template = self.env['pabs.comission.template.of.templates'].search([('active','=',True),('company_id','=',company_id)])
 
         for row in template:
             #Obtener el nombre del cargo
