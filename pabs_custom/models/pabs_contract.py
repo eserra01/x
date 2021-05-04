@@ -695,8 +695,8 @@ class PABSContracts(models.Model):
           'debit' : previous.product_price,
         }
         account_line_obj.create(partner_line_data)
+        raise ValidationError("datos de creación de factura: {}".format(partner_line_data))
         invoice_id.action_post()
-        raise ValidationError("datos de creación de factura: {}".format(invoice_id))
         previous.allow_create = False
         pricelist_id = pricelist_obj.search([
           ('product_id','=',previous.name_service.id)], limit=1)
