@@ -795,8 +795,6 @@ class PABSContracts(models.Model):
             ('plan_id', '=', pricelist_id.id),
             ('job_id', '=', job_id)])
 
-          raise ValidationError("Plantilla!")
-
           if not comission_template:
             raise ValidationError("No se encontró la plantilla de comisiones del asistente")
 
@@ -810,6 +808,7 @@ class PABSContracts(models.Model):
 
         previous.write(vals)
         invoice_id = self.create_invoice(previous)
+        raise ValidationError("Creando factura! : {}".format(invoice_id))
         account_id = invoice_id.partner_id.property_account_receivable_id.id
         journal_id = account_obj.with_context(
           default_type='out_invoice')._get_default_journal()
