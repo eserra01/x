@@ -632,6 +632,7 @@ class PABSContracts(models.Model):
           'commission_paid' : 0,
           'actual_commission_paid' : 0,
         }
+        _logger.warning("Creando arbol de contrato: {}".format(data))
         comission_tree_obj.create(data)
 
   #Crea la factura
