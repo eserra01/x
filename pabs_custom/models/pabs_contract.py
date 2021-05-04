@@ -696,7 +696,6 @@ class PABSContracts(models.Model):
         }
         account_line_obj.create(partner_line_data)
         invoice_id.action_post()
-        raise ValidationError("validando factura!")
         previous.allow_create = False
         pricelist_id = pricelist_obj.search([
           ('product_id','=',previous.name_service.id)], limit=1)

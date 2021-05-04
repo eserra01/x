@@ -17,7 +17,7 @@ class AcccountMove(models.Model):
     comission_tree_obj = self.env['pabs.comission.tree']
     context = self._context
     res = super(AcccountMove, self).action_post()
-    if context.get('investment_bond') or self.contract_id:
+    if context.get('investment_bond') or (self.type == 'out_refund' and self.contract_id):
       NumeroContrato = self.contract_id.id,
       MontoPago = self.amount_total
       comission_tree_obj.CrearSalidasEnganche(
