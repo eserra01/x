@@ -59,7 +59,7 @@ class ComissionTree(models.Model):
         ######################## PAPELERIA ##########################
         if TipoPago == "Papeleria":
             #Obtener id del cargo
-            id_cargo = self.env['hr.job'].search([('name', '=', "PAPELERIA"),('company_id', '=', contrato.company_id.id)]).id
+            id_cargo = self.env['hr.job'].search([('name', '=', "PAPELERIA")]).id
 
             #Obtener registro de papeleria en el árbol de comisiones
             registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
@@ -136,7 +136,7 @@ class ComissionTree(models.Model):
             raise ValidationError("No se encontró el contrato {}".format(NumeroContrato))
         
         #Obtener y validar información del arbol de comisiones
-        arbol = self.search([('contract_id', '=', contrato.id),('company_id', '=', contrato.company_id.id)], order='pay_order asc')
+        arbol = self.search([('contract_id', '=', contrato.id)], order='pay_order asc')
 
         if not arbol:
             raise ValidationError("No se encontro el árbol de comisiones")
@@ -151,7 +151,7 @@ class ComissionTree(models.Model):
             PorcentajeCobrador = 0
         else:
             #Obtener y validar información del cobrador
-            empleado = self.env["hr.employee"].search([('barcode', '=', CodigoCobrador),('company_id', '=', contrato.company_id.id)])
+            empleado = self.env["hr.employee"].search([('barcode', '=', CodigoCobrador)])
 
             if not empleado:
                 raise ValidationError("No se encontró el cobrador {}".format(CodigoCobrador))
@@ -170,7 +170,7 @@ class ComissionTree(models.Model):
             MontoComisionCobrador = MontoPago * PorcentajeCobrador
 
             #Obtener id del cargo de cobrador
-            id_cargo_cobrador = self.env['hr.job'].search([('name', '=', "COBRADOR"),('company_id', '=', contrato.company_id.id)]).id
+            id_cargo_cobrador = self.env['hr.job'].search([('name', '=', "COBRADOR")]).id
             registroCobradorEnArbol = self.search([('contract_id','=', contrato.id),('comission_agent_id', '=', empleado.id), ('job_id', '=', id_cargo_cobrador)], limit = 1)
 
             if registroCobradorEnArbol:
@@ -261,7 +261,7 @@ class ComissionTree(models.Model):
             raise ValidationError("No se encontraron salidas de comisiones del pago")
 
         #Obtener id del cargo de cobrador
-        id_cargo_cobrador = self.env['hr.job'].search([('name', '=', "COBRADOR"),('company_id', '=', contrato.company_id.id)]).id
+        id_cargo_cobrador = self.env['hr.job'].search([('name', '=', "COBRADOR")]).id
 
         if not id_cargo_cobrador:
             raise ValidationError("No se encontró el id para el cargo Cobrador")
