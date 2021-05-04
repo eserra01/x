@@ -795,6 +795,8 @@ class PABSContracts(models.Model):
             ('plan_id', '=', pricelist_id.id),
             ('job_id', '=', job_id)])
 
+          raise ValidationError("Plantilla!")
+
           if not comission_template:
             raise ValidationError("No se encontró la plantilla de comisiones del asistente")
 
