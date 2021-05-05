@@ -55,7 +55,7 @@ class ReportAttendanceRecapINGEGRE(models.AbstractModel):
             ('payment_date', '>=', date_start), ('payment_date', '<=', date_end), 
             ('state', 'in', ['posted','sent','reconciled']), 
             ('reference','in',['payment', 'surplus'])
-        ]).filtered(lambda r: r.contract.company_id.id == self.env.user.company_id.id)
+        ]).filtered(lambda r: r.contract.company_id.id in self.env.company.ids)
 
         ingresos_lista_cobradores = []
         ingresos_sin_clasificar = []
@@ -224,3 +224,4 @@ class ReportAttendanceRecapINGEGRE(models.AbstractModel):
             'egresos_fideicomiso': egresos_sin_clasificar,
             'total_egresos':    total_egresos
         }
+        
