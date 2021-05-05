@@ -82,53 +82,14 @@
 
               <tbody>
                 <!-- PAPELERIA -->
-                <t t-set="payment_ids" t-value="sorted(doc.payment_ids, key=lambda k: k.payment_date)"/>
-                <t t-foreach="payment_ids" t-as="recibo">
-                  <tr t-if="recibo['reference'] == 'stationary'">
-                    <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
-                    <td class="text-center"><span/><t t-esc="recibo['ecobro_receipt']"/></td>
-                    <td class="text-center"><span>$<t t-esc="recibo['amount']"/></span></td>
-                    <td class="text-center"><span/><t t-esc="recibo['debt_collector_code'].name"/></td>
-                    <td>INVERSIÓN INICIAL</td>
-                    <!-- Acumular a total -->
-                    <t t-set="total" t-value="total + recibo['amount']"/>
-                  </tr>
-                </t>
-
-                <!-- EXCEDENTE -->
-                <t t-foreach="payment_ids" t-as="recibo">
-                  <tr t-if="recibo['reference'] == 'surplus' and recibo['state'] in ('posted','reconciled')">
-                    <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
-                    <td class="text-center"><span/><t t-esc="recibo['ecobro_receipt']"/></td>
-                    <td class="text-center"><span>$<t t-esc="recibo['amount']"/></span></td>
-                    <td class="text-center"><span/><t t-esc="recibo['debt_collector_code'].name"/></td>
-                    <td>EXCEDENTE INVERSIÓN INICIAL</td>
-                    <!-- Acumular a total -->
-                    <t t-set="total" t-value="total + recibo['amount']"/>
-                  </tr>
-                </t>
-
-                <!-- BONO -->
-                <t t-foreach="doc.refund_ids" t-as="nota">
-                  <tr t-if="nota['type'] == 'out_refund' and nota['state'] == 'posted'">
-                    <td class="text-center"><span/><t t-esc="nota['date']"/></td>
-                    <td class="text-center"><span/></td>
-                    <td class="text-center"><span>$<t t-esc="nota['amount_total']"/></span></td>
-                    <td class="text-center"><span/></td>
-                    <td>BONO POR INVERSIÓN INICIAL</td>
-                    <!-- Acumular a total -->
-                    <t t-set="total" t-value="total + nota['amount_total']"/>
-                  </tr>
-                </t>
-
-                <!-- ABONOS -->
-                <t t-foreach="payment_ids" t-as="recibo">
-                  <tr t-if="recibo['reference'] == 'payment' and recibo['state'] in ('posted','reconciled')">
-                    <td class="text-center"><span/><t t-esc="recibo['payment_date']"/></td>
-                    <td class="text-center"><span/><t t-esc="recibo['ecobro_receipt']"/></td>
-                    <td class="text-center"><span>$<t t-esc="recibo['amount']"/></span></td>
-                    <td class="text-center"><span/><t t-esc="recibo['debt_collector_code'].name"/></td>
-                    <td>ABONO</td>
+                <t t-set="credits" t-value="doc.get_credits()"/>
+                <t t-foreach="credits" t-as="recibo">
+                  <tr>
+                    <td class="text-center"><span/><t t-esc="recibo['date']"/></td>
+                    <td class="text-center"><span/><t t-esc="recibo['name']"/></td>
+                    <td class="text-center"><span>$<t t-esc="'${:,.2f}'.format(recibo['amount'])"/></span></td>
+                    <td class="text-center"><span/><t t-esc="recibo['collector']"/></td>
+                    <td><t t-esc="recibo['description']"/></td>
                     <!-- Acumular a total -->
                     <t t-set="total" t-value="total + recibo['amount']"/>
                   </tr>
@@ -138,7 +99,7 @@
                 <tr>
                   <td></td>
                   <td></td>
-                  <td class="text-center"><strong>TOTAL: $<span t-esc="total"></span></strong></td>
+                  <td class="text-center"><strong>TOTAL: $<span t-esc="'${:,.2f}'.format(total)"></span></strong></td>
                   <td></td>
                   <td></td>
                 </tr>

@@ -5,6 +5,37 @@ from dateutil.relativedelta import relativedelta
 class PabsContract(models.Model):
     _inherit = "pabs.contract"
 
+    def get_credits(self):
+        credits = []
+        for payment_id in self.payment_ids:
+            if payment_id.state in ('posted','send','reconciled'):
+                if payment_id.reference == 'stationary':
+                    description = 'INVERSION INICIAL'
+                elif payment_id.reference == 'surplus':
+                    description = 'EXCEDENTE INVERSIÓN INICIAL'
+                elif payment_id.reference == 'payment':
+                    description = 'ABONO'
+                else:
+                    description = ''
+                credits.append({
+                    'date' : payment_id.payment_date,
+                    'name' : payment_id.ecobro_receipt,
+                    'amount' : payment_id.amount,
+                    'collector' : payment_id.debt_collector_code.name,
+                    'description' : description
+                })
+        for refund_id in self.refund_ids:
+            if refund_id.type == 'out_refund':
+                credits.append({
+                    'date' : refund_id.invoice_date,
+                    'name' : "",
+                    'amount' : refund_id.amount_total,
+                    'collector' : "",
+                    'description' : 'BONO POR INVERSIÓN INICIAL'
+                })
+        credit = sorted(credits, key=lambda r: r['date'])
+        return credit
+
     def payments(self, ids):
         for rec in self:
             payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment'),('state','in',('posted','reconciled'))])
