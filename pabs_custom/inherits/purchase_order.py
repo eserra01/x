@@ -18,13 +18,15 @@ class PurchaseOrder(models.Model):
     res = super(PurchaseOrder, self).button_confirm()
     ### Se recorre todas las lineas del pedido
     for line in self.order_line:
-      ### Se agrega el valor de número de serie a la órden de entrega
-      line.move_ids.next_serial = line.since
-      ### Se agrega la cantidad a generar
-      line.move_ids.next_serial_count = line.product_qty
-      ### Se asigna la entrada
-      line.move_ids.action_assign_serial_show_details()
-      ### Valida si el producto tiene "seguimiento por número de serie" y lo confirma
+      ### Si tiene trazabilidad el producto
+      if line.product_id.tracking in ('serial','lot'):
+        ### Se agrega el valor de número de serie a la órden de entrega
+        line.move_ids.next_serial = line.since
+        ### Se agrega la cantidad a generar
+        line.move_ids.next_serial_count = line.product_qty
+        ### Se asigna la entrada
+        line.move_ids.action_assign_serial_show_details()
+        ### Valida si el producto tiene "seguimiento por número de serie" y lo confirma
     return res
 
   @api.model

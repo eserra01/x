@@ -57,82 +57,146 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
 
   @api.model
   def _get_report_values(self, docids, data):
-    ### DECLARACIÓN DE OBJETOS
-    contract_obj = self.env['pabs.contract']
-    status_obj = self.env['pabs.contract.status']
-
     ### BUSCANDO PARAMETROS DE ENCABEZADO
+    company_id = self.env.company.id
     logo = self.env.user.company_id.logo
     date = data.get('data') or fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
 
-    ### ESTATUS DE CONTRATOS NO PERMITIDOS
-    status_ids = status_obj.search([
-      ('status','in',('ACTIVO','SUSP. TEMPORAL','REALIZADO POR COBRAR','VERIFICACION'))])
+    ### CREAMOS CURSOS
+    cr = self._cr
+    ### ESCRIBIMOS EL QUERY EN UNA VARIABLE
+    query = """
+      SELECT *
+        FROM (
+            SELECT 
+            c.invoice_date AS "Fecha de contrato",
+            c.name AS "contrato",
+            CONCAT(c.partner_name,
+                    ' ',
+                    c.partner_fname,
+                    ' ',
+                    c.partner_mname) AS "Cliente",
+            CONCAT(c.street_name_toll,
+                    ' #',
+                    c.street_number_toll) AS "Domicilio",
+            col.name AS "Colonia",
+            loc.name AS "Localidad",
+            c.between_streets_toll AS "Entre calles",
+            c.phone AS "Telefono",
+            prom.name AS "Promotor",
+            cob.name AS "Cobrador",
+            CASE
+                WHEN c.way_to_payment = 'weekly' THEN 'S'
+                WHEN c.way_to_payment = 'biweekly' THEN 'Q'
+                WHEN c.way_to_payment = 'monthly' THEN 'M'
+            END AS "Forma de Pago",
+            c.date_of_last_status "Fecha estatus",
+            pEst.status AS "Estatus",
+            pMot.reason AS "Motivo",
+            c.id AS "id contrato",
+            c.payment_amount AS "Monto pago actual",
+            prod.name AS "Servicio",
+            ppl.fixed_price AS "Costo",
+            am.amount_residual AS "Saldo",
+            0 AS "Ultimo abono",
+            (Select MAX(date_receipt) from account_payment as last where last.contract = c.id) AS "Fecha de ultimo abono",
+            (SELECT 
+                    P.name
+                FROM
+                    account_payment AS a
+                        LEFT JOIN
+                    hr_employee AS p ON a.debt_collector_code = p.id
+                WHERE
+                    a.id = (SELECT 
+                            MAX(ab.id)
+                        FROM
+                            account_payment ab
+                        WHERE
+                            (ab.reference = 'stationary'
+                                OR ab.reference = 'payment'
+                                OR ab.reference = 'surplus')
+                                AND ab.contract = c.id)) AS "Ultimo cobrador",
+            (SELECT 
+                    a.amount
+                FROM
+                    account_payment AS a
+                WHERE
+                    a.id = (SELECT 
+                            MAX(ab.id)
+                        FROM
+                            account_payment AS ab
+                        WHERE
+                            (ab.reference = 'stationary'
+                                OR ab.reference = 'payment'
+                                OR ab.reference = 'surplus')
+                                AND ab.contract = c.id)) AS "Importe ultimo abono",
+            CASE
+                WHEN
+                    c.contract_status_item <> 21
+                        THEN
+                            (CASE
+                                WHEN c.contract_status_item = 11 THEN 2
+                                WHEN c.contract_status_item = 14 THEN 14
+                                WHEN c.contract_status_item = 18 THEN 13
+                                WHEN c.contract_status_item = 19 THEN 15
+                                WHEN c.contract_status_item = 20 THEN 16
+                                WHEN c.contract_status_item = 13 THEN 3
+                                WHEN c.contract_status_item = 12 THEN 4
+                                WHEN c.contract_status_item = 17 THEN 5
+                                WHEN c.contract_status_item = 16 THEN 6
+                            END)
+                
+                WHEN c.contract_status_item = 21 AND CURRENT_DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) < (
+                        CASE
+                            WHEN way_to_payment = 'weekly' THEN 14
+                            WHEN way_to_payment = 'biweekly' THEN 30
+                            WHEN way_to_payment = 'monthly' THEN 60
+                        END)
+                    THEN 21
 
-    ### BUSCAMOS TODOS LOS CONTRATOS
-    contract_ids = contract_obj.search([
-      ('state','=','contract'),
-      ('contract_status_item','in',status_ids.ids),
-      ('way_to_payment','>=',14)]).filtered(
-      lambda k: (k.way_to_payment == 'weekly' and k.days_without_payment >= 14) or \
-      (k.way_to_payment == 'biweekly' and k.days_without_payment >= 30) or \
-      (k.way_to_payment == 'monthly' and k.days_without_payment >= 60))
+                WHEN c.contract_status_item = 21 AND CURRENT_DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) > (
+                            CASE
+                                WHEN way_to_payment = 'weekly' THEN 14
+                                WHEN way_to_payment = 'biweekly' THEN 30
+                                WHEN way_to_payment = 'monthly' THEN 60
+                            END)
+                        THEN 7
+            END AS estatus_moroso
+        FROM
+            pabs_contract AS c
+                LEFT JOIN
+            colonias AS col ON col.id = c.toll_colony_id
+                LEFT JOIN
+            res_locality AS loc ON loc.id = c.toll_municipallity_id
+                LEFT JOIN
+            hr_employee AS prom ON prom.id = c.sale_employee_id
+                LEFT JOIN
+            pabs_contract_status AS pEst ON pEst.id = c.contract_status_item
+                LEFT JOIN
+            pabs_contract_status_reason AS pMot ON pMot.id = c.contract_status_reason
+                LEFT JOIN
+            hr_employee AS cob ON cob.id = c.debt_collector
+                LEFT JOIN
+            stock_production_lot AS sl ON sl.id = c.lot_id
+                LEFT JOIN
+            product_template AS prod ON prod.id = sl.product_id
+                LEFT JOIN
+            product_pricelist_item AS ppl ON ppl.product_id = sl.product_id
+                LEFT JOIN
+            account_move AS am ON am.contract_id = c.id
+        WHERE
+            am.type = 'out_invoice'
+                AND c.invoice_date <= CURRENT_DATE
+                AND c.state = 'contract'
+                AND c.company_id = {}
+        ORDER BY pEst.id , c.invoice_date )
+    AS mor
+    WHERE mor.estatus_moroso = 7""".format(company_id)
 
-    ### OBTENEMOS TODOS LOS COBRADORES DE LOS CONTRATOS
-    collector_ids = contract_ids.mapped('debt_collector')
+    cr.execute(query)
+    data = cr.fetchall()
+    raise ValidationError("data: {}".format(data))
 
-    ### DICCIONARIO QUE CONTENDRÁ TODA LA INFORMACIÓN DEL REPORTE
-    data = {}
-
-    ### RECORREMOS LA LISTA DE COBRADORES
-    for collector_id in collector_ids:
-      ### FILTRAMOS TODOS LOS CONTRATOS PERTENECIENTES AL COBRADOR
-      collector_contract_ids = contract_ids.filtered(lambda k: k.debt_collector.id == collector_id.id)
-      ### GENERAMOS EL ARRAY CON LA INFORMACIÓN
-      info = []
-      ### RECORREMOS TODOS LOS CONTRATOS
-      for contract_id in collector_contract_ids:
-        ### OBTENEMOS EL ULTIMO PAGO DEL CONTRATO
-        last_payment = contract_id.payment_ids.filtered(
-          lambda k: k.reference == 'payment').sorted(
-          lambda k: k.payment_date).mapped('payment_date')
-        ### SI EXISTEN PAGOS DEL TIPO ABONO
-        if last_payment:
-          ### TRAEMOS EL ULTIMO
-          last_payment = last_payment[-1]
-        ### SI NO
-        else:
-          ### ENVIAMOS VACIO
-          last_payment = ' '
-        ### VERIFICAMOS LA PERIODICIDAD
-        ### SI ES SEMANAL
-        if contract_id.way_to_payment == 'weekly':
-          period = 'S'
-        ### SI ES QUINCENAL
-        elif contract_id.way_to_payment == 'biweekly':
-          period = 'Q'
-        ### SI ES MENSUAL
-        elif contract_id.way_to_payment == 'monthly':
-          period = 'M'
-        ### SI NO ENCUENTRA EL MÉTODO
-        else:
-          period = ''
-        ### GENERAMOS EL DICCIONARIO CON TODA LA INFORMACIÓN DEL CONTRATO
-        detail = {
-          'contract_name' : contract_id.name,
-          'partner_name' : contract_id.full_name,
-          'address' : "{} {}".format(contract_id.street_name_toll, contract_id.street_number_toll),
-          'colony' : contract_id.toll_colony_id.name or '',
-          'municipality' : contract_id.toll_municipallity_id.name or '',
-          'last_payment' : last_payment,
-          'period' : period or '',
-        }
-        ### AGREGAMOS LA INFORMACIÓN DEL CONTRATO A LA LISTA
-        info.append(detail)
-      ### AGREGAMOS LA LISTA DE CONTRATOS POR COBRADOR
-      data.update({
-        collector_id.name : info,
-      })
     ### RETORNAMOS LA INFORMACIÓN
     return {
       'logo' : logo,
@@ -146,6 +210,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
 
   def generate_xlsx_report(self, workbook, data, lines):
     ### FECHA ACTUAL
+    company_id = self.env.company.id
     date = data.get('data') or fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
     ### CREAMOS CURSOS
     cr = self._cr
@@ -273,9 +338,10 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
             am.type = 'out_invoice'
                 AND c.invoice_date <= CURRENT_DATE
                 AND c.state = 'contract'
+                AND c.company_id = {}
         ORDER BY pEst.id , c.invoice_date )
     AS mor
-    WHERE mor.estatus_moroso = 7"""
+    WHERE mor.estatus_moroso = 7""".format(company_id)
     ### GENERAMOS LA HOJA
     sheet = workbook.add_worksheet("Reporte de Morosos {}".format(date))
 
@@ -289,7 +355,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
       sheet.write(0,row,row_data,bold_format)
 
     ### EJECUTAMOS EL QUERY
-    cr.execute(query);
+    cr.execute(query)
     ### ITERAMOS EN EL RESULTADO
     for index, rec in enumerate(cr.fetchall()):
       ### ESCRIBIMOS LOS RESULTADOS DEL QUERY
