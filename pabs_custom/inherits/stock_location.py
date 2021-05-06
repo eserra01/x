@@ -70,3 +70,52 @@ class StockLocation(models.Model):
       ### Creando Ubicación de regreso
       picking_type_obj.create(return_picking_data)
     return res
+
+  def write(self, vals):
+    res = super(StockLocation, self).write(vals)
+    picking_type_obj = self.env['stock.picking.type']
+    location_obj = self.env['stock.location']
+    type_location = vals.get('consignment_location') or self.consignment_location or False
+    if type_location and vals.get('location_id'):
+      warehouse_id = location_obj.browse(vals.get('location_id')).get_warehouse()
+      picking_type_ids = picking_type_obj.search(['|',
+        ('default_location_dest_id','=',self.id),
+        ('default_location_src_id','=',self.id)])
+      for picking_type_id in picking_type_ids:
+        ### SI LA UBICACIÓN ES LA RECEPCIÓN
+        if picking_type_id.default_location_dest_id.id == self.id:
+          ### SI VIENE DE OFICINA
+          if picking_type_id.default_location_src_id.office_location:
+            picking_type_id.write({
+              'name' : "{} -> {}".format(warehouse_id.name, self.name),
+              'warehouse_id' : warehouse_id.id,
+              'default_location_src_id' : warehouse_id.lot_stock_id.id})
+            ### SOBREESCRIBIMOS LA SECUENCIA OFICINA - ASISTENTE
+            picking_type_id.sequence_id.write({
+              'name' : "{} Secuencia {} - {}".format(warehouse_id.name, warehouse_id.lot_stock_id.name, self.name),
+              'prefix' : "{}/{} - {}".format(warehouse_id.view_location_id.name, warehouse_id.lot_stock_id.name, self.name)
+            })
+        ### SI LA UBICACIÓN ES DE ORIGEN
+        if picking_type_id.default_location_src_id.id == self.id:
+          ### SI VA PARA RECIBIDOS
+          if picking_type_id.default_location_dest_id.received_location:
+            picking_type_id.write({
+              'name' : "{} -> {}".format(self.name, warehouse_id.name),
+              'warehouse_id' : warehouse_id.id,
+              'default_location_dest_id' : warehouse_id.wh_receipt_stock_id.id})
+            ### SOBREESCRIBIMOS LA SECUENCIA ASISTENTE A RECIBIDOS
+            picking_type_id.sequence_id.write({
+              'name' : "{} Secuencia {} - {}".format(warehouse_id.name, self.name, warehouse_id.wh_receipt_stock_id.name),
+              'prefix' : "{}/{} - {}".format(warehouse_id.view_location_id.name, self.name, warehouse_id.wh_receipt_stock_id.name)
+            })
+          ### SI VA PARA NO DISPONIBLE (CANCELADA O EXTRAVIADA)
+          if picking_type_id.default_location_dest_id.scrap_location:
+            picking_type_id.write({
+              'warehouse_id' : warehouse_id.id,
+              'default_location_dest_id' : warehouse_id.wh_trash_stock_id.id})
+            ### SOBREESCRIBIMOS LA SECUENCIA
+            picking_type_id.sequence_id.write({
+              'name' : "{} Secuencia {} - {}".format(warehouse_id.name, self.name, warehouse_id.wh_trash_stock_id.name),
+              'prefix' : "{}/{} - {}".format(warehouse_id.view_location_id.name, self.name, warehouse_id.wh_trash_stock_id.name)
+            })
+    return res
