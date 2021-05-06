@@ -63,7 +63,7 @@ class PabsIngreEgreReportXLSX(models.AbstractModel):
       ('payment_date', '>=', date_start), ('payment_date', '<=', date_end), 
       ('state', 'in', ['posted','sent','reconciled']), 
       ('reference','in',['payment', 'surplus'])
-    ])
+    ]).filtered(lambda r: r.contract.company_id.id in self.env.company.ids)
 
     ingresos_lista_cobradores = []
     ingresos_sin_clasificar = []
