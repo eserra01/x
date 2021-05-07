@@ -87,7 +87,7 @@
                   <tr>
                     <td class="text-center"><span/><t t-esc="recibo['date']"/></td>
                     <td class="text-center"><span/><t t-esc="recibo['name']"/></td>
-                    <td class="text-center"><span>$<t t-esc="'${:,.2f}'.format(recibo['amount'])"/></span></td>
+                    <td class="text-center"><span><t t-esc="'${:,.2f}'.format(recibo['amount'])"/></span></td>
                     <td class="text-center"><span/><t t-esc="recibo['collector']"/></td>
                     <td><t t-esc="recibo['description']"/></td>
                     <!-- Acumular a total -->
@@ -99,7 +99,7 @@
                 <tr>
                   <td></td>
                   <td></td>
-                  <td class="text-center"><strong>TOTAL: $<span t-esc="'${:,.2f}'.format(total)"></span></strong></td>
+                  <td class="text-center"><strong>TOTAL: <span t-esc="'${:,.2f}'.format(total)"></span></strong></td>
                   <td></td>
                   <td></td>
                 </tr>
