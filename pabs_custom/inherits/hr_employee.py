@@ -247,9 +247,9 @@ class HrEmployee(models.Model):
       ### cambia el código de empleado a mayusculas para mantener un estándar
       vals['barcode'] = vals['barcode'].upper()
     ### Validar que no se repitan los códigos de empleado
-    duplicated = self.search([('barcode','=',vals.get('barcode')),('company_id','=',vals.get('company_id'))])
+    duplicated = self.search([('barcode','=',vals.get('barcode'))])
     deb_collector = job_obj.search([
-      ('name','=','COBRADOR'),('company_id','=',vals.get('company_id'))],limit=1)
+      ('name','=','COBRADOR')],limit=1)
     if not deb_collector:
       raise ValidationError((
         "No se encontró el puesto de cobrador"))
@@ -257,7 +257,7 @@ class HrEmployee(models.Model):
       raise ValidationError((
         "No puedes dar de alta el código de empleado {} por que ya existe".format(vals.get('barcode'))))
     job_ids = job_obj.search([
-      ('name','in',('PRESIDENTE','DIRECTOR NACIONAL','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL')),('company_id','=',vals.get('company_id'))])
+      ('name','in',('PRESIDENTE','DIRECTOR NACIONAL','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))])
     if vals.get('job_id') in job_ids.ids:
       ### validación para seleccionar automáticamente las ubicaciones correspondientes
       if vals.get('warehouse_id'):
@@ -265,11 +265,11 @@ class HrEmployee(models.Model):
         view_location_id = warehouse_id.view_location_id
         ### Buscar la ubicación de contratos
         contract_location = location_obj.search([
-          ('contract_location','=',True),('company_id','=',vals.get('company_id'))], limit=1)
+          ('contract_location','=',True)], limit=1)
         ### Buscar la ubicación de solicitudes
         request_location = location_obj.search([
           ('location_id','=',view_location_id.id),
-          ('office_location','=',True),('company_id','=',vals.get('company_id'))],limit=1)
+          ('office_location','=',True)],limit=1)
         ### Sí encuentra una ubicación de solicitudes
         if request_location:
           vals['request_location_id'] = request_location.id
@@ -300,7 +300,7 @@ class HrEmployee(models.Model):
         newEmployee = super(HrEmployee, self).create(vals)
 
         #Solo crear plantilla cuando el empleado es del departamento de ventas
-        sales_dept_id = self.env['hr.department'].search([('name','=','VENTAS'),('company_id','=',newEmployee.company_id.id)], limit = 1)
+        sales_dept_id = self.env['hr.department'].search([('name','=','VENTAS')], limit = 1)
         _logger.warning("Departamento Emp:{}\nDept:{}".format(newEmployee.department_id.id,sales_dept_id.id))
         if newEmployee.department_id.name == 'VENTAS':
           self.env['pabs.comission.template'].create_comission_template(newEmployee.id)
@@ -328,8 +328,7 @@ class HrEmployee(models.Model):
     picking_type_obj = self.env['stock.picking.type']
     job_obj = self.env['hr.job']
     ### BUSCAMOS EL JOB ID
-    company_id = vals.get('company_id') or self.company_id.id
-    asistant_job_id = job_obj.search([('name','=','ASISTENTE SOCIAL'),('company_id','=',company_id)])
+    asistant_job_id = job_obj.search([('name','=','ASISTENTE SOCIAL')])
     ### SI NO ESTA
     if not asistant_job_id:
       ### ENVIAMOS MENSAJE DE ERROR
