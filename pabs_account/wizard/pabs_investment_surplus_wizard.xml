@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_investment_surplus_wizard_view" model="ir.ui.view">
+    <field name="name">pabs.investment.surplus.wizard.view</field>
+    <field name="model">pabs.investment.surplus</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <div class="form-row">
+            <div class="form-group col-md-8">
+              <label for="ecobro_date"/>
+              <field name="ecobro_date"/>
+            </div>
+            <field name="hide" invisible="1"/>
+          </div>
+        <group attrs="{'invisible' : [('hide','=',True)]}">
+            <field name="count_contract" widget="monetary" readonly="1"/>
+            <field name="initial_investment" widget="monetary" readonly="1"/>
+            <field name="excedent" widget="monetary" readonly="1"/>
+            <field name="total" widget="monetary" readonly="1" style="font-size : 25px;font-weight : bolder;"/>
+            <field name="status" readonly="1"/>
+          </group>
+        </sheet>
+        <footer>
+          <button name="generate_account_move" string="Generar Póliza" type="object" class="btn-primary" attrs="{'invisible' : ['|',('hide','=',True),('status','=','generated')]}"/>
+          <button name="generate_account_move" string="Ver Póliza" type="object" class="btn-primary" attrs="{'invisible' : ['|',('hide','=',True),('status','=','not_generated')]}"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_pabs_investment_surplus_wizard" model="ir.actions.act_window">
+    <field name="name">Póliza de inversiones y Excedentes</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.investment.surplus</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_investment_surplus_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+
+  <menuitem
+    id="menu_generator_account_move"
+    name="Generador de pólizas"
+    groups="pabs_custom.admin_profile,pabs_custom.collection_profile"
+    sequence="3"
+    parent="account_accountant.menu_accounting"/>
+
+  <menuitem
+    id="menu_pabs_investment_surplus_wizard"
+    name="Póliza de inversiones y Excedentes"
+    groups="pabs_custom.admin_profile,pabs_custom.collection_profile"
+    action="action_pabs_investment_surplus_wizard"
+    parent="menu_generator_account_move"
+    sequence="2"/>
+
+</odoo>

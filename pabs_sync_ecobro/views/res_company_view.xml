@@ -13,6 +13,14 @@
               <field name="extension_path"/>
             </group>
           </group>
+          <div>
+            <field name="companies">
+              <tree editable="bottom">
+                <field name="serie"/>
+                <field name="type_company"/>
+              </tree>
+            </field>
+          </div>
         </page>
       </xpath>
     </field>

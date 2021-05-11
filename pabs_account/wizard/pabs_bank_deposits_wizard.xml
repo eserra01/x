@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="pabs_bank_deposits_wizard" model="ir.ui.view">
+    <field name="name">pabs.bank.deposits.wizard</field>
+    <field name="model">pabs.bank.deposits</field>
+    <field name="arch" type="xml">
+      <form>
+        <sheet>
+          <div class="form-row">
+            <div class="form-group col-md-14">
+              <label for="ecobro_date"/>
+              <field name="ecobro_date"/>
+              <button name="get_deposits" string="Consultar Depósitos" type="object" class="btn-primary" style="margin-left : 20px;"/>
+              <label for="total" style="margin-left : 40px;" attrs="{'invisible' : [('total','=',0)]}"/>
+              <field name="total" widget="monetary" style="margin-left : 20px; font-size: 18px;font-weight : bold;" attrs="{'invisible' : [('total','=',0)]}"/>
+              <button name="get_account_move" string="Generar Póliza" type="object" class="btn-primary" style="margin-left : 20px;" attrs="{'invisible' : [('total','=',0)]}"/>
+            </div>
+          </div>
+          <field name="deposit_line_ids" nolabel="1" readonly="1" attrs="{'invisible' : [('deposit_line_ids','=',[])]}">
+            <tree create="0" edit="0" delete="0" limit="99999">
+              <field name="bank_name"/>
+              <field name="employee_code"/>
+              <field name="debt_collector"/>
+              <field name="amount" sum="amount, Total de deposito"/>
+              <field name="deposit_date"/>
+              <field name="cashier"/>
+              <field name="ref"/>
+              <field name="account_id" optional="hide"/>
+            </tree>
+          </field>
+        </sheet>
+        <footer>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_pabs_deposits_wizard" model="ir.actions.act_window">
+    <field name="name">Póliza de depósitos</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.bank.deposits</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_bank_deposits_wizard"/>
+    <field name="target">current</field>
+  </record>
+
+  <menuitem
+    id="menu_pabs_bank_deposits_wizard"
+    name="Póliza de depósitos"
+    groups="pabs_custom.admin_profile,pabs_custom.collection_profile"
+    action="action_pabs_deposits_wizard"
+    parent="menu_generator_account_move"
+    sequence="1"/>
+
+</odoo>

@@ -17,7 +17,7 @@ class AcccountMove(models.Model):
     comission_tree_obj = self.env['pabs.comission.tree']
     context = self._context
     res = super(AcccountMove, self).action_post()
-    if context.get('investment_bond') or (self.type == 'out_refund' and self.contract_id):
+    if context.get('investment_bond') or (self.type in ('out_refund','entry') and self.contract_id):
       NumeroContrato = self.contract_id.id,
       MontoPago = self.amount_total
       comission_tree_obj.CrearSalidasEnganche(
@@ -33,7 +33,7 @@ class AcccountMove(models.Model):
   def button_cancel(self):
     comission_tree_obj = self.env['pabs.comission.tree']
     res = super(AcccountMove, self).button_cancel()
-    if self.type == 'out_refund':
+    if self.type in ('out_refund','entry'):
       if self.contract_id:
         NumeroContrato = self.contract_id.id,
         comission_tree_obj.RevertirSalidas(

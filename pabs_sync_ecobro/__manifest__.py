@@ -10,8 +10,10 @@
     'base',
     'base_setup',
     'hr',
-    'pabs_custom'],
+    'pabs_custom',
+    'mortuary'],
   'data': [
+    'security/ir.model.access.csv',
     #'views/ecobro_settings_view.xml',
     'views/res_company_view.xml',
     'views/hr_employee_view.xml',

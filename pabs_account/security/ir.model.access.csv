@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pabs_investment_surplus,pabs.investment.surplus,pabs_account.model_pabs_investment_surplus,pabs_custom.collection_profile,1,1,1,1
+access_pabs_investment_surplus_manager,pabs.investment.surplus,pabs_account.model_pabs_investment_surplus,pabs_custom.admin_profile,1,1,1,1
+access_pabs_bank_account,pabs.bank.account,pabs_account.model_pabs_bank_account,base.group_user,1,1,1,1

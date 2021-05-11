@@ -316,6 +316,8 @@ class PABSEcobroSync(models.Model):
     payment_method_obj = self.env['account.payment.method'].sudo()
     payment_obj = self.env['account.payment'].sudo()
     hr_employee_obj = self.env['hr.employee'].sudo()
+    company_obj = self.env['res.company'].sudo()
+    mortuary_obj = self.env['mortuary'].sudo()
     ### DICCIONARIO DE RECONCILIACIÓN
     reconcile = {}
     ### MANDAR A LLAMAR LA URL DE PAGOS PENDIENTES
@@ -327,6 +329,7 @@ class PABSEcobroSync(models.Model):
       ### FINALIZA EL MÉTODO
       return
     try:
+      company = company_obj.browse(company_id)
       ### SE ENVIA LA PETICIÓN PARA RECIBIR LOS PAGOS
       req = requests.post(url_pending)
       ### CASTEANDO A JSON LA RESPUESTA
@@ -388,12 +391,11 @@ class PABSEcobroSync(models.Model):
 
       log += 'Cobrador: {} \n'.format(collector_id.name)
 
-      ### Validar que el recibo no esté afectado
+      ### Validar que el recibo no exista previamente
       ecobro_number = "{}{}".format(rec['serie_recibo'],rec['no_recibo'])
       recibo_afectado = payment_obj.search([
         ('company_id','=',company_id),
-        ('ecobro_affect_id','=',rec['afectacionID']),
-        ('state','in',['posted','sent','reconciled'])
+        ('ecobro_affect_id','=',rec['afectacionID'])
       ])
 
       log += 'Número de recibo: {} \n'.format(ecobro_number)
@@ -440,26 +442,63 @@ class PABSEcobroSync(models.Model):
           log += 'Estatus: Se cancelo el recibo correctamente \n'
           continue
 
-
-      ### BUSCAMOS EL CONTRATO QUE SE CONCATENO
-      contract_id = contract_obj.search([
-        ('company_id','=',company_id),
-        ('name', '=', contract_name)],limit=1)
-      ### SI NO ENCUENTRA EL CONTRATO
-      if not contract_id:
-        ### LO AGREGA A LAS LISTAS DE FAILS
+      ### VERIFICAMOS EL TIPO DE COMPAÑIA
+      company_sync = company.companies.filtered(lambda r: r.serie == rec['empresa'])
+      if not company_sync:
+        _logger.warning("No se encontró el tipo de compañia: {} para la empresa {}".format(rec['empresa'],company.name))
         fails.append({
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
-          'detalle' : "No se encontró el contrato"
+          'detalle' : "No esta configurado el tipo de empresa: {}".format(rec['empresa'])
         })
-        log += 'Estatus: No se encontró el contrato al que debe de afectar \n'
-        ### CONTINUA CON EL SIGUIENTE REGISTRO
+        log += 'Estatus: No esta configurado el tipo de empresa: {}'.format(rec['empresa'])
         continue
-      ### BUSCANDO LA/LAS FACTURA QUE VA A AFECTAR
-      invoice_ids = contract_id.refund_ids.filtered(
-        lambda x: x.type == 'out_invoice').sorted(
-        key=lambda p: p.invoice_date)
+      contract_id = False
+      mortuary_id = False
+      ### SI EL COBRO HACE REFERENCIA A COOPERATIVA O APOYO
+      if company_sync.type_company in ('support', 'cooperative'):
+        ### BUSCAMOS EL CONTRATO QUE SE CONCATENO
+        contract_id = contract_obj.search([
+          ('company_id','=',company_id),
+          ('name', '=', contract_name)],limit=1)
+        ### SI NO ENCUENTRA EL CONTRATO
+        if not contract_id:
+          ### LO AGREGA A LAS LISTAS DE FAILS
+          fails.append({
+            'afectacionID' : rec['afectacionID'],
+            'estatus' : 2,
+            'detalle' : "No se encontró el contrato"
+          })
+          log += 'Estatus: No se encontró el contrato al que debe de afectar \n'
+          ### CONTINUA CON EL SIGUIENTE REGISTRO
+          continue
+        ### BUSCANDO LA/LAS FACTURA QUE VA A AFECTAR
+        invoice_ids = contract_id.refund_ids.filtered(
+          lambda x: x.type == 'out_invoice').sorted(
+          key=lambda p: p.invoice_date)
+      ### SI EL COBRO HACE REFERENCIA A FUNERARIA
+      elif company_sync.type_company == 'mortuary':
+        ###  BUSCAMOS EN BICATACORAS
+        mortuary_id = mortuary_obj.search([
+          ('company_id','=',company_id),
+          ('name','=',contract_name)], limit=1)
+        ### SI NO ENCUENTRA LA BITACORA
+        if not mortuary_id:
+          ### LO AGREGAMOS A LA LISTA DE FAILS
+          fails.append({
+            'afectacionID' : rec['afectacionID'],
+            'estatus' : 2,
+            'detalle' : "No se encontró la bitacora"
+          })
+          log += 'Estatus: No se encontró la bitacora que debe de afectar \n'
+          ### CONTINUA CON EL SIGUIENTE REGISTRO
+          continue
+        ### BUSCAMOS LAS FACTURAS PERTENECIENTES A LA BITACORA
+        invoice_ids = account_obj.search([
+          ('company_id','=',company_id),
+          ('type','=','out_invoice'),
+          ('mortuary_id','=',mortuary_id.id)])
+
       ### SI NO HAY NINGUNA FACTURA
       if not invoice_ids:
         fails.append({
@@ -497,8 +536,6 @@ class PABSEcobroSync(models.Model):
           ### AGREGAMOS LA LINEA A RECONCILIAR
           reconcile.update({'debit_move_id' : line.id})
 
-      ### LANZANDO NUMERO DE CONTRATO QUE ESTA SIENDO AFECTADO
-      _logger.info("Número de Contrato: {}".format(contract_id.name))
       ### GENERANDO INFORMACIÓN PARA APLICAR EL PAGO
       payment_data = {
         'payment_reference' : 'Sincronizado de Ecobro',
@@ -508,8 +545,9 @@ class PABSEcobroSync(models.Model):
         'payment_type' : 'inbound',
         'partner_type' : 'customer',
         'debt_collector_code' : collector_id.id,
-        'contract' : contract_id.id,
-        'partner_id' : contract_id.partner_id.id,
+        'contract' : contract_id.id if contract_id else False,
+        'binnacle' : mortuary_id.id if mortuary_id else False,
+        'partner_id' : contract_id.partner_id.id if contract_id else mortuary_id.partner_id.id,
         'amount' : rec['monto'],
         'currency_id' : currency_id.id,
         'date_receipt' : rec['fecha_recibo'],
