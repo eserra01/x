@@ -132,9 +132,11 @@
                         </div>
                       </fieldset>
                       <div class="modal-footer">
-                        <h1 id="activation_code"></h1>
-                        <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
-                        <button type="submit" id="submit" class="btn btn-blue">Activar Solicitud</button>
+                        <div class="form-group col-md-8">
+                          <h3 id="activation_code"></h3>
+                          <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
+                          <button type="submit" id="submit" class="btn btn-blue">Activar Solicitud</button>
+                        </div>
                       </div>
                     </fieldset>
                   </form>

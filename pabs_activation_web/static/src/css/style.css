@@ -200,6 +200,17 @@ h2 {
     background: #1E64A0;
 }
 
+.btn-blue::after {
+    color : #fff;
+    background: #1E64A0;
+}
+
+.btn-blue:active {
+    color : #fff;
+    background: #1E64A0;
+}
+
+
 .btn-animation-1:hover::after {
     transform: scaleX(1.4) scaleY(1.6);
     opacity: 0;
@@ -266,4 +277,9 @@ input[type=date] {
   padding: 0 3px;
   color: gray;
 }
+
+#activation_code {
+  color : #3F3844 !important;
+}
+
 

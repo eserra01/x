@@ -1,5 +1,27 @@
 $( document ).ready(function() {
 
+  $("#birthdate").focus(function() {}).blur(function() {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+
+    today = yyyy + '-' + mm + '-' + dd;
+    if($(this).val().split("-")[0] < 100){
+      var qwe  = "19"+$(this).val().split("-")[0][2]+$(this).val().split("-")[0][3];
+      $(this).val( qwe+"-"+$(this).val().split("-")[1]+"-"+$(this).val().split("-")[2] );
+    } else if ($(this).val().split("-")[0] >= 100 & $(this).val().split("-")[0] <1910 | $(this).val() >= today){
+      alert("El formato de fecha no es correcto, favor de verificarlo");
+      $(this).val(null);
+      $(this.focus());
+    }
+    if ($(this).val().split("-")[0].length >4){
+      alert("El campo de año contiene más de 4 digitos, favor de verificarlo");
+      $(this).val(null);
+    }
+    });
+
+
   /* Método de formateo de string */
   String.prototype.format = function() {
     var str = this;
@@ -54,6 +76,7 @@ $( document ).ready(function() {
     $("#schemes").empty();
     var company_id = $("#company option:selected").val();
     var lot_id = $( this ).val();
+    $("#activation_code").text("");
     $.post('/main/check/serie', {'company_id' : company_id, 'lot_id' : lot_id}, function(data) {
       if (data.result != null) {
         if (data.result.employee) {
@@ -92,8 +115,8 @@ $( document ).ready(function() {
       success: function(data)
         {
           if(data.result.activation_code != null) {
-            $("#activation_code").text(data.result.activation_code);
             if(confirm('Código de activación : {0}\n¿Deseas seguir activando?'.format(data.result.activation_code))){
+              $("#activation_code").text("Código: {0}".format(data.result.activation_code));
               $("#lot_id").val('');
               $("#partner_name").val('');
               $("#partner_fname").val('');
@@ -110,6 +133,7 @@ $( document ).ready(function() {
               $("#employee_id").text('');
               $("#product_id").text('');
             } else {
+              $("#activation_code").text("");
               $("#activation-form").modal("hide");
             }
           }
