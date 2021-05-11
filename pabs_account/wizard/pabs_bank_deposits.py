@@ -11,6 +11,7 @@ tz = pytz.timezone('America/Mexico_City')
 
 URL.update({
   'DEPOSIT' : '/controldepositos/getAfectedDeposits',
+  'DEPOSIT_SYNC' : '/controldepositos/updateAfectedDepositsAsSynced',
 })
 
 class PabsBankDeposits(models.TransientModel):
@@ -74,23 +75,41 @@ class PabsBankDeposits(models.TransientModel):
       raise ValidationError("Información recibida: {}".format(e))
 
   def get_account_move(self):
+    ### Encabezado de la petición
+    headers = {'Content-type': 'application/json'}
     ### CREANDO OBJETOS
     move_obj = self.env['account.move']
+    sync_obj = self.env['pabs.ecobro.sync']
     ### GENERANDO LA POLIZA DE LOS DEPOSITOS
     name = 'Depositos del {}'.format(self.ecobro_date)
+    ### Obtenemos la compañia
     company_id = self.env.company
+    ####  Obtenemos la URL
+    url = sync_obj.get_url(company_id.id, "DEPOSIT_SYNC")
+    ### Si no conseguimos la url
+    if not url:
+      ### Mensaje de error
+      raise ValidationError("No se pudo generar la URL, favor de verificarlo con sistemas")
+    ### Obtenemos el diario configurado
     journal_id = company_id.account_journal_id.id
+    ### Obtenemos la cuenta analitica configurada
     analytic_account_id = company_id.deposit_analytic_account_id.id
+    ### Si no viene la cuenta analitica
     if not analytic_account_id:
+      ### Mensaje de error
       raise ValidationError("No se encuentra configurada la cuenta análitica de depositos, favor de configurar una e intentarlo nuevamente.")
+    ### Agregamos array del encabezado de la póliza
     data = {
       'ref' : name,
       'date' : self.ecobro_date,
       'journal_id' : journal_id,
       'company_id' : company_id.id,
     }
+    ids_line = []
     lines = []
+    ### Reccorremos detalles
     for line in self.deposit_line_ids:
+      ids_line.append(line.id_ref)
       if line.account_id:
         lines.append([0,0,{
           'account_id' : line.account_id.id,
@@ -113,6 +132,15 @@ class PabsBankDeposits(models.TransientModel):
     move_id = move_obj.create(data)
     ### Validamos la póliza
     move_id.action_post()
+    ### Generamos encabezado de la petición
+    payload = {
+      'doc_entry' : move_id.id,
+      'result' : ids_line,
+    }
+    ### Enviamos la petición
+    req = requests.post(url, json=payload, headers=headers)
+    ### leemos la respuesta de la petición
+    response = json.loads(req.text)
     ### Retornamos la póliza
     return {
       'name' : name,
