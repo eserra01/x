@@ -711,6 +711,7 @@ class PABSEcobroSync(models.Model):
     ### BUSCAMOS LOS CONTRATOS QUE SE TENGAN QUE REACTIVAR HOY, O ANTERIOR A HOY
     contract_ids = contract_obj.search([
       ('contract_status_item','=',status_id.id),
+      ('state','=','contract'),
       ('reactivation_date','<=',today)])
 
     ### ESCRIBIMOS EL ESTATUS ACTIVO EN TODOS LOS REGISTROS QUE SE ENCONTRARON
