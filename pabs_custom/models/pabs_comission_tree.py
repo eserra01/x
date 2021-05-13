@@ -110,7 +110,7 @@ class ComissionTree(models.Model):
 
 
             #Crear registro en salida de comisiones
-            salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id}])
+            salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
 
 #Para excedente y abono
     def CrearSalidas(self, IdPago, NumeroContrato, CodigoCobrador, MontoPago, EsExcedente = False):
