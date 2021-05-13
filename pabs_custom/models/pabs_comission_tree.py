@@ -110,7 +110,7 @@ class ComissionTree(models.Model):
 
 
             #Crear registro en salida de comisiones
-            salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company:_id" : contrato.company_id.id}])
+            salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company:_id" : contrato.company_id}])
 
 #Para excedente y abono
     def CrearSalidas(self, IdPago, NumeroContrato, CodigoCobrador, MontoPago, EsExcedente = False):
@@ -183,7 +183,7 @@ class ComissionTree(models.Model):
                     #Obtener ultimo orden del arbol de comisiones
                     siguiente_orden_disponible = self.search([('contract_id','=', contrato.id)], order='pay_order desc', limit = 1).sorted(lambda r: r.pay_order).mapped('pay_order')[-1] + 1
                     #Crear registro en Arbol
-                    self.create([{"contract_id":contrato.id, "pay_order":siguiente_orden_disponible, "job_id":id_cargo_cobrador, "comission_agent_id":empleado.id, "actual_commission_paid":MontoComisionCobrador}])
+                    self.create([{"contract_id":contrato.id, "pay_order":siguiente_orden_disponible, "job_id":id_cargo_cobrador, "comission_agent_id":empleado.id, "actual_commission_paid":MontoComisionCobrador, "company_id" : contrato.company_id.id}])
 
             #Insertar linea de cobrador en salida de comisiones
             salida_comisiones_obj.create([{"payment_id":IdPago, "job_id":id_cargo_cobrador, "comission_agent_id":empleado.id, "actual_commission_paid": MontoComisionCobrador}])
