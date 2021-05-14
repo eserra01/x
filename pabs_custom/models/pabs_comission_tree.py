@@ -54,12 +54,12 @@ class ComissionTree(models.Model):
             raise ValidationError("No se encontró el contrato {}".format(NumeroContrato))
 
         #Instanciar objeto Salida de comisiones
-        salida_comisiones_obj = self.env['pabs.comission.output']
+        salida_comisiones_obj = self.env['pabs.comission.output'].with_context(force_company=contrato.company_id.id)
 
         ######################## PAPELERIA ##########################
         if TipoPago == "Papeleria":
             #Obtener id del cargo
-            id_cargo = self.env['hr.job'].search([('name', '=', "PAPELERIA"),('company_id', '=', contrato.company_id.id)]).id
+            id_cargo = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "PAPELERIA")]).id
 
             #Obtener registro de papeleria en el árbol de comisiones
             registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
@@ -79,16 +79,16 @@ class ComissionTree(models.Model):
             registro_arbol.write({"commission_paid":MontoPago, "actual_commission_paid":MontoPago, "remaining_commission":0})
 
             #Crear registro en salida de comisiones
-            salida_comisiones_obj.create([{"payment_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago}])
+            salida_comisiones_obj.create([{"payment_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
         
         ######################## BONO ##########################
         elif TipoPago == "Bono":
 
             #Obtener id del cargo
-            id_cargo = self.env['hr.job'].search([('name', '=', "FIDEICOMISO"), ('company_id', '=', contrato.company_id.id)]).id
+            id_cargo = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "FIDEICOMISO")]).id
 
             #Obtener registro de fideicomiso en el árbol de comisiones
-            registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo), ('company_id', '=', contrato.company_id.id)])
+            registro_arbol = self.with_context(force_company=contrato.company_id.id).search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
 
             if not registro_arbol:
                 raise ValidationError("No se encontro el monto de Fideicomiso en el árbol de comisiones")
