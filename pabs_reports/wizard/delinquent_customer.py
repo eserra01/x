@@ -85,7 +85,7 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
         ### RECORREMOS LOS CONTRATOS
         for contract_id in contract_ids:
             ### SI EL CONTRATO ES PAGO SEMANAL Y TIENE MAS DE 15 DIAS SIN ABONAR
-            if contract_id.way_to_payment == 'weekly' and contract_id.days_without_payment > 15:
+            if contract_id.way_to_payment == 'weekly' and contract_id.days_without_payment > 14:
                 last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
                 data_rec.append({
                     'contract_name' : contract_id.name,
@@ -223,7 +223,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                                 WHEN c.contract_status_item = 16 THEN 6
                             END)
                 
-                WHEN c.contract_status_item = 21 AND CURRENT_DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) < (
+                WHEN c.contract_status_item = 21 AND CURRENT_DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) <= (
                         CASE
                             WHEN way_to_payment = 'weekly' THEN 14
                             WHEN way_to_payment = 'biweekly' THEN 30
