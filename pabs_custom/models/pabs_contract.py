@@ -1166,18 +1166,13 @@ class PABSContracts(models.Model):
   def calcular_dias_sin_abonar(self):
     for rec in self:
       #Obtener registro del último pago de cobranza
-      ultimo_abono_cobranza = rec.env['account.payment'].search([('contract','=', rec.id), ('date_receipt','!=',False)], order='date_receipt desc', limit = 1)
-      
-      if ultimo_abono_cobranza.date_receipt:
-        rec.days_without_payment = (fields.Date.today() - ultimo_abono_cobranza.date_receipt).days
+      ultimo_abono_cobranza = self.payment_ids.filtered(lambda r: r.state == 'posted' and r.reference == 'payment').sorted(key=lambda r: r.date_receipt)[-1]
+      if ultimo_abono_cobranza:
+        rec.days_without_payment = (fields.Date.today() - ultimo_abono_cobranza.payment_date).days
+      elif rec.date_first_payment < fields.Date.today():
+        rec.days_without_payment = (fields.Date.today() - rec.date_first_payment).days
       else:
-        #Obtener registro del último pago de oficina
-        ultimo_abono_oficina = rec.env['account.payment'].search([('contract','=', rec.id), ('payment_date','!=',False)], order='payment_date desc', limit = 1)
-        
-        if ultimo_abono_oficina.payment_date:
-          rec.days_without_payment = (fields.Date.today() - ultimo_abono_oficina.payment_date).days
-        else:
-          rec.days_without_payment = 0
+        rec.days_without_payment = 0
 
   def create_contracts(self):
     _logger.warning('El contrato')
