@@ -78,7 +78,7 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
       picking_ids = picking_obj.search([
         ('state','=','done'),
         ('origin','in',('cancelada','extravio')),
-        ('date_done','<=',start_date)],order="date_done")
+        ('date_done','=',start_date)],order="date_done")
       report_name = "Reporte de Acumulados de {}".format(start_date)
 
     ### SI NO SE ENCONTRARON REGISTROS COINCIDENTES

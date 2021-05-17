@@ -23,7 +23,7 @@
 
             * {
                 font-family: Arial, Helvetica, sans-serif;
-                font-size: 10pt;
+                font-size: 12px;
                 box-sizing: border-box;
             }
 
@@ -61,23 +61,19 @@
               </div>
             </div>
 
-            <table style="border-collapse: collapse; width: 100%;">
-              <thead class="encabezado">
-                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Contrato</th>
-                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Cliente</th>
-                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Domicilio</th>
-                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Colonia</th>
-                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Localidad</th>
-                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Ultimo Abono</th>
-                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Periodo</th>
-              </thead>
-              <t t-foreach="data.keys()" t-as="collector">
+            <t t-foreach="data.keys()" t-as="collector">
+              <span t-esc="collector" style="text-align: center; font-weight: bold;"/>
+              <table style="border-collapse: collapse; width: 100%;">
+                <thead class="encabezado">
+                  <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Contrato</th>
+                  <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Cliente</th>
+                  <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Domicilio</th>
+                  <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Colonia</th>
+                  <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Localidad</th>
+                  <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Ultimo Abono</th>
+                  <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">Periodo</th>
+                </thead>
                 <tbody>
-                  <tr>
-                    <td colspan="7">
-                      <span t-esc="collector" style="text-align: center; font-weight: bold;"/>
-                    </td>
-                  </tr>
                   <tr t-foreach="data[collector]" t-as="line">
                     <td>
                       <span t-esc="line['contract_name']"/>
@@ -108,8 +104,9 @@
                     </td>
                   </tr>
                 </tbody>
-              </t>
-            </table>
+              </table>
+              <p style="page-break-after:always;">   </p>
+            </t>
 
             <div class="footer">
               <div class="row">
