@@ -75,25 +75,25 @@
                 </thead>
                 <tbody>
                   <tr t-foreach="data[collector]" t-as="line">
-                    <td>
+                    <td style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">
                       <span t-esc="line['contract_name']"/>
                     </td>
-                    <td>
+                    <td style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">
                       <span t-esc="line['partner_name']"/>
                     </td>
-                    <td>
+                    <td style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">
                       <span t-esc="line['address']"/>
                     </td>
-                    <td>
+                    <td style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">
                       <span t-esc="line['colony']"/>
                     </td>
-                    <td>
+                    <td style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">
                       <span t-esc="line['municipality']"/>
                     </td>
-                    <td>
+                    <td style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">
                       <span t-esc="line['last_payment']"/>
                     </td>
-                    <td>
+                    <td style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">
                       <span t-esc="line['period']"/>
                     </td>
                   </tr>
