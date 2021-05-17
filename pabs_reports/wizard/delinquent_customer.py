@@ -69,7 +69,7 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
     ### BUSCAMOS TODOS LOS CONTRATOS
     all_contracts = contract_obj.search([
         ('state','=','contract'),
-        ('contract_status_item','in',status_id.ids)])
+        ('contract_status_item','in',status_id.ids)], order="name")
 
     ### TRAEMOS TODOS LOS COBRADORES
     collectors = all_contracts.mapped('debt_collector.name')
@@ -86,7 +86,7 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
         for contract_id in contract_ids:
             ### SI EL CONTRATO ES PAGO SEMANAL Y TIENE MAS DE 15 DIAS SIN ABONAR
             if contract_id.way_to_payment == 'weekly' and contract_id.days_without_payment > 15:
-                last_payment = contract_id.payment_ids.sorted(key=lambda r: r.payment_date)[-1].payment_date
+                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
                 data_rec.append({
                     'contract_name' : contract_id.name,
                     'partner_name' : contract_id.full_name,
@@ -98,7 +98,7 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
                 })
             ### SI EL CONTRATO ES PAGO QUINCENAL Y TIENE MAS DE 30 DÍAS SIN ABONAR
             elif contract_id.way_to_payment == 'biweekly' and contract_id.days_without_payment > 30:
-                last_payment = contract_id.payment_ids.sorted(key=lambda r: r.payment_date)[-1].payment_date
+                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
                 data_rec.append({
                     'contract_name' : contract_id.name,
                     'partner_name' : contract_id.full_name,
@@ -110,7 +110,7 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
                 })
             ### SI EL CONTRATO ES PAGO MENSUAL Y TIENE MAS DE 60 DIAS SIN ABONAR
             elif contract_id.way_to_payment == 'monthly' and contract_id.days_without_payment > 60:
-                last_payment = contract_id.payment_ids.sorted(key=lambda r: r.payment_date)[-1].payment_date
+                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
                 data_rec.append({
                     'contract_name' : contract_id.name,
                     'partner_name' : contract_id.full_name,
