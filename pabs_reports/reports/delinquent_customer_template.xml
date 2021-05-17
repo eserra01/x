@@ -75,25 +75,25 @@
                 </thead>
                 <tbody>
                   <tr t-foreach="data[collector]" t-as="line">
-                    <td style="padding: 1px 1px 1px 1px;text-overflow: clip;">
+                    <td style="padding: 1px 1px 1px 1px;overflow: hidden;">
                       <span t-esc="line['contract_name']"/>
                     </td>
-                    <td style="padding: 1px 1px 1px 1px;text-overflow: clip;">
+                    <td style="padding: 1px 1px 1px 1px;overflow: hidden;">
                       <span t-esc="line['partner_name']"/>
                     </td>
-                    <td style="padding: 1px 1px 1px 1px;text-overflow: clip;">
+                    <td style="padding: 1px 1px 1px 1px;overflow: hidden;">
                       <span t-esc="line['address']"/>
                     </td>
-                    <td style="padding: 1px 1px 1px 1px;text-overflow: clip;">
+                    <td style="padding: 1px 1px 1px 1px;overflow: hidden;">
                       <span t-esc="line['colony']"/>
                     </td>
-                    <td style="padding: 1px 1px 1px 1px;text-overflow: clip;">
+                    <td style="padding: 1px 1px 1px 1px;overflow: hidden;">
                       <span t-esc="line['municipality']"/>
                     </td>
-                    <td style="padding: 1px 1px 1px 1px;text-overflow: clip;">
+                    <td style="padding: 1px 1px 1px 1px;overflow: hidden;">
                       <span t-esc="line['last_payment']"/>
                     </td>
-                    <td style="padding: 1px 1px 1px 1px;text-overflow: clip;">
+                    <td style="padding: 1px 1px 1px 1px;overflow: hidden;">
                       <span t-esc="line['period']"/>
                     </td>
                   </tr>
