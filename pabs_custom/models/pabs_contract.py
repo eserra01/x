@@ -1169,7 +1169,7 @@ class PABSContracts(models.Model):
       ultimo_abono_cobranza = self.payment_ids.filtered(lambda r: r.state == 'posted' and r.reference == 'payment')
       if ultimo_abono_cobranza:
         ultimo_abono_cobranza = ultimo_abono_cobranza.sorted(key=lambda r: r.date_receipt)
-        rec.days_without_payment = (fields.Date.today() - ultimo_abono_cobranza[-1].payment_date).days
+        rec.days_without_payment = (fields.Date.today() - ultimo_abono_cobranza[-1].date_receipt).days
       elif rec.date_first_payment < fields.Date.today():
         rec.days_without_payment = (fields.Date.today() - rec.date_first_payment).days
       else:

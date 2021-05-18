@@ -3,6 +3,9 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from dateutil import tz
+import logging
+
+_logger = logging.getLogger(__name__)
 
 HEADERS = [
   'Fecha de Contrato',
@@ -84,9 +87,11 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
 
         ### RECORREMOS LOS CONTRATOS
         for contract_id in contract_ids:
+            _logger.warning("Contrato: {}\n días sin abonar: {}".format(contract_id.name,contract_id.days_without_payment))
             ### SI EL CONTRATO ES PAGO SEMANAL Y TIENE MAS DE 15 DIAS SIN ABONAR
             if contract_id.way_to_payment == 'weekly' and contract_id.days_without_payment > 14:
                 last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
+                _logger.warning("Moroso Semanal")
                 data_rec.append({
                     'contract_name' : contract_id.name,
                     'partner_name' : contract_id.full_name,
@@ -99,6 +104,7 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
             ### SI EL CONTRATO ES PAGO QUINCENAL Y TIENE MAS DE 30 DÍAS SIN ABONAR
             elif contract_id.way_to_payment == 'biweekly' and contract_id.days_without_payment > 30:
                 last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
+                _logger.warning("Moroso Quincenal")
                 data_rec.append({
                     'contract_name' : contract_id.name,
                     'partner_name' : contract_id.full_name,
@@ -111,6 +117,7 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
             ### SI EL CONTRATO ES PAGO MENSUAL Y TIENE MAS DE 60 DIAS SIN ABONAR
             elif contract_id.way_to_payment == 'monthly' and contract_id.days_without_payment > 60:
                 last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
+                _logger.warning("Moroso Mensual")
                 data_rec.append({
                     'contract_name' : contract_id.name,
                     'partner_name' : contract_id.full_name,
