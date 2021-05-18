@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, date
 import logging
 import calendar
+from dateutil import tz
 from odoo.addons.pabs_custom.externals.calcule import CalculeRFC, CalculeCURP
 
 import math
@@ -1166,14 +1167,15 @@ class PABSContracts(models.Model):
   def calcular_dias_sin_abonar(self):
     for rec in self:
       days = 0
+      today = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
       #Obtener registro del último pago de cobranza
       ultimo_abono_cobranza = self.payment_ids.filtered(lambda r: r.state == 'posted' and r.reference == 'payment')
       if ultimo_abono_cobranza:
         ultimo_abono_cobranza = ultimo_abono_cobranza.sorted(key=lambda r: r.date_receipt)
-        days = (fields.Date.today() - ultimo_abono_cobranza[-1].date_receipt).days
+        days = (today - ultimo_abono_cobranza[-1].date_receipt).days
         rec.days_without_payment = days
-      elif rec.date_first_payment < fields.Date.today():
-        days = (fields.Date.today() - rec.date_first_payment).days
+      elif rec.date_first_payment < today:
+        days = (today - rec.date_first_payment).days
         rec.days_without_payment = days
       else:
         rec.days_without_payment = days
