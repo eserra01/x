@@ -235,7 +235,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                                 WHEN c.contract_status_item = 16 THEN 6
                             END)
                 
-                WHEN c.contract_status_item = 21 AND (current_date AT TIME ZONE 'Mexico/General')::DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) <= (
+                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) <= (
                         CASE
                             WHEN way_to_payment = 'weekly' THEN 14
                             WHEN way_to_payment = 'biweekly' THEN 30
@@ -243,7 +243,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                         END)
                     THEN 21
 
-                WHEN c.contract_status_item = 21 AND (current_date AT TIME ZONE 'Mexico/General')::DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) > (
+                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) > (
                             CASE
                                 WHEN way_to_payment = 'weekly' THEN 14
                                 WHEN way_to_payment = 'biweekly' THEN 30
@@ -275,7 +275,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
             account_move AS am ON am.contract_id = c.id
         WHERE
             am.type = 'out_invoice'
-                AND c.invoice_date <= (current_date AT TIME ZONE 'Mexico/General')::DATE
+                AND c.invoice_date <= (now() AT TIME ZONE 'UTC+5')::DATE
                 AND c.state = 'contract'
                 AND c.company_id = {}
         ORDER BY pEst.id , c.invoice_date )
