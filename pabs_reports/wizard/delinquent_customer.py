@@ -89,7 +89,9 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
         for contract_id in contract_ids:
             ### SI EL CONTRATO ES PAGO SEMANAL Y TIENE MAS DE 15 DIAS SIN ABONAR
             if contract_id.way_to_payment == 'weekly' and contract_id.calcular_dias_sin_abonar() > 14:
-                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
+                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted')
+                if last_payment:
+                  last_payment = last_payment.sorted(key=lambda r: r.payment_date)[-1].payment_date
                 _logger.warning("Moroso Semanal")
                 data_rec.append({
                     'contract_name' : contract_id.name,
@@ -102,7 +104,9 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
                 })
             ### SI EL CONTRATO ES PAGO QUINCENAL Y TIENE MAS DE 30 DÍAS SIN ABONAR
             elif contract_id.way_to_payment == 'biweekly' and contract_id.calcular_dias_sin_abonar() > 30:
-                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
+                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted')
+                if last_payment:
+                  last_payment = last_payment.sorted(key=lambda r: r.payment_date)[-1].payment_date
                 _logger.warning("Moroso Quincenal")
                 data_rec.append({
                     'contract_name' : contract_id.name,
@@ -115,7 +119,9 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
                 })
             ### SI EL CONTRATO ES PAGO MENSUAL Y TIENE MAS DE 60 DIAS SIN ABONAR
             elif contract_id.way_to_payment == 'monthly' and contract_id.calcular_dias_sin_abonar() > 60:
-                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
+                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted')
+                if last_payment:
+                  last_payment = last_payment.sorted(key=lambda r: r.payment_date)[-1].payment_date
                 _logger.warning("Moroso Mensual")
                 data_rec.append({
                     'contract_name' : contract_id.name,
