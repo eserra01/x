@@ -1170,15 +1170,18 @@ class PABSContracts(models.Model):
       today = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')).date()
       #Obtener registro del último pago de cobranza
       ultimo_abono_cobranza = self.payment_ids.filtered(lambda r: r.state == 'posted' and r.reference == 'payment')
-      if ultimo_abono_cobranza:
-        ultimo_abono_cobranza = ultimo_abono_cobranza.sorted(key=lambda r: r.date_receipt)
-        days = (today - ultimo_abono_cobranza[-1].date_receipt).days
-        rec.days_without_payment = days
-      elif rec.date_first_payment < today:
-        days = (today - rec.date_first_payment).days
-        rec.days_without_payment = days
+      if rec.date_first_payment and ultimo_abono_cobranza:
+        if ultimo_abono_cobranza:
+          ultimo_abono_cobranza = ultimo_abono_cobranza.sorted(key=lambda r: r.date_receipt)
+          days = (today - ultimo_abono_cobranza[-1].date_receipt).days
+          rec.days_without_payment = days
+        elif rec.date_first_payment < today:
+          days = (today - rec.date_first_payment).days
+          rec.days_without_payment = days
+        else:
+          rec.days_without_payment = days
       else:
-        rec.days_without_payment = days
+        rec.days_without_payment = 0
       return days
 
   def create_contracts(self):
