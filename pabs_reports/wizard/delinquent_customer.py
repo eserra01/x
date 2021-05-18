@@ -150,7 +150,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
   def generate_xlsx_report(self, workbook, data, lines):
     ### FECHA ACTUAL
     company_id = self.env.company.id
-    date = data.get('data') or fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')).strftime("%Y-%m-%d")
+    date = data.get('data') or fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
     ### CREAMOS CURSOS
     cr = self._cr
     ### ESCRIBIMOS EL QUERY EN UNA VARIABLE
@@ -235,7 +235,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                                 WHEN c.contract_status_item = 16 THEN 6
                             END)
                 
-                WHEN c.contract_status_item = 21 AND {} - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) <= (
+                WHEN c.contract_status_item = 21 AND current_date AT TIME ZONE 'Mexico/General' - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) <= (
                         CASE
                             WHEN way_to_payment = 'weekly' THEN 14
                             WHEN way_to_payment = 'biweekly' THEN 30
@@ -243,7 +243,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                         END)
                     THEN 21
 
-                WHEN c.contract_status_item = 21 AND {} - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) > (
+                WHEN c.contract_status_item = 21 AND current_date AT TIME ZONE 'Mexico/General' - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) > (
                             CASE
                                 WHEN way_to_payment = 'weekly' THEN 14
                                 WHEN way_to_payment = 'biweekly' THEN 30
@@ -275,12 +275,12 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
             account_move AS am ON am.contract_id = c.id
         WHERE
             am.type = 'out_invoice'
-                AND c.invoice_date <= {}
+                AND c.invoice_date <= current_date AT TIME ZONE 'Mexico/General'
                 AND c.state = 'contract'
                 AND c.company_id = {}
         ORDER BY pEst.id , c.invoice_date )
     AS mor
-    WHERE mor.estatus_moroso = 7""".format(date, date, date, company_id)
+    WHERE mor.estatus_moroso = 7""".format(company_id)
     ### GENERAMOS LA HOJA
     sheet = workbook.add_worksheet("Reporte de Morosos {}".format(date))
 
