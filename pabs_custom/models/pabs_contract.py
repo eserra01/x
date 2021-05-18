@@ -1167,7 +1167,7 @@ class PABSContracts(models.Model):
   def calcular_dias_sin_abonar(self):
     for rec in self:
       days = 0
-      today = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
+      today = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')).date()
       #Obtener registro del último pago de cobranza
       ultimo_abono_cobranza = self.payment_ids.filtered(lambda r: r.state == 'posted' and r.reference == 'payment')
       if ultimo_abono_cobranza:
