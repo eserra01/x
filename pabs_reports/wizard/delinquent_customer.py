@@ -235,7 +235,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                                 WHEN c.contract_status_item = 16 THEN 6
                             END)
                 
-                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) <= (
+                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - COALESCE( (Select MAX(date_receipt) from account_payment as last where last.contract = c.id), c.date_first_payment) <= (
                         CASE
                             WHEN way_to_payment = 'weekly' THEN 14
                             WHEN way_to_payment = 'biweekly' THEN 30
@@ -243,7 +243,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                         END)
                     THEN 21
 
-                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) > (
+                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - COALESCE( (Select MAX(date_receipt) from account_payment as last where last.contract = c.id), c.date_first_payment) > (
                             CASE
                                 WHEN way_to_payment = 'weekly' THEN 14
                                 WHEN way_to_payment = 'biweekly' THEN 30
