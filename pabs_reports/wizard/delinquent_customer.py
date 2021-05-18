@@ -188,7 +188,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
             ppl.fixed_price AS "Costo",
             am.amount_residual AS "Saldo",
             0 AS "Ultimo abono",
-            (Select MAX(date_receipt) from account_payment as last where last.contract = c.id) AS "Fecha de ultimo abono",
+            (Select MAX(date_receipt) from account_payment as last where last.contract = c.id and reference = 'payment' and state = 'posted') AS "Fecha de ultimo abono",
             (SELECT 
                     P.name
                 FROM
@@ -235,7 +235,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                                 WHEN c.contract_status_item = 16 THEN 6
                             END)
                 
-                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - COALESCE( (Select MAX(date_receipt) from account_payment as last where last.contract = c.id), c.date_first_payment) <= (
+                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - COALESCE( (Select MAX(date_receipt) from account_payment as last where last.contract = c.id and reference = 'payment' and state = 'posted'), c.date_first_payment) <= (
                         CASE
                             WHEN way_to_payment = 'weekly' THEN 14
                             WHEN way_to_payment = 'biweekly' THEN 30
@@ -243,7 +243,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                         END)
                     THEN 21
 
-                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - COALESCE( (Select MAX(date_receipt) from account_payment as last where last.contract = c.id), c.date_first_payment) > (
+                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - COALESCE( (Select MAX(date_receipt) from account_payment as last where last.contract = c.id and reference = 'payment' and state = 'posted'), c.date_first_payment) > (
                             CASE
                                 WHEN way_to_payment = 'weekly' THEN 14
                                 WHEN way_to_payment = 'biweekly' THEN 30
@@ -297,28 +297,30 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
     cr.execute(query)
     ### ITERAMOS EN EL RESULTADO
     for index, rec in enumerate(cr.fetchall()):
+      if rec[0] == '1CJ004795':
+        raise ValidationError("Ya encontré el contrato 1CJ004795")
       ### ESCRIBIMOS LOS RESULTADOS DEL QUERY
-      sheet.write((index + 1), 0, rec[0], date_format)
-      sheet.write((index + 1), 1, rec[1])
-      sheet.write((index + 1), 2, rec[2])
-      sheet.write((index + 1), 3, rec[3])
-      sheet.write((index + 1), 4, rec[4])
-      sheet.write((index + 1), 5, rec[5])
-      sheet.write((index + 1), 6, rec[6])
-      sheet.write((index + 1), 7, rec[7])
-      sheet.write((index + 1), 8, rec[8])
-      sheet.write((index + 1), 9, rec[9])
-      sheet.write((index + 1), 10, rec[10])
-      sheet.write((index + 1), 11, rec[11], date_format)
-      sheet.write((index + 1), 12, rec[12])
-      sheet.write((index + 1), 13, rec[13])
-      sheet.write((index + 1), 14, rec[14]) # id contrato
-      sheet.write((index + 1), 15, rec[15], money_format) # monto de pago
-      sheet.write((index + 1), 16, rec[16])
-      sheet.write((index + 1), 17, rec[17], money_format) # costo
-      sheet.write((index + 1), 18, rec[18], money_format) # saldo
-      sheet.write((index + 1), 19, rec[19]) 
-      sheet.write((index + 1), 20, rec[20], date_format) # fecha de ultimo abono
-      sheet.write((index + 1), 21, rec[21])
-      sheet.write((index + 1), 22, rec[22], money_format) #importe de ultimo abono
-      sheet.write((index + 1), 23, rec[23]) # estatus moroso
+      sheet.write((index + 1), 0, rec[0] or '', date_format)
+      sheet.write((index + 1), 1, rec[1] or '')
+      sheet.write((index + 1), 2, rec[2] or '')
+      sheet.write((index + 1), 3, rec[3] or '')
+      sheet.write((index + 1), 4, rec[4] or '')
+      sheet.write((index + 1), 5, rec[5] or '')
+      sheet.write((index + 1), 6, rec[6] or '')
+      sheet.write((index + 1), 7, rec[7] or '')
+      sheet.write((index + 1), 8, rec[8] or '')
+      sheet.write((index + 1), 9, rec[9] or '')
+      sheet.write((index + 1), 10, rec[10] or '')
+      sheet.write((index + 1), 11, rec[11] or '', date_format)
+      sheet.write((index + 1), 12, rec[12] or '')
+      sheet.write((index + 1), 13, rec[13] or '')
+      sheet.write((index + 1), 14, rec[14] or '') # id contrato
+      sheet.write((index + 1), 15, rec[15] or '', money_format) # monto de pago
+      sheet.write((index + 1), 16, rec[16] or '')
+      sheet.write((index + 1), 17, rec[17] or '', money_format) # costo
+      sheet.write((index + 1), 18, rec[18] or '', money_format) # saldo
+      sheet.write((index + 1), 19, rec[19] or '') 
+      sheet.write((index + 1), 20, rec[20] or '', date_format) # fecha de ultimo abono
+      sheet.write((index + 1), 21, rec[21] or '')
+      sheet.write((index + 1), 22, rec[22] or '', money_format) #importe de ultimo abono
+      sheet.write((index + 1), 23, rec[23] or '') # estatus moroso
