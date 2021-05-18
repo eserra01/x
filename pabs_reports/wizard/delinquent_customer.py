@@ -297,8 +297,6 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
     cr.execute(query)
     ### ITERAMOS EN EL RESULTADO
     for index, rec in enumerate(cr.fetchall()):
-      if rec[0] == '1CJ004795':
-        raise ValidationError("Ya encontré el contrato 1CJ004795")
       ### ESCRIBIMOS LOS RESULTADOS DEL QUERY
       sheet.write((index + 1), 0, rec[0] or '', date_format)
       sheet.write((index + 1), 1, rec[1] or '')
