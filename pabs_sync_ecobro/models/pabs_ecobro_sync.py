@@ -261,7 +261,7 @@ class PABSEcobroSync(models.Model):
         'nombre' : mortuary_id.ii_finado,
         'apellido_paterno' : '',
         'apellido_materno' : '',
-        'empresa' : '05'
+        'empresa' : '05',
         'calle' : mortuary_id.podp_calle_y_number or '',
         'numero_exterior' : '',
         'colonia' : mortuary_id.podp_colonia_id.name or '',
