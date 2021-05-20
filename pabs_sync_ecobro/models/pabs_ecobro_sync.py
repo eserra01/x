@@ -180,6 +180,7 @@ class PABSEcobroSync(models.Model):
     log = "Sincronización de Contratos de Odoo \n"
     ### INSTANCIACIÓN DE OBJECTOS
     contract_obj = self.env['pabs.contract'].sudo()
+    mortuary_obj = self.env['mortuary'].sudo()
     ### MANDAR A LLAMAR LA URL DE CONTRATOS
     url = self.get_url(company_id, "CONTRATOS")
     ### SI NO GENERA LA URL
@@ -193,6 +194,9 @@ class PABSEcobroSync(models.Model):
       ('company_id','=',company_id),
       ('state','=','contract'),
       ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO'))])
+
+    ### BUSCAMOS TODAS LAS BITACORAS
+    mortuary_ids = mortuary_obj.search([('name','!=',False)]).filtered(lambda r: r.ii_servicio.name in ('PENDIENTE','TERMINADO'))
 
     ### AGREGAMOS LA CANTIDAD DE CONTRATOS EN EL LOG
     len_contract = len(contract_ids)
@@ -246,6 +250,44 @@ class PABSEcobroSync(models.Model):
 
       _logger.info("Contrato: {}".format(contract_id.name))
       _logger.info("Cobrador: {}-{}".format(contract_id.debt_collector.barcode,contract_id.debt_collector.name))
+      log += '\n\n'
+    ### RECORREMOS TODAS LAS BITACORAS
+    _logger.info("Iniciamos Enpaquetado de bitacoras!")
+    for index, mortuary_id in enumerate(mortuary_ids):
+      contract_info.append({
+        'contratoID' : int(mortuary_id.id) + 20000000,
+        'serie' : mortuary_id.name[0:3],
+        'no_contrato' : mortuary_id.name[3:],
+        'nombre' : mortuary_id.ii_finado,
+        'apellido_paterno' : '',
+        'apellido_materno' : '',
+        'empresa' : '05'
+        'calle' : mortuary_id.podp_calle_y_number or '',
+        'numero_exterior' : '',
+        'colonia' : mortuary_id.podp_colonia_id.name or '',
+        'localidad' : mortuary_id.podp_municipio_id.name or '',
+        'entre_calles' : '',
+        'forma_pago_actual' : 1,
+        'monto_pago_actual' : 1,
+        'cobradorID' : mortuary_id.employee_id.id or '',
+        'estatus' : 1,
+        'fecha_ultimo_abono' : '',
+        'monto_atrasado' : 0,
+        'fecha_primer_abono' : "",
+        'fecha_reactivacion' : "",
+        'detalle_servicio' : '',
+        'solicitud' : '',
+        'nombre_plan' : '',
+        'costo_plan' : 0,
+        'codigo_promotor' : '',
+        'saldo' : mortuary_id.balance,
+        'abonado' : 0,
+        'telefono' :'',
+      })
+      ### ESCRIBIMOS EL CONTRATO QUE SE ESTA PROCESANDO
+      log += 'Número de bitacora: {} \n'.format(mortuary_id.name)
+
+      _logger.info("bitacora: {}".format(mortuary_id.name))
       log += '\n\n'
     ### MANEJO DE ERRORES AL ENVIAR AL WEB SERVICE
     try:
