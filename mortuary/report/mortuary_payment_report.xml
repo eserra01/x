@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    <template id="mortuary_payment_report">
+      <t t-call="web.basic_layout">
+        <!-- Encabezado de reporte -->
+        <div class="page">
+          <style type="text/css">
+            .logo {width:330px; padding-right: 50px; padding-top: 60px;}
+            .bottom_line {text-decoration: underline;font-weight : bold; padding: 10px;}
+            table { border-collapse:collapse; }
+            table thead th { border-bottom: 1px solid #000; font-weight : bold;}
+            td { padding: 10px;}
+            .total {border-bottom: 1px solid #000; border-top: 1px solid #000; font-weight : bold;}
+            .lbl_total {padding-right : 25px;}
+            .container { height: 400px;}
+            .border {border: 1px solid #000 !important;}
+            .bold {font-weight : bold;}
+            .signature {border : 1px solid #000 !important; width: 250px; padding: 50px; margin: 20px; float: right; height : 200px;position: relative; top: -230px;}
+            .content {position: absolute; bottom: 0; padding-left: 50px;}
+            .title {font-size : 20px; padding: 20px;}
+          </style>
+          <div style="float: left; width: 15%; text-align: center;">
+            <img src="mortuary/static/description/imagen.jpg" class="logo"/>
+          </div>
+          <div style=" width: 85%;  text-align: left;">
+            <!-- TITULO DEL REPORTE -->
+            <div style="font-size:15pt; color:#000000;  font-weight:bold; text-align: CENTER;">
+              <br/>
+              <h1>INFORME DE COBROS RECIBIDOS</h1>
+              <br/>
+              <strong>SUCURSAL <span class="bottom_line title"><tt>LATINOAMERICANA</tt></span></strong>
+              <br/>
+              <strong>
+                DEL
+                  <span  t-esc="data['start_date']" class="bottom_line"/>
+                AL 
+                <t t-if="data['end_date']">
+                  <span t-esc="data['end_date']" class="bottom_line"/>
+                </t>
+                <t t-else="else">
+                  ________________
+                </t>
+              </strong>
+              <br/>
+            </div>
+          </div>
+          <br/>
+          <table width="100%" cellspacing="0" cellpadding="0">
+            <thead>
+              <th>Número de pago</th>
+              <th>Fecha de Pago</th>
+              <th>Contrato / Bitácora</th>
+              <th>Nombre</th>
+              <th>Efectivo</th>
+              <th>Transferencia</th>
+              <th>T. Crédito</th>
+              <th>Total</th>
+            </thead>
+            <tbody>
+              <t t-set="cash_total" t-value="0"/>
+              <t t-set="transfer_total" t-value="0"/>
+              <t t-set="credit_card_total" t-value="0"/>
+              <t t-set="total" t-value="0"/>
+              <tr t-foreach="payment_ids" t-as="payment">
+                <td><span t-esc="payment.name"/></td>
+                <td><span t-esc="payment.payment_date"/></td>
+                <td><span t-esc="payment.binnacle.name"/></td>
+                <td><span t-esc="payment.binnacle.ii_finado"/></td>
+                <t t-if="payment.way_to_pay == 'cash'">
+                  <td><span t-esc="'${0:,.2f}'.format(payment.amount)"/></td>
+                  <t t-set="cash_total" t-value="cash_total + payment.amount"/>
+                </t>
+                <t t-else="else">
+                  <td>$0.00</td>
+                </t>
+                <t t-if="payment.way_to_pay == 'transfer'">
+                  <td><span t-esc="'${0:,.2f}'.format(payment.amount)"/></td>
+                  <t t-set="transfer_total" t-value="transfer_total + payment.amount"/>
+                </t>
+                <t t-else="else">
+                  <td>$0.00</td>
+                </t>
+                <t t-if="payment.way_to_pay == 'credit_card'">
+                  <td><span t-esc="'${0:,.2f}'.format(payment.amount)"/></td>
+                  <t t-set="credit_card_total" t-value="credit_card_total + payment.amount"/>
+                </t>
+                <t t-else="else">
+                  <td>$0.00</td>
+                </t>
+                <td><span t-esc="'${0:,.2f}'.format(payment.amount)"/></td>
+                <t t-set="total" t-value="total + payment.amount"/>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                 <td class="total text-right lbl_total">TOTALES</td>
+                 <td class="total"><span t-esc="'${0:,.2f}'.format(cash_total)"/></td>
+                 <td class="total"><span t-esc="'${0:,.2f}'.format(transfer_total)"/></td>
+                 <td class="total"><span t-esc="'${0:,.2f}'.format(credit_card_total)"/></td>
+                 <td class="total"><span t-esc="'${0:,.2f}'.format(total)"/></td>
+              </tr>
+            </tbody>
+          </table>
+          <br/>
+          <div class="container">
+            <table width="25%">
+              <tr>
+                <td colspan="2" class="border bold text-center">RESUMEN DE PAGOS RECIBIDOS</td>
+              </tr>
+              <tr>
+                <td class="border">EFECTIVO</td>
+                <td class="border bold text-right"><span t-esc="'${0:,.2f}'.format(cash_total)"/></td>
+              </tr>
+              <tr>
+                <td class="border">TRANSFERENCIA</td>
+                <td class="border bold text-right"><span t-esc="'${0:,.2f}'.format(transfer_total)"/></td>
+              </tr>
+              <tr>
+                <td class="border">T. CRÉDITO</td>
+                <td class="border bold text-right"><span t-esc="'${0:,.2f}'.format(credit_card_total)"/></td>
+              </tr>
+              <tr>
+                <td class="border">TOTAL</td>
+                <td class="border bold text-right"><span t-esc="'${0:,.2f}'.format(total)"/></td>
+              </tr>
+            </table>
+            <div>
+              <div class="signature">
+                <p class="text-center bold">Recibí Corte<br/>(Administración)</p>
+              </div>
+              <div class="signature">
+                <p class="text-center bold">Recibí Corte<br/>(Mensajero)</p>
+              </div>
+              <div class="signature">
+                <p class="text-center bold">Elaboró</p>
+                <div class="content">
+                  <p class="text-center bold">Funeraría</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </t>
+    </template>
+	</data>
+</odoo>

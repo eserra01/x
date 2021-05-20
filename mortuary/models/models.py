@@ -596,6 +596,7 @@ class Mortuary(models.Model):
     def btn_create_facturas(self):
         ctx = {
             'default_type': 'out_invoice',
+            'default_company_id' : self.env.company_id.id,
             'default_mortuary_id' : self.id}
         if self.partner_id:
             ctx.update({'default_partner_id' : self.partner_id.id})

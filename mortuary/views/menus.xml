@@ -167,5 +167,20 @@
       action="action_mortuary_cremation"
     />
 
+    <menuitem
+      id="menu_reports"
+      name="Informes"
+      parent="mortuary.mortuary"
+      sequence="5"
+    />
+
+    <menuitem
+      id="cutting_mortuary"
+      name="Cobros de Funeraria"
+      parent="menu_reports"
+      sequence="1"
+      action="action_mortuary_payment_report"
+    />
+
   </data>
 </odoo>

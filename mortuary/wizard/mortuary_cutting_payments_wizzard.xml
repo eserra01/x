@@ -1,0 +1,49 @@
+<odoo>
+  <data>
+
+  	<record id="cutting_mortuary_payments_wizard" model="ir.ui.view">
+  		<field name="name">cutting.mortuary.payments.wizard</field>
+  		<field name="model">mortuary.cutting.payments</field>
+  		<field name="arch" type="xml">
+  			<form string="Pagos de Funeraria">
+  				<sheet>
+  					<group>
+  						<group>
+  							<field name="start_date"/>
+  						</group>
+  						<group>
+  							<field name="end_date"/>
+  						</group>
+  					</group>
+  				</sheet>
+  				<footer>
+            <button name="print_pdf" string="Generar PDF" type="object" class="btn-primary"/> ó 
+            <button string="Cancelar" class="btn-secondary" special="cancel" />
+		      </footer>
+  			</form>
+  		</field>
+  	</record>
+
+    <record id="action_mortuary_payment_report" model="ir.actions.act_window">
+      <field name="name">Cobros de Funeraria</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">mortuary.cutting.payments</field>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="cutting_mortuary_payments_wizard"/>
+      <field name="target">new</field>
+    </record>
+
+    <report
+      id="report_mortuary_payments"
+      model="mortuary.cutting.payments"
+      string="Cobros de Funeraria"
+      report_type="qweb-pdf"
+      name="mortuary.mortuary_payment_report"
+      file="mortuary.mortuary_payment_report"
+      paperformat="pabs_custom.letter_landscape_sheet"
+      attachment_use="False"
+      />
+
+
+  </data>
+</odoo>
