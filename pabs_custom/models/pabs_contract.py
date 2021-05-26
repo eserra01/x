@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, date
 import logging
 import calendar
+from dateutil import tz
 from odoo.addons.pabs_custom.externals.calcule import CalculeRFC, CalculeCURP
 
 import math
