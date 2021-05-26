@@ -65,8 +65,7 @@ class account_Payment(models.Model):
       status_reason_id = contract_status_reason_obj.search([
         ('reason','=','ACTIVO'),
         ('status_id','=',status_active_id.id)])
-      comission_tree_obj = self.env['pabs.comission.tree'].with_context(
-        force_company=self.contract.company_id.id)
+      comission_tree_obj = self.env['pabs.comission.tree']
       res = super(account_Payment, self).post()
       context = self._context
       IdPago = self.id

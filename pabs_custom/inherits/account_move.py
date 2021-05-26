@@ -39,3 +39,18 @@ class AcccountMove(models.Model):
         comission_tree_obj.RevertirSalidas(
           IdPago=False,RefundID=self.id,NumeroContrato=NumeroContrato)
     return res
+
+class AccountMoveLine(models.Model):
+  _inherit = 'account.move.line'
+
+  contract_id = fields.Many2one(comodel_name='pabs.contract',
+    string='Contrato')
+
+  balance_signed = fields.Float(string='Importe Con signo',
+    compute='_calc_balance_signed')
+
+  def _calc_balance_signed(self):
+    for rec in self:
+      if rec.debit or rec.credit:
+        rec.balance_signed = (rec.balance * - 1)
+  

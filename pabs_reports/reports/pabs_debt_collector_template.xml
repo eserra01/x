@@ -1,0 +1,70 @@
+<odoo>
+  <data>
+    <template id="pabs_reports.debt_collector_pdf_template">
+      <t t-call="web.html_container">
+        <t t-call="web.basic_layout">
+          <div class="page">
+            <style>
+              table {width : 100%;border-collapse: collapse;padding : 3 px;}
+              table thead th {border-bottom : 1px solid black;text-align: center;font-weight: bold;}
+              table tbody tr td {padding: 1px 1px 1px 1px;text-overflow: clip;}
+            </style>
+            <div>
+              <div>
+                <!-- LOGO -->
+                <div style="float: left; width: 15%; text-align: center;">
+                  <img t-if="logo" t-att-src="'data:image/png;base64,%s' % to_text(logo)" alt="logoPABS" height="100px"/>
+                </div>
+
+                <div style=" width: 85%;  text-align: left;">
+                  <!-- TITULO DEL REPORTE -->
+                  <div style="font-size:15pt; color:#000000;  font-weight:bold; text-align: CENTER;">
+                      <br/>
+                      REPORTE DE CARTERA DE COBRADORES
+                      <br/>
+                      PABS - Programa de Apoyo De Beneficio Social
+                      <br/>
+                      TOTAL DE CONTRATOS: <span t-esc="count_contracts"/>
+                      <br/>
+                  </div>
+                </div>
+                <br/>
+                <br/>
+
+                <t t-foreach="data.keys()" t-as="collector">
+                  <span style="font-weight: bold; font-size : 24px; padding-left : 4px;">
+                    <span t-esc="collector" style="text-align : left;"/>  <span style="text-align : right;"> Contratos: <t t-esc="len(data[collector])"/></span>
+                  </span>
+                  <table>
+                    <thead>
+                      <th>CONTRATO</th>
+                      <th>CLIENTE</th>
+                      <th>DOMICILIO</th>
+                      <th>COLONIA</th>
+                      <th>LOCALIDAD</th>
+                      <th>F.P</th>
+                      <th>ESTATUS</th>
+                    </thead>
+                    <tbody>
+                      <tr t-foreach="data[collector]" t-as="line">
+                        <td><span t-esc="line['contract']"/></td>
+                        <td><span t-esc="line['partner_name']"/></td>
+                        <td><span t-esc="line['address']"/></td>
+                        <td><span t-esc="line['neightborhood']"/></td>
+                        <td><span t-esc="line['locality_id']"/></td>
+                        <td><span t-esc="line['payment_way']"/></td>
+                        <td><span t-esc="line['status']"/></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p style="page-break-after:always;"/>
+                </t>
+
+              </div>
+            </div>
+          </div>
+        </t>
+      </t>
+    </template>
+  </data>
+</odoo>

@@ -25,13 +25,22 @@ class PabsContract(models.Model):
                     'description' : description
                 })
         for refund_id in self.refund_ids:
-            if refund_id.type == 'out_refund':
+            if refund_id.type == 'out_refund' and refund_id.state == "posted":
                 credits.append({
                     'date' : refund_id.invoice_date,
                     'name' : "",
                     'amount' : refund_id.amount_total,
                     'collector' : "",
                     'description' : 'BONO POR INVERSIÓN INICIAL'
+                })
+        for transfers_id in self.transfer_balance_ids:
+            if transfers_id.parent_state == "posted":
+                credits.append({
+                    'date' : transfers_id.date,
+                    'name' : "",
+                    'amount' : transfers_id.balance_signed,
+                    'collector' : "",
+                    'description' : 'TRASPASO'
                 })
         credit = sorted(credits, key=lambda r: r['date'])
         return credit

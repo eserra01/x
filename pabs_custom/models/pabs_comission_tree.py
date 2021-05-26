@@ -54,12 +54,12 @@ class ComissionTree(models.Model):
             raise ValidationError("No se encontró el contrato {}".format(NumeroContrato))
 
         #Instanciar objeto Salida de comisiones
-        salida_comisiones_obj = self.env['pabs.comission.output'].with_context(force_company=contrato.company_id.id)
+        salida_comisiones_obj = self.env['pabs.comission.output']
 
         ######################## PAPELERIA ##########################
         if TipoPago == "Papeleria":
             #Obtener id del cargo
-            id_cargo = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "PAPELERIA")]).id
+            id_cargo = self.env['hr.job'].search([('name', '=', "PAPELERIA"),('company_id', '=', contrato.company_id.id)]).id
 
             #Obtener registro de papeleria en el árbol de comisiones
             registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
@@ -79,16 +79,16 @@ class ComissionTree(models.Model):
             registro_arbol.write({"commission_paid":MontoPago, "actual_commission_paid":MontoPago, "remaining_commission":0})
 
             #Crear registro en salida de comisiones
-            salida_comisiones_obj.create([{"payment_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
+            salida_comisiones_obj.create([{"payment_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago}])
         
         ######################## BONO ##########################
         elif TipoPago == "Bono":
 
             #Obtener id del cargo
-            id_cargo = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "FIDEICOMISO")]).id
+            id_cargo = self.env['hr.job'].search([('name', '=', "FIDEICOMISO"), ('company_id', '=', contrato.company_id.id)]).id
 
             #Obtener registro de fideicomiso en el árbol de comisiones
-            registro_arbol = self.with_context(force_company=contrato.company_id.id).search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo)])
+            registro_arbol = self.search(['&',('contract_id', '=', contrato.id), ('job_id', '=', id_cargo), ('company_id', '=', contrato.company_id.id)])
 
             if not registro_arbol:
                 raise ValidationError("No se encontro el monto de Fideicomiso en el árbol de comisiones")
@@ -110,7 +110,7 @@ class ComissionTree(models.Model):
 
 
             #Crear registro en salida de comisiones
-            salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
+            salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago}])
 
 #Para excedente y abono
     def CrearSalidas(self, IdPago, NumeroContrato, CodigoCobrador, MontoPago, EsExcedente = False):
@@ -142,7 +142,7 @@ class ComissionTree(models.Model):
             raise ValidationError("No se encontro el árbol de comisiones")
 
         #Instanciar objeto Salida de comisiones
-        salida_comisiones_obj = self.env['pabs.comission.output'].with_context(force_company=contrato.company_id.id)
+        salida_comisiones_obj = self.env['pabs.comission.output']
 
         ### Comienza proceso de cobrador ###
         #Calcular porcentaje del cobrador
@@ -181,12 +181,12 @@ class ComissionTree(models.Model):
                 #No crear linea en el arbol si el cobrador no recibió comisión
                 if PorcentajeCobrador > 0:
                     #Obtener ultimo orden del arbol de comisiones
-                    siguiente_orden_disponible = self.search([('contract_id','=', contrato.id)], order='pay_order desc', limit = 1).sorted(lambda r: r.pay_order).mapped('pay_order')[-1] + 1
+                    siguiente_orden_disponible = self.search([('contract_id','=', contrato.id)], order='pay_order desc', limit = 1).pay_order + 1
                     #Crear registro en Arbol
-                    self.create([{"contract_id":contrato.id, "pay_order":siguiente_orden_disponible, "job_id":id_cargo_cobrador, "comission_agent_id":empleado.id, "actual_commission_paid":MontoComisionCobrador, "company_id" : contrato.company_id.id}])
+                    self.create([{"contract_id":contrato.id, "pay_order":siguiente_orden_disponible, "job_id":id_cargo_cobrador, "comission_agent_id":empleado.id, "actual_commission_paid":MontoComisionCobrador}])
 
             #Insertar linea de cobrador en salida de comisiones
-            salida_comisiones_obj.create([{"payment_id":IdPago, "job_id":id_cargo_cobrador, "comission_agent_id":empleado.id, "actual_commission_paid": MontoComisionCobrador, "company_id" : contrato.company_id.id}])
+            salida_comisiones_obj.create([{"payment_id":IdPago, "job_id":id_cargo_cobrador, "comission_agent_id":empleado.id, "actual_commission_paid": MontoComisionCobrador}])
 
         ### REALIZAR PROCESO PARA EMPLEADOS DEL ÁRBOL
         #Calcular cambios al árbol de comisiones y la salida de comisiones del recibo
@@ -214,7 +214,7 @@ class ComissionTree(models.Model):
                     com.write({"commission_paid":comisionPagada, "actual_commission_paid":comisionRealPagada, "remaining_commission":comisionRestante})
 
                     #Crear registro en salida de comisiones
-                    salida_comisiones_obj.create([{"payment_id":IdPago, "job_id":com.job_id.id, "comission_agent_id":com.comission_agent_id.id, "commission_paid":comisionPagadaSalida, "actual_commission_paid": comisionRealPagadaSalida, "company_id" : contrato.company_id.id}])
+                    salida_comisiones_obj.create([{"payment_id":IdPago, "job_id":com.job_id.id, "comission_agent_id":com.comission_agent_id.id, "commission_paid":comisionPagadaSalida, "actual_commission_paid": comisionRealPagadaSalida}])
                 else:
                 #Si el monto de pago no cubre la comisión restante
                     comisionPagadaSalida = MontoPago                                        #1.1 Comision pagada de salida = Monto_pago
@@ -229,7 +229,7 @@ class ComissionTree(models.Model):
                     com.write({"commission_paid":comisionPagada, "actual_commission_paid":comisionRealPagada, "remaining_commission":comisionRestante})
 
                     #Crear registro en salida de comisiones
-                    salida_comisiones_obj.create([{"payment_id":IdPago, "job_id":com.job_id.id, "comission_agent_id":com.comission_agent_id.id, "commission_paid":comisionPagadaSalida, "actual_commission_paid": comisionRealPagadaSalida, "company_id" : contrato.company_id.id}])
+                    salida_comisiones_obj.create([{"payment_id":IdPago, "job_id":com.job_id.id, "comission_agent_id":com.comission_agent_id.id, "commission_paid":comisionPagadaSalida, "actual_commission_paid": comisionRealPagadaSalida}])
 
                     #Al no quedar mas por repartir se termina el proceso
                     break

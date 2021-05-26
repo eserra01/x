@@ -426,6 +426,17 @@
                 </field>
           </group>
 
+          <group string="Traspasos" attrs="{'invisible' : [('transfer_balance_ids','=',[])]}">
+            <field name="transfer_balance_ids" nolabel="1" readonly="1">
+              <tree create="0" edit="0" delete="0" duplicate="0">
+                <field name="date" string="Fecha de traspaso"/>
+                <field name="balance_signed" string="Importe"/>
+                <field name="name"/>
+                <field name="parent_state" string="Estado"/>
+              </tree>
+            </field>
+          </group>
+
           <group string="Árbol de comisiones" attrs="{'invisible' : [('lot_id','=',False)]}">
               <field name="commission_tree" nolabel="1" readonly="1"/>
           </group>
@@ -606,6 +617,17 @@
             </field>
           </group>
 
+          <group string="Traspasos" attrs="{'invisible' : [('transfer_balance_ids','=',[])]}">
+            <field name="transfer_balance_ids" nolabel="1" readonly="1">
+              <tree create="0" edit="0" delete="0" duplicate="0">
+                <field name="date" string="Fecha de traspaso"/>
+                <field name="balance_signed" string="Importe"/>
+                <field name="name"/>
+                <field name="parent_state" string="Estado"/>
+              </tree>
+            </field>
+          </group>
+
           <group string="Árbol de comisiones" attrs="{'invisible' : [('lot_id','=',False)]}" invisible="1">
               <field name="commission_tree" nolabel="1" readonly="1" style="pointer-events:none;"/>
           </group>
@@ -762,6 +784,17 @@
                     <field name="state"/>
                   </tree>
                 </field>
+          </group>
+
+          <group string="Traspasos" attrs="{'invisible' : [('transfer_balance_ids','=',[])]}">
+            <field name="transfer_balance_ids" nolabel="1" readonly="1">
+              <tree create="0" edit="0" delete="0" duplicate="0">
+                <field name="date" string="Fecha de traspaso"/>
+                <field name="balance_signed" string="Importe"/>
+                <field name="name"/>
+                <field name="parent_state" string="Estado"/>
+              </tree>
+            </field>
           </group>
 
           <group string="Árbol de comisiones" attrs="{'invisible' : [('lot_id','=',False)]}" invisible="1">
@@ -952,6 +985,17 @@
                 </field>
           </group>
 
+          <group string="Traspasos" attrs="{'invisible' : [('transfer_balance_ids','=',[])]}">
+            <field name="transfer_balance_ids" nolabel="1" readonly="1">
+              <tree create="0" edit="0" delete="0" duplicate="0">
+                <field name="date" string="Fecha de traspaso"/>
+                <field name="balance_signed" string="Importe"/>
+                <field name="name"/>
+                <field name="parent_state" string="Estado"/>
+              </tree>
+            </field>
+          </group>
+
           <group string="Árbol de comisiones" attrs="{'invisible' : [('lot_id','=',False)]}">
               <field name="commission_tree" nolabel="1" readonly="1"/>
           </group>
@@ -1131,6 +1175,17 @@
                 </field>
           </group>
 
+          <group string="Traspasos" attrs="{'invisible' : [('transfer_balance_ids','=',[])]}">
+            <field name="transfer_balance_ids" nolabel="1" readonly="1">
+              <tree create="0" edit="0" delete="0" duplicate="0">
+                <field name="date" string="Fecha de traspaso"/>
+                <field name="balance_signed" string="Importe"/>
+                <field name="name"/>
+                <field name="parent_state" string="Estado"/>
+              </tree>
+            </field>
+          </group>
+
           <group string="Árbol de comisiones" attrs="{'invisible' : [('lot_id','=',False)]}">
               <field name="commission_tree" nolabel="1" readonly="1"/>
           </group>
@@ -1308,6 +1363,17 @@
                     <field name="state"/>
                   </tree>
                 </field>
+          </group>
+
+          <group string="Traspasos" attrs="{'invisible' : [('transfer_balance_ids','=',[])]}">
+            <field name="transfer_balance_ids" nolabel="1" readonly="1">
+              <tree create="0" edit="0" delete="0" duplicate="0">
+                <field name="date" string="Fecha de traspaso"/>
+                <field name="balance_signed" string="Importe"/>
+                <field name="name"/>
+                <field name="parent_state" string="Estado"/>
+              </tree>
+            </field>
           </group>
 
           <group string="Árbol de comisiones" attrs="{'invisible' : [('lot_id','=',False)]}">
@@ -1496,6 +1562,17 @@
                     <field name="state"/>
                   </tree>
                 </field>
+          </group>
+
+          <group string="Traspasos" attrs="{'invisible' : [('transfer_balance_ids','=',[])]}">
+            <field name="transfer_balance_ids" nolabel="1" readonly="1">
+              <tree create="0" edit="0" delete="0" duplicate="0">
+                <field name="date" string="Fecha de traspaso"/>
+                <field name="balance_signed" string="Importe"/>
+                <field name="name"/>
+                <field name="parent_state" string="Estado"/>
+              </tree>
+            </field>
           </group>
 
           <group string="Árbol de comisiones" attrs="{'invisible' : [('lot_id','=',False)]}">

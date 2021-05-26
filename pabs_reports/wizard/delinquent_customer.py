@@ -3,9 +3,6 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from dateutil import tz
-import logging
-
-_logger = logging.getLogger(__name__)
 
 HEADERS = [
   'Fecha de Contrato',
@@ -88,11 +85,8 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
         ### RECORREMOS LOS CONTRATOS
         for contract_id in contract_ids:
             ### SI EL CONTRATO ES PAGO SEMANAL Y TIENE MAS DE 15 DIAS SIN ABONAR
-            if contract_id.way_to_payment == 'weekly' and contract_id.calcular_dias_sin_abonar() > 14:
-                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted')
-                if last_payment:
-                  last_payment = last_payment.sorted(key=lambda r: r.payment_date)[-1].payment_date
-                _logger.warning("Moroso Semanal")
+            if contract_id.way_to_payment == 'weekly' and contract_id.days_without_payment > 14:
+                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
                 data_rec.append({
                     'contract_name' : contract_id.name,
                     'partner_name' : contract_id.full_name,
@@ -103,11 +97,8 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
                     'period' : 'S'
                 })
             ### SI EL CONTRATO ES PAGO QUINCENAL Y TIENE MAS DE 30 DÍAS SIN ABONAR
-            elif contract_id.way_to_payment == 'biweekly' and contract_id.calcular_dias_sin_abonar() > 30:
-                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted')
-                if last_payment:
-                  last_payment = last_payment.sorted(key=lambda r: r.payment_date)[-1].payment_date
-                _logger.warning("Moroso Quincenal")
+            elif contract_id.way_to_payment == 'biweekly' and contract_id.days_without_payment > 30:
+                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
                 data_rec.append({
                     'contract_name' : contract_id.name,
                     'partner_name' : contract_id.full_name,
@@ -118,11 +109,8 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
                     'period' : 'Q'
                 })
             ### SI EL CONTRATO ES PAGO MENSUAL Y TIENE MAS DE 60 DIAS SIN ABONAR
-            elif contract_id.way_to_payment == 'monthly' and contract_id.calcular_dias_sin_abonar() > 60:
-                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted')
-                if last_payment:
-                  last_payment = last_payment.sorted(key=lambda r: r.payment_date)[-1].payment_date
-                _logger.warning("Moroso Mensual")
+            elif contract_id.way_to_payment == 'monthly' and contract_id.days_without_payment > 60:
+                last_payment = contract_id.payment_ids.filtered(lambda r: r.state == 'posted').sorted(key=lambda r: r.payment_date)[-1].payment_date
                 data_rec.append({
                     'contract_name' : contract_id.name,
                     'partner_name' : contract_id.full_name,
@@ -188,7 +176,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
             ppl.fixed_price AS "Costo",
             am.amount_residual AS "Saldo",
             0 AS "Ultimo abono",
-            (Select MAX(date_receipt) from account_payment as last where last.contract = c.id and reference = 'payment' and state = 'posted') AS "Fecha de ultimo abono",
+            (Select MAX(date_receipt) from account_payment as last where last.contract = c.id) AS "Fecha de ultimo abono",
             (SELECT 
                     P.name
                 FROM
@@ -235,7 +223,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                                 WHEN c.contract_status_item = 16 THEN 6
                             END)
                 
-                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - COALESCE( (Select MAX(date_receipt) from account_payment as last where last.contract = c.id and reference = 'payment' and state = 'posted'), c.date_first_payment) <= (
+                WHEN c.contract_status_item = 21 AND CURRENT_DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) <= (
                         CASE
                             WHEN way_to_payment = 'weekly' THEN 14
                             WHEN way_to_payment = 'biweekly' THEN 30
@@ -243,7 +231,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
                         END)
                     THEN 21
 
-                WHEN c.contract_status_item = 21 AND (now() AT TIME ZONE 'UTC+5')::DATE - COALESCE( (Select MAX(date_receipt) from account_payment as last where last.contract = c.id and reference = 'payment' and state = 'posted'), c.date_first_payment) > (
+                WHEN c.contract_status_item = 21 AND CURRENT_DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) > (
                             CASE
                                 WHEN way_to_payment = 'weekly' THEN 14
                                 WHEN way_to_payment = 'biweekly' THEN 30
@@ -275,7 +263,7 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
             account_move AS am ON am.contract_id = c.id
         WHERE
             am.type = 'out_invoice'
-                AND c.invoice_date <= (now() AT TIME ZONE 'UTC+5')::DATE
+                AND c.invoice_date <= CURRENT_DATE
                 AND c.state = 'contract'
                 AND c.company_id = {}
         ORDER BY pEst.id , c.invoice_date )
@@ -298,27 +286,27 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
     ### ITERAMOS EN EL RESULTADO
     for index, rec in enumerate(cr.fetchall()):
       ### ESCRIBIMOS LOS RESULTADOS DEL QUERY
-      sheet.write((index + 1), 0, rec[0] or '', date_format)
-      sheet.write((index + 1), 1, rec[1] or '')
-      sheet.write((index + 1), 2, rec[2] or '')
-      sheet.write((index + 1), 3, rec[3] or '')
-      sheet.write((index + 1), 4, rec[4] or '')
-      sheet.write((index + 1), 5, rec[5] or '')
-      sheet.write((index + 1), 6, rec[6] or '')
-      sheet.write((index + 1), 7, rec[7] or '')
-      sheet.write((index + 1), 8, rec[8] or '')
-      sheet.write((index + 1), 9, rec[9] or '')
-      sheet.write((index + 1), 10, rec[10] or '')
-      sheet.write((index + 1), 11, rec[11] or '', date_format)
-      sheet.write((index + 1), 12, rec[12] or '')
-      sheet.write((index + 1), 13, rec[13] or '')
-      sheet.write((index + 1), 14, rec[14] or '') # id contrato
-      sheet.write((index + 1), 15, rec[15] or '', money_format) # monto de pago
-      sheet.write((index + 1), 16, rec[16] or '')
-      sheet.write((index + 1), 17, rec[17] or '', money_format) # costo
-      sheet.write((index + 1), 18, rec[18] or '', money_format) # saldo
-      sheet.write((index + 1), 19, rec[19] or '') 
-      sheet.write((index + 1), 20, rec[20] or '', date_format) # fecha de ultimo abono
-      sheet.write((index + 1), 21, rec[21] or '')
-      sheet.write((index + 1), 22, rec[22] or '', money_format) #importe de ultimo abono
-      sheet.write((index + 1), 23, rec[23] or '') # estatus moroso
+      sheet.write((index + 1), 0, rec[0], date_format)
+      sheet.write((index + 1), 1, rec[1])
+      sheet.write((index + 1), 2, rec[2])
+      sheet.write((index + 1), 3, rec[3])
+      sheet.write((index + 1), 4, rec[4])
+      sheet.write((index + 1), 5, rec[5])
+      sheet.write((index + 1), 6, rec[6])
+      sheet.write((index + 1), 7, rec[7])
+      sheet.write((index + 1), 8, rec[8])
+      sheet.write((index + 1), 9, rec[9])
+      sheet.write((index + 1), 10, rec[10])
+      sheet.write((index + 1), 11, rec[11], date_format)
+      sheet.write((index + 1), 12, rec[12])
+      sheet.write((index + 1), 13, rec[13])
+      sheet.write((index + 1), 14, rec[14]) # id contrato
+      sheet.write((index + 1), 15, rec[15], money_format) # monto de pago
+      sheet.write((index + 1), 16, rec[16])
+      sheet.write((index + 1), 17, rec[17], money_format) # costo
+      sheet.write((index + 1), 18, rec[18], money_format) # saldo
+      sheet.write((index + 1), 19, rec[19]) 
+      sheet.write((index + 1), 20, rec[20], date_format) # fecha de ultimo abono
+      sheet.write((index + 1), 21, rec[21])
+      sheet.write((index + 1), 22, rec[22], money_format) #importe de ultimo abono
+      sheet.write((index + 1), 23, rec[23]) # estatus moroso

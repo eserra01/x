@@ -5,7 +5,6 @@ from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, date
 import logging
 import calendar
-from dateutil import tz
 from odoo.addons.pabs_custom.externals.calcule import CalculeRFC, CalculeCURP
 
 import math
@@ -154,6 +153,10 @@ class PABSContracts(models.Model):
   company_id = fields.Many2one(
     'res.company', 'Compañia', required=True,
     default=lambda s: s.env.company.id, index=True)
+
+  transfer_balance_ids = fields.One2many(comodel_name='account.move.line',
+    inverse_name='contract_id',
+    string='Traspasos')
   
   def calc_invoice_date(self):
     params = self.env['ir.config_parameter'].sudo()
@@ -1166,22 +1169,15 @@ class PABSContracts(models.Model):
   #Calcular dias sin abonar
   def calcular_dias_sin_abonar(self):
     for rec in self:
-      days = 0
-      today = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')).date()
       #Obtener registro del último pago de cobranza
       ultimo_abono_cobranza = self.payment_ids.filtered(lambda r: r.state == 'posted' and r.reference == 'payment')
       if ultimo_abono_cobranza:
-        ultimo_abono_cobranza = ultimo_abono_cobranza.sorted(key=lambda r: r.date_receipt)
-        days = (today - ultimo_abono_cobranza[-1].date_receipt).days
-        rec.days_without_payment = days
-        return days
-      if rec.date_first_payment:
-        if rec.date_first_payment < today:
-          days = (today - rec.date_first_payment).days
-          rec.days_without_payment = days
-          return days
-      rec.days_without_payment = days
-      return days
+        ultimo_abono_cobranza = ultimo_abono_cobranza.sorted(key=lambda r: r.date_receipt)[-1]
+        rec.days_without_payment = (fields.Date.today() - ultimo_abono_cobranza.payment_date).days
+      elif rec.date_first_payment < fields.Date.today():
+        rec.days_without_payment = (fields.Date.today() - rec.date_first_payment).days
+      else:
+        rec.days_without_payment = 0
 
   def create_contracts(self):
     _logger.warning('El contrato')

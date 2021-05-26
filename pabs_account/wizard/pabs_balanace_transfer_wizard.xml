@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="pabs_balance_transfer_form_view" model="ir.ui.view">
+    <field name="name">pabs.balance.transfer.form.view</field>
+    <field name="model">pabs.balance.transfer</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+          <field name="state" widget="statusbar" statusbar_visible="draft,done,cancel"/>
+          <button name="cancel_transfer" string="Cancelar Traspaso" type="object" attrs="{'invisible' : [('state','!=','done')]}"/>
+        </header>
+        <sheet>
+          <group col="2">
+            <group>
+              <field name="move_id" invisible="1"/>
+              <field name="contract_origin_id" domain="[('state','=','contract')]" attrs="{'readonly' : [('state','!=','draft')]}"/>
+              <field name="origin_titular_name"/>
+              <field name="contract_origin_amount"/>
+            </group>
+            <group>
+              <field name="contract_dest_id" domain="[('state','=','contract')]" attrs="{'readonly' : [('state','!=','draft')]}"/>
+              <field name="dest_titular_name"/>
+              <field name="contract_dest_amount"/>
+            </group>
+          </group>
+          <footer>
+            <div>
+              <div class="form-row">
+                <label for="amount_transfer"/>
+                <field name="amount_transfer" class="oe_inline" attrs="{'readonly' : [('state','!=','draft')]}"/>
+                <button name="set_balance" string="Generar Traspaso" type="object" class="btn-primary" style="margin-left : 20px;" attrs="{'invisible' : [('state','!=','draft')]}"/>
+              </div>
+            </div>
+          </footer>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="pabs_balance_transfer_tree_view" model="ir.ui.view">
+    <field name="name">pabs.balance.transfer.tree.view</field>
+    <field name="model">pabs.balance.transfer</field>
+    <field name="arch" type="xml">
+      <tree decoration-info="state == 'draft'" decoration-muted="state == 'cancel'">
+        <field name="contract_origin_id"/>
+        <field name="origin_titular_name"/>
+        <field name="contract_dest_id"/>
+        <field name="dest_titular_name"/>
+        <field name="amount_transfer"/>
+        <field name="create_date" string="Fecha de Traspaso"/>
+        <field name="state"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="action_pabs_balance_form" model="ir.actions.act_window">
+    <field name="name">Traspaso entre Contratos</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.balance.transfer</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_balance_transfer_form_view"/>
+    <field name="target">current</field>
+  </record>
+
+  <record id="action_pabs_balance_tree" model="ir.actions.act_window">
+    <field name="name">Traspasos entre contratos</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.balance.transfer</field>
+    <field name="view_mode">tree,form</field>
+    <field name="view_id" ref="pabs_balance_transfer_tree_view"/>
+    <field name="target">current</field>
+  </record>
+
+  <menuitem
+    id="menu_pabs_balance_transfer"
+    name="Traspasos"
+    parent="pabs_custom.service_menu_root"
+    groups="pabs_custom.contract_profile,pabs_custom.admin_profile"
+    sequence="4"/>
+
+  <menuitem
+    id="menu_pabs_balance_form"
+    name="Crear Traspaso entre Contratos"
+    groups="pabs_custom.admin_profile,pabs_custom.collection_profile"
+    action="action_pabs_balance_form"
+    parent="menu_pabs_balance_transfer"
+    sequence="1"/>
+
+  <menuitem
+    id="menu_pabs_balance_tree"
+    name="Consultar Traspasos"
+    groups="pabs_custom.admin_profile,pabs_custom.collection_profile"
+    action="action_pabs_balance_tree"
+    parent="menu_pabs_balance_transfer"
+    sequence="2"/>
+
+</odoo>
