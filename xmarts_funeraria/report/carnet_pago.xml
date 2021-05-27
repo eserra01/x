@@ -367,7 +367,7 @@
 
  
 <report
-    string="Tarjeta 'X'"
+    string="Tarjeta con tabla"
     id="id_carnet_pago"
     model='pabs.contract'
     name="xmarts_funeraria.carnet_pago"

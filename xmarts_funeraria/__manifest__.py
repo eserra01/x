@@ -32,6 +32,7 @@
         'wizard/payroll_pabs_ing_egre.xml',
         'report/payroll_ing_egre.xml',
         'wizard/carnet_pago_rango.xml',
+        'wizard/carnet_pago_rango_tabla_wizard.xml',
         'report/carnet_pago_sin_tabla_rango.xml',
         'wizard/comisiones_promotores.xml',
         'report/rpt_comisiones_promotores.xml',

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <record id="view_wizar_report_carnet_pago" model="ir.ui.view">
-    <field name="name">Impresión de tarjetas sin tabla</field>
-    <field name="model">report.carnet.pago</field>
+  <record id="view_wizar_report_carnet_pago_tabla" model="ir.ui.view">
+    <field name="name">Impresión de tarjetas con tabla</field>
+    <field name="model">report.carnet.pago.tabla</field>
     <field name="arch" type="xml">
       <form string="Choose The Details">
         <group string="Impresión por rango de contratos">
@@ -19,19 +19,19 @@
     </field>
   </record>
 
-  <record id="action_carnet_pago" model="ir.actions.act_window">
-    <field name="name">Impresión de tarjetas sin tabla</field>
-    <field name="res_model">report.carnet.pago</field>
+  <record id="action_carnet_pago_tabla" model="ir.actions.act_window">
+    <field name="name">Impresión de tarjetas con tabla</field>
+    <field name="res_model">report.carnet.pago.tabla</field>
     <field name="view_mode">form</field>
-    <field name="view_id" ref="view_wizar_report_carnet_pago"/>
+    <field name="view_id" ref="view_wizar_report_carnet_pago_tabla"/>
     <field name="target">new</field>
   </record>
 
   <menuitem
-    id="menu_root_carnet_pago"
-    name="Impresión de tarjetas sin tabla"
+    id="menu_root_carnet_pago_tabla"
+    name="Impresión de tarjetas con tabla"
     parent="xmarts_funeraria.report_root_menu" 
-    sequence="1"
-    action="action_carnet_pago" />
+    sequence="2"
+    action="action_carnet_pago_tabla" />
 
 </odoo>
