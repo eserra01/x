@@ -568,6 +568,19 @@ class PABSContracts(models.Model):
         if received_contract != location_id:
           raise ValidationError((
             "la solicitud {} no se encontró en la ubicación de contratos, se encuentra en {}".format(self.lot_id.name, location_id.name_get()[0][1])))
+        contract = self.search([
+          ('partner_name','=',self.partner_name),
+          ('partner_fname','=',self.partner_fname),
+          ('partner_mname','=',self.partner_mname),
+          ('state','=','contract')])
+        if contract:
+          contract_names = contract.mapped('name')
+          return {
+            'warning' : {
+              'title' : ('Validación'),
+              'message' :('Ya existen contratos con este nombre: {}\nContratos: {}'.format(self.full_name,contract_names)),
+            }
+          }
 
   #Crea el árbol de comisiones del contrato
   def create_commision_tree(self, invoice_id=False):
