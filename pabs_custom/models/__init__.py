@@ -10,6 +10,7 @@ from . import pabs_payment_scheme
 from . import pabs_recluitment_origin
 from . import pabs_recluitment_induction
 from . import pabs_contract
+from . import pabs_contract_comments
 from . import hr_employee_status
 from . import closing_transfer_registry
 from . import pabs_status_stock

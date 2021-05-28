@@ -24,6 +24,7 @@
     'views/payment_scheme_view.xml',
     'views/recluitment_origin_view.xml',
     'views/recluitment_induction_view.xml',
+    'views/pabs_contract_comments_view.xml',
     'views/contract_view.xml',
     'views/product_pricelist_view.xml',
     'views/stock_location_view.xml',

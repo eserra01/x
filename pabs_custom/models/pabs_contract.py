@@ -145,6 +145,8 @@ class PABSContracts(models.Model):
   allow_edit = fields.Boolean(tracking=True, string='¿Permitir Modificar?')
   
 #Otros datos
+  count_comments = fields.Integer(string='Comentarios de contrato',
+    compute="_calc_comments")
   search_field = fields.Char(tracking=True, string = "Busqueda")
   new_comment = fields.Text(tracking=True, string = "Nuevo comentario:")
   service_detail = fields.Selection(tracking=True, selection=SERVICE, string='Detalle de servicio', default="unrealized", required="1")
@@ -158,7 +160,25 @@ class PABSContracts(models.Model):
   transfer_balance_ids = fields.One2many(comodel_name='account.move.line',
     inverse_name='contract_id',
     string='Traspasos')
-  
+
+  def _calc_comments(self):
+    contract_comments_obj = self.env['pabs.contract.comments']
+    for rec in self:
+      contract_count = contract_comments_obj.search_count([('contract_id','=',rec.id)])
+      rec.count_comments = contract_count
+
+  def button_comments(self):
+    return {
+      'name': 'Visualizar Comentarios',
+      'type': 'ir.actions.act_window',
+      'view_mode': 'tree',
+      'res_model': 'pabs.contract.comments',
+      'view_id': self.env.ref('pabs_custom.view_pabs_custom_comments_tree').id,
+      'target' : 'new',
+      'domain' : [('contract_id','=',self.id)]
+    }
+    
+
   def calc_invoice_date(self):
     params = self.env['ir.config_parameter'].sudo()
     actually_day = params.get_param('pabs_custom.actually_day')
@@ -985,6 +1005,15 @@ class PABSContracts(models.Model):
   def save_comment(self):
     if len(self.new_comment.strip()) == 0:
       raise ValidationError("No se ha escrito un comentario")
+
+    val = {
+      'user_id' : self.env.user.id,
+      'date' : fields.Datetime.now(),
+      'comment' : self.new_comment,
+      'contract_id' : self.id,
+    }
+
+    self.env['pabs.contract.comments'].create(val)
 
     values = {
       'body': "<p>" + self.new_comment + "</p>",

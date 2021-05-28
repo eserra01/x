@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="view_pabs_custom_comments_tree" model="ir.ui.view">
+    <field name="name">view.pabs.custom.comments.tree</field>
+    <field name="model">pabs.contract.comments</field>
+    <field name="arch" type="xml">
+      <tree create="0" edit="0" delete="0">
+        <field name="user_id"/>
+        <field name="date"/>
+        <field name="comment"/>
+      </tree>
+    </field>
+  </record>
+
+</odoo>

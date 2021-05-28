@@ -313,7 +313,14 @@
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
          
         </header>
-        <sheet>       
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" name="button_comments" type="object" icon="fa-bars">
+              <field name="count_comments"/>
+                <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
+                <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
+              </button>
+          </div>
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
@@ -522,7 +529,14 @@
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
          
         </header>
-        <sheet>       
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" name="button_comments" type="object" icon="fa-bars">
+              <field name="count_comments"/>
+                <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
+                <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
+              </button>
+          </div>
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
@@ -682,7 +696,14 @@
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
          
         </header>
-        <sheet>       
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" name="button_comments" type="object" icon="fa-bars">
+              <field name="count_comments"/>
+                <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
+                <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
+              </button>
+          </div>
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
@@ -717,6 +738,7 @@
               <field name="balance" readonly="1"/>
               <field name="paid_balance" readonly="1"/>
 
+              
               <!-- Nuevo comentario -->
               <label for="new_comment" class="oe_edit_only" /> 
               <field name= "new_comment" class="oe_edit_only" nolabel="1"/>
@@ -872,7 +894,14 @@
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
          
         </header>
-        <sheet>       
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" name="button_comments" type="object" icon="fa-bars">
+              <field name="count_comments"/>
+                <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
+                <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
+              </button>
+          </div>
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
@@ -916,6 +945,7 @@
               <field name="balance" readonly="1"/>
               <field name="paid_balance" readonly="1"/>
 
+              
               <!-- Nuevo comentario -->
               <label for="new_comment" class="oe_edit_only" /> 
               <field name= "new_comment" class="oe_edit_only" nolabel="1"/>
@@ -1071,7 +1101,14 @@
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
          
         </header>
-        <sheet>       
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" name="button_comments" type="object" icon="fa-bars">
+              <field name="count_comments"/>
+                <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
+                <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
+              </button>
+          </div>
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
@@ -1106,6 +1143,7 @@
               <field name="balance" readonly="1"/>
               <field name="paid_balance" readonly="1"/>
 
+              
               <!-- Nuevo comentario -->
               <label for="new_comment" class="oe_edit_only" /> 
               <field name= "new_comment" class="oe_edit_only" nolabel="1"/>
@@ -1261,7 +1299,14 @@
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
          
         </header>
-        <sheet>       
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" name="button_comments" type="object" icon="fa-bars">
+              <field name="count_comments"/>
+                <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
+                <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
+              </button>
+          </div>
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
@@ -1296,6 +1341,7 @@
               <field name="balance" readonly="1"/>
               <field name="paid_balance" readonly="1"/>
 
+              
               <!-- Nuevo comentario -->
               <label for="new_comment" class="oe_edit_only" /> 
               <field name= "new_comment" class="oe_edit_only" nolabel="1"/>
@@ -1451,7 +1497,14 @@
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
          
         </header>
-        <sheet>       
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" name="button_comments" type="object" icon="fa-bars">
+              <field name="count_comments"/>
+                <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
+                <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
+              </button>
+          </div>
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
@@ -1495,6 +1548,7 @@
               <field name="balance" readonly="1"/>
               <field name="paid_balance" readonly="1"/>
 
+              
               <!-- Nuevo comentario -->
               <label for="new_comment" class="oe_edit_only" /> 
               <field name= "new_comment" class="oe_edit_only" nolabel="1"/>
