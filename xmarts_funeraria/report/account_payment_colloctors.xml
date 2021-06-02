@@ -11,25 +11,30 @@
           <!-- Vista cuando se elige cobrador -->
           <t t-if="type == 1">
             <div class="page">
-              <!-- Encabezado del reporte -->
-              <table  width="100%"  cellspacing="0" cellpadding="0">
-                <tr>
-                  <td  rowspan="4" aling="top"><img  src="xmarts_funeraria/static/description/image.png" style="width:250px;"/></td>
-                  <td colsan="2" class="text-center"  aling="top"> <h3>PABS - Programa de Apoyo De Beneficio Social</h3></td>
-                </tr>
-                <tr>
-                  <td colsan="2" class="text-center"  aling="top" style="padding-left: 10px;"> <h3>DETALLE DE INGRESOS</h3></td>
-                </tr>
-                <tr>
-                  <td class="pull-left"  aling="top"><ins><strong>PERIODO DE:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="first_date"/> <strong>HASTA:</strong><span>&amp;nbsp;&amp;nbsp;</span><t t-esc="end_date"/></ins></td>
-                </tr>
-              </table>
 
               <!-- Se ciclan los registros -->
               <t t-foreach="reg" t-as="vals">
-                <!-- Nombre del cobrador -->
-                <span>Cobrador:</span><span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['collectors']"/>
-                <br/>
+                <!-- Encabezado del reporte -->
+                <table  width="100%"  cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td  rowspan="4" aling="top"><img  src="xmarts_funeraria/static/description/image.png" style="width:250px;"/></td>
+                    <td colsan="2" class="text-center"  aling="top"> <h3>PABS - Programa de Apoyo De Beneficio Social</h3></td>
+                  </tr>
+                  <tr>
+                    <td colsan="2" class="text-center"  aling="top" style="padding-left: 10px;"> <h3>DETALLE DE INGRESOS</h3></td>
+                  </tr>
+                  <tr>
+                    <td class="pull-left"  aling="top"><ins><strong>PERIODO DE:</strong> <span>&amp;nbsp;&amp;nbsp;</span><t t-esc="first_date"/> <strong>HASTA:</strong><span>&amp;nbsp;&amp;nbsp;</span><t t-esc="end_date"/></ins></td>
+                  </tr>
+                  <tr>
+                    <td class="pull-left" align="top">
+                      <ins>
+                        <!-- Nombre del cobrador -->
+                        <span>Cobrador:</span><span>&amp;nbsp;&amp;nbsp;</span><t t-esc="vals['collectors']"/>
+                      </ins>
+                    </td>
+                  </tr>
+                </table>
                 <table class="table" style="table-layout: fixed; border:0 px;">
                   <!-- Nombres de columnas -->
                   <thead style="display: table-row-group">
