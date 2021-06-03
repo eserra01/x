@@ -248,7 +248,7 @@
           </table><br/><br/>
 
           <div style="width:92%; margin:auto; text-align:justify; text-justify: inter-word; font-size:17px;">
-            Por el presente pagaré reconocemos deber y nos oblígamos a pagar  en esta Ciudad a la orden de ABELARDO AHUMADA RANGEL
+            Por el presente pagaré reconocemos deber y nos oblígamos a pagar  en esta Ciudad a la orden de <span t-esc="doc.company_id.legal_representative"/>
             el día &amp;nbsp;&amp;nbsp;
             <ins>
               &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
