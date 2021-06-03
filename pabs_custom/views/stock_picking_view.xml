@@ -72,6 +72,15 @@
         <field name="codigo_de_activacion_valid"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')],
           'required' : [('parent.type_transfer','=','as-ov')]}"/>
+        <field name="service_number"
+          attrs="{'column_invisible': [('parent.type_transfer','!=','servicios')],
+          'required' : [('parent.type_transfer','=','servicios')]}"/>
+        <field name="service_item_number"
+          attrs="{'column_invisible': [('parent.type_transfer','!=','servicios')],
+          'required' : [('parent.type_transfer','=','servicios')]}"/>
+        <field name="consumption_warehouse"
+          attrs="{'column_invisible': [('parent.type_transfer','not in',('servicios','consumo','reparacion') )],
+          'required' : [('parent.type_transfer','=','servicios')]}"/>
       </xpath>
 
       <xpath expr="//field[@name='move_ids_without_package']/form/group/field[@name='description_picking']" position="after">

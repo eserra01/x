@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Cuentas analíticas -->
+        <record id="mortuary_analytic_group" model="account.analytic.group">
+            <field name="name">FUNERARIAS</field>
+        </record>
+
+        <record id="mortuary_analytic_account1" model="account.analytic.account">
+            <field name="name">FUNE_1</field>
+            <field name="group_id" ref="mortuary_analytic_group"></field>
+        </record>
+
+        <!-- Almacenes y ubicaciones -->
+        <record id="service_items_warehouse" model="stock.warehouse">
+            <field name="name">BODEGA GENERAL</field>
+            <field name="code">GENER</field>
+        </record>
+        <record id="service_items_location" model="stock.location">
+            <field name="name">Bodega General</field>
+            <field name="location_id" search="[('name','=','GENER'), ('usage','=','view')]"></field>
+            <field name="usage">internal</field>
+            <field name="office_location">0</field>
+        </record>
+        
+        <record id="service_outgoing_warehouse" model="stock.warehouse">
+            <field name="name">SERVICIOS</field>
+            <field name="code">SERV</field>
+        </record>
+        <record id="service_outgoing_location" model="stock.location">
+            <field name="name">Salida a servicios</field>
+            <field name="location_id" search="[('name','=','SERV'), ('usage','=','view')]"></field>
+            <field name="usage">customer</field>
+        </record>
+
+        <record id="consumption_outgoing_warehouse" model="stock.warehouse">
+            <field name="name">CONSUMO</field>
+            <field name="code">CONS</field>
+        </record>
+        <record id="consumption_outgoing_location" model="stock.location">
+            <field name="name">Consumo</field>
+            <field name="location_id" search="[('name','=','DONA'), ('usage','=','view')]"></field>
+            <field name="usage">customer</field>
+        </record>
+
+        <record id="repair_outgoing_warehouse" model="stock.warehouse">
+            <field name="name">REPARACIONES</field>
+            <field name="code">REPA</field>
+        </record>
+        <record id="repair_outgoing_location" model="stock.location">
+            <field name="name">Salida a reparación</field>
+            <field name="location_id" search="[('name','=','REPA'), ('usage','=','view')]"></field>
+            <field name="usage">internal</field>
+        </record>
+
+        <!-- Tipos de operaciones -->
+        <record id="service_stock_picking_type1" model="stock.picking.type">
+            <field name="name">Salida a Servicios</field>
+            <field name="code">outgoing</field>
+            <field name="show_operations">1</field>
+            <field name="sequence_code">Salida_servicios</field>
+            <field name="warehouse_id" ref="service_outgoing_warehouse"></field>
+            <field name="default_location_src_id" ref="service_items_location"></field>
+            <field name="default_location_dest_id" ref="service_outgoing_location"></field>
+        </record>
+
+        <record id="service_stock_picking_type2" model="stock.picking.type">
+            <field name="name">Salida a Reparaciones</field>
+            <field name="code">outgoing</field>
+            <field name="show_operations">1</field>
+            <field name="sequence_code">Reparaciones</field>
+            <field name="warehouse_id" ref="repair_outgoing_warehouse"></field>
+            <field name="default_location_src_id" ref="service_items_location"></field>
+            <field name="default_location_dest_id" ref="repair_outgoing_location"></field>
+        </record>
+
+        <record id="service_stock_picking_type3" model="stock.picking.type">
+            <field name="name">Salida a Consumo</field>
+            <field name="code">outgoing</field>
+            <field name="show_operations">0</field>
+            <field name="sequence_code">Consumo</field>
+            <field name="warehouse_id" ref="consumption_outgoing_warehouse"></field>
+            <field name="default_location_src_id" ref="service_items_location"></field>
+            <field name="default_location_dest_id" ref="consumption_outgoing_location"></field>
+        </record>
+
+     </data>
+</odoo>

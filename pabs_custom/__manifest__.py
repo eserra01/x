@@ -13,10 +13,12 @@
     'account',
     'product',
     'purchase',
+    'stock_account',
     'contacts',
     'hr'],
   'data': [
     'data/ir_sequence.xml',
+    'data/data.xml'
     'reports/closing_transfer_report.xml',
     'reports/arching_report.xml',
     'views/pabs_office_view.xml',

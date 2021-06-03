@@ -77,6 +77,10 @@ class StockMove(models.Model):
   amount_received = fields.Float(string='Importe recibido',
     compute="_calc_amount_received")
 
+  service_number = fields.Char(string="Bitacora")
+  service_item_number = fields.Char(string="Serie del artículo")
+  consumption_warehouse = fields.Many2one(comodel_name='account.analytic.account', string='Almacén de consumo')
+
   ### Termina Declaración de campos XMARTS
 
   @api.onchange('inversion_inicial','toma_comision')
@@ -458,4 +462,162 @@ class StockMove(models.Model):
           }
           move_line_obj.create(data)
         res.state = 'assigned'
+      if picking_id.type_transfer in ('servicios','reparaciones'):
+        lot_id = lot_obj.search([('product_id','=', res.product_id.id), ('name','=',res.service_item_number), ('company_id','=',vals.get('company_id'))],limit=1)
+        data = {
+          'picking_id' : picking_id.id,
+          'move_id': res.id,
+          'product_id': res.product_id.id,
+          'product_uom_id' : res.product_id.uom_id.id,
+          'qty_done' : 1,
+          'lot_id' : lot_id.id or False,
+          'location_id' : picking_id.location_id.id,
+          'location_dest_id' : picking_id.location_dest_id.id,
+          'state' : 'assigned',
+          'reference' : res.reference,
+        }
+        #raise ValidationError("{}".format(data) )
+        move_line_obj.create(data)
+        res.state = 'assigned'
+      ##### Salida a consumo
+      if picking_id.type_transfer in ('consumo'):
+        data = {
+          'picking_id' : picking_id.id,
+          'move_id': res.id,
+          'product_id': res.product_id.id,
+          'product_uom_id' : res.product_id.uom_id.id,
+          'qty_done' : res.product_uom_qty,
+          'location_id' : picking_id.location_id.id,
+          'location_dest_id' : picking_id.location_dest_id.id,
+          'state' : 'assigned',
+          'reference' : res.reference,
+        }
+        move_line_obj.create(data)
+        res.state = 'assigned'
     return res
+
+  ### Validar que al realizar un consumo exista la cantidad de producto suficiente
+  @api.onchange('product_uom_qty')
+  def onchange_product_quantity(self):
+    for rec in self:
+      #raise ValidationError("{}".format(rec.picking_id.type_transfer))
+      if rec.picking_id.type_transfer == 'consumo' and rec.product_uom_qty > 0:
+        
+        #Buscar cantidad de producto disponible en almacen de origen
+        location_id = rec.picking_id.location_id.id
+        available_quantity = self.env['stock.quant'].search([
+          ('product_id','=', rec.product_id.id),
+          ('location_id','=', location_id),
+          ('company_id','=', rec.company_id.id)
+        ]).quantity
+
+        if rec.product_uom_qty > available_quantity:
+          raise ValidationError("El almacén {} solo cuenta con {} unidades. Eliga una cantidad menor".format(rec.picking_id.location_id.name, available_quantity))
+
+  ### Validar que existe la bitácora
+  @api.onchange('service_number')
+  def onchange_service_number(self):
+    for rec in self:
+      if rec.service_number:
+        
+        rec.service_number = rec.service_number.upper()
+
+        mortuary_obj = self.env['mortuary'].search([
+          ('name', '=', rec.service_number.upper() ),
+          ('company_id','=', rec.company_id.id)
+          ])
+
+        if not mortuary_obj:
+          raise ValidationError("La bitácora {} no existe. Eliga una bitácora válida.".format(rec.service_number))
+
+  ### Validar que el número de artículo de funeraria elegido se encuentre disponible ###
+  @api.onchange('service_item_number')
+  def onchange_service_item_number(self):
+    for rec in self:
+      if rec.service_item_number:
+
+        rec.product_uom_qty = 1
+        
+        # 1. Obtener el id del articulo
+        stock_obj = self.env['stock.production.lot']
+        item = stock_obj.search([
+          ('product_id','=', rec.product_id.id),
+          ('name','=', rec.service_item_number),
+          ('company_id','=', rec.company_id.id)
+        ])
+
+        if not item:
+          valor = rec.service_item_number
+          rec.service_item_number = ""
+          raise ValidationError("No se encontró la serie {} para el artículo {}".format(valor, rec.product_id.name) )
+        
+        #2. Obtener la cantidad disponible y validarla
+        quant_obj = self.env['stock.quant']
+        item_quant = quant_obj.search([
+          ('lot_id','=', item.id),
+          ('location_id','=', rec.picking_id.location_id.id),
+          ('company_id','=', rec.company_id.id)
+        ])
+
+        if item_quant.quantity < 1:
+          raise ValidationError("No hay inventario disponible para el artículo {} con serie {}. Verifique que no se le haya dado salida".format(rec.product_id.name, item.name))
+        if item_quant.quantity > 1:
+          raise ValidationError("Hay exceso de inventario para el artículo {} con serie {}. Cantidad: {}".format(rec.product_id.name, item.name, item_quant.quantity))
+
+  ##### Override del método _generate_valuation_lines_data(...) para agregar la cuenta analítica a la póliza por salida de mercancia de funeraria #####
+  def _generate_valuation_lines_data(self, partner_id, qty, debit_value, credit_value, debit_account_id, credit_account_id, description):
+    # This method returns a dictionary to provide an easy extension hook to modify the valuation lines (see purchase for an example)
+    self.ensure_one()
+    debit_line_vals = {
+        'name': description,
+        'product_id': self.product_id.id,
+        'quantity': qty,
+        'product_uom_id': self.product_id.uom_id.id,
+        'ref': description,
+        'partner_id': partner_id,
+        'debit': debit_value if debit_value > 0 else 0,
+        'credit': -debit_value if debit_value < 0 else 0,
+        'account_id': debit_account_id,
+    }
+
+    credit_line_vals = {
+        'name': description,
+        'product_id': self.product_id.id,
+        'quantity': qty,
+        'product_uom_id': self.product_id.uom_id.id,
+        'ref': description,
+        'partner_id': partner_id,
+        'credit': credit_value if credit_value > 0 else 0,
+        'debit': -credit_value if credit_value < 0 else 0,
+        'account_id': credit_account_id,
+    }
+
+    #Asignar cuenta analitica de acuerdo al almacén de consumo
+    if self.consumption_warehouse:
+      debit_line_vals.update({'analytic_account_id': self.consumption_warehouse.id})
+      credit_line_vals.update({'analytic_account_id': self.consumption_warehouse.id})
+
+    rslt = {'credit_line_vals': credit_line_vals, 'debit_line_vals': debit_line_vals}
+    if credit_value != debit_value:
+        # for supplier returns of product in average costing method, in anglo saxon mode
+        diff_amount = debit_value - credit_value
+        price_diff_account = self.product_id.property_account_creditor_price_difference
+
+        if not price_diff_account:
+            price_diff_account = self.product_id.categ_id.property_account_creditor_price_difference_categ
+        if not price_diff_account:
+            raise UserError(_('Configuration error. Please configure the price difference account on the product or its category to process this operation.'))
+
+        rslt['price_diff_line_vals'] = {
+            'name': self.name,
+            'product_id': self.product_id.id,
+            'quantity': qty,
+            'product_uom_id': self.product_id.uom_id.id,
+            'ref': description,
+            'partner_id': partner_id,
+            'credit': diff_amount > 0 and diff_amount or 0,
+            'debit': diff_amount < 0 and -diff_amount or 0,
+            'account_id': price_diff_account.id,
+        }
+
+    return rslt

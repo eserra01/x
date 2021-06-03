@@ -35,7 +35,10 @@ class StockPicking(models.Model):
     ('ov-as', 'Oficina de Venta -> Asistente'),
     ('as-ov', 'Asistente -> Oficina de Venta'),
     ('as-cont', 'Asistente -> Contratos'),
-    ('as-cont', 'Asistente -> Admon Contratos')],
+    ('as-cont', 'Asistente -> Admon Contratos'),
+    ('servicios', 'Salida a servicios'),
+    ('consumo', 'Salida por consumo'),
+    ('reparacion', 'Salida a reparacion')],
     string='Tipo de transferencia')
   ### Termina campos XMARTS
 
@@ -62,6 +65,13 @@ class StockPicking(models.Model):
   @api.onchange('picking_type_id', 'partner_id')
   def onchange_picking_type(self):
     origin = ''
+    #Si es Salida a servicios
+    if self.picking_type_id.warehouse_id.name == 'SERVICIOS':
+      self.type_transfer = 'servicios'
+    if self.picking_type_id.warehouse_id.name == 'CONSUMO':
+      self.type_transfer = 'consumo'
+    if self.picking_type_id.warehouse_id.name == 'REPARACIONES':
+      self.type_transfer = 'reparacion'
     if self.type_transfer != 'regreso_solicitudes':
       if self.picking_type_id:
         ####### VALIDACIONES RESPECTIVAS PARA LAS UBICACIONES
