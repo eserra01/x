@@ -38,7 +38,7 @@ class ContractsElaboratedW1zard(models.TransientModel):
           ('invoice_date','>=',start_date),
           ('invoice_date','<=',end_date)])
 
-    lot_ids = [x.lot_id for x in contract_ids]
+    lot_ids = contract_ids.mapped('lot_id')
     warehouse_ids = lot_ids.mapped('warehouse_id').sorted(key=lambda r: r.name)
     warehouse_names = []
 
