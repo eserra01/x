@@ -157,13 +157,13 @@ class PabsBalanceTransfer(models.Model):
     ### SI HAY UN CONTRATO
     if contract_id:
       ### BUSCAMOS EL PUESTO DE TRABAJO DE TRASP
-      job_id = self.env['hr.job'].search([('name', '=', "TRASPASO"),('company_id', '=', contract_id.company_id.id)]).id
+      job_id = self.env['hr.job'].search([('name', '=', "TRASPASO")]).id
       ### SI NO HAY PUESTO DE TRABAJO
       if not job_id:
         ### ENVIAMOS MENSAJE DE ERROR
         raise ValidationError('No se encontró el puesto de "TRASPASO"')
       ### BUSCAMOS AL COMISIONISTA DE TRASPASO
-      commission_agent = self.env['hr.employee'].search([('job_id','=',job_id),('company_id','=',contract_id.company_id.id)]).id
+      commission_agent = self.env['hr.employee'].search([('job_id','=',job_id)]).id
       ### SI NO HAY COMISIONISTA
       if not commission_agent:
         ### ENVIAMOS MENSAJE DE ERROR
@@ -201,13 +201,13 @@ class PabsBalanceTransfer(models.Model):
       ### SI HAY CONTRATO ORIGEN
       if self.contract_origin_id:
         ### BUSCAMOS EL PUESTO DE TRABAJO DE TRASP
-        job_id = self.env['hr.job'].search([('name', '=', "TRASPASO"),('company_id', '=', self.contract_origin_id.company_id.id)]).id
+        job_id = self.env['hr.job'].search([('name', '=', "TRASPASO")]).id
         ### SI NO HAY PUESTO DE TRABAJO
         if not job_id:
           ### ENVIAMOS MENSAJE DE ERROR
           raise ValidationError('No se encontró el puesto de "TRASPASO"')
         ### BUSCAMOS AL COMISIONISTA DE TRASPASO
-        commission_agent = self.env['hr.employee'].search([('job_id','=',job_id),('company_id','=',self.contract_origin_id.company_id.id)]).id
+        commission_agent = self.env['hr.employee'].search([('job_id','=',job_id)]).id
         ### SI NO HAY COMISIONISTA
         if not commission_agent:
           ### ENVIAMOS MENSAJE DE ERROR
