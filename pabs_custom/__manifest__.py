@@ -18,7 +18,7 @@
     'hr'],
   'data': [
     'data/ir_sequence.xml',
-    'data/data.xml'
+    'data/data.xml',
     'reports/closing_transfer_report.xml',
     'reports/arching_report.xml',
     'views/pabs_office_view.xml',
