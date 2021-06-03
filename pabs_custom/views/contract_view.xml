@@ -345,6 +345,7 @@
 
               <label for="partner_mname" string="Nuevo apellido materno" class="oe_edit_only" /> 
               <field name="partner_mname" class="oe_edit_only" nolabel="1"/>
+              <field name="birthdate"/>
               <!-- Fin nombre -->
               
               <field name="invoice_date" readonly="1"/>
@@ -495,7 +496,6 @@
     <field name="name">Contratos (Administrador)</field>
     <field name="res_model">pabs.contract</field>
     <field name="view_mode">tree,form</field>
-    <field name="domain">[('state','=','contract')]</field>
     <field name="target">current</field>
   </record>
 
@@ -551,6 +551,7 @@
               <!-- Fin Estatus -->
               
               <field name="full_name" string="Titular"/>
+              <field name="birthdate" attrs="{'readonly' : [('state','=','contract')]}"/>
               <field name="invoice_date" readonly="1"/>
               <field name="name_service" string="Nombre del plan" readonly="1" options="{'no_open': True,}"/>
               <field name="service_detail"/>
@@ -719,6 +720,7 @@
               
               <!-- Nombre -->
               <field name="full_name" string="Titular"/>
+              <field name="birthdate" attrs="{'readonly' : [('state','=','contract')]}"/>
               <!-- Fin nombre -->
               
               <field name="invoice_date" readonly="1"/>
@@ -926,6 +928,7 @@
 
               <label for="partner_mname" string="Nuevo apellido materno" class="oe_edit_only" /> 
               <field name="partner_mname" class="oe_edit_only" nolabel="1"/>
+              <field name="birthdate"/>
               <!-- Fin nombre -->
               
               <field name="invoice_date" readonly="1"/>
@@ -1124,6 +1127,7 @@
               
               <!-- Nombre -->
               <field name="full_name" string="Titular"/>
+              <field name="birthdate" attrs="{'readonly' : [('state','=','contract')]}"/>
               <!-- Fin nombre -->
               
               <field name="invoice_date" readonly="1"/>
@@ -1322,6 +1326,7 @@
               
               <!-- Nombre -->
               <field name="full_name" string="Titular"/>
+              <field name="birthdate" attrs="{'readonly' : [('state','=','contract')]}"/>
               <!-- Fin nombre -->
               
               <field name="invoice_date" readonly="1"/>
@@ -1529,6 +1534,7 @@
 
               <label for="partner_mname" string="Nuevo apellido materno" class="oe_edit_only" /> 
               <field name="partner_mname" class="oe_edit_only" nolabel="1"/>
+              <field name="birthdate" attrs="{'readonly' : [('state','=','contract')]}"/>
               <!-- Fin nombre -->
               
               <field name="invoice_date" readonly="1"/>
