@@ -1,0 +1,18 @@
+<odoo>
+  <data>
+
+    <record id="legal_representative_on_company_view" model="ir.ui.view">
+      <field name="name">legal.representative.on.company.view</field>
+      <field name="model">res.company</field>
+      <field name="inherit_id" ref="base.view_company_form"/>
+      <field name="arch" type="xml">
+
+        <xpath expr="//field[@name='website']" position="after">
+          <field name="legal_representative"/>
+        </xpath>
+
+      </field>
+    </record>
+
+  </data>
+</odoo>

@@ -692,3 +692,9 @@ class AccountMove(models.Model):
 
     mortuary_id = fields.Many2one(comodel_name='mortuary',
         name='Bitacora')
+
+class ResCompany(models.Model):
+    _inherit = 'res.company'
+
+    legal_representative = fields.Char(string='Apoderado Legal')
+    

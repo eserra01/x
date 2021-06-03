@@ -48,6 +48,7 @@
         'views/ig_proveedor_embalsama.xml',
         'views/ig_templo.xml',
         'views/mortuary_cremation.xml',
+        'views/res_company_view.xml',
         'report/mortuary_payment_report.xml',
         'wizard/mortuary_cutting_payments_wizzard.xml',
         'views/menus.xml',
