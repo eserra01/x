@@ -480,7 +480,7 @@ class StockMove(models.Model):
         move_line_obj.create(data)
         res.state = 'assigned'
       ##### Salida a consumo
-      if picking_id.type_transfer in ('consumo'):
+      if picking_id.type_transfer == 'consumo':
         data = {
           'picking_id' : picking_id.id,
           'move_id': res.id,
