@@ -627,16 +627,15 @@ class Mortuary(models.Model):
     def get_invoiced_services(self):
         move_obj = self.env['account.move']
         data = []
-        if self.balance > 0:
-            move_ids = move_obj.search([
-                ('type','=','out_invoice'),
-                ('mortuary_id','=',self.id)])
-            for move_id in move_ids:
-                for line in move_id.invoice_line_ids:
-                    data.append({
-                        'pricelist' : "${:,.2f}".format(line.price_subtotal),
-                        'name' : line.name,
-                    })
+        move_ids = move_obj.search([
+            ('type','=','out_invoice'),
+            ('mortuary_id','=',self.id)])
+        for move_id in move_ids:
+            for line in move_id.invoice_line_ids:
+                data.append({
+                    'pricelist' : "${:,.2f}".format(line.price_subtotal),
+                    'name' : line.name,
+                })
         return data
 
     def get_payments(self):
