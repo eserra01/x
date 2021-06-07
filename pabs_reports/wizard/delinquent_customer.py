@@ -71,6 +71,8 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
         ('state','=','contract'),
         ('contract_status_item','in',status_id.ids)], order="name")
 
+    raise ValidationError("contratos: {}".format(len(all_contracts)))
+
     ### TRAEMOS TODOS LOS COBRADORES
     collectors = all_contracts.mapped('debt_collector.name')
 
