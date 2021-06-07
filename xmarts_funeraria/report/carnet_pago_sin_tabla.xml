@@ -83,14 +83,14 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td class="dato">ACAPULCO</td>
+                        <td class="dato"><span t-esc="doc.company_id.name"/></td>
                         <td></td>
                         <td class="dato"> <div class="dato_largo_rec" t-esc="doc.phone_toll"> </div></td>
                     </tr>
                     <tr>
                         <td></td>
                         <!-- TELEFONOS DE LA FUNERARIA -->
-                        <td class="dato">3336154330 Y 36150207</td>
+                        <td class="dato"><span t-esc="doc.company_id.service_phone"/></td>
                         <td></td>
                         <td class="dato">
                             <div class="dato_largo_rec">
