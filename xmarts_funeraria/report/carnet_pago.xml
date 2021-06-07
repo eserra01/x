@@ -36,7 +36,7 @@
                   <table width="100%">
                     <tr>
                       <td>
-                        Tel. servicio: 36 50 36 95 y 38 23 21 55.
+                        Tel. servicio: <span t-esc="doc.company_id.service_phone"/>
                       </td>
                     </tr>
                   </table>
@@ -61,7 +61,7 @@
                   <table width="100%">
                     <tr>
                       <td>
-                        Tel. oficina: 36 15 02 07 y 36 15 02 17.
+                        Tel. oficina: <span t-esc="doc.company_id.phone"/>
                       </td>
                     </tr>
                   </table>
