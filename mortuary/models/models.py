@@ -667,6 +667,60 @@ class Mortuary(models.Model):
         data = sorted(data, key=lambda r: r['date'])
         return data
 
+    def write(self, vals):
+        ### DECLARACIÓN DE OBJETOS.
+        servicio_obj = self.env['ii.servicio']
+        contract_obj = self.env['pabs.contract']
+        status_obj = self.env['pabs.contract.status']
+        reason_obj = self.env['pabs.contract.status.reason']
+        ### SI SE MODIFICO EL SERVICIO
+        if vals.get('ii_servicio'):
+            ### INSTANCIAMOS EL OBJETO
+            servicio_id = servicio_obj.browse(vals.get('ii_servicio'))
+            ### SI EL SERVICIO ESTA EN ESTATUS TERMINADO
+            if servicio_id.name == 'TERMINADO':
+                ### BUSCAMOS EL CONTRATO YA SEA SI SE MODIFICO O NO
+                contract_name = vals.get('tc_no_contrato') or self.tc_no_contrato or False
+                ### SI EXISTE UN CONTRATO
+                if contract_name:
+                    ### INSTANCIAMOS EL CONTRATO
+                    contract_id = contract_obj.search([
+                        ('name','=',contract_name)])
+                    ### SI NO HAY CONTRATO
+                    if not contract_id:
+                        ### ENVIAMOS MENSAJE DE ERROR
+                        raise ValidationError("No se encontró el contrato: {}".format(contract_name))
+                    ### SI EL SALDO DEL CONTRATO ES MAYOR QUE 0
+                    if contract_id.balance > 0:
+                        ### BUSCAMOS EL ESTATUS ACTIVO
+                        status_id = status_obj.search([
+                            ('status','=','ACTIVO')])
+                        ### BUSCAMOS EL MOTIVO DE REALIZADO POR COBRAR
+                        reason_id = reason_obj.search([
+                            ('status_id','=',status_id.id),
+                            ('reason','=','REALIZADO POR COBRAR')])
+                        ### ESCRIBIMOS LOS VALORES EN EL CONTRATO
+                        contract_id.write({
+                            'contract_status_item' : status_id.id,
+                            'contract_status_reason' : reason_id.id,
+                            'service_detail' : 'made_receivable',
+                        })
+                    ### SI NO TIENE SALDO
+                    else:
+                        ### BUSCAMOS EL ESTATUS REALIZADO
+                        status_id = status_obj.search([
+                            ('status','=','REALIZADO')])
+                        ### BUSCAMOS EL MOTIVO DE REALIZADO POR COBRAR
+                        reason_id = reason_obj.search([
+                            ('status_id','=',status_id.id),
+                            ('reason','=','REALIZADO')])
+                        ### ESCRIBIMOS LOS VALORES EN EL CONTRATO
+                        contract_id.write({
+                            'contract_status_item' : status_id.id,
+                            'contract_status_reason' : reason_id.id,
+                            'service_detail' : 'realized',
+                        })
+        return super(Mortuary, self).write(vals)
 
 
 class Observaciones(models.Model):
