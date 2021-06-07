@@ -3,6 +3,9 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from dateutil import tz
+import logging
+
+_logger = logging.getLogger(__name__)
 
 HEADERS = [
   'Fecha de Contrato',
