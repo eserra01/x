@@ -11,17 +11,20 @@ class PabsContract(models.Model):
             if payment_id.state in ('posted','send','reconciled'):
                 if payment_id.reference == 'stationary':
                     description = 'INVERSION INICIAL'
+                    collector = self.employee_id.name
                 elif payment_id.reference == 'surplus':
                     description = 'EXCEDENTE INVERSIÓN INICIAL'
+                    collector = self.employee_id.name
                 elif payment_id.reference == 'payment':
                     description = 'ABONO'
+                    collector = payment_id.debt_collector_code.name
                 else:
                     description = ''
                 credits.append({
                     'date' : payment_id.payment_date,
                     'name' : payment_id.ecobro_receipt,
                     'amount' : payment_id.amount,
-                    'collector' : payment_id.debt_collector_code.name,
+                    'collector' : collector,
                     'description' : description
                 })
         for refund_id in self.refund_ids:
@@ -30,7 +33,7 @@ class PabsContract(models.Model):
                     'date' : refund_id.invoice_date,
                     'name' : "",
                     'amount' : refund_id.amount_total,
-                    'collector' : "",
+                    'collector' : self.employee_id.name,
                     'description' : 'BONO POR INVERSIÓN INICIAL'
                 })
         for transfers_id in self.transfer_balance_ids:
