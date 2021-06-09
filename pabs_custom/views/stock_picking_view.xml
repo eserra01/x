@@ -36,10 +36,10 @@
 
       <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
         <field name="series_start"
-          attrs="{'column_invisible': [('parent.type_transfer','!=','ac-ov')],
+          attrs="{'column_invisible': [('parent.type_transfer','not in',('ac-ov','ov-ac'))],
                   'required': [('parent.type_transfer','==','ac-ov')]}"/>
         <field name="series_end"
-          attrs="{'column_invisible': [('parent.type_transfer','!=','ac-ov')],
+          attrs="{'column_invisible': [('parent.type_transfer','not in',('ac-ov','ov-ac'))],
                   'required': [('parent.type_transfer','==','ac-ov')]}"/>
         <field name="series"
           attrs="{'column_invisible': [
@@ -85,10 +85,10 @@
 
       <xpath expr="//field[@name='move_ids_without_package']/form/group/field[@name='description_picking']" position="after">
         <field name="series_start"
-          attrs="{'column_invisible': [('parent.type_transfer','!=','ac-ov')],
+          attrs="{'column_invisible': [('parent.type_transfer','not in',('ac-ov','ov-ac'))],
                   'required': [('parent.type_transfer','==','ac-ov')]}"/>
         <field name="series_end"
-          attrs="{'column_invisible': [('parent.type_transfer','!=','ac-ov')],
+          attrs="{'column_invisible': [('parent.type_transfer','not in',('ac-ov','ov-ac'))],
                   'required': [('parent.type_transfer','==','ac-ov')]}"/>
         <field name="series"
           attrs="{'column_invisible': [
