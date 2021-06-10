@@ -82,7 +82,7 @@ class ComissionTree(models.Model):
             salida_comisiones_obj.create([{"payment_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
         
         ######################## BONO ##########################
-        elif TipoPago == "Bono":
+        elif TipoPago in ("Bono","Transfer"):
 
             #Obtener id del cargo
             id_cargo = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "FIDEICOMISO")]).id
@@ -110,7 +110,11 @@ class ComissionTree(models.Model):
 
 
             #Crear registro en salida de comisiones
-            salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
+            if TipoPago == 'Bono':
+                salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
+            elif TipoPago == 'Transfer':
+                salida_comisiones_obj.create([{"payment_id":IdPago, "job_id": registro_arbol.job_id.id, "comission_agent_id": registro_arbol.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
+
 
 #Para excedente y abono
     def CrearSalidas(self, IdPago, NumeroContrato, CodigoCobrador, MontoPago, EsExcedente = False):

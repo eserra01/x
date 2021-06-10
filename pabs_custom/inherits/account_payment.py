@@ -98,10 +98,9 @@ class account_Payment(models.Model):
           CodigoCobrador = self.debt_collector_code.barcode
           NumeroContrato = self.contract.id
           MontoPago = self.amount or 0
-          comission_tree_obj.CrearSalidas(
-            IdPago=IdPago, NumeroContrato=NumeroContrato,
-            CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
-            EsExcedente=True)
+          comission_tree_obj.CrearSalidasEnganche(
+            IdPago=self.id, NumeroContrato=NumeroContrato,
+            MontoPago=MontoPago, TipoPago='Transfer')
       return res
 
     def disassociate_payment(self):
