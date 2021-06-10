@@ -97,6 +97,7 @@ class account_Payment(models.Model):
         if self.reference == 'transfer':
           CodigoCobrador = self.debt_collector_code.barcode
           NumeroContrato = self.contract.id
+          MontoPago = self.amount or 0
           comission_tree_obj.CrearSalidas(
             IdPago=IdPago, NumeroContrato=NumeroContrato,
             CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
