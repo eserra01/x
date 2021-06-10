@@ -144,7 +144,7 @@ class ActivationWeb(http.Controller):
         'neighborhood_id' : int(kargs.get('neighborhood_id')),
         'company_id' : company_id
       })
-    contract_id = contract_obj.with_user(request.env.context['uid']).with_context({
+    contract_id = contract_obj.with_user(request.env.context['uid']).with_context(force_company=company_id,{
       'company_id' : company_id}).create(kargs)
     if contract_id:
       response = {'result' : {'activation_code' : contract_id.activation_code}}
