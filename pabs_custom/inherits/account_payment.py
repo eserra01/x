@@ -94,6 +94,13 @@ class account_Payment(models.Model):
             ### PONEMOS LOS CONTRATOS EN ACTIVO
             self.contract.contract_status_item = status_active_id.id
             self.contract.contract_status_reason = status_reason_id.id
+        if self.reference == 'transfer':
+          CodigoCobrador = self.debt_collector_code.barcode
+          NumeroContrato = self.contract.id
+          comission_tree_obj.CrearSalidas(
+            IdPago=IdPago, NumeroContrato=NumeroContrato,
+            CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
+            EsExcedente=True)
       return res
 
     def disassociate_payment(self):
