@@ -330,7 +330,7 @@ class PABSContracts(models.Model):
   def create(self, vals):
     company_id = vals.get('company_id') or self.env.context.get('company_id') or False
     ### Valida que si ya existe una activación con ese número de serie, no permita generarla nuevamente
-    previous = self.search([('lot_id','=',vals['lot_id'])],limit=1)
+    previous = self.with_context(force_company=company_id).search([('lot_id','=',vals['lot_id'])],limit=1)
     if previous:
       if previous.state == 'precontract':
         self.create_contract(vals)
