@@ -106,7 +106,12 @@ class ActivationWeb(http.Controller):
           'id' : scheme_id.id,
           'name' : scheme_id.name,
         })
-      result.update({"schemes" : scheme_data})
+    else:
+      scheme_data.append({
+        'id' : employee_id.payment_scheme.id,
+        'name' : employee_id.payment_scheme.name,
+      })
+    result.update({"schemes" : scheme_data})
     product_id = lot_id.product_id
     if not product_id:
       message = message + "No se encontró el servicio\n"
