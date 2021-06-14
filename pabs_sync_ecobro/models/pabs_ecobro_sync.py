@@ -193,6 +193,7 @@ class PABSEcobroSync(models.Model):
     company = company_obj.browse(company_id)
     ### BUSCAMOS SI SE PUEDE SINCRONIZAR ALGO CON COOPERATIVA O APOYO
     cont_comp = company.contract_companies.filtered(lambda r: r.type_company in ('support','cooperative'))
+    _logger.warning("Valor encontrado: {}".format(cont_comp))
     if cont_comp:
       ### BUSCAR TODOS LOS CONTRATOS QUE NO ESTÉN EN ESTATUS CANCELADO, PAGADO Ó REALIZADO
       contract_ids = contract_obj.search([
@@ -207,6 +208,7 @@ class PABSEcobroSync(models.Model):
       raise ValidationError("No se encontró compañia configurada para sincronizar Contratos")
 
     mortuary_comp = company.contract_companies.filtered(lambda r: r.type_company == 'mortuary')
+    _logger.warning("Valor encontrado: {}".format(mortuary_comp))
     if mortuary_comp:
       ### BUSCAMOS TODAS LAS BITACORAS
       mortuary_ids = mortuary_obj.search([('company_id','=',company_id),('name','!=',False)]).filtered(lambda r: r.ii_servicio.name in ('PENDIENTE','TERMINADO'))
