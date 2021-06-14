@@ -179,6 +179,7 @@ class PABSEcobroSync(models.Model):
     ### GENERAR VARIABLE DE LOG
     log = "Sincronización de Contratos de Odoo \n"
     ### INSTANCIACIÓN DE OBJECTOS
+    company_obj = self.env['res.company'].sudo()
     contract_obj = self.env['pabs.contract'].sudo()
     mortuary_obj = self.env['mortuary'].sudo()
     ### MANDAR A LLAMAR LA URL DE CONTRATOS
