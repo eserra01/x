@@ -176,6 +176,7 @@ class PABSEcobroSync(models.Model):
         return 0000-00-00
 
   def sync_contracts(self, company_id=False):
+    
     ### GENERAR VARIABLE DE LOG
     log = "Sincronización de Contratos de Odoo \n"
     ### INSTANCIACIÓN DE OBJECTOS
