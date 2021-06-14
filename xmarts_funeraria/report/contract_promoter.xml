@@ -121,7 +121,7 @@
         name="xmarts_funeraria.contract_to_office"
         file="xmarts_funeraria.contract_to_office"
         report_type="qweb-pdf"
-        print_report_name="Contratos a oficina"
+        print_report_name="'Contratos a oficina'"
         paperformat="xmarts_funeraria.paperformat_report"
         menu="False"
         />
