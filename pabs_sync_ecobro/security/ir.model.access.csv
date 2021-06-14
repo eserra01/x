@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_companies,access_company,pabs_sync_ecobro.model_companies,base.group_user,1,1,1,1
+access_contract_companies,access_contract_companies,pabs_sync_ecobro.model_contract_companies,base.group_user,1,1,1,1
