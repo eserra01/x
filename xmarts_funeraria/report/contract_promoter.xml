@@ -83,7 +83,7 @@
                                             <span t-esc="result.series"/>
                                         </td>
                                         <td style="padding: 1px 1px 1px 1px; text-align: center;">
-                                            <span t-esc="dict(result._fields['return_reason'].selection).get(result.return_reason).upper()"/>
+                                            <span t-esc="dict(result._fields['return_reasons'].selection).get(result.return_reasons).upper()"/>
                                         </td>
                                     </tr>
                                 </t>
