@@ -189,14 +189,33 @@ class PABSEcobroSync(models.Model):
       _logger.warning("No se ha configurado ninguna IP de sincronización con ecobro")
       ### FINALIZA EL MÉTODO
       return
-    ### BUSCAR TODOS LOS CONTRATOS QUE NO ESTÉN EN ESTATUS CANCELADO, PAGADO Ó REALIZADO
-    contract_ids = contract_obj.search([
-      ('company_id','=',company_id),
-      ('state','=','contract'),
-      ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO'))])
+    ### TRAEMOS EL OBJETO DE LA COMPAÑIA
+    company = company_obj.browse(company_id)
+    ### BUSCAMOS SI SE PUEDE SINCRONIZAR ALGO CON COOPERATIVA O APOYO
+    cont_comp = company.contract_companies.filtered(lambda r: r.type_company in ('support','cooperative'))
+    if cont_comp:
+      ### BUSCAR TODOS LOS CONTRATOS QUE NO ESTÉN EN ESTATUS CANCELADO, PAGADO Ó REALIZADO
+      contract_ids = contract_obj.search([
+        ('company_id','=',company_id),
+        ('state','=','contract'),
+        ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO'))])
+    else:
+      _logger.warning("No se configuró ninguna compañia para sincronización de contratos")
+      log += 'No se configuró ninguna compañia para sincronización de contratos'
+      url_log = self.get_url(company_id, "LOG_CONTRATOS")
+      req_log = requests.post(url_log, log)
+      raise ValidationError("No se encontró compañia configurada para sincronizar Contratos")
 
-    ### BUSCAMOS TODAS LAS BITACORAS
-    mortuary_ids = mortuary_obj.search([('company_id','=',company_id),('name','!=',False)]).filtered(lambda r: r.ii_servicio.name in ('PENDIENTE','TERMINADO'))
+    mortuary_comp = company.contract_companies.filtered(lambda r: r.type_company == 'mortuary')
+    if mortuary_comp:
+      ### BUSCAMOS TODAS LAS BITACORAS
+      mortuary_ids = mortuary_obj.search([('company_id','=',company_id),('name','!=',False)]).filtered(lambda r: r.ii_servicio.name in ('PENDIENTE','TERMINADO'))
+    else:
+      _logger.warning("No se configuró ninguna compañia para sincronización de Bitacoras")
+      log += "No se configuró ninguna compañia para sincronización de Bitacoras"
+      url_log = self.get_url(company_id, "LOG_CONTRATOS")
+      req_log = requests.post(url_log, log)
+      raise ValidationError("No se encontró compañia configurada para sincronizar Bitacoras")
 
     ### AGREGAMOS LA CANTIDAD DE CONTRATOS EN EL LOG
     len_contract = len(contract_ids)
@@ -222,7 +241,7 @@ class PABSEcobroSync(models.Model):
         'nombre' : contract_id.partner_name or '',
         'apellido_paterno' : contract_id.partner_fname or '',
         'apellido_materno' : contract_id.partner_mname or '',
-        'empresa' : '01',
+        'empresa' : cont_comp.serie,
         'calle' : contract_id.street_name_toll or '',
         'numero_exterior' : contract_id.street_number_toll or '',
         'colonia' : contract_id.toll_colony_id.name or '',
@@ -262,7 +281,7 @@ class PABSEcobroSync(models.Model):
           'nombre' : mortuary_id.ii_finado,
           'apellido_paterno' : '',
           'apellido_materno' : '',
-          'empresa' : '05',
+          'empresa' : mortuary_comp.serie,
           'calle' : mortuary_id.podp_calle_y_number or '',
           'numero_exterior' : '',
           'colonia' : mortuary_id.podp_colonia_id.name or '',

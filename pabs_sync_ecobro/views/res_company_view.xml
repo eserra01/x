@@ -14,6 +14,16 @@
             </group>
           </group>
           <div>
+            <label for="contract_companies" string='Sincrpnización de Contratos'/>
+            <field name="contract_companies">
+              <tree editable="bottom">
+                <field name="serie"/>
+                <field name="type_company"/>
+              </tree>
+            </field>
+          </div>
+          <div>
+            <label for="companies" string="Sincronización de Pagos"/>
             <field name="companies">
               <tree editable="bottom">
                 <field name="serie"/>
