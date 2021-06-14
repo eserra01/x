@@ -98,8 +98,8 @@ class ActivationWeb(http.Controller):
     else:
       employee_name = "{} - {}".format(employee_id.barcode, employee_id.name) or False
       result.update({'employee' : employee_name})
+    scheme_data = []
     if employee_id.payment_scheme.id == salary_id.id:
-      scheme_data = []
       scheme_ids = payment_scheme_obj.search([])
       for scheme_id in scheme_ids:
         scheme_data.append({
