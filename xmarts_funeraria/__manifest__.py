@@ -54,6 +54,7 @@
         'report/detallado_moroso.xml',
         'report/contrato_pagado.xml',
         'report/office_promoter.xml',
+        'report/contract_promoter.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

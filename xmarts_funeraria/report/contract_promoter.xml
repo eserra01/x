@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<odoo>
+	<data>
+    	<template id="xmarts_funeraria.contract_to_office">
+			<t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc"> 
+                <div class="page" style="font-size: 13pt;">
+                    <style>
+                        * {
+                          box-sizing: border-box;
+                        }
+
+                        .column{
+                          float: left;
+                          width: 50%;
+                          padding: 10px;
+                        }
+
+                        /* Create two equal columns that floats next to each other */
+                        .column-left{
+                          float: left;
+                          width: 25%;
+                          padding: 10px;
+                        }
+
+                        .column-right{
+                          float: left;
+                          width: 75%;
+                          padding: 10px;
+                        }
+
+                        /* Clear floats after the columns */
+                        .row:after {
+                          content: "";
+                          display: table;
+                          clear: both;
+                        }
+                    </style>
+                    <t t-if="doc.type_transfer ==  'cont-ov'">
+                        <div style="display: table; clear: both;">
+                             <div style="float: left; width: 25%; padding: 10px;">
+                                <img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="width:100px;"/>
+                            </div>
+                            <div style="float: left; width: 75%; padding: 10px;">
+                                <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">RECEPCIÓN DE SOLICITUDES</span><br/>
+                                <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">** CONTRATOS A OFICINA **</span><br/>
+                            </div>
+                        </div>
+
+                        <span>Folio:</span><strong t-esc="doc.name"/><br/>
+                        <span>Fecha:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.date_done" t-options='{"widget": "date"}'/><br/>
+                        <span>Hora:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-field="doc.date_done" t-options='{"format":"hh:mm:ss"}'/><br/>
+                        
+                        <span>Entrega: </span><span t-esc="doc.employee_id.barcode"/><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.employee_id.name"/><br/>
+                        <span>Recibe: </span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="user.partner_id.name"/><br/>
+                        <br/>
+
+                        <!-- SOLICITUDES -->
+                        <table class="table" style="border-collapse: collapse; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">
+                                    PLAN
+                                </th>
+                                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">
+                                    FOLIO
+                                </th>
+                                <th style="padding: 1px 1px 1px 1px; text-align: center; font-weight: bold; border-bottom: 1px solid black;">
+                                    MOTIVO DE REGRESO
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="doc.move_ids_without_package">
+                                <t t-set="entregadas" t-value="len(doc.move_ids_without_package)"/>
+                                <t t-foreach="doc.move_ids_without_package" t-as="result">
+                                    <tr>
+                                        <td style="padding: 1px 1px 1px 1px; text-align: center;">
+                                            <span t-esc="result.description_picking"/>
+                                        </td>
+                                        <td style="padding: 1px 1px 1px 1px; text-align: center;">
+                                            <span t-esc="result.series"/>
+                                        </td>
+                                        <td style="padding: 1px 1px 1px 1px; text-align: center;">
+                                            <span t-esc="dict(result._fields['return_reason'].selection).get(result.return_reason).upper()"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </tbody>
+                        </table>
+                        
+                        <!-- FIRMAS -->
+                        <div style="display: table; clear: both;">
+                            <div style="float: left; width: 50%; padding: 10px;">
+                                <center>
+                                    _________________________ <br/>
+                                    <span style="margin-left: 10px;">Firma Contratos</span><br/>
+                                </center>
+                            </div>
+                            <div style="float: left; width: 50%; padding: 10px;">
+                                <center>
+                                    _________________________ <br/>
+                                    <span style="margin-left: 10px;">Firma Secretaria</span> 
+                                </center>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </t>
+            </t>
+			</t>
+    	</template>
+
+	</data>
+	<report
+        string="Contratos a oficina"
+        id="id_contract_office"
+        model='stock.picking'
+        name="xmarts_funeraria.contract_to_office"
+        file="xmarts_funeraria.contract_to_office"
+        report_type="qweb-pdf"
+        print_report_name="Contratos a oficina"
+        paperformat="xmarts_funeraria.paperformat_report"
+        menu="False"
+        />
+
+</odoo>
