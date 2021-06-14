@@ -37,6 +37,7 @@
         'wizard/comisiones_promotores.xml',
         'report/rpt_comisiones_promotores.xml',
         'wizard/historial_ventas.xml',
+        'wizard/pabs_production_promoter_wizard.xml',
         'report/rpt_historial_ventas.xml',
         'wizard/comisiones_por_recuperar.xml',
         'report/rpt_comisiones_por_recuperar.xml',

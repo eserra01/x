@@ -10,6 +10,7 @@
     'base'],
   'data': [
     'templates/main_page.xml',
+    'views/res_company_view.xml',
   ],
   'installable': True,
   'auto_install': False,

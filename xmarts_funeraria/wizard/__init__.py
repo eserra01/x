@@ -8,3 +8,4 @@ from . import carnet_pago_rango_tabla
 from . import comisiones_promotores
 from . import historial_ventas
 from . import comisiones_por_recuperar
+from . import pabs_production_promoter

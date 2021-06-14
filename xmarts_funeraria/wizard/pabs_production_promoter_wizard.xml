@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_production_promoter_view" model="ir.ui.view">
+    <field name="name">Producción de un asistente</field>
+    <field name="model">pabs.production.promoter</field>
+    <field name="arch" type="xml">
+      <form string="Producción de un asistente">
+        <group>
+          <group>
+              <field name="employee_id" domain="[('job_id','=','ASISTENTE SOCIAL')]"/>
+          </group>
+        </group>
+        <footer>
+          <button name='print_xlsx_report' string='Exportar XLSX' type="object" icon="fa-windows"/>
+          or
+          <button string="Cancelar" class="oe_link" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_production_promoter" model="ir.actions.act_window">
+    <field name="name">Reporte de Producción de un asistente</field>
+    <field name="res_model">pabs.production.promoter</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_production_promoter_view"/>
+    <field name="target">new</field>
+  </record>
+
+
+  <menuitem id="menu_production_promoter_report" 
+    name="Reporte de Producción de un asistente" 
+    parent="xmarts_funeraria.report_root_menu" 
+    sequence="3" 
+    action="action_production_promoter"/>
+
+  <report
+    id="production_promoter_report_xlsx"
+    model="pabs.production.promoter"
+    string="'Reporte de producción de %s' % (object.employee_id.name)"
+    report_type="xlsx"
+    name="xmarts_funeraria.promoter_production_xlsx"
+    file="xmarts_funeraria.promoter_production_xlsx"
+    attachment_use="False"
+    />
+
+</odoo>
