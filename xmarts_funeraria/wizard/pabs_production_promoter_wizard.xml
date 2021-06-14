@@ -37,7 +37,8 @@
   <report
     id="production_promoter_report_xlsx"
     model="pabs.production.promoter"
-    string="'Reporte de producción de %s' % (object.employee_id.name)"
+    string="Producción de asistente"
+    print_report_name="'Reporte de producción de %s' % (object.employee_id.name)"
     report_type="xlsx"
     name="xmarts_funeraria.promoter_production_xlsx"
     file="xmarts_funeraria.promoter_production_xlsx"
