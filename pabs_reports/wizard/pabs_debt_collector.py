@@ -141,7 +141,7 @@ class PabsDebtCollectorReportXLSX(models.AbstractModel):
     date_format = workbook.add_format({'num_format': 'dd/mm/yy'})
     money_format = workbook.add_format({'num_format': '$#,##0.00'})
 
-    sheet.merge_range('A1:G1', "REPORTE DE CARTERA DE COBRADORES", header_format)
+    sheet.merge_range('A1:I1', "REPORTE DE CARTERA DE COBRADORES", header_format)
 
     ### FILTRAMOS LOS COBRADORES
     debt_collectors = all_contracts.mapped('debt_collector')
@@ -195,7 +195,7 @@ class PabsDebtCollectorReportXLSX(models.AbstractModel):
         ### F.P
         sheet.write(count, 5, payment_way or '')
         ### ULT F. ABONO
-        sheet.write(count, 6, contract_id.date_first_payment or '')
+        sheet.write(count, 6, contract_id.date_first_payment or '', date_format)
         ### TELEFONO
         sheet.write(count, 7, contract_id.phone_toll or contract_id.phone or '')
         ### ESTATUS
