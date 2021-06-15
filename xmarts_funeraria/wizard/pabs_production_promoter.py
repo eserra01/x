@@ -48,10 +48,10 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
     employee_obj = self.env['hr.employee']
 
     ### INSTANCIAMOS EL OBJETO DEL EMPLEADO
-    employee_id = employee_obj.browse(data.get('employee_id')
+    employee_id = employee_obj.browse(data.get('employee_id'))
 
     ### AGREGAMOS LA HOJA DE PRODUCCION AL EXCEL
-    sheet = workbook.add_worksheet("Producción de {} - {}".format(employee_id.barcode, employee_id.name))
+    sheet = workbook.add_worksheet("Produccion de {}".format(employee_id.name))
 
     ### AGREGAMOS FORMATOS
     title_format = workbook.add_format({'bold' : True, 'font_size' : 14, 'center_across' : True})
