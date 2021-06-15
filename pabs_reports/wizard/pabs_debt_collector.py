@@ -92,7 +92,7 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
           'locality_id' : contract_id.toll_municipallity_id.name or '',
           'payment_way' : payment_way or '',
           'last_payment' : contract_id.date_first_payment or '',
-          'phone' : contract_id.phone_toll or contract_id.phone or ''
+          'phone' : contract_id.phone_toll or contract_id.phone or '',
           'status' : 'Activo' if contract_id.contract_status_item.status == 'ACTIVO' else 'Inactivo',
         })
       rec_data.update({
