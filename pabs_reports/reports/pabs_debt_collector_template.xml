@@ -43,6 +43,8 @@
                       <th>COLONIA</th>
                       <th>LOCALIDAD</th>
                       <th>F.P</th>
+                      <th>ULT F. ABONO</th>
+                      <th>TELÉFONO</th>
                       <th>ESTATUS</th>
                     </thead>
                     <tbody>
@@ -53,6 +55,8 @@
                         <td><span t-esc="line['neightborhood']"/></td>
                         <td><span t-esc="line['locality_id']"/></td>
                         <td><span t-esc="line['payment_way']"/></td>
+                        <td><span t-esc="line['last_payment']"/></td>
+                        <td><span t-esc="line['phone']"/></td>
                         <td><span t-esc="line['status']"/></td>
                       </tr>
                     </tbody>

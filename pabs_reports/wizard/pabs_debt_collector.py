@@ -11,6 +11,8 @@ HEADERS = [
   'COLONIA',
   'LOCALIDAD',
   'F.P',
+  'ULT F. ABONO',
+  'TELÉFONO',
   'ESTATUS']
 
 class PabsDebtCollector(models.TransientModel):
@@ -86,9 +88,11 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
           'contract' : contract_id.name,
           'partner_name' : contract_id.full_name,
           'address' : "{} #{}".format(contract_id.street_name_toll,contract_id.street_number_toll),
-          'neightborhood' : contract_id.toll_colony_id.name,
-          'locality_id' : contract_id.toll_municipallity_id.name,
-          'payment_way' : payment_way,
+          'neightborhood' : contract_id.toll_colony_id.name or '',
+          'locality_id' : contract_id.toll_municipallity_id.name or '',
+          'payment_way' : payment_way or '',
+          'last_payment' : contract_id.date_first_payment or '',
+          'phone' : contract_id.phone_toll or contract_id.phone or ''
           'status' : 'Activo' if contract_id.contract_status_item.status == 'ACTIVO' else 'Inactivo',
         })
       rec_data.update({
@@ -172,13 +176,28 @@ class PabsDebtCollectorReportXLSX(models.AbstractModel):
         ### CLIENTES
         sheet.write(count, 1, contract_id.full_name or '')
         ### DOMICILIO
-        sheet.write(count, 2, "{} #{}".format(contract_id.street_name_toll,contract_id.street_number_toll))
+        street = ''
+        if contract_id.street_name_toll:
+          if contract_id.street_number_toll:
+            street = "{} #{}".format(contract_id.street_name_toll, contract_id.street_number_toll)
+          else:
+            street = contract_id.street_name_toll
+        elif contract_id.street_name:
+          if contract_id.street_number:
+            street = "{} #{}".format(contract_id.street_name, contract_id.street_number)
+          else:
+            street = contract_id.street_name
+        sheet.write(count, 2, street)
         ### COLONIA
         sheet.write(count, 3, contract_id.toll_colony_id.name or '')
         ### LOCALIDAD
         sheet.write(count, 4, contract_id.toll_municipallity_id.name or '')
         ### F.P
         sheet.write(count, 5, payment_way or '')
+        ### ULT F. ABONO
+        sheet.write(count, 6, contract_id.date_first_payment or '')
+        ### TELEFONO
+        sheet.write(count, 7, contract_id.phone_toll or contract_id.phone or '')
         ### ESTATUS
-        sheet.write(count, 6, state or '')
+        sheet.write(count, 8, state or '')
       count += 4

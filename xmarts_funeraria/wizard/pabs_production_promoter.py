@@ -163,7 +163,7 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
       recomended = comission_tree.filtered(lambda r: r.job_id.name == 'RECOMENDADO')
       ### SI EXISTE RECOMENDADO, ESCRIBIMOS DATOS
       if recomended:
-        sheet.write(count, 17, "RECOMENDADO")
+        sheet.write(count, 17, recomended.comission_agent_id.name)
         sheet.write(count, 18, recomended.corresponding_commission or 0, money_format)
         sheet.write(count, 19, recomended.remaining_commission or 0, money_format)
       ### SI NO, ENVIAMOS QUE NO APLICA
