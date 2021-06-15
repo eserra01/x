@@ -55,6 +55,7 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
 
     ### AGREGAMOS FORMATOS
     title_format = workbook.add_format({'bold' : True, 'font_size' : 14, 'center_across' : True})
+    subtitle_format = workbook.add_format({'font_size' : 12, 'center_across' : True})
     bold_format = workbook.add_format({'bold' : True})
     header_format = workbook.add_format({'bold' : True,'bg_color': '#2978F8'})
     money_format = workbook.add_format({'num_format': '$#,##0.00'})
