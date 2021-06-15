@@ -89,17 +89,17 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
       ### ESTATUS DEL PROMOTOR
       sheet.write(count, 4, contract_id.sale_employee_id.employee_status.name or '')
       ### TIPO DE INGRESO
-      sheet.write(count, 6, contract_id.payment_scheme_id.name or '')
+      sheet.write(count, 5, contract_id.payment_scheme_id.name or '')
       ### FECHA DE ELABORACIÓN
-      sheet.write(count, 7, contract_id.invoice_date or '')
+      sheet.write(count, 6, contract_id.invoice_date or '')
       ### CONTRATO
-      sheet.write(count, 8, contract_id.name or '')
+      sheet.write(count, 7, contract_id.name or '')
       ### COSTO
-      sheet.write(count, 9, contract_id.product_price or 0)
+      sheet.write(count, 8, contract_id.product_price or 0)
       ### SALDO
-      sheet.write(count, 10, contract_id.balance or 0)
+      sheet.write(count, 9, contract_id.balance or 0)
       ### CLIENTE
-      sheet.write(count, 11, contract_id.full_name or '')
+      sheet.write(count, 10, contract_id.full_name or '')
       street = ''
       neightborhood = ''
       municipality = ''
@@ -117,17 +117,17 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
         municipality = contract_id.municipality_id.name
         phone = contract_id.phone
       ### DOMICILIO
-      sheet.write(count, 12, street)
+      sheet.write(count, 11, street)
       ### COLONIA
-      sheet.write(count, 13, neightborhood)
+      sheet.write(count, 12, neightborhood)
       ### MUNICIPIO
-      sheet.write(count, 14, municipality)
+      sheet.write(count, 13, municipality)
       ### TELÉFONO
-      sheet.write(count, 15, phone)
+      sheet.write(count, 14, phone)
       ### ESTATUS
-      sheet.write(count, 16, contract_id.contract_status_item.status or '')
+      sheet.write(count, 15, contract_id.contract_status_item.status or '')
       ### MOTIVO
-      sheet.write(count, 17, contract_id.contract_status_reason.reason or '')
+      sheet.write(count, 16, contract_id.contract_status_reason.reason or '')
       ### COBRADOR
-      sheet.write(count, 18, contract_id.debt_collector.name or '')
-    count += 1
+      sheet.write(count, 17, contract_id.debt_collector.name or '')
+      count += 1
