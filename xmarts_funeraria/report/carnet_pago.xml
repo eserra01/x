@@ -295,12 +295,22 @@
                 </div><br/>
 
                 <table width="100%">
-                  <tr>
-                    <td><strong>Domicilio:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
-                    <td style="width: 40%; border-bottom: 1px solid black;"><t t-esc="doc.street_name_toll"/> &amp;nbsp;&amp;nbsp; <t t-esc="doc.street_number_toll"/></td>
-                    <td style="width: 5%; border-bottom: 1px solid black;"><strong>Col:</strong></td>
-                    <td style="width: 48%; border-bottom: 1px solid black;"><t t-esc="doc.toll_colony_id.name"/> - <t t-esc="doc.toll_municipallity_id.name"/></td>
-                  </tr>
+                  <t t-if="doc.street_name_toll">
+                    <tr>
+                      <td><strong>Domicilio:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
+                      <td style="width: 40%; border-bottom: 1px solid black;"><t t-esc="doc.street_name_toll"/> &amp;nbsp;&amp;nbsp; <t t-esc="doc.street_number_toll"/></td>
+                      <td style="width: 5%; border-bottom: 1px solid black;"><strong>Col:</strong></td>
+                      <td style="width: 48%; border-bottom: 1px solid black;"><t t-esc="doc.toll_colony_id.name"/> - <t t-esc="doc.toll_municipallity_id.name"/></td>
+                    </tr>
+                  </t>
+                  <t t-if="doc.street_name">
+                    <tr>
+                      <td><strong>Domicilio:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
+                      <td style="width: 40%; border-bottom: 1px solid black;"><t t-esc="doc.street_name"/> &amp;nbsp;&amp;nbsp; <t t-esc="doc.street_number"/></td>
+                      <td style="width: 5%; border-bottom: 1px solid black;"><strong>Col:</strong></td>
+                      <td style="width: 48%; border-bottom: 1px solid black;"><t t-esc="doc.neighborhood_id.name"/> - <t t-esc="doc.municipallity_id.name"/></td>
+                    </tr>
+                  </t>
                 </table>
 
                 <table width="100%">
