@@ -95,9 +95,9 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
 
 
     ### ESCRIBIMOS EL ENCABEZADO DE LA PAGINA
-    sheet.merge_range("A2:R2","Programa de Apoyo en Beneficio Social", title_format)
-    sheet.merge_range("A3:R3", "Producción de asistente", subtitle_format)
-    sheet.merge_range("A4:R4", "{} - {}".format(employee_id.barcode, employee_id.name), subtitle_format)
+    sheet.merge_range("A2:AK2","Programa de Apoyo en Beneficio Social", title_format)
+    sheet.merge_range("A3:AK3", "Producción de asistente", subtitle_format)
+    sheet.merge_range("A4:AK4", "{} - {}".format(employee_id.barcode, employee_id.name), subtitle_format)
 
     for index, val in enumerate(HEADERS):
       sheet.write(5,index,val,header_format)
@@ -222,10 +222,10 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
         sheet.write(count, 34, president.remaining_commission or 0, money_format)
       ### SI NO
       else:
-        sheet.write(count, 27, "N/A")
-        sheet.write(count, 28, "N/A")
-        sheet.write(count, 29, 0, money_format)
-        sheet.write(count, 30, 0, money_format)
+        sheet.write(count, 31, "N/A")
+        sheet.write(count, 32, "N/A")
+        sheet.write(count, 33, 0, money_format)
+        sheet.write(count, 34, 0, money_format)
       ### FECHA DE PRIMER ABONO
       sheet.write(count, 31, contract_id.date_first_payment, date_format)
       ### COMENTARIOS
@@ -234,6 +234,7 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
       for line in comment_ids.mapped('comment'):
         comment = comment + line + "\n"
       sheet.write(count, 32, comment)
+      count += 1
 
 
 
