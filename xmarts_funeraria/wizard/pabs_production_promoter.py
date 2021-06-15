@@ -227,13 +227,13 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
         sheet.write(count, 33, 0, money_format)
         sheet.write(count, 34, 0, money_format)
       ### FECHA DE PRIMER ABONO
-      sheet.write(count, 31, contract_id.date_first_payment, date_format)
+      sheet.write(count, 35, contract_id.date_first_payment, date_format)
       ### COMENTARIOS
       comment_ids = comment_obj.search([('contract_id','=',contract_id.id)])
       comment = ''
       for line in comment_ids.mapped('comment'):
         comment = comment + line + "\n"
-      sheet.write(count, 32, comment)
+      sheet.write(count, 36, comment)
       count += 1
 
 
