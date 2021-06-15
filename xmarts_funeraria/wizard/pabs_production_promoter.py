@@ -127,7 +127,7 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
       ### ESTATUS
       sheet.write(count, 16, contract_id.contract_status_item.status or '')
       ### MOTIVO
-      sheet.write(count, 17, contract_id.contract_status_reason.status_id or '')
+      sheet.write(count, 17, contract_id.contract_status_reason.reason or '')
       ### COBRADOR
       sheet.write(count, 18, contract_id.debt_collector.name or '')
-
+    count += 1
