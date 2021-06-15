@@ -48,10 +48,23 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
     employee_obj = self.env['hr.employee']
 
     ### INSTANCIAMOS EL OBJETO DEL EMPLEADO
-    employee_id = employee_obj.browse(data.get('employee_id'))
+    employee_id = employee_obj.browse(data.get('employee_id')
 
-    ### BUSCAMOS LOS CONTRATOS DE ESE ASISTENTE
-    contract_ids = contract_obj.search([
-      ('state','=','contract'),
-      ('sale_employee_id','=',data.get(employee_id))])
+    ### AGREGAMOS LA HOJA DE PRODUCCION AL EXCEL
+    sheet = workbook.add_worksheet("Producción de {} - {}".format(employee_id.barcode, employee_id.name))
+
+    ### AGREGAMOS FORMATOS
+    title_format = workbook.add_format({'bold' : True, 'font_size' : 14, 'center_across' : True})
+    bold_format = workbook.add_format({'bold' : True})
+    header_format = workbook.add_format({'bold' : True,'bg_color': '#2978F8'})
+    money_format = workbook.add_format({'num_format': '$#,##0.00'})
+    subtotal_format = workbook.add_format({'top' : 2, 'bold' : True, 'num_format': '$#,##0.00'})
+
+    ### ESCRIBIMOS EL ENCABEZADO DE LA PAGINA
+    sheet.merge_range("A2:D2","Programa de Apoyo en Beneficio Social", title_format)
+    sheet.merge_range("A3:D3", "Producción de asistente", subtitle_format)
+    sheet.merge_range("A4:B4", "{} - {}".format(employee_id.barcode, employee_id.name))
+
+    for index, val in enumerate(HEADERS):
+      sheet.write(5,index,val,header_format)
 
