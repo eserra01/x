@@ -59,6 +59,7 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
     bold_format = workbook.add_format({'bold' : True})
     header_format = workbook.add_format({'bold' : True,'bg_color': '#76A8F9'})
     money_format = workbook.add_format({'num_format': '$#,##0.00'})
+    date_format = workbook.add_format({'num_format': 'dd/mm/yy'})
     subtotal_format = workbook.add_format({'top' : 2, 'bold' : True, 'num_format': '$#,##0.00'})
 
     ### BUSCAMOS LOS CONTRATOS DE ESE ASISTENTE
@@ -70,7 +71,7 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
     ### ESCRIBIMOS EL ENCABEZADO DE LA PAGINA
     sheet.merge_range("A2:R2","Programa de Apoyo en Beneficio Social", title_format)
     sheet.merge_range("A3:R3", "Producción de asistente", subtitle_format)
-    sheet.merge_range("A4:R4", "{} - {}".format(employee_id.barcode, employee_id.name))
+    sheet.merge_range("A4:R4", "{} - {}".format(employee_id.barcode, employee_id.name), subtitle_format)
 
     for index, val in enumerate(HEADERS):
       sheet.write(5,index,val,header_format)
@@ -81,25 +82,25 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
     ### RECORREMOS LOS CONTRATOS
     for contract_id in contract_ids:
       ### CÓDIGO DEL PROMOTOR
-      sheet.write(count, 1, contract_id.sale_employee_id.barcode)
+      sheet.write(count, 0, contract_id.sale_employee_id.barcode)
       ### NOMBRE DEL PROMOTOR
-      sheet.write(count, 2, contract_id.sale_employee_id.name)
+      sheet.write(count, 1, contract_id.sale_employee_id.name)
       ### OFICINA
-      sheet.write(count, 3, contract_id.warehouse_id.name or '')
+      sheet.write(count, 2, contract_id.warehouse_id.name or '')
       ### ESTATUS DEL PROMOTOR
-      sheet.write(count, 4, contract_id.sale_employee_id.employee_status.name or '')
+      sheet.write(count, 3, contract_id.sale_employee_id.employee_status.name or '')
       ### TIPO DE INGRESO
-      sheet.write(count, 5, contract_id.payment_scheme_id.name or '')
+      sheet.write(count, 4, contract_id.payment_scheme_id.name or '')
       ### FECHA DE ELABORACIÓN
-      sheet.write(count, 6, contract_id.invoice_date or '')
+      sheet.write(count, 5, contract_id.invoice_date or '', date_format)
       ### CONTRATO
-      sheet.write(count, 7, contract_id.name or '')
+      sheet.write(count, 6, contract_id.name or '')
       ### COSTO
-      sheet.write(count, 8, contract_id.product_price or 0)
+      sheet.write(count, 7, contract_id.product_price or 0, money_format)
       ### SALDO
-      sheet.write(count, 9, contract_id.balance or 0)
+      sheet.write(count, 8, contract_id.balance or 0, money_format)
       ### CLIENTE
-      sheet.write(count, 10, contract_id.full_name or '')
+      sheet.write(count, 9, contract_id.full_name or '')
       street = ''
       neightborhood = ''
       municipality = ''
@@ -117,17 +118,17 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
         municipality = contract_id.municipality_id.name
         phone = contract_id.phone
       ### DOMICILIO
-      sheet.write(count, 11, street)
+      sheet.write(count, 10, street)
       ### COLONIA
-      sheet.write(count, 12, neightborhood)
+      sheet.write(count, 11, neightborhood)
       ### MUNICIPIO
-      sheet.write(count, 13, municipality)
+      sheet.write(count, 12, municipality)
       ### TELÉFONO
-      sheet.write(count, 14, phone)
+      sheet.write(count, 13, phone)
       ### ESTATUS
-      sheet.write(count, 15, contract_id.contract_status_item.status or '')
+      sheet.write(count, 14, contract_id.contract_status_item.status or '')
       ### MOTIVO
-      sheet.write(count, 16, contract_id.contract_status_reason.reason or '')
+      sheet.write(count, 15, contract_id.contract_status_reason.reason or '')
       ### COBRADOR
-      sheet.write(count, 17, contract_id.debt_collector.name or '')
+      sheet.write(count, 16, contract_id.debt_collector.name or '')
       count += 1
