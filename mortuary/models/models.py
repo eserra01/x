@@ -610,6 +610,11 @@ class Mortuary(models.Model):
         }
 
     def btn_create_pagos(self):
+        journal_id = self.env['account.journal'].search([('name','like','funeraria')])
+        if journal_id:
+            journal_name = journal_id.id
+        else:
+            journal_name = False
         return {
             'name': 'Crear pagos',
             'type': 'ir.actions.act_window',
@@ -617,6 +622,10 @@ class Mortuary(models.Model):
             'res_model': 'account.payment',
             'view_id': self.env.ref('account.view_account_payment_form').id,
             'context': {
+                'default_balance_binnacle' : self.balance,
+                'default_date_of_death' : self.ds_fecha_de_falleci,
+                'default_place_of_death' : self.ii_lugar_fallec,
+                'default_journal_id' : journal_name,
                 'default_binnacle' : self.id,
                 'default_partner_id' : self.partner_id.id,
                 'default_reference' : 'payment_mortuary',

@@ -57,7 +57,7 @@
               <!-- <button string='Servicios pendientes' name='btn_servic_pendiet' type='object' class="btn-primary"
                   attrs="{'invisible':[('id','==',0)]}" /> -->
               <button string='Crear facturas' name='btn_create_facturas' type='object' class="btn-primary" groups="pabs_custom.management_mortuary_profile"/>
-              <button string='Crear pagos' name='btn_create_pagos' type='object' class="btn-primary" groups="pabs_custom.reception_mortuary_profile"/>
+              <button string='Crear pagos' name='btn_create_pagos' type='object' class="btn-primary" groups="pabs_custom.reception_mortuary_profile" attrs="{'invisible' : [('balance','=',0)]}"/>
           </header>
           <sheet>
             <div class="oe_button_box" name="button_box">
