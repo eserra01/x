@@ -743,8 +743,6 @@ class PABSContracts(models.Model):
         if not pricelist_id:
           raise ValidationError((
             "No se encontró una secuencia"))
-        contract_name = pricelist_id.sequence_id._next()
-        previous.name = contract_name
         if not previous.partner_id:
           raise ValidationError((
             "No tiene un cliente ligado al contrato"))
@@ -753,6 +751,8 @@ class PABSContracts(models.Model):
           partner_id.write({'name' : previous.name})
         previous.state = 'contract'
         previous.create_commision_tree(invoice_id=invoice_id)
+        contract_name = pricelist_id.sequence_id._next()
+        previous.name = contract_name
         return invoice_id
 
   def reconcile_all(self, reconcile={}):

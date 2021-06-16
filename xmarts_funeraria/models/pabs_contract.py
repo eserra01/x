@@ -18,8 +18,15 @@ class PabsContract(models.Model):
                 elif payment_id.reference == 'payment':
                     description = 'ABONO'
                     collector = payment_id.debt_collector_code.name
+                elif payment_id.reference == 'mortuary':
+                    description = 'COBRO FUNERARIA'
+                    if payment_id.debt_collector_code:
+                        collector = payment_id.debt_collector_code.name
+                    else:
+                        collector = False
                 else:
                     description = ''
+                    collector = False
                 credits.append({
                     'date' : payment_id.payment_date,
                     'name' : payment_id.ecobro_receipt,
