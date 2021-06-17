@@ -138,7 +138,7 @@ class PABSProductionPromoterXLSX(models.AbstractModel):
         municipality = contract_id.toll_municipallity_id.name
         phone = contract_id.phone_toll
       elif contract_id.street_name:
-        street = "{} {} {}".format(
+        street = "{} {}".format(
           contract_id.street_name or '', contract_id.street_number or '')
         neightborhood = contract_id.neighborhood_id.name
         municipality = contract_id.municipality_id.name
