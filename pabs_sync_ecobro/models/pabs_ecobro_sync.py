@@ -200,7 +200,7 @@ class PABSEcobroSync(models.Model):
       contract_ids = contract_obj.search([
         ('company_id','=',company_id),
         ('state','=','contract'),
-        ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO'))])
+        ('contract_status_item','not in',('CANCELADO','PAGADO','REALIZADO','TRASPASO'))])
     else:
       _logger.warning("No se configuró ninguna compañia para sincronización de contratos")
       log += 'No se configuró ninguna compañia para sincronización de contratos'
