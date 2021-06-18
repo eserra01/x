@@ -406,6 +406,7 @@ class Mortuary(models.Model):
         move_obj = self.env['account.move']
         for rec in self:
             move_ids = move_obj.search([
+                ('state','=','posted'),
                 ('type','=','out_invoice'),
                 ('mortuary_id','=',rec.id)])
             balance = sum(move_ids.mapped('amount_residual'))
