@@ -112,7 +112,6 @@ class PABSContracts(models.Model):
   refund_ids = fields.One2many(tracking=True, comodel_name='account.move', inverse_name='contract_id', string="Notas")
 
 #Datos del cliente
-  full_name = fields.Char(tracking=True, string="Nombre completo", compute="calc_full_name")
   partner_name = fields.Char(tracking=True, string='Nombre', required=True)
   partner_fname = fields.Char(tracking=True, string='Apellido paterno', required=True)
   partner_mname = fields.Char(tracking=True, string='Apellido materno', required=True)
