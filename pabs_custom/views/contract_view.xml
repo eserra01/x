@@ -937,7 +937,7 @@
             </group>
 
             <group string="Datos de cobranza">
-              <field name="debt_collector" domain="[('job_id','=','COBRADOR')]" readonly="1"/>
+              <field name="debt_collector" domain="[('job_id','=','COBRADOR')]"/>
               <field name="way_to_payment"/>
               <field name="payment_amount"/>
               <field name="days_without_payment" readonly="1"/>
@@ -1701,9 +1701,11 @@
         <search>
             <field name="name" string="Contrato"/>
 
-            <field name="partner_name" string="Nombre"/>
+            <field name="full_name" string="Titular"/>
+
+            <!--<field name="partner_name" string="Nombre"/>
             <field name="partner_fname" string="Apellido paterno"/>
-            <field name="partner_mname" string="Apellido materno"/>
+            <field name="partner_mname" string="Apellido materno"/>-->
             
             <field name="lot_id" string="Solicitud"/>
             <field name="street_name" string="Calle de casa"/>

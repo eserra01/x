@@ -10,7 +10,7 @@
   <menuitem id="precontract_menu" name="Pre-Contratos" parent="service_menu_root" groups="pabs_custom.admin_profile,pabs_custom.contract_profile" action="precontract_action" sequence="2"/>
 
   <!-- Submenú de contratos para busqueda en general -->
-  <menuitem id="many_contract_menu" parent="service_menu_root" groups="pabs_custom.admin_profile,pabs_custom.contract_profile,pabs_custom.secretary_profile" action="action_many_contracts" sequence="2"/>
+  <menuitem id="many_contract_menu" parent="service_menu_root" groups="pabs_custom.admin_profile" action="action_many_contracts" sequence="2"/>
 
   <!-- Submenú de arqueos -->
   <menuitem id="menu_arching" name="Arqueos" groups="pabs_custom.admin_profile,pabs_custom.secretary_profile" parent="stock.menu_stock_root" action="pabs_arching_action" sequence="20"/>
