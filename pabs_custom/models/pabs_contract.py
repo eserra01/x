@@ -62,7 +62,7 @@ class PABSContracts(models.Model):
   payment_scheme_id = fields.Many2one(comodel_name='pabs.payment.scheme', tracking=True, default=lambda self : self.env['pabs.payment.scheme'].search([],limit=1).id, string='Esquema de pago')
   contract_status = fields.Selection(selection=STATUS, string='Estatus de contrato', tracking=True)
   lot_id = fields.Many2one(comodel_name='stock.production.lot', string='No. de Solicitud', tracking=True, required=True)
-  full_name = fields.Char(string="Nombre completo", tracking=True, compute="calc_full_name",store=True, index=True)
+  full_name = fields.Char(string="Nombre completo", tracking=True, compute="calc_full_name")
   partner_name = fields.Char(string='Nombre', required=True)
   partner_fname = fields.Char(string='Apellido paterno', required=True)
   partner_mname = fields.Char(string='Apellido materno', required=True)

@@ -1701,7 +1701,7 @@
         <search>
             <field name="name" string="Contrato"/>
 
-            <field name="full_name" string="Titular"/>
+            <field name="full_name" filter_domain="['|','|',('partner_name','ilike','%' + self + '%'),('partner_fname','ilike','%' + self + '%'),('partner_mname','ilike','%' + self + '%')]" string="Titular"/>
 
             <!--<field name="partner_name" string="Nombre"/>
             <field name="partner_fname" string="Apellido paterno"/>
