@@ -51,6 +51,7 @@
               <th>Número de pago</th>
               <th>Fecha de Pago</th>
               <th>Contrato / Bitácora</th>
+              <th>Tipo de Servicio</th>
               <th>Nombre</th>
               <th>Efectivo</th>
               <th>Transferencia</th>
@@ -66,6 +67,7 @@
                 <td><span t-esc="payment.name"/></td>
                 <td><span t-esc="payment.payment_date"/></td>
                 <td><span t-esc="payment.binnacle.name"/></td>
+                <td><span t-esc="payment.binnacle.ds_tipo_de_servicio.name or ''"/></td>
                 <td><span t-esc="payment.binnacle.ii_finado"/></td>
                 <t t-if="payment.way_to_pay == 'cash'">
                   <td><span t-esc="'${0:,.2f}'.format(payment.amount)"/></td>
@@ -92,6 +94,7 @@
                 <t t-set="total" t-value="total + payment.amount"/>
               </tr>
               <tr>
+                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>

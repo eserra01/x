@@ -1,0 +1,192 @@
+<odoo>
+<data>    
+
+    <template id="mortuary.receipt">
+        <t t-call="web.html_container">
+        <t t-call="web.basic_layout">
+            <div class="page">
+                <style>
+                    body {
+                        font-family: Arial, Helvetica, sans-serif;
+                    }
+
+                    .domicilio {
+                        font-size: 13px;
+                        text-align: center;
+                    }
+
+                    .fiscal {
+                        font-size: 15px;
+                        text-align: center;
+                    }
+
+                    td {
+                        border: 1px solid black;
+                        padding-left: 5px;
+                    }
+
+                    th {
+                        border: 1px solid black;
+                    }
+
+                    .encabezado {
+                        font-size: 12px;
+                        text-align: center;
+                        font-weight: bold;
+                    }
+
+                    .enc_izq {
+                        font-size: 10px;
+                        font-weight: bold;
+                    }
+
+                    .dato_cent {
+                        font-size: 15px;
+                        text-align: center;
+                    }
+
+                    .dato {
+                        font-size: 15px;
+                    }
+                </style>
+
+                <!-- Inicio del body -->
+                <div>
+                    <!-- Domicilio y datos fiscales -->
+                    <!-- CUERNAVACA -->
+                    <div class="domicilio">
+                        <hr style=" height: 3px; border:none; color:#333; background-color:#333;"/>
+                        <h4>
+                            <t t-esc="encabezado[0]"/> <br/>
+                            <t t-esc="encabezado[1]"/> <br/>
+                            <t t-esc="encabezado[2]"/>
+                        </h4>
+                        <hr style=" height: 3px; border:none; color:#333; background-color:#333;"/>
+                    </div>
+                    <div class="fiscal">
+                        <h4>
+                            <t t-esc="encabezado[3]"/> <br/>
+                            <t t-esc="encabezado[4]"/> <br/>
+                            <t t-esc="encabezado[5]"/> <br/>
+                            <t t-esc="encabezado[6]"/>
+                        </h4>
+                        <hr style=" height: 3px; border:none; color:#333; background-color:#333;"/>
+                    </div>
+
+                    <!-- Información del pago -->
+                    <table class="table" style="border: 1px solid black; border-collapse: collapse; width: 100%;">
+                        <tbody>
+                            <tr>
+                                <td class="encabezado">Número de bitácora</td>
+                                <td class="encabezado">Número de Contrato</td>
+                            </tr>
+                            <tr>
+                                <td class="dato_cent"><t t-esc="cuerpo.get('bitacora')"/></td>
+                                <td class="dato_cent"><t t-esc="cuerpo.get('contrato')"/></td>
+                            </tr>
+
+                            <tr>
+                                <td class="encabezado">Número de recibo</td>
+                                <td class="encabezado">Fecha</td>
+                            </tr>
+                            <tr>
+                                <td class="dato_cent"><t t-esc="cuerpo.get('recibo')"/></td>
+                                <td class="dato_cent"><t t-esc="cuerpo.get('fecha_recibo')"/></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <span class="enc_izq">Nombre: </span>
+                                    <span class="dato"><t t-esc="cuerpo.get('cliente')"/></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <span class="enc_izq">Finado: </span>
+                                    <span class="dato"><t t-esc="cuerpo.get('finado')"/></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <span class="enc_izq">Lugar de fallecimiento: </span>
+                                    <span class="dato"><t t-esc="cuerpo.get('lugar_fallecimiento')"/></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <span class="enc_izq">Fecha de defunción:</span>
+                                    <span class="dato"><t t-esc="cuerpo.get('fecha_defuncion')"/></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <span class="enc_izq">Cantidad</span>
+                                    <span class="dato">$<t t-esc="cuerpo.get('cantidad')"/> MXP</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <span class="enc_izq">Cantidad con letra</span>
+                                    <span class="dato"><t t-esc="cuerpo.get('cantidad_letra')"/> M.N.</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="encabezado">Recibimos:</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="dato"><t t-esc="cuerpo.get('adicionales')"/><br/> </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Firmas -->
+                    <p class="dato">
+                        <span>Autor:</span>
+                        <span><t t-esc="cuerpo.get('autor')"/></span>
+                        <br/>
+                        <span>Cajera:</span>
+                        <span><t t-esc="cuerpo.get('cajera')"/></span>
+                        <br/>
+                        <br/>
+                        <p style="text-align: right;">
+                            <span>Firma:</span>
+                            <span style="font-weight: bolder;">__________________________</span>
+                            <br/>    
+                            <span style="text-align: right; font-weight: bold; font-style: italic;">Original</span>
+                        </p>
+                        <span style="font-weight: bold;">Este documento es válido, solo con la firma y sello de facturación.</span>
+                    </p>
+                    <!-- Fin del body -->
+                </div>
+            </div>
+        </t>
+        </t>
+    </template>
+
+    <record id="mortuary_receipt_paper_format" model="report.paperformat">
+      <field name="name">Recibo de funeraria</field>
+      <field name="format">custom</field>
+      <field name="orientation">Portrait</field>
+      <field name="page_width">70</field>
+      <field name="page_height">200</field>
+      <field name="margin_top">20</field>
+      <field name="margin_bottom">0</field>
+      <field name="margin_left">3</field>
+      <field name="margin_right">3</field>
+      <field name="dpi">90</field>
+    </record>
+
+    <report
+        id="mortuary_receipt_action" 
+        model="mortuary"
+        string="Recibo_de_pago"
+        name="mortuary.receipt"
+        report_type="qweb-pdf"
+        file="mortuary.receipt"
+        menu="False"
+        paperformat="mortuary_receipt_paper_format"
+        /> 
+
+    
+
+</data>    
+</odoo> 
