@@ -81,6 +81,15 @@ class PabsContract(models.Model):
 
         
         return date_term
+
+    def late_amount_from_table(self, pay):
+        late_amount = 0
+        for rec in pay:
+            today = fields.Datetime.today()
+            if rec["date"] < today:
+                late_amount = late_amount + rec['amount_p']
+                
+        return late_amount
             
 
     def estimated_payment(self, ids):
@@ -96,7 +105,7 @@ class PabsContract(models.Model):
                 print("---------",paid)
                 i = rec.balance
                 cont = 0
-                date = rec.date_first_payment
+                date = rec.date_first_payment - relativedelta(days=7)
                 pay = []
                 while i > 0:
                     i -= rec.payment_amount
@@ -155,7 +164,7 @@ class PabsContract(models.Model):
                 print("---------",paid)
                 i = rec.balance
                 cont = 0
-                date = rec.date_first_payment
+                date = rec.date_first_payment - relativedelta(days=15)
                 pay = []
                 dates = 0
                 month = 0
@@ -261,7 +270,7 @@ class PabsContract(models.Model):
                 print("---------",paid)
                 i = rec.balance
                 cont = 0
-                date = rec.date_first_payment
+                date = rec.date_first_payment - relativedelta(months=1)
                 pay = []
                 while i > 0:
                     i -= rec.payment_amount

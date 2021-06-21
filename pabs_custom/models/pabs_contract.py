@@ -1059,8 +1059,17 @@ class PABSContracts(models.Model):
         rec.late_amount = 0
         return
 
-      saldo_a_plazos = rec.product_price - rec.initial_investment - rec.investment_bond
-      abonado = rec.paid_balance - rec.initial_investment - rec.investment_bond #Abonos sin tomar en cuenta enganche
+      #Obtener cantidad entregada en bono de inversión inicial
+      bonos_por_inversion = self.env['account.move'].search([
+        ('partner_id','=',rec.partner_id.id),
+        ('type','=', 'out_refund'),
+        ('ref','=', 'Bono por inversión inicial')
+      ])
+      total_bono = sum(reg.amount_total for reg in bonos_por_inversion) or 0
+
+      #Cantidad a programar (no se toma en cuenta recibos de enganche: inversion, excedente y bono)
+      saldo_a_plazos = rec.product_price - rec.initial_investment - total_bono
+      abonado = rec.paid_balance - rec.initial_investment - total_bono
 
       lista_pagos = []
       monto_atrasado = 0

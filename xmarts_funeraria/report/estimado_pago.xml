@@ -38,6 +38,7 @@
                  <t t-set="ids" t-value="doc.id"/>
                   <t t-set="pay" t-value="doc.estimated_payment(ids)"/>
                   <t t-set="date" t-value="doc.estimated_payment_date(pay)"/>
+                  <t t-set="late_amount" t-value="doc.late_amount_from_table(pay)"/>
                 <table width="100%">
                   <tr>
                     <td width="7%"><ins><strong>Cliente:</strong></ins></td>
@@ -47,7 +48,7 @@
                   </tr>
                   <tr>
                     <td width="7%"><ins><strong>Atrazado:</strong></ins></td>
-                    <td width="40%">$ 0000</td>
+                    <td width="40%">$<span>&amp;nbsp;&amp;nbsp;</span><t t-esc="late_amount"/></td>
                     <td class="text-right" width="35%"><ins><strong>Código Activación:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
                     <td class="text-center"><t t-esc="doc.activation_code"/></td>
                   </tr>
