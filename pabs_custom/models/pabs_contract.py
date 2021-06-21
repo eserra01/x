@@ -355,6 +355,14 @@ class PABSContracts(models.Model):
     partner_id = self.create_partner(vals)
     vals['partner_id'] = partner_id.id
     vals['state'] = 'actived'
+    full_name = ''
+    if vals.get('partner_name'):
+      full_name = full_name + vals.get('partner_name')
+    if vals.get('partner_fname'):
+      full_name = full_name + ' ' + vals.get('partner_fname')
+    if vals.get('partner_mname'):
+      full_name = full_name + ' ' + vals.get('partner_mname')
+    vals['full_name'] = full_name
     ### Se retorna el diccionario modificado
     return super(PABSContracts, self).create(vals)
 
@@ -1002,6 +1010,14 @@ class PABSContracts(models.Model):
     if vals.get('contract_status_item') and vals.get('contract_status_item') != "SUSPENSION TEMPORAL" and self.contract_status_item.status == "SUSPENSION TEMPORAL":
       self.reactivation_date = None
 
+    full_name = ''
+    if vals.get('partner_name'):
+      full_name = full_name + (vals.get('partner_name') or self.partner_name)
+    if vals.get('partner_fname'):
+      full_name = full_name + ' ' + (vals.get('partner_fname') or self.partner_fname)
+    if vals.get('partner_mname'):
+      full_name = full_name + ' ' + (vals.get('partner_mname') or self.partner_mname)
+    vals['full_name'] = full_name
     return super(PABSContracts, self).write(vals)
 
   #Agregar comentario como nota interna
