@@ -94,6 +94,14 @@ class PabsContract(models.Model):
 
     def estimated_payment(self, ids):
         for rec in self:
+            ### total facturado
+            total_facturado = sum(self.refund_ids.filted(lambda r: r.type == 'out_invoice' and r.state == 'posted').mapped('amount_total'))
+
+            #Obtener cantidad entregada en bono de inversión inicial
+            total_bono = sum(self.refund_ids.filtered(lambda r: r.type == 'out_refund' and r.state == 'posted').mapped('amount_total'))
+
+            #Cantidad a programar (no se toma en cuenta recibos de enganche: inversion, excedente y bono)
+            saldo_a_plazos = total_facturado - rec.initial_investment - total_bono
 
             if rec.way_to_payment == 'weekly':
                 
@@ -103,7 +111,7 @@ class PabsContract(models.Model):
                     for p in payment:
                         paid += p.amount
                 print("---------",paid)
-                i = rec.balance
+                i = saldo_a_plazos
                 cont = 0
                 date = rec.date_first_payment - relativedelta(days=7)
                 pay = []
@@ -162,7 +170,7 @@ class PabsContract(models.Model):
                     for p in payment:
                         paid += p.amount
                 print("---------",paid)
-                i = rec.balance
+                i = saldo_a_plazos
                 cont = 0
                 date = rec.date_first_payment - relativedelta(days=15)
                 pay = []
@@ -268,7 +276,7 @@ class PabsContract(models.Model):
                     for p in payment:
                         paid += p.amount
                 print("---------",paid)
-                i = rec.balance
+                i = saldo_a_plazos
                 cont = 0
                 date = rec.date_first_payment - relativedelta(months=1)
                 pay = []
