@@ -95,7 +95,7 @@ class PabsContract(models.Model):
     def estimated_payment(self, ids):
         for rec in self:
             ### total facturado
-            total_facturado = sum(self.refund_ids.filted(lambda r: r.type == 'out_invoice' and r.state == 'posted').mapped('amount_total'))
+            total_facturado = sum(self.refund_ids.filtered(lambda r: r.type == 'out_invoice' and r.state == 'posted').mapped('amount_total'))
 
             #Obtener cantidad entregada en bono de inversión inicial
             total_bono = sum(self.refund_ids.filtered(lambda r: r.type == 'out_refund' and r.state == 'posted').mapped('amount_total'))
