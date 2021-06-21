@@ -1011,11 +1011,11 @@ class PABSContracts(models.Model):
       self.reactivation_date = None
 
     full_name = ''
-    if vals.get('partner_name'):
+    if vals.get('partner_name') or self.partner_name:
       full_name = full_name + (vals.get('partner_name') or self.partner_name)
-    if vals.get('partner_fname'):
+    if vals.get('partner_fname') or self.partner_fname:
       full_name = full_name + ' ' + (vals.get('partner_fname') or self.partner_fname)
-    if vals.get('partner_mname'):
+    if vals.get('partner_mname') or self.partner_mname:
       full_name = full_name + ' ' + (vals.get('partner_mname') or self.partner_mname)
     vals['full_name'] = full_name
     return super(PABSContracts, self).write(vals)
