@@ -745,11 +745,6 @@ class PABSContracts(models.Model):
         account_line_obj.create(partner_line_data)
         invoice_id.action_post()
         previous.allow_create = False
-        pricelist_id = pricelist_obj.search([
-          ('product_id','=',previous.name_service.id)], limit=1)
-        if not pricelist_id:
-          raise ValidationError((
-            "No se encontró una secuencia"))
         if not previous.partner_id:
           raise ValidationError((
             "No tiene un cliente ligado al contrato"))
@@ -757,14 +752,8 @@ class PABSContracts(models.Model):
           partner_id = previous.partner_id
           partner_id.write({'name' : previous.name})
         previous.state = 'contract'
-        try:
-          previous.create_commision_tree(invoice_id=invoice_id)
-          contract_name = pricelist_id.sequence_id._next()
-          previous.name = contract_name
-          return invoice_id
-        except:
-          self._cr.rollback()
-          raise ValidationError("Hubo un problema con la creación de la secuencia")
+        previous.create_commision_tree(invoice_id=invoice_id)
+        return invoice_id
 
   def reconcile_all(self, reconcile={}):
     account_move_line_obj = self.env['account.move.line']
@@ -997,6 +986,8 @@ class PABSContracts(models.Model):
               reconcile.update({'pabs' : line.id})
               refund_id.with_context(investment_bond=True).action_post()
         _logger.info("Se creó la factura del contrato")
+        contract_name = pricelist_id.sequence_id._next()
+        previous.name = contract_name
         self.reconcile_all(reconcile)
     except Exception as e:
       self._cr.rollback()
