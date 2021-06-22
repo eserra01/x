@@ -23,6 +23,5 @@ class StockQuant(models.Model):
         ('state','=','done')]).sorted(key=lambda r: r.date)
       if move_ids:
         rec.initial_investment = move_ids[-1].inversion_inicial
-        res.update({
-          rec.id : move_ids[-1].inversion_inicial
-        })
+      else:
+        rec.initial_investment = 0
