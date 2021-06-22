@@ -8,6 +8,7 @@
   'depends' : [
     'xmarts_funeraria',
     'report_xlsx',
+    'stock',
     'pabs_custom'],
   'data': [
     'security/security.xml',
@@ -27,6 +28,7 @@
     'reports/commissions_to_recovery_template.xml',
     'reports/pabs_debt_collector_template.xml',
     'wizard/pabs_commissions_recovery_wizard.xml',
+    'views/stock_quant_view.xml',
     'views/menus.xml',
     
     ],
