@@ -988,6 +988,7 @@ class PABSContracts(models.Model):
         _logger.info("Se creó la factura del contrato")
         contract_name = pricelist_id.sequence_id._next()
         previous.name = contract_name
+        previous.partner_id.write({'name' : contract_name})
         self.reconcile_all(reconcile)
     except Exception as e:
       self._cr.rollback()
