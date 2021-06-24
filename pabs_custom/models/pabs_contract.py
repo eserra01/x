@@ -1045,7 +1045,7 @@ class PABSContracts(models.Model):
     self.env['mail.message'].create(values)
     self.new_comment = ""
 
-  # Calcular fecha de vencimiento
+   # Calcular fecha de vencimiento
   @api.depends('payment_amount', 'way_to_payment', 'date_first_payment')
   def calcular_vencimiento_y_atraso(self):
     for rec in self:
@@ -1059,14 +1059,16 @@ class PABSContracts(models.Model):
         rec.late_amount = 0
         return
 
-      ### total facturado
-      total_facturado = sum(self.refund_ids.filtered(lambda r: r.type == 'out_invoice' and r.state == 'posted').mapped('amount_total'))
-
       #Obtener cantidad entregada en bono de inversión inicial
-      total_bono = sum(self.refund_ids.filtered(lambda r: r.type == 'out_refund' and r.state == 'posted').mapped('amount_total'))
-    
+      bonos_por_inversion = self.env['account.move'].search([
+        ('partner_id','=',rec.partner_id.id),
+        ('type','=', 'out_refund'),
+        ('ref','=', 'Bono por inversión inicial')
+      ])
+      total_bono = sum(reg.amount_total for reg in bonos_por_inversion) or 0
+
       #Cantidad a programar (no se toma en cuenta recibos de enganche: inversion, excedente y bono)
-      saldo_a_plazos = total_facturado - rec.initial_investment - total_bono
+      saldo_a_plazos = rec.product_price - rec.initial_investment - total_bono
       abonado = rec.paid_balance - rec.initial_investment - total_bono
 
       lista_pagos = []
