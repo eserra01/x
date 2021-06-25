@@ -211,9 +211,13 @@ class StockMove(models.Model):
       mode_prod = self.env['stock.production.lot'].search(
         [('name', '=', str(rec.series)),('company_id','=',self.company_id.id)], limit=1)        
       if rec.series and rec.picking_id.type_transfer in ('ov-as','cont-ov'):
+        if not mode_prod:
+            raise ValidationError("el número de solicitud {} no fue encontrado en el sistema, favor de verificarlo".format(rec.series))
         for prodc in mode_prod:
           quant_id = quant_obj.search([
             ('lot_id','=',prodc.id),('company_id','=',self.company_id.id)],limit=1,order="id desc")
+          if not quant_id:
+            raise ValidationError("el número de solicitud {} no fue encontrado en el sistema, favor de verificarlo".format(rec.series))
           if quant_id.location_id != rec.location_id:
             raise ValidationError((
               "La solicitud {} no se encuentrá en el almacén indicado, se encuentra en {}\nfavor de verificarlo".format(
@@ -224,6 +228,8 @@ class StockMove(models.Model):
         if rec.picking_id.employee_id:
           location_id = rec.picking_id.employee_id.local_location_id
         if rec.picking_id.location_dest_id.received_location:
+          if not mode_prod:
+            raise ValidationError("el número de solicitud {} no fue encontrado en el sistema, favor de verificarlo".format(rec.series))
           for prodc in mode_prod:
             quant_id = quant_obj.search([
               ('lot_id','=',prodc.id),
@@ -621,3 +627,4 @@ class StockMove(models.Model):
         }
 
     return rslt
+    

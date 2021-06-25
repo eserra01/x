@@ -172,3 +172,21 @@ class StockPicking(models.Model):
       return {
         'move_ids_without_package' : [(0, 0, serie_data)]
       }      
+
+  def button_validate(self):
+    ### INSTANCIACION DE OBJETOS
+    quant_obj = self.env['stock.quant']
+    for picking in self:
+      for line in picking.move_line_ids_without_package:
+        lot_id = line.lot_id
+        quant_ids = quant_obj.search([
+          ('inventory_quantity','>',0),
+          ('lot_id','=',lot_id.id)]).filtered(
+          lambda r: r.location_id.usage == 'internal')
+        if len(quant_ids) > 1:
+          raise ValidationError("No se puede transferir porque la solicitud se encuentra en {} lugares diferentes".format(len(quant_ids)))
+        elif len(quant_ids) < 1:
+          raise ValidationError("No se encontró la solicitud {}".format(lot_id.name))
+        else:
+          continue
+    return super(StockPicking, self).button_validate()

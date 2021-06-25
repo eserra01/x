@@ -571,7 +571,9 @@ class PABSContracts(models.Model):
     else:
       self.empty_window()
     quant_id = stock_quant_obj.search([
-      ('lot_id','=',self.lot_id.id)],order="id desc", limit=1)
+      ('inventory_quantity','>',0),
+      ('lot_id','=',self.lot_id.id)]).filtered(
+          lambda r: r.location_id.usage == 'internal')
     if quant_id:
       location_id = quant_id.location_id
     if self.type_view == 'activation':
