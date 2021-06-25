@@ -591,7 +591,7 @@ class PABSContracts(models.Model):
       if self.lot_id:
         received_contract = location_obj.search([
           ('contract_location','=',True),
-          ('received_location','=',True)])[-1]
+          ('received_location','=',True)],limit=1)
         if not received_contract:
           raise ValidationError((
             "No se encuentra la ubicación de contratos"))
