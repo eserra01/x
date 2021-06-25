@@ -589,11 +589,8 @@ class PABSContracts(models.Model):
               }
     elif self.type_view == 'precontract':
       if self.lot_id:
-        contract_location = location_obj.search([
-          ('contract_location','=',True)])
-        contract_view_location = contract_location.location_id
         received_contract = location_obj.search([
-          ('location_id','=',contract_view_location.id),
+          ('contract_location','=',True),
           ('received_location','=',True)])
         if not received_contract:
           raise ValidationError((
