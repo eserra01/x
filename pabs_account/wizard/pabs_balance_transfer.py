@@ -68,8 +68,8 @@ class PabsBalanceTransfer(models.Model):
     for rec in self:
       balance = 0
       if rec.contract_dest_id:
-        balance = sum(rec.contract_origin_id.refund_ids.filtered(
-          lambda r: r.type == 'out_invoice' and r.state in ('posted','reconciled')).mapped(
+        balance = sum(rec.contract_dest_id.refund_ids.filtered(
+          lambda r: r.type == 'out_invoice' and r.state == 'posted').mapped(
           'amount_residual'))
       rec.contract_dest_amount = balance
 
