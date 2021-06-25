@@ -589,7 +589,7 @@ class PABSContracts(models.Model):
               }
     elif self.type_view == 'precontract':
       if self.lot_id:
-        received_contract = location_obj.search([
+        received_contract = location_obj.search(['&',
           ('contract_location','=',True),
           ('received_location','=',True)])
         if not received_contract:
