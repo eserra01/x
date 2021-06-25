@@ -595,7 +595,7 @@ class PABSContracts(models.Model):
         if not received_contract:
           raise ValidationError((
             "No se encuentra la ubicación de contratos"))
-        if received_contract != location_id:
+        if received_contract.id != location_id.id:
           raise ValidationError((
             "la solicitud {} no se encontró en la ubicación de contratos, se encuentra en {}".format(self.lot_id.name, location_id.name_get()[0][1])))
         contract = self.search([
