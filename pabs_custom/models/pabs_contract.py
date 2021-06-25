@@ -590,11 +590,12 @@ class PABSContracts(models.Model):
     elif self.type_view == 'precontract':
       if self.lot_id:
         received_contract = location_obj.search([
-          ('contract_location','=',True)]).filtered(lambda r: r.received_location == True)
+          ('contract_location','=',True),
+          ('received_location','=',True)])[-1]
         if not received_contract:
           raise ValidationError((
             "No se encuentra la ubicación de contratos"))
-        if received_contract[-1].id != location_id.id:
+        if received_contract.id != location_id.id:
           raise ValidationError((
             "la solicitud {} no se encontró en la ubicación de contratos, se encuentra en {}".format(self.lot_id.name, location_id.name_get()[0][1])))
         contract = self.search([
