@@ -184,7 +184,7 @@ class StockPicking(models.Model):
           ('lot_id','=',lot_id.id)]).filtered(
           lambda r: r.location_id.usage == 'internal')
         if len(quant_ids) > 1:
-          raise ValidationError("No se puede transferir porque la solicitud se encuentra en {} lugares diferentes".format(len(quant_ids)))
+          raise ValidationError("No se puede transferir porque la solicitud {} se encuentra en {} lugares diferentes".format(line.lot_id.name, len(quant_ids)))
         elif len(quant_ids) < 1:
           raise ValidationError("No se encontró la solicitud {}".format(lot_id.name))
         else:

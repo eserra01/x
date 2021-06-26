@@ -165,7 +165,7 @@
                         <t t-if="last_payment">
                           <tr>
                             <td style="border: 1px solid black;"><t t-esc="initial_investment.mapped('payment_date')[0]"/></td>
-                            <td style="border: 1px solid black;" class="text-center"></td>
+                            <td style="border: 1px solid black;" class="text-center"/>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(sum(initial_investment.mapped('amount')))"/></td>
                             <td style="border: 1px solid black; font-size:11px; line-height: 1;"><t t-esc="doc.employee_id.name"/></td>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(doc.product_price)"/></td>
@@ -178,12 +178,12 @@
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(doc.balance)"/></td>
                           </tr>
                         </t>
-                        <t t-else="not last_payment">
+                        <t t-else="">
                           <tr>
                             <td style="border: 1px solid black;"><t t-esc="initial_investment.mapped('payment_date')[0]"/></td>
-                            <td style="border: 1px solid black;" class="text-center"></td>
+                            <td style="border: 1px solid black;" class="text-center"/>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(sum(initial_investment.mapped('amount')))"/></td>
-                            <td style="border: 1px solid black; font-size:11px; line-height: 1;"></td>
+                            <td style="border: 1px solid black; font-size:11px; line-height: 1;"/>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(doc.product_price)"/></td>
                           </tr>
                           <tr>
@@ -192,15 +192,6 @@
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(sum(initial_investment.mapped('amount')))"/></td>
                             <td style="border: 1px solid black; font-size:11px; line-height: 1;"><t t-esc="doc.employee_id.name"/></td>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(doc.balance)"/></td>
-                          </tr>
-                        </t>
-                        <t t-else="not last_payment">
-                          <tr>
-                            <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
-                            <td style="border: 1px solid black;" class="text-center"><span/></td>
-                            <td style="border: 1px solid black;" class="text-center"><span/></td>
-                            <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
-                            <td style="border: 1px solid black;" class="text-center"><span/></td>
                           </tr>
                         </t>
                         <tr>
@@ -264,58 +255,58 @@
                         <tr>
                           <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
                           <td style="border: 1px solid black;" class="text-center"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                           <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                         </tr>
                         <tr>
                           <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
                           <td style="border: 1px solid black;" class="text-center"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                           <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                         </tr>
                         <tr>
                           <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
                           <td style="border: 1px solid black;" class="text-center"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                           <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                         </tr>
                         <tr>
                           <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
                           <td style="border: 1px solid black;" class="text-center"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                           <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                         </tr>
                         <tr>
                           <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
                           <td style="border: 1px solid black;" class="text-center"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                           <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                         </tr>
                         <tr>
                           <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
                           <td style="border: 1px solid black;" class="text-center"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                           <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                         </tr>
                         <tr>
                           <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
                           <td style="border: 1px solid black;" class="text-center"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                           <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                         </tr>
                         <tr>
                           <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
                           <td style="border: 1px solid black;" class="text-center"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                           <td style="border: 1px solid black; font-size:11px; line-height: 1;"><span/></td>
-                          <td style="border: 1px solid black;" class="text-center"><span></span></td>
+                          <td style="border: 1px solid black;" class="text-center"><span/></td>
                         </tr>
                       </tbody>
                     </table>
@@ -332,7 +323,7 @@
                       <td style="width: 48%; border-bottom: 1px solid black;"><t t-esc="doc.toll_colony_id.name"/> - <t t-esc="doc.toll_municipallity_id.name"/></td>
                     </tr>
                   </t>
-                  <t t-else="doc.street_name">
+                  <t t-else="">
                     <tr>
                       <td><strong>Domicilio:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
                       <td style="width: 40%; border-bottom: 1px solid black;"><t t-esc="doc.street_name"/> &amp;nbsp;&amp;nbsp; <t t-esc="doc.street_number"/></td>
@@ -342,25 +333,29 @@
                   </t>
                 </table>
 
-                <table width="100%">
-                <thead>
-                  <tr>
-                    <td><strong>Entre calles:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
-                    <td style="width: 90%; border-bottom: 1px solid black;"><t t-esc="doc.between_streets_toll"/></td>
-                  </tr>
-                </thead>
-              </table>
+                <t t-if="doc.street_name_toll">
+                  <table width="100%">
+                    <thead>
+                      <tr>
+                        <td><strong>Entre calles:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
+                        <td style="width: 90%; border-bottom: 1px solid black;"><t t-esc="doc.between_streets_toll"/></td>
+                      </tr>
+                    </thead>
+                  </table>
+                </t>
 
-                <table width="100%">
-                <thead>
-                  <tr>
-                    <td><strong>Entre calles:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
-                    <td style="width: 90%; border-bottom: 1px solid black;"><t t-esc="doc.between_streets_toll"/></td>
-                  </tr>
-                </thead>
-              </table>
+                <t t-else="">
+                  <table width="100%">
+                    <thead>
+                      <tr>
+                        <td><strong>Entre calles:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
+                        <td style="width: 90%; border-bottom: 1px solid black;"><t t-esc="doc.between_streets_toll"/></td>
+                      </tr>
+                    </thead>
+                  </table>
+                </t>
 
-              <div style="page-break-before:always;"></div>
+              <div style="page-break-before:always;"/>
 
               </div>
             </t>
