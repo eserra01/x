@@ -36,19 +36,13 @@ class ContractsElaboratedW1zard(models.TransientModel):
     contract_ids = contract_obj.search([
           ('state','=','contract'),
           ('invoice_date','>=',start_date),
-          ('invoice_date','<=',end_date)])
+          ('invoice_date','<=',end_date)]).sorted(key=lambda r: r.name)
 
     lot_ids = contract_ids.mapped('lot_id')
     warehouse_ids = lot_ids.mapped('warehouse_id').sorted(key=lambda r: r.name)
     warehouse_names = []
 
-    plans_ids = [x.product_id.product_tmpl_id.name for x in lot_ids]
-    plans_ids = set(plans_ids)
-    plan_name =[]
-    
-
-    
-    
+    plans_ids = lot_ids.mapped('product_id.product_tmpl_id.name')
 
     for rec in warehouse_ids:
       warehouse_name = rec.name

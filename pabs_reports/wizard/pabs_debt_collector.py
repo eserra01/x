@@ -84,7 +84,7 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
           payment_way = 'M'
         else:
           payment_way = ''
-        last_payment = contract_id.payment_ids.sorted(key=lambda r: r.payment_date)[-1]
+        last_payment = contract_id.payment_ids.filtered(lambda r: r.state in ('posted','reconciled','sent')).sorted(key=lambda r: r.payment_date)[-1]
         contracts_data.append({
           'contract' : contract_id.name,
           'partner_name' : contract_id.full_name,
@@ -169,7 +169,7 @@ class PabsDebtCollectorReportXLSX(models.AbstractModel):
           payment_way = 'M'
         else:
           payment_way = ''
-        last_payment = contract_id.payment_ids.sorted(key=lambda r: r.payment_date)[-1]
+        last_payment = contract_id.payment_ids.filtered(lambda r: r.state in ('posted','reconciled','sent')).sorted(key=lambda r: r.payment_date)[-1]
         ### ESTADOS
         state = 'Activo' if contract_id.contract_status_item.status == 'ACTIVO' else 'Inactivo'
         count+= 1
