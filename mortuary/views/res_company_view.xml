@@ -9,6 +9,7 @@
 
         <xpath expr="//field[@name='website']" position="after">
           <field name="legal_representative"/>
+          <field name="mortuary_journal"/>
         </xpath>
 
       </field>

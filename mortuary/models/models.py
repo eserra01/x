@@ -611,7 +611,7 @@ class Mortuary(models.Model):
         }
 
     def btn_create_pagos(self):
-        journal_id = self.env['account.journal'].search([('name','like','funeraria')])
+        journal_id = self.env.company.mortuary_journal
         if journal_id:
             journal_name = journal_id.id
         else:
@@ -760,4 +760,6 @@ class ResCompany(models.Model):
     _inherit = 'res.company'
 
     legal_representative = fields.Char(string='Apoderado Legal')
-    
+
+    mortuary_journal = fields.Many2one(comodel_name='account.journal',
+        string='Diario para funeraria')    
