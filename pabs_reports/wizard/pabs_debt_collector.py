@@ -84,6 +84,7 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
           payment_way = 'M'
         else:
           payment_way = ''
+        last_payment = contract_id.payment_ids.sorted(key=lambda r: r.payment_date)[-1]
         contracts_data.append({
           'contract' : contract_id.name,
           'partner_name' : contract_id.full_name,
@@ -91,7 +92,7 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
           'neightborhood' : contract_id.toll_colony_id.name or '',
           'locality_id' : contract_id.toll_municipallity_id.name or '',
           'payment_way' : payment_way or '',
-          'last_payment' : contract_id.date_first_payment or '',
+          'last_payment' : last_payment.date_receipt if last_payment.date_receipt else last_payment.payment_date,
           'phone' : contract_id.phone_toll or contract_id.phone or '',
           'status' : 'Activo' if contract_id.contract_status_item.status == 'ACTIVO' else 'Inactivo',
         })
@@ -168,6 +169,7 @@ class PabsDebtCollectorReportXLSX(models.AbstractModel):
           payment_way = 'M'
         else:
           payment_way = ''
+        last_payment = contract_id.payment_ids.sorted(key=lambda r: r.payment_date)[-1]
         ### ESTADOS
         state = 'Activo' if contract_id.contract_status_item.status == 'ACTIVO' else 'Inactivo'
         count+= 1
@@ -195,7 +197,7 @@ class PabsDebtCollectorReportXLSX(models.AbstractModel):
         ### F.P
         sheet.write(count, 5, payment_way or '')
         ### ULT F. ABONO
-        sheet.write(count, 6, contract_id.date_first_payment or '', date_format)
+        sheet.write(count, 6, last_payment.date_receipt if last_payment.date_receipt else last_payment.payment_date, date_format)
         ### TELEFONO
         sheet.write(count, 7, contract_id.phone_toll or contract_id.phone or '')
         ### ESTATUS
