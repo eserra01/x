@@ -590,7 +590,7 @@ class PABSContracts(models.Model):
       if self.lot_id:
         quant_id = stock_quant_obj.search([
           ('inventory_quantity','>',0),
-          ('lot_id','=',self.lot_id.id)])
+          ('lot_id','=',self.lot_id.id)],limit=1)
         if quant_id:
           location_id = quant_id.location_id
         received_contract = location_obj.search([
