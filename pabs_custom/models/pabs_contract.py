@@ -590,7 +590,7 @@ class PABSContracts(models.Model):
       if self.lot_id:
         quant_id = stock_quant_obj.search([
           ('inventory_quantity','>',0),
-          ('lot_id','=',self.lot_id.id)],limit=1)
+          ('lot_id','=',self.lot_id.id)])
         if quant_id:
           location_id = quant_id.location_id
         received_contract = location_obj.search([
@@ -599,7 +599,7 @@ class PABSContracts(models.Model):
         if not received_contract:
           raise ValidationError((
             "No se encuentra la ubicación de contratos"))
-        if received_contract.id != location_id.id:
+        if received_contract.id not in location_id.ids:
           raise ValidationError((
             "la solicitud {} no se encontró en la ubicación de contratos, se encuentra en {}".format(self.lot_id.name, location_id.name_get()[0][1])))
         contract = self.search([
