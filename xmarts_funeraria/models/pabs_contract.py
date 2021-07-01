@@ -24,6 +24,9 @@ class PabsContract(models.Model):
                         collector = payment_id.debt_collector_code.name
                     else:
                         collector = False
+                elif payment_id.reference == 'transfer':
+                    description = 'TRASPASO'
+                    collector = 'TRASPASO'
                 else:
                     description = ''
                     collector = False
