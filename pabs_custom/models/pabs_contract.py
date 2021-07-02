@@ -62,7 +62,7 @@ class PABSContracts(models.Model):
   payment_scheme_id = fields.Many2one(comodel_name='pabs.payment.scheme', tracking=True, default=lambda self : self.env['pabs.payment.scheme'].search([],limit=1).id, string='Esquema de pago')
   contract_status = fields.Selection(selection=STATUS, string='Estatus de contrato', tracking=True)
   lot_id = fields.Many2one(comodel_name='stock.production.lot', string='No. de Solicitud', tracking=True, required=True)
-  full_name = fields.Char(string="Nombre completo", tracking=True, compute="calc_full_name", store=True, index=True)
+  full_name = fields.Char(string="Nombre completo", tracking=True, compute="calc_full_name", search="_search_full_name", store=True, index=True)
   partner_name = fields.Char(string='Nombre', required=True)
   partner_fname = fields.Char(string='Apellido paterno', required=True)
   partner_mname = fields.Char(string='Apellido materno', required=True)
@@ -159,6 +159,25 @@ class PABSContracts(models.Model):
   transfer_balance_ids = fields.One2many(comodel_name='account.move.line',
     inverse_name='contract_id',
     string='Traspasos')
+
+  #Función que busca por nombre completo mediante una consuta a la base utilizando like
+  def _search_full_name(self, operator, value):
+    #Construye cadena de busqueda
+    nombre_completo = "%" + value.replace(" ", "%") + "%"
+    nombre_completo = nombre_completo.upper()
+
+    #Ejecuta la consulta
+    consulta = "Select name from pabs_contract where company_id = {} AND state = 'contract' AND CONCAT(partner_name, ' ', partner_fname, ' ', partner_mname) like '{}'".format(self.env.company.id, nombre_completo)
+    self.env.cr.execute(consulta)
+
+    #Construye lista de contratos a regresar
+    contratos = []
+    for res in self.env.cr.fetchall():
+      contratos.append(res[0]) 
+
+    #Retorna los contratos encontrados
+    return [('name', 'in', tuple(contratos))]
+
 
   def _calc_comments(self):
     contract_comments_obj = self.env['pabs.contract.comments']
