@@ -180,9 +180,8 @@ class StockPicking(models.Model):
       for line in picking.move_line_ids_without_package:
         lot_id = line.lot_id
         quant_ids = quant_obj.search([
-          ('inventory_quantity','>',0),
           ('lot_id','=',lot_id.id)]).filtered(
-          lambda r: r.location_id.usage == 'internal')
+          lambda r: (r.location_id.usage == 'internal' and r.inventory_quantity > 0))
         if len(quant_ids) > 1:
           raise ValidationError("No se puede transferir porque la solicitud {} se encuentra en {} lugares diferentes".format(line.lot_id.name, len(quant_ids)))
         else:
