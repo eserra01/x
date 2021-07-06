@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="pabs_contracts_done_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.contracts.done.wizard.view</field>
+		<field name="model">pabs.contracts.done</field>
+		<field name="arch" type="xml">
+			<form string="Generación de reporte de Abonos a contratos realizados">
+        <h3>Generación de reporte de Abonos a contratos realizados</h3>
+        <group coslpan="2">
+          <group>
+            <field name="start_date"/>
+          </group>
+          <group>
+            <field name="end_date"/>
+          </group>
+        </group>
+        <footer>
+          <button name="generate_xlsx_report" string="Generar XLS" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+			</form>
+		</field>
+	</record>
+
+  <record id="action_pabs_contracts_done_report_action" model="ir.actions.act_window">
+    <field name="name">Reporte de Abonos a contratos realizados</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.contracts.done</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_contracts_done_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    action="action_pabs_contracts_done_report_action" 
+    id="contracts_done_menu"
+    name="Reporte de Abonos a contratos realizados" 
+    parent="xmarts_funeraria.report_root_menu"
+    groups="pabs_custom.administrative_management_profile,pabs_custom.admin_profile"
+    sequence="7"/>
+
+  <report
+    id="pabs_contracts_done_xlsx"
+    model="pabs.contracts.done"
+    string="Abonos a contratos realizados XLSX"
+    report_type="xlsx"
+    name="pabs_reports.pabs_contracts_done_xlsx"
+    file="pabs_reports.pabs_contracts_done_xlsx"
+    attachment_use="False"
+    />
+    
+</odoo>
