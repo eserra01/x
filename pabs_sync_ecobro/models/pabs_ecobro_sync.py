@@ -879,9 +879,10 @@ class PABSEcobroSync(models.Model):
       _logger.warning("No se ha configurado ninguna IP de sincronización con ecobro")
       ### FINALIZA EL MÉTODO
       return
-    ### BUSCAMOS LOS CONTRATOS QUE ESTÁN ACTIVOS
+    ### BUSCAMOS ESTATUS ACTIVO
     active_status_id = status_obj.search([
       ('status','=','ACTIVO')])
+    ### SI NO SE ENCUENTRA ESTATUS ACTIVO
     if not active_status_id:
       raise ValidationError("No se encontró el estatus de Activo")
     ### BUSCAMOS EL ESTATUS DE SUSPENSIÓN PARA CANCELAR
@@ -899,7 +900,7 @@ class PABSEcobroSync(models.Model):
       ('state','=','contract'),
       ('contract_status_item','=',active_status_id.id)])
     ### FILTRAMOS DE TODOS LOS CONTRATOS, LOS QUE TENGAN MAS DE 91 DÍAS SIN ABONAR
-    contract_ids = contracts.filtered(lambda r: r.days_without_payment >= 91)
+    contract_ids = contracts.filtered(lambda r: (r.days_without_payment >= 91 and r.contract_status_reason.reason == 'ACTIVO'))
     ### SE ENVIAN TODOS ESOS CONTRATOS A SUSP. PARA CANCELAR
     if contract_ids:
       ### CONTAMOS TODOS LOS CONTRATOS QUE SE VAN A PROCESAR
