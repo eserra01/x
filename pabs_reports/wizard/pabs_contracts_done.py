@@ -35,7 +35,8 @@ class ContractsDone(models.TransientModel):
 
     ### SI HAY FECHA FINAL SE AGREGABA LA FECHA
     if self.end_date:
-      domain.append(('date_of_last_status', '>=', self.start_date),('date_of_last_status', '<=', self.end_date))
+      domain.append(('date_of_last_status', '>=', self.start_date))
+      domain.append(('date_of_last_status', '<=', self.end_date))
     ### SI NO
     else:
       domain.append(('date_of_last_status' , '=', self.start_date))
