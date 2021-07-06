@@ -25,6 +25,18 @@ class ContractsDone(models.TransientModel):
   end_date = fields.Date(string='Fecha Final')
 
   def generate_xlsx_report(self):
-    return True
+    ### ARMANDO LOS PARAMETROS
+    data = {
+      'start_date' : self.start_date,
+      'end_date' : self.end_date,
+    }
+    ### RETORNAMOS EL REPORTE
 
+    return self.env.ref('pabs_reports.pabs_contracts_done_xlsx').report_action(self, data=data)
 
+class PabsContractsDoneReportXLSX(models.AbstractModel):
+  _name = 'report.pabs_reports.pabs_contracts_done_xlsx'
+  _inherit = 'report.report_xlsx.abstract'
+
+  def generate_xlsx_report(self, workbook, data, lines):
+    raise ValidationError("Si entra")
