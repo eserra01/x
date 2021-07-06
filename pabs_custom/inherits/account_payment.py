@@ -118,10 +118,10 @@ class account_Payment(models.Model):
       self.disassociate_payment()
       res = super(account_Payment, self).cancel()
       IdPago = self.id
-      """if self.contract:
+      if self.contract and self.commission_output_ids:
         NumeroContrato = self.contract.id
         comission_tree_obj.RevertirSalidas(
-          IdPago=IdPago,NumeroContrato=NumeroContrato)"""
+          IdPago=IdPago,NumeroContrato=NumeroContrato)
       return res 
 
     #Fields mortuary
