@@ -10,6 +10,7 @@ HEADERS = [
 'ESTATUS',
 'MOTIVO',
 'FECHA CAMB. EST.',
+'TIPO ABONO',
 'ABONO',
 'COBRADOR',
 'FECHA ABONO',
@@ -114,17 +115,19 @@ class PabsContractsDoneReportXLSX(models.AbstractModel):
 
       ### BUSCAMOS LOS ABONOS A PARTIR DE LA FECHA DE CAMBIO DE ESTATUS
       payment_ids = contract_id.payment_ids.filtered(
-        lambda r: (r.payment_date >= date and r.reference == 'payment' and r.state in ('posted','reconciled')))
+        lambda r: (r.payment_date >= date and r.reference in ('payment','payment_mortuary') and r.state in ('posted','reconciled')))
 
       ### SI HAY PAGOS
       if payment_ids:
         for payment_id in payment_ids:
+          ### ESCRIBIMOS EL TIPO DE ABONO
+          sheet.write(row, 5, dict(payment_id._fields['reference'].selection).get(payment_id.reference) or '') 
           ### ESCRIBIMOS EL MONTO DEL ABONO
-          sheet.write(row, count, payment_id.amount or 0, money_format)
-          count+=1
-          sheet.write(row, count, payment_id.debt_collector_code.name or '')
-          count+=1
-          sheet.write(row, count, payment_id.payment_date or '', date_format)
+          sheet.write(row, 6, payment_id.amount or 0, money_format)
+          ### ESCRIBIMOS EL COBRADOR
+          sheet.write(row, 7, payment_id.debt_collector_code.name or '')
+          ### ESCRIBIMOS LA FECHA DEL ABONO
+          sheet.write(row, 8, payment_id.payment_date or '', date_format)
           row+=1
       else:
         row+=1
