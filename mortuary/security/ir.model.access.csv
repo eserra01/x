@@ -1,8 +1,8 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_mortuary_administrator_call_center,mortuary.administrator.call.center,model_mortuary,pabs_custom.administrator_call_center_profile,1,1,1,1
-access_mortuary_receipt,mortuary.receipt,model_mortuary,pabs_custom.reception_mortuary_profile,1,1,1,1
-access_mortuary_management,mortuary.management,model_mortuary,pabs_custom.management_mortuary_profile,1,1,1,1
-access_mortuary_agent_call_center,mortuary.agent.call.center,model_mortuary,pabs_custom.agent_call_center_profile,1,1,1,1
+access_mortuary_receipt,mortuary.receipt,model_mortuary,pabs_custom.reception_mortuary_profile,1,1,1,0
+access_mortuary_management,mortuary.management,model_mortuary,pabs_custom.management_mortuary_profile,1,1,1,0
+access_mortuary_agent_call_center,mortuary.agent.call.center,model_mortuary,pabs_custom.agent_call_center_profile,1,1,1,0
 access_mortuary_supervisor_call_center,mortuary.supervisor.call.center,model_mortuary,pabs_custom.supervisor_call_center_profile,1,1,1,1
 ,,,,,,,
 access_ii_servicio_administrator_call_center,ii.servicio.administrator.call.center,model_ii_servicio,pabs_custom.administrator_call_center_profile,1,1,1,1
