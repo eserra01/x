@@ -155,132 +155,123 @@ class DelinquentCustomerXLSXReport(models.AbstractModel):
     cr = self._cr
     ### ESCRIBIMOS EL QUERY EN UNA VARIABLE
     query = """
-      SELECT *
-        FROM (
-            SELECT 
-            c.invoice_date AS "Fecha de contrato",
-            c.name AS "contrato",
-            CONCAT(c.partner_name,
-                    ' ',
-                    c.partner_fname,
-                    ' ',
-                    c.partner_mname) AS "Cliente",
-            CONCAT(c.street_name_toll,
-                    ' #',
-                    c.street_number_toll) AS "Domicilio",
-            col.name AS "Colonia",
-            loc.name AS "Localidad",
-            c.between_streets_toll AS "Entre calles",
-            c.phone AS "Telefono",
-            prom.name AS "Promotor",
-            cob.name AS "Cobrador",
+      SELECT 
+    *
+FROM
+(
+    SELECT
+        con.fecha_contrato as "Fecha de contrato",
+        con.contrato as "contrato",
+        con.cliente as "Cliente",
+        con.domicilio as "Domicilio",
+        con.colonia as "Colonia",
+        con.localidad as "Localidad",
+        con.entre_calles as "Entre calles",
+        con.telefono as "Telefono",
+        con.promotor as "Promotor",
+        con.cobrador as "Cobrador",
+        con.forma_pago as "Forma de Pago",
+        con.fecha_estatus as "Fecha estatus",
+        con.estatus as "Estatus",
+        con.motivo as "Motivo",
+        con.id_contrato as "id contrato",
+        con.monto_pago as "Monto pago actual",
+        con.servicio as "Servicio",
+        con.costo as "Costo",
+        fac.saldo as "Saldo",
+        abo.id as "Ultimo abono",
+        COALESCE(abo.date_receipt, abo.payment_date) as "Fecha de ultimo abono",
+        emp.name as "Ultimo cobrador",
+        abo.amount as "Importe ultimo abono",
+        CASE
+            WHEN con.id_estatus = 21 AND CURRENT_DATE - GREATEST(con.fecha_primer_abono, COALESCE(abo.date_receipt, abo.payment_date)) <= 
+                (CASE
+                    WHEN con.forma_pago = 'S' THEN 14
+                    WHEN con.forma_pago = 'Q' THEN 30
+                    WHEN con.forma_pago = 'M' THEN 60
+                END)
+            THEN 1
+            WHEN con.id_estatus = 21 AND CURRENT_DATE - GREATEST(con.fecha_primer_abono, COALESCE(abo.date_receipt, abo.payment_date)) > 
+                (CASE
+                    WHEN con.forma_pago = 'S' THEN 14
+                    WHEN con.forma_pago = 'Q' THEN 30
+                    WHEN con.forma_pago = 'M' THEN 60
+                END)
+            THEN 7
+        END AS "estatus_moroso"
+    FROM
+    (
+        /*Contrato*/
+        SELECT 
+            con.invoice_date as "fecha_contrato",
+            con.name as "contrato",
+            CONCAT(con.partner_name, ' ', con.partner_fname, ' ', con.partner_mname) as "cliente",
+            CONCAT(con.street_name_toll, ' #', con.street_number_toll) as "domicilio",
+            col.name as "colonia",
+            loc.name as "localidad",
+            con.between_streets_toll as "entre_calles",
+            con.phone as "telefono",
+            prom.name as "promotor",
+            cob.name as "cobrador",
             CASE
-                WHEN c.way_to_payment = 'weekly' THEN 'S'
-                WHEN c.way_to_payment = 'biweekly' THEN 'Q'
-                WHEN c.way_to_payment = 'monthly' THEN 'M'
-            END AS "Forma de Pago",
-            c.date_of_last_status "Fecha estatus",
-            pEst.status AS "Estatus",
-            pMot.reason AS "Motivo",
-            c.id AS "id contrato",
-            c.payment_amount AS "Monto pago actual",
-            prod.name AS "Servicio",
-            ppl.fixed_price AS "Costo",
-            am.amount_residual AS "Saldo",
-            0 AS "Ultimo abono",
-            (Select MAX(date_receipt) from account_payment as last where last.contract = c.id) AS "Fecha de ultimo abono",
-            (SELECT 
-                    P.name
-                FROM
-                    account_payment AS a
-                        LEFT JOIN
-                    hr_employee AS p ON a.debt_collector_code = p.id
-                WHERE
-                    a.id = (SELECT 
-                            MAX(ab.id)
-                        FROM
-                            account_payment ab
-                        WHERE
-                            (ab.reference = 'stationary'
-                                OR ab.reference = 'payment'
-                                OR ab.reference = 'surplus')
-                                AND ab.contract = c.id)) AS "Ultimo cobrador",
-            (SELECT 
-                    a.amount
-                FROM
-                    account_payment AS a
-                WHERE
-                    a.id = (SELECT 
-                            MAX(ab.id)
-                        FROM
-                            account_payment AS ab
-                        WHERE
-                            (ab.reference = 'stationary'
-                                OR ab.reference = 'payment'
-                                OR ab.reference = 'surplus')
-                                AND ab.contract = c.id)) AS "Importe ultimo abono",
-            CASE
-                WHEN
-                    c.contract_status_item <> 21
-                        THEN
-                            (CASE
-                                WHEN c.contract_status_item = 11 THEN 2
-                                WHEN c.contract_status_item = 14 THEN 14
-                                WHEN c.contract_status_item = 18 THEN 13
-                                WHEN c.contract_status_item = 19 THEN 15
-                                WHEN c.contract_status_item = 20 THEN 16
-                                WHEN c.contract_status_item = 13 THEN 3
-                                WHEN c.contract_status_item = 12 THEN 4
-                                WHEN c.contract_status_item = 17 THEN 5
-                                WHEN c.contract_status_item = 16 THEN 6
-                            END)
-                
-                WHEN c.contract_status_item = 21 AND CURRENT_DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) <= (
-                        CASE
-                            WHEN way_to_payment = 'weekly' THEN 14
-                            WHEN way_to_payment = 'biweekly' THEN 30
-                            WHEN way_to_payment = 'monthly' THEN 60
-                        END)
-                    THEN 21
-
-                WHEN c.contract_status_item = 21 AND CURRENT_DATE - GREATEST(c.date_first_payment, (Select MAX(date_receipt) from account_payment as last where last.contract = c.id)) > (
-                            CASE
-                                WHEN way_to_payment = 'weekly' THEN 14
-                                WHEN way_to_payment = 'biweekly' THEN 30
-                                WHEN way_to_payment = 'monthly' THEN 60
-                            END)
-                        THEN 7
-            END AS estatus_moroso
-        FROM
-            pabs_contract AS c
-                LEFT JOIN
-            colonias AS col ON col.id = c.toll_colony_id
-                LEFT JOIN
-            res_locality AS loc ON loc.id = c.toll_municipallity_id
-                LEFT JOIN
-            hr_employee AS prom ON prom.id = c.sale_employee_id
-                LEFT JOIN
-            pabs_contract_status AS pEst ON pEst.id = c.contract_status_item
-                LEFT JOIN
-            pabs_contract_status_reason AS pMot ON pMot.id = c.contract_status_reason
-                LEFT JOIN
-            hr_employee AS cob ON cob.id = c.debt_collector
-                LEFT JOIN
-            stock_production_lot AS sl ON sl.id = c.lot_id
-                LEFT JOIN
-            product_template AS prod ON prod.id = sl.product_id
-                LEFT JOIN
-            product_pricelist_item AS ppl ON ppl.product_id = sl.product_id
-                LEFT JOIN
-            account_move AS am ON am.contract_id = c.id
-        WHERE
-            am.type = 'out_invoice'
-                AND c.invoice_date <= CURRENT_DATE
-                AND c.state = 'contract'
-                AND c.company_id = {}
-        ORDER BY pEst.id , c.invoice_date )
-    AS mor
-    WHERE mor.estatus_moroso = 7""".format(company_id)
+                WHEN con.way_to_payment = 'weekly' THEN 'S'
+                WHEN con.way_to_payment = 'biweekly' THEN 'Q'
+                WHEN con.way_to_payment = 'monthly' THEN 'M'
+            END as "forma_pago",
+            con.date_of_last_status "fecha_estatus",
+            pEst.status as "estatus",
+            pMot.reason as "motivo",
+            con.id as "id_contrato",
+            con.payment_amount as "monto_pago",
+            prod.name as "servicio",
+            ppl.fixed_price as "costo",
+            con.contract_status_item as "id_estatus",
+            con.date_first_payment as "fecha_primer_abono"
+        FROM pabs_contract AS con
+        LEFT JOIN colonias AS col ON col.id = con.toll_colony_id
+        LEFT JOIN res_locality AS loc ON loc.id = con.toll_municipallity_id
+        LEFT JOIN hr_employee AS prom ON prom.id = con.sale_employee_id
+        LEFT JOIN pabs_contract_status AS pEst ON pEst.id = con.contract_status_item
+        LEFT JOIN pabs_contract_status_reason AS pMot ON pMot.id = con.contract_status_reason
+        LEFT JOIN hr_employee AS cob ON cob.id = con.debt_collector
+        LEFT JOIN stock_production_lot AS sol ON sol.id = con.lot_id
+        LEFT JOIN product_template AS prod ON prod.id = sol.product_id
+        LEFT JOIN product_pricelist_item AS ppl ON ppl.product_id = sol.product_id
+            WHERE con.invoice_date <= CURRENT_DATE
+            AND con.state = 'contract'
+            AND con.company_id = {}
+            AND con.contract_status_item IN (21)
+    ) AS con
+    INNER JOIN
+    (
+        /*Factura*/
+        SELECT 
+            fac.contract_id as "id_contrato",
+            SUM(fac.amount_residual) as "saldo"
+        FROM pabs_contract AS con 
+        INNER JOIN account_move AS fac on con.id = fac.contract_id 
+            WHERE fac.type = 'out_invoice'
+            AND fac.state = 'posted'
+            AND con.state = 'contract'
+            AND con.company_id = {}
+                GROUP BY fac.contract_id
+    ) AS fac on con.id_contrato = fac.id_contrato
+    INNER JOIN
+    (
+        /*Lista de ultimo abono*/
+        SELECT      
+            ROW_NUMBER() OVER(PARTITION BY abo.contract ORDER BY COALESCE(abo.date_receipt, abo.payment_date) DESC) as "numero", 
+            abo.id as "id_abono", 
+            abo.contract as "id_contrato"
+        FROM account_payment as abo
+            WHERE (abo.reference = 'stationary' or abo.reference = 'payment') 
+            AND abo.state = 'posted'
+    ) as orden ON orden.id_contrato = con.id_contrato AND orden.numero = 1
+    LEFT JOIN account_payment as abo ON orden.id_abono = abo.id
+    LEFT JOIN hr_employee AS emp ON abo.debt_collector_code = emp.id
+)AS consulta
+    WHERE consulta.estatus_moroso = 7
+        ORDER BY consulta.contrato""".format(company_id, company_id)
     ### GENERAMOS LA HOJA
     sheet = workbook.add_worksheet("Reporte de Morosos {}".format(date))
 
