@@ -107,7 +107,7 @@ class PabsContractsDoneReportXLSX(models.AbstractModel):
       count+=1
 
       ### FECHA DE CAMBIO DE ESTATUS
-      date = contract_id.date_of_last_status
+      date = contract_id.date_of_last_status.date()
       ### ESCRIBIMOS LA FECHA DE CAMBIO DE ESTATUS
       sheet.write(row, count, date or '', date_format)
       count+=1
