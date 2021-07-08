@@ -235,6 +235,26 @@ class PABSEcobroSync(models.Model):
         way_payment = 2
       elif contract_id.way_to_payment == 'monthly':
         way_payment = 3
+
+      ### BUSCAMOS LA DIRECCIÓN A SINCRONIZAR
+      if contract_id.street_name_toll:
+        street = contract_id.street_name_toll
+        number_address = contract_id.street_number_toll or ''
+        colony_name = contract_id.toll_colony_id.name or ''
+        locality_name = contract_id.toll_municipallity_id.name or ''
+        between = contract_id.between_streets_toll or ''
+      elif contract_id.street_name:
+        street = contract_id.street_name
+        number_address = contract_id.street_number or ''
+        colony_name = contract_id.neighborhood_id.name or ''
+        locality_name = contract_id.municipality_id.name or ''
+        between = contract_id.between_streets or ''
+      else:
+        street = ''
+        number_address = ''
+        colony_name = ''
+        locality_name = ''
+        between = ''
       ### AGREGANDO INFORMACIÓN DE CONTRATO A LA LISTA
       log += 'Contrato {} de {} \n'.format((index + 1), len_contract)
       contract_info.append({
@@ -245,11 +265,11 @@ class PABSEcobroSync(models.Model):
         'apellido_paterno' : contract_id.partner_fname or '',
         'apellido_materno' : contract_id.partner_mname or '',
         'empresa' : cont_comp.serie,
-        'calle' : contract_id.street_name_toll or '',
-        'numero_exterior' : contract_id.street_number_toll or '',
-        'colonia' : contract_id.toll_colony_id.name or '',
-        'localidad' : contract_id.toll_municipallity_id.name or '',
-        'entre_calles' : contract_id.between_streets_toll or '',
+        'calle' : street,
+        'numero_exterior' : number_address,
+        'colonia' : colony_name,
+        'localidad' : locality_name,
+        'entre_calles' : between,
         'forma_pago_actual' : way_payment,
         'monto_pago_actual' : contract_id.payment_amount or 0,
         'cobradorID' : contract_id.debt_collector.ecobro_id or contract_id.debt_collector.id,
