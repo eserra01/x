@@ -993,8 +993,11 @@ class PABSContracts(models.Model):
               reconcile.update({'pabs' : line.id})
               refund_id.with_context(investment_bond=True).action_post()
         _logger.info("Se creó la factura del contrato")
-        contract_name = pricelist_id.sequence_id._next()
-        previous.name = contract_name
+        if previous.name == 'Nuevo Contrato':
+          contract_name = pricelist_id.sequence_id._next()
+          previous.name = contract_name
+        else:
+          contract_name = previous.name
         previous.partner_id.write({'name' : contract_name})
         self.reconcile_all(reconcile)
     except Exception as e:
