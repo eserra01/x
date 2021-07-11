@@ -674,36 +674,37 @@ class APIREST(http.Controller):
       Grupo, 
       Plaza, 
       TipoDato,
-        Fecha, 
-        Diario, 
-        TipoPoliza, 
-        Folio, 
-        ConceptoPoliza,
-        NumMovto, 
-        AreaDeNegocio, 
-        CentroCosto, 
-        CodSegNegocio, 
-        SegmentoNegocio, 
-        CodCtaMayor, 
-        NomCtaMayor, 
-        CodSubCta, 
-        NomSubCta, 
-        CodSubSubCta, 
-        NomSubSubCta, 
-        CodSubSubSubCta, 
-        NomSubSubSubCta, 
-        CodigoCuenta, 
-        NombreCuenta,
-        Referencia, 
-        ConceptoMovimiento,
-        Cargos, 
-        Abonos, 
-        ImporteNeto,
-        SaldoSemanal, 
-        SaldoMensual, 
-        SaldoAnual, 
-        Project, 
-        Comments
+      Fecha, 
+      Diario, 
+      TipoPoliza, 
+      Folio, 
+      ConceptoPoliza,
+      NumMovto, 
+      AreaDeNegocio, 
+      CentroCosto, 
+      CodSegNegocio, 
+      SegmentoNegocio, 
+      CodCtaMayor, 
+      NomCtaMayor, 
+      CodSubCta, 
+      NomSubCta, 
+      CodSubSubCta, 
+      NomSubSubCta, 
+      CodSubSubSubCta, 
+      NomSubSubSubCta, 
+      CodigoCuenta, 
+      NombreCuenta,
+      Referencia, 
+      ConceptoMovimiento,
+      CuentaAnalitica,
+      Cargos, 
+      Abonos, 
+      ImporteNeto,
+      SaldoSemanal, 
+      SaldoMensual, 
+      SaldoAnual, 
+      Project, 
+      Comments
     FROM
     (
       SELECT 
@@ -830,6 +831,7 @@ class APIREST(http.Controller):
 
         mov.ref as Referencia,
         COALESCE(mov.name,'Sin concepto') AS ConceptoMovimiento,
+        aaa.name AS CuentaAnalitica,
         mov.Debit AS Cargos,
         mov.Credit AS Abonos,
         (mov.Debit - mov.Credit) as ImporteNeto,
@@ -843,6 +845,7 @@ class APIREST(http.Controller):
       INNER JOIN account_move_line as mov on enc.id = mov.move_id
       INNER JOIN res_users AS usr ON enc.create_uid = usr.id
       INNER JOIN res_partner AS part ON usr.partner_id = part.id
+      INNER JOIN account_analytic_account AS aaa ON mov.analytic_account_id = aaa.id
       LEFT JOIN account_journal AS jou ON enc.journal_id = jou.id
       LEFT JOIN account_account as acc on mov.account_id = acc.id
       LEFT JOIN account_analytic_account as ana on mov.analytic_account_id = ana.id
