@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <template id="pabs_reports.mortuary_product_invoiced_pdf">
+      <t t-call="web.html_container">
+          <t t-foreach="docs" t-as="doc">
+            <t t-call="web.basic_layout">
+
+              <div class="header">
+                <table width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td width="20%" rowspan="2" aling="top">
+                      <img src="mortuary/static/description/imagen.jpg" style="width:250px;" />
+                    </td>
+                    <td class="text-center" aling="top">
+                      <h3><strong>LATINOAMERICANA RECINTO FUNERAL <br/><br/>Reporte de Facturación de Funeraria</strong></h3>
+                    </td>
+                    <td width="20%" rowspan="2" aling="top"></td>
+                  </tr>
+                </table>
+              </div>
+
+              <div class="page">
+
+                <br/><br/><br/><br/><br/>
+                <div style="width:99%; margin:auto; border:1px solid black;">
+                  <div style="width:100%; margin-top:10px; margin-bottom:10px;" class="text-center"><strong>CONCEPTOS FACTURADOS</strong></div>
+                  <hr style="margin-left:2%; margin-right:2%; margin-bottom:10px; margin-top:0px; border:1px solid black;" />
+
+                  <table width="96%" style="margin:auto; margin-bottom:10px;">
+                    <tr>
+                      <th width="50%">Facturado</th>
+                      <th width="20%">Cantidad</th>
+                      <th width="30%">Total</th>
+                    </tr>
+                    <tr t-foreach="detail" t-as="line">
+                      <td width="50%"><t t-esc="line['name']"/></td>
+                      <td width="20%"><t t-esc="line['qty']"/></td>
+                      <td width="30%"><t t-esc="line['total']"/></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </t>
+          </t>
+        </t>
+    </template>
+  </data>
+</odoo>

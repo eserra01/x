@@ -5,3 +5,4 @@ access_pabs_delinquent_customer_collector,access.pabs.delinquent.customer.collec
 access_pabs_commissions_recovery,access.pabs.commissions.recovery,pabs_reports.model_pabs_commissions_recovery,pabs_custom.administrative_management_profile,1,1,1,1
 access_pabs_debt_collector_wizard,access.pabs.debt.collector.wizard,pabs_reports.model_pabs_debt_collector_wizard,base.group_user,1,1,1,1
 access_pabs_contracts_done,access.pabs.contracts.done,pabs_reports.model_pabs_contracts_done,base.group_user,1,1,1,1
+access_mortuary_product_invoiced,access.mortuary.product.invoiced,pabs_reports.model_mortuary_product_invoiced,base.group_user,1,1,1,1

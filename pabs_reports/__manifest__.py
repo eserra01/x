@@ -7,6 +7,7 @@
   'website': 'https://www.pabsmr.org',
   'depends' : [
     'xmarts_funeraria',
+    'mortuary',
     'report_xlsx',
     'stock',
     'pabs_custom'],
@@ -27,8 +28,10 @@
     'reports/delinquent_customer_template.xml',
     'reports/commissions_to_recovery_template.xml',
     'reports/pabs_debt_collector_template.xml',
+    'reports/mortuary_product_invoiced_template.xml',
     'wizard/pabs_commissions_recovery_wizard.xml',
     'wizard/pabs_contracts_done_wizard.xml',
+    'wizard/mortuary_product_invoiced_wizard.xml',
     'views/stock_quant_view.xml',
     'views/menus.xml',
     

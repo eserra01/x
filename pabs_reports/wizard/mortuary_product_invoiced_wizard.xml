@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="mortuary_product_invoiced_wizard" model="ir.ui.view">
+    <field name="name">mortuary.product.invoiced.wizard</field>
+    <field name="model">mortuary.product.invoiced</field>
+    <field name="arch" type="xml">
+      <form string="Reporte de facturación Funeraria">
+        <h3>Reporte de facturación Funeraria</h3>
+        <group coslpan="2">
+          <group>
+            <field name="start_date"/>
+          </group>
+          <group>
+            <field name="end_date"/>
+          </group>
+        </group>
+        <footer>
+          <button name="print_pdf_report" string="Imprimir" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_mortuary_product_invoiced_action" model="ir.actions.act_window">
+    <field name="name">Reporte de Facturación Funeraria</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">mortuary.product.invoiced</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="mortuary_product_invoiced_wizard"/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    action="action_mortuary_product_invoiced_action" 
+    id="mortuary_product_invoiced_menu"
+    name="Reporte de facturación Funeraria" 
+    parent="mortuary.menu_reports"
+    sequence="2"/>
+
+  <report
+    id="mortuary_product_invoiced_report"
+    model="mortuary.product.invoiced"
+    string="Reporte de facturación Funeraria PDF"
+    report_type="qweb-pdf"
+    name="pabs_reports.mortuary_product_invoiced_pdf"
+    file="pabs_reports.mortuary_product_invoiced_pdf"
+    attachment_use="False"
+    />
+
+</odoo>

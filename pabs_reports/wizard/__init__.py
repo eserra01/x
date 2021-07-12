@@ -10,3 +10,4 @@ from . import delinquent_customer
 from . import pabs_commissions_recovery
 from . import pabs_debt_collector
 from . import pabs_contracts_done
+from . import mortuary_product_invoiced
