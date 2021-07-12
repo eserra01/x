@@ -37,7 +37,7 @@ class MortuaryProductInvoiced(models.TransientModel):
     data = {'invoice_ids' : invoice_ids.ids}
 
     ### RETORNAMOS EL REPORTE
-    return return self.env.ref('pabs_reports.mortuary_product_invoiced_report').report_action(self, data=data)
+    return self.env.ref('pabs_reports.mortuary_product_invoiced_report').report_action(self, data=data)
 
 class MortuaryProductInvoicedPDFReport(models.AbstractModel):
   ### TEMPLATE
