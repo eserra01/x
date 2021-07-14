@@ -14,9 +14,12 @@ class PABSCommissionsToRecover(models.TransientModel):
 
   end_date = fields.Date(string='Fecha de Fin')
 
+  employee_id = fields.Many2one(comodel_name="hr.employee", string='Asistente Social')
+
   def print_pdf_report(self):
     ### ARMANDO LOS PARAMETROS
     data = {
+      'employee_id' : self.employee_id.id,
       'start_date' : self.start_date,
       'end_date' : self.end_date,
     }
@@ -38,6 +41,7 @@ class CollectorReport(models.AbstractModel):
     ### OBTENEMOS LOS PARAMETROS DE BUSQUEDA
     start_date = data.get('start_date')
     end_date = data.get('end_date')
+    employee_id = data.get('employee_id')
 
     ### GENERAMOS EL DOMINIO DE BUSQUEDA
     ### SI TIENE FECHA FIN ES UN RANGO DE FECHAS
@@ -49,6 +53,10 @@ class CollectorReport(models.AbstractModel):
     else:
       params = [
       ('invoice_date','=',start_date)]
+
+    ### SI EN EL FILTRO DE BUSQUEDA AGREGARON UN ASISTENTE SOCIAL
+    if employee_id:
+      params.append(('sale_employee_id', '=', employee_id))
 
 
     ### BUSCAMOS LOS CONTRATOS GENERADOS EN ESAS FECHAS

@@ -8,10 +8,15 @@
         <h3>Reporte de Comisiones por Recuperar</h3>
         <group>
           <group>
-            <field name="start_date"/>
+            <field name="employee_id" domain="[('job_id','=','ASISTENTE SOCIAL')]"/>
           </group>
           <group>
-            <field name="end_date"/>
+            <group>
+              <field name="start_date"/>
+            </group>
+            <group>
+              <field name="end_date"/>
+            </group>
           </group>
         </group>
         <footer>
