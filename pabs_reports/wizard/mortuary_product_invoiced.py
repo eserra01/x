@@ -79,9 +79,9 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
         'total' : total
       })
 
-  ### retornamos los datos
-  return {
-    'docs' : docs,
-    'detail' : details,
-  }
+    ### retornamos los datos
+    return {
+      'docs' : docs,
+      'detail' : details,
+    }
     
