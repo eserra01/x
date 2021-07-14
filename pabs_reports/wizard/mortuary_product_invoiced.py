@@ -19,7 +19,7 @@ class MortuaryProductInvoiced(models.TransientModel):
 
     ### GENERAMOS EL DOMINIO
     if self.end_date:
-      domain.append(('invoice_date', '>=', self.date))
+      domain.append(('invoice_date', '>=', self.start_date))
       domain.append(('invoice_date', '<=', self.end_date))
     else:
       domain.append(('invoice_date', '=', self.start_date))
