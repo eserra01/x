@@ -13,6 +13,7 @@
                   </td>
                   <td class="text-center" aling="top">
                     <h3><strong>LATINOAMERICANA RECINTO FUNERAL <br/><br/>Reporte de Facturación de Funeraria</strong></h3>
+                    <span t-esc="name"/>
                   </td>
                   <td width="20%" rowspan="2" aling="top"></td>
                 </tr>
@@ -21,7 +22,7 @@
 
             <div class="page">
 
-              <br/><br/><br/><br/><br/>
+              <br/><br/>
               <div style="width:99%; margin:auto; border:1px solid black;">
                 <div style="width:100%; margin-top:10px; margin-bottom:10px;" class="text-center"><strong>CONCEPTOS FACTURADOS</strong></div>
                 <hr style="margin-left:2%; margin-right:2%; margin-bottom:10px; margin-top:0px; border:1px solid black;" />

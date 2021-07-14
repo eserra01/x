@@ -21,8 +21,10 @@ class MortuaryProductInvoiced(models.TransientModel):
     if self.end_date:
       domain.append(('invoice_date', '>=', self.start_date))
       domain.append(('invoice_date', '<=', self.end_date))
+      name = 'del {} al {}'.format(self.start_date, self.end_date)
     else:
       domain.append(('invoice_date', '=', self.start_date))
+      name = 'del {}'.format(self.start_date)
 
 
     ### BUSCAMOS QUE EXISTAN FACTURAS EN ESAS FECHAS...
@@ -34,7 +36,9 @@ class MortuaryProductInvoiced(models.TransientModel):
       raise ValidationError("No hay facturas para procesar!")
 
     ### SI SE ENCONTRARON FACTURAS LAS AGREGAMOS A UN DICCIONARIO
-    data = {'invoice_ids' : invoice_ids.ids}
+    data = {
+      'name' : name,
+      'invoice_ids' : invoice_ids.ids}
 
     ### RETORNAMOS EL REPORTE
     return self.env.ref('pabs_reports.mortuary_product_invoiced_report').report_action(self, data=data)
@@ -81,6 +85,7 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
 
     ### retornamos los datos
     return {
+      'name' : data.get('name'),
       'detail' : details,
     }
     
