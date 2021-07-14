@@ -75,8 +75,8 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
       ### LOS AGREGAMOS AL ARRAY
       details.append({
         'name' : product_id.name,
-        'qty' : qty,
-        'total' : total
+        'qty' : int(qty),
+        'total' : "${:,.2f}".format(total)
       })
 
     ### retornamos los datos
