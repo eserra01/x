@@ -49,7 +49,7 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
     invoice_obj = self.env['account.move']
 
     ### MENSAJE DE ERROR
-    if data.get('invoice_ids'):
+    if not data.get('invoice_ids'):
       raise ValidationError("Error!")
 
     ### INSTANCIAMOS LAS FACTURAS GENERADAS
