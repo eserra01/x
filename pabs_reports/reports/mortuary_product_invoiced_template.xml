@@ -29,7 +29,7 @@
 
                   <table width="96%" style="margin:auto; margin-bottom:10px;">
                     <tr>
-                      <th width="50%">Facturado</th>
+                      <th width="50%">Concepto</th>
                       <th width="20%">Cantidad</th>
                       <th width="30%">Total</th>
                     </tr>

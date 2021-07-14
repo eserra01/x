@@ -7,16 +7,14 @@
 			<form string="Generar Reporte de Comisiones por recuperar">
         <h3>Reporte de Comisiones por Recuperar</h3>
         <group>
+          <field name="employee_id" domain="[('job_id','=','ASISTENTE SOCIAL')]"/>
+        </group>
+        <group>
           <group>
-            <field name="employee_id" domain="[('job_id','=','ASISTENTE SOCIAL')]"/>
+            <field name="start_date"/>
           </group>
           <group>
-            <group>
-              <field name="start_date"/>
-            </group>
-            <group>
-              <field name="end_date"/>
-            </group>
+            <field name="end_date"/>
           </group>
         </group>
         <footer>

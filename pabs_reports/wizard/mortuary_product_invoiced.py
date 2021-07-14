@@ -45,8 +45,21 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
 
   @api.model
   def _get_report_values(self, docids, data):
+    ### INSTANCIACIÓN DE OBJETOS
+    invoice_obj = self.env['account.move']
+
+    ### MENSAJE DE ERROR
     if data.get('invoice_ids'):
       raise ValidationError("Error!")
-    return {
-      'data' : data
-    }
+
+    ### INSTANCIAMOS LAS FACTURAS GENERADAS
+    invoice_ids = invoice_obj.browse(data.get('invoice_ids'))
+
+    ### ARRAY DE LA INFO
+    details = []
+
+    ### TRAEMOS TODAS LAS LINEAS DE LAS FACTURAS
+    lines = invoice_ids.mapped('invoice_line_ids').sorted(key=lambda r: r.product_id)
+
+    raise ValidationError("Lineas: {}".format(lines))
+    
