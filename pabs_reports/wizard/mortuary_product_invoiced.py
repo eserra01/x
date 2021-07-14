@@ -59,7 +59,29 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
     details = []
 
     ### TRAEMOS TODAS LAS LINEAS DE LAS FACTURAS
-    lines = invoice_ids.mapped('invoice_line_ids').sorted(key=lambda r: r.product_id)
+    lines = invoice_ids.mapped('invoice_line_ids')
+    ### LISTAMOS TODOS LOS PRODUCTOS FACTURADOS
+    product_ids =  lines.mapped('product_id')
 
-    raise ValidationError("Lineas: {}".format(lines))
+    ### RECORREMOS LA LISTA DE PRODUCTOS
+    for product_id in product_ids:
+      ### FILTRAMOS TODAS LAS LINEAS QUE VIENE EL PRODUCTO
+      product_lines = lines.filtered(lambda r: r.product_id.id == product_id.id)
+      ### SUAMMOS TODAS LAS CANTIDADES DE ESE PRODUCTO
+      qty = sum(product_lines.mapped('quantity'))
+      ### SUMAMOS EL TOTAL FACTURADO POR ESE PRODUCTO
+      total = sum(product_lines.mapped('price_total'))
+
+      ### LOS AGREGAMOS AL ARRAY
+      details.append({
+        'name' : product_id.name,
+        'qty' : qty,
+        'total' : total
+      })
+
+  ### retornamos los datos
+  return {
+    'docs' : docs
+    'detail' : details
+  }
     
