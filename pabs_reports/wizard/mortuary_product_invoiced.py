@@ -29,7 +29,7 @@ class MortuaryProductInvoiced(models.TransientModel):
     invoice_ids = invoice_obj.search(domain)
 
     ### SI NO
-    if not mortuary_ids:
+    if not invoice_ids:
       ### MENSAJE DE ERROR
       raise ValidationError("No hay facturas para procesar!")
 
