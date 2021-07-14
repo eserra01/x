@@ -81,7 +81,6 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
 
     ### retornamos los datos
     return {
-      'docs' : docs,
       'detail' : details,
     }
     
