@@ -621,7 +621,7 @@ class Mortuary(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'account.payment',
-            'view_id': self.env.ref('account.view_account_payment_form').id,
+            'view_id': self.env.ref('pabs_custom.mortuary_account_payment_form_view').id,
             'context': {
                 'default_balance_binnacle' : self.balance,
                 'default_date_of_death' : self.ds_fecha_de_falleci,
@@ -731,6 +731,14 @@ class Mortuary(models.Model):
                             'service_detail' : 'realized',
                         })
         return super(Mortuary, self).write(vals)
+
+    _sql_constraints = [
+        (
+            'unique_mortuary_record',
+            'UNIQUE(name, company_id)',
+            'No se puede crear el registro: ya existe esta bitacora -> [name, company_id]'
+        ),
+    ]
 
 
 class Observaciones(models.Model):
