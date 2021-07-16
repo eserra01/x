@@ -12,8 +12,13 @@
                     <img src="mortuary/static/description/imagen.jpg" style="width:250px;" />
                   </td>
                   <td class="text-center" aling="top">
-                    <h3><strong>LATINOAMERICANA RECINTO FUNERAL <br/><br/>Reporte de Facturación de Funeraria</strong></h3>
-                    <span t-esc="name"/>
+                    <h3>
+                      LATINOAMERICANA RECINTO FUNERAL <br/><br/>
+                      Reporte de Facturación de Funeraria<br/>
+                    </h3>
+                    <h5>
+                      <span t-esc="name"/>
+                    </h5>
                   </td>
                   <td width="20%" rowspan="2" aling="top"></td>
                 </tr>
