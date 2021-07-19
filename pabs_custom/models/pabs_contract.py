@@ -202,9 +202,7 @@ class PABSContracts(models.Model):
   def _calc_balance(self):
     invoice_obj = self.env['account.move']
     for rec in self:
-      invoice_ids = invoice_obj.search([
-        ('type','=','out_invoice'),
-        ('contract_id','=',rec.id)])
+      invoice_ids = rec.refund_ids.filtered(lambda r: (r.type == 'out_invoice' and r.state == 'posted'))
       result = sum(invoice_ids.mapped('amount_residual'))
       rec.balance = result
 
