@@ -17,7 +17,9 @@
   					</group>
   				</sheet>
   				<footer>
-            <button name="print_pdf" string="Generar PDF" type="object" class="btn-primary"/> ó 
+            <button name="print_report" context="{'type_report' : 'pdf'}" string="Generar PDF" type="object" class="btn-primary"/> 
+            <button name='print_report' context="{'type_report' : 'xlsx'}" string='Exportar XLSX' type="object" icon="fa-windows"/>
+            ó 
             <button string="Cancelar" class="btn-secondary" special="cancel" />
 		      </footer>
   			</form>
@@ -44,6 +46,15 @@
       attachment_use="False"
       />
 
+    <report
+      id="report_mortuary_payments_xlsx"
+      model="mortuary.cutting.payments"
+      string="Cobros de Funeraria XLSX"
+      report_type="xlsx"
+      name="mortuary.mortuary_payment_report_xlsx"
+      file="mortuary.mortuary_payment_report_xlsx"
+      attachment_use="False"
+      />
 
   </data>
 </odoo>
