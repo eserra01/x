@@ -16,7 +16,8 @@
           </group>
         </group>
         <footer>
-          <button name="print_pdf_report" string="Imprimir" type="object" class="btn-primary"/>
+          <button name="print_report" context="{'type_report' : 'pdf'}" string="Imprimir" type="object" class="btn-primary"/>
+          <button name='print_report' context="{'type_report' : 'xlsx'}" string='Exportar XLSX' type="object" icon="fa-windows"/>
           ó
           <button string="Cancelar" class="btn-secondary" special="cancel" />
         </footer>
@@ -47,6 +48,16 @@
     report_type="qweb-pdf"
     name="pabs_reports.mortuary_product_invoiced_pdf"
     file="pabs_reports.mortuary_product_invoiced_pdf"
+    attachment_use="False"
+    />
+
+  <report
+    id="mortuary_product_invoiced_report_xlsx"
+    model="mortuary.product.invoiced"
+    string="Reporte de facturación Funeraria XLSX"
+    report_type="xlsx"
+    name="pabs_reports.mortuary_product_invoiced_xlsx"
+    file="pabs_reports.mortuary_product_invoiced_xlsx"
     attachment_use="False"
     />
 
