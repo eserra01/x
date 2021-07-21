@@ -140,7 +140,7 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
       ### SUMAMOS EL TOTAL FACTURADO POR ESE PRODUCTO
       total = sum(product_lines.mapped('price_total'))
 
-      sheet.write(count, 0, product.name)
+      sheet.write(count, 0, product_id.name)
       sheet.write(count, 1, int(qty))
       sheet.write(count, 2, total, money_format)
       count+= 1
