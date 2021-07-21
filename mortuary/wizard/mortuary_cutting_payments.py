@@ -121,7 +121,7 @@ class CuttingMortuaryXLSXReport(models.AbstractModel):
       ### ESCRIBIMOS LA FECHA DEL PAGO
       sheet.write(count, 1, payment_id.payment_date or '', date_format)
       ### ESCRIBIMOS EL CONTRATO / BITACORA
-      sheet.write(count, 2, payment_id..binnacle.name or '')
+      sheet.write(count, 2, payment_id.binnacle.name or '')
       ### ESCRIBIMOS EL TIPO DE SERVICIO
       sheet.write(count, 3, payment_id.binnacle.ds_tipo_de_servicio.name or '')
       ### ESCRIBIMOS EL NOMBRE (FINADO)
