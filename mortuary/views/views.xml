@@ -49,7 +49,7 @@
               <button string='Tarjeta' name='btn_tarjeta' type='object' class="btn-primary"
                 attrs="{'invisible':[('id','==',0)]}" groups="pabs_custom.collection_profile"/>
               <button string='CGS' name='btn_cgs' type='object' class="btn-primary"
-                  attrs="{'invisible':[('id','==',0)]}" groups="pabs_custom.management_mortuary_profile"/>
+                  attrs="{'invisible':[('id','==',0)]}" groups="pabs_custom.management_mortuary_profile,pabs_custom.reception_mortuary_profile"/>
               <button string='Convenio' name='btn_convenio' type='object' class="btn-primary"
                   attrs="{'invisible':[('id','==',0)]}" groups="pabs_custom.management_mortuary_profile,pabs_custom.reception_mortuary_profile"/>
               <button string='BSF' name='btn_bsf' type='object' class="btn-primary"
