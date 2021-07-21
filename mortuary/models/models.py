@@ -469,6 +469,14 @@ class Mortuary(models.Model):
         vals['ii_hora_creacion'] = datetime.now(tz).strftime('%H:%M')
         if vals['name']:
             partner_id = partner_obj.create({'name' : vals['name']})
+            ### BUSCAMOS LA CUENTA CONTABLE PARA LAS BITACORAS
+            account_id = self.env.company.mortuary_account_id
+            ### SI EXISTE LA CUENTA CONFIGURADA EN LA COMPAÑIA
+            if account_id:
+                ### SOBREESCRIBIMOS AL CLIENTE POR LA CUENTA DE LAS BITACORAS
+                partner_id.write({
+                    'property_account_receivable_id' : account_id.id or False
+                })
             vals.update({'partner_id' : partner_id.id})
         result = super(Mortuary, self).create(vals)
         return result
@@ -770,4 +778,7 @@ class ResCompany(models.Model):
     legal_representative = fields.Char(string='Apoderado Legal')
 
     mortuary_journal = fields.Many2one(comodel_name='account.journal',
-        string='Diario para funeraria')    
+        string='Diario para funeraria')
+
+    mortuary_account_id = fields.Many2one(comodel_name='account.account',
+        string='Cuenta de bitacoras')
