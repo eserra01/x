@@ -19,6 +19,8 @@
   'security/ir.model.access.csv',
   'views/res_company_view.xml',
   'views/stock_warehouse_view.xml',
+  'views/account_account_view.xml',
+  'views/account_move_view.xml',
   'security/security.xml',
   ],
   'installable': True,
