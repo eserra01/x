@@ -11,6 +11,7 @@ HEADERS = [
   'COLONIA',
   'LOCALIDAD',
   'F.P',
+  'FECHA PRIMER ABONO',
   'ULT F. ABONO',
   'TELÉFONO',
   'ESTATUS']
@@ -196,10 +197,12 @@ class PabsDebtCollectorReportXLSX(models.AbstractModel):
         sheet.write(count, 4, contract_id.toll_municipallity_id.name or '')
         ### F.P
         sheet.write(count, 5, payment_way or '')
+        ### FECHA DE PRIMER ABONO
+        sheet.write(count, 6, contract_id.date_first_payment or '', date_format)
         ### ULT F. ABONO
-        sheet.write(count, 6, last_payment.date_receipt if last_payment.date_receipt else last_payment.payment_date, date_format)
+        sheet.write(count, 7, last_payment.date_receipt if last_payment.date_receipt else last_payment.payment_date, date_format)
         ### TELEFONO
-        sheet.write(count, 7, contract_id.phone_toll or contract_id.phone or '')
+        sheet.write(count, 8, contract_id.phone_toll or contract_id.phone or '')
         ### ESTATUS
-        sheet.write(count, 8, state or '')
+        sheet.write(count, 9, state or '')
       count += 4
