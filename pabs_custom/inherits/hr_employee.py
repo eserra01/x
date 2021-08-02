@@ -335,8 +335,8 @@ class HrEmployee(models.Model):
       raise ValidationError((
         "No se encontró el puesto de trabajo de asistente social"))
     if vals.get('warehouse_id'):
+      warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
       if self.local_location_id:
-        warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
         local_location_id = location_obj.browse(self.local_location_id.id)
         local_location_id.write({'location_id' : warehouse_id.view_location_id.id})
       vals['request_location_id'] = warehouse_id.lot_stock_id.id
