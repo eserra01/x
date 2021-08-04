@@ -136,7 +136,8 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
         sheet.write(count, 3, closing_id.warehouse_id.name or "")
         sheet.write(count, 4, "COOPERATIVA PABS")
         sheet.write(count, 5, line.product_id.name or "")
-        sheet.write(count, 6, int(line.lot_id.name[6:]) or "")
+        #sheet.write(count, 6, int(line.lot_id.name[6:]) or "")
+        sheet.write(count, 6, line.lot_id.name or "")
         contract_id = contract_obj.search([
           ('lot_id','=',line.lot_id.id)])
         if contract_id.state == 'precontract':
