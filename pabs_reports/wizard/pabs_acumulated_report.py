@@ -22,7 +22,12 @@ HEADERS = [
   'Origen Solicitud',
   #'Valor origen',
   #'Comentarios',
-  'Esquema de pago']
+  'Esquema de pago',
+  'Calle',
+  'Número',
+  'Colonia',
+  'Municipio',
+  'Telefono']
 
 class AccumulatedReport(models.TransientModel):
   _name = 'pabs.accumulated.report'
@@ -149,5 +154,9 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
         sheet.write(count, 13, move_id.referencia or "")
         sheet.write(count, 14, dict(move_id._fields['origen_solicitud'].selection).get(move_id.origen_solicitud) or "")
         sheet.write(count, 15, contract_id.payment_scheme_id.name or "")
-        
+        sheet.write(count, 16, contract_id.street_name or "")
+        sheet.write(count, 17, contract_id.street_number or "")
+        sheet.write(count, 18, contract_id.neighborhood_id.name or "")
+        sheet.write(count, 19, contract_id.municipality_id.name or "")
+        sheet.write(count, 20, contract_id.phone or "")
         count+=1
