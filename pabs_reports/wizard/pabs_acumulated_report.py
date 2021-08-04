@@ -112,7 +112,8 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
         sheet.write(count, 3, picking_id.location_dest_id.get_warehouse().name)
         sheet.write(count, 4, "COOPERATIVA PABS")
         sheet.write(count, 5, line.product_id.name or "")
-        sheet.write(count, 6, int(line.lot_id.name[6:]) or "")
+        #sheet.write(count, 6, int(line.lot_id.name[6:]) or "")
+        sheet.write(count, 6, line.lot_id.name or "")
         if picking_id.origin == 'cancelada':
           status = 'C'
         elif picking_id.origin == 'extravio':
