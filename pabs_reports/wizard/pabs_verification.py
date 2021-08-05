@@ -6,29 +6,25 @@ from dateutil import tz
 
 HEADERS = [
   'Fecha Corte',
-  'Codigo',
-  'Asociado',
-  'Oficina',
-  'Empresa',
-  'Plan',
-  'Folio',
+  'Solicitud',
   'Estatus',
-  'Inv. Inicial',
-  'Toma Comision',
-  'Importe',
-  'Costo',
-  'Forma Pago',
-  'Referencia',
-  'Origen Solicitud',
-  #'Valor origen',
-  #'Comentarios',
-  'Esquema de pago',
+  'Cliente',
+  'Teléfono',
   'Calle',
-  'Número',
+  'Exterior',
+  'Interior',
   'Colonia',
-  'Municipio',
-  'Telefono',
-  'Nombre Titular']
+  'Localidad',
+  'Fecha de nacimiento',
+  'Plan',
+  'Inversión Inicial',
+  'Asistente',
+  'Oficina',
+  'Origen',
+  'Fecha de Captura',
+  'Clave de Activación',
+  'Agente',
+  'Comentarios']
 
 class CallCenterVerificationReport(models.TransientModel):
   _name = 'pabs.call.center.verification.report'
@@ -105,62 +101,48 @@ class PabsVerificationReportXLSX(models.AbstractModel):
       sheet.write(0,row,row_data,bold_format)
 
     count = 1
-    for picking_id in picking_ids:
-      for line in picking_id.move_line_ids_without_package:
-        sheet.write(count, 0, picking_id.date_done or "", date_format)
-        sheet.write(count, 1, line.lot_id.employee_id.barcode or "")
-        sheet.write(count, 2, line.lot_id.employee_id.name or "")
-        sheet.write(count, 3, picking_id.location_dest_id.get_warehouse().name)
-        sheet.write(count, 4, "COOPERATIVA PABS")
-        sheet.write(count, 5, line.product_id.name or "")
-        #sheet.write(count, 6, int(line.lot_id.name[6:]) or "")
-        sheet.write(count, 6, line.lot_id.name or "")
-        if picking_id.origin == 'cancelada':
-          status = 'C'
-        elif picking_id.origin == 'extravio':
-          status = 'E'
-        sheet.write(count, 7, status or "")
-        sheet.write(count, 8, 0, money_format)
-        sheet.write(count, 9, 0, money_format)
-        sheet.write(count, 10, 0, money_format)
-        sheet.write(count, 11, 0, money_format)
-        sheet.write(count, 12, "")
-        sheet.write(count, 13, "")
-        sheet.write(count, 14, "")
-        sheet.write(count, 15, "")
-        count+=1
     for closing_id in closing_ids:
       for line in closing_id.picking_id.move_line_ids_without_package:
-        sheet.write(count, 0, closing_id.date or "", date_format)
-        sheet.write(count, 1, line.lot_id.employee_id.barcode or "")
-        sheet.write(count, 2, line.lot_id.employee_id.name or "")
-        sheet.write(count, 3, closing_id.warehouse_id.name or "")
-        sheet.write(count, 4, "COOPERATIVA PABS")
-        sheet.write(count, 5, line.product_id.name or "")
-        #sheet.write(count, 6, int(line.lot_id.name[6:]) or "")
-        sheet.write(count, 6, line.lot_id.name or "")
         contract_id = contract_obj.search([
           ('lot_id','=',line.lot_id.id)])
-        if contract_id.state == 'precontract':
-          status = 'F'
-        elif contract_id.state == 'contract':
-          status = 'V'
-        sheet.write(count, 7, status or "")
-        move_id = stock_move_obj.search([
-          ('series','=',line.lot_id.name),
-          ('codigo_de_activacion_valid','!=',False)],order="create_date desc",limit=1)
-        sheet.write(count, 8, move_id.inversion_inicial or 0, money_format)
-        sheet.write(count, 9, move_id.toma_comision or 0, money_format)
-        sheet.write(count, 10, move_id.amount_received or 0, money_format)
-        sheet.write(count, 11, contract_id.product_price or 0, money_format)
-        sheet.write(count, 12, dict(move_id._fields['forma_pago'].selection).get(move_id.forma_pago) or "")
-        sheet.write(count, 13, move_id.referencia or "")
-        sheet.write(count, 14, dict(move_id._fields['origen_solicitud'].selection).get(move_id.origen_solicitud) or "")
-        sheet.write(count, 15, contract_id.payment_scheme_id.name or "")
-        sheet.write(count, 16, contract_id.street_name or "")
-        sheet.write(count, 17, contract_id.street_number or "")
-        sheet.write(count, 18, contract_id.neighborhood_id.name or "")
-        sheet.write(count, 19, contract_id.municipality_id.name or "")
-        sheet.write(count, 20, contract_id.phone or "")
-        sheet.write(count, 21, contract_id.full_name or "")
-        count+=1
+        ### Fecha Corte
+        sheet.write(count, 0, closing_id.date or "", date_format)
+        ### Solicitud
+        sheet.write(count, 1, line.lot_id.name or "")
+        ### Estatus
+        sheet.write(count, 2, "RECIBIDO")
+        ### Cliente
+        sheet.write(count, 3, contract_id.full_name or "")
+        ### Teléfono
+        sheet.write(count, 4, contract_id.phone or "")
+        ### Calle
+        sheet.write(count, 5, contract_id.street_name or "")
+        ### Exterior
+        sheet.write(count, 6, contract_id.street_number or "")
+        ### Interior
+        sheet.write(count, 7, "")
+        ### Colonia
+        sheet.write(count, 8, contract_id.neighborhood_id.name or "")
+        ### Localidad
+        sheet.write(count, 9, contract_id.municipality_id.name or "")
+        ### Fecha de nacimiento
+        sheet.write(count, 10, contract_id.birthdate or "", date_format)
+        ### Plan
+        sheet.write(count, 11, line.product_id.name or "")
+        ### Inversión inicial
+        sheet.write(count, 12, move_id.inversion_inicial or 0, money_format)
+        ### Asistente
+        sheet.write(count, 13, contract_id.sale_employee_id.name or "")
+        ### Oficina
+        sheet.write(count, 14, line.lot_id.warehouse_id.name or "")
+        ### Origen
+        sheet.write(count, 15, dict(move_id._fields['origen_solicitud'].selection).get(move_id.origen_solicitud) or "")
+        ### Fecha de Captura
+        sheet.write(count, 16, contract_id.create_date or "", date_format)
+        ### Clave de activación
+        sheet.write(count, 17, contract_id.activation_code or "")
+        ### Agente que activo
+        sheet.write(count, 18, contract_id.agent_id or "")
+        ### Comentarios
+        sheet.write(count, 19, contract_id.comments or "")
+        
