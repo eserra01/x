@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_verification_report_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.verification.report.wizard.view</field>
+		<field name="model">pabs.call.center.verification.report</field>
+		<field name="arch" type="xml">
+			<form string="Reporte de Verificacion de solciitudes">
+        <h3>Verificación de solicitudes</h3>
+        <group coslpan="2">
+          <group>
+            <field name="start_date"/>
+          </group>
+          <group>
+            <field name="end_date"/>
+          </group>
+        </group>
+        <footer>
+          <button name="print_xls_report" string="Generar XLS" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+			</form>
+		</field>
+	</record>
+
+  <record id="action_pabs_verification_report_action" model="ir.actions.act_window">
+    <field name="name">Reporte de verificación de solicitudes</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.call.center.verification.report</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_verification_report_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+
+  <menuitem
+    id="menu_call_center_reports"
+    name="Reportes Call Center"
+    parent="pabs_custom.service_menu_root"
+    sequence="8"/>
+  
+  <menuitem 
+    action="action_pabs_verification_report_action" 
+    id="verification_report_menu"
+    name="Reporte de Verificación de solicitudes"
+    parent="menu_call_center_reports"
+    groups="pabs_custom.supervisor_call_center_profile,pabs_custom.administrator_call_center_profile"
+    sequence="7"/>
+
+  <report
+    id="verification_report"
+    model="pabs.call.center.verification.report"
+    string="Reporte de Verificación XLSX"
+    report_type="xlsx"
+    name="pabs_reports.verification_report_xlsx"
+    file="pabs_reports.verification_report_xlsx"
+    attachment_use="False"
+    />
+    
+</odoo>

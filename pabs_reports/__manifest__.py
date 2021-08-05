@@ -32,6 +32,7 @@
     'wizard/pabs_commissions_recovery_wizard.xml',
     'wizard/pabs_contracts_done_wizard.xml',
     'wizard/mortuary_product_invoiced_wizard.xml',
+    'wizard/pabs_verification_wizard.xml',
     'views/stock_quant_view.xml',
     'views/menus.xml',
     
