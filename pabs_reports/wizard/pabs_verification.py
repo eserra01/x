@@ -105,6 +105,9 @@ class PabsVerificationReportXLSX(models.AbstractModel):
       for line in closing_id.picking_id.move_line_ids_without_package:
         contract_id = contract_obj.search([
           ('lot_id','=',line.lot_id.id)])
+        move_id = stock_move_obj.search([
+          ('series','=',line.lot_id.name),
+          ('codigo_de_activacion_valid','!=',False)],order="create_date desc",limit=1)
         ### Fecha Corte
         sheet.write(count, 0, closing_id.date or "", date_format)
         ### Solicitud
