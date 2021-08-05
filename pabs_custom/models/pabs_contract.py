@@ -1013,8 +1013,8 @@ class PABSContracts(models.Model):
       self.date_of_last_status = datetime.today()
 
     ### Al poner en suspensión temporal validar que la fecha de reactivación sea mayor al dia de hoy.
-    #if vals.get('reactivation_date') and fields.Date.to_date(vals.get('reactivation_date')) < fields.Date.today():
-      #raise ValidationError("La fecha de suspensión temporal debe ser mayor a la fecha actual")
+    if vals.get('reactivation_date') and fields.Date.to_date(vals.get('reactivation_date')) < fields.Date.today():
+      raise ValidationError("La fecha de suspensión temporal debe ser mayor a la fecha actual")
 
     ### Si se quita la suspensión temporal quitar la fecha de reactivación
     if vals.get('contract_status_item') and vals.get('contract_status_item') != "SUSPENSION TEMPORAL" and self.contract_status_item.status == "SUSPENSION TEMPORAL":
