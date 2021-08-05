@@ -27,7 +27,8 @@ HEADERS = [
   'Número',
   'Colonia',
   'Municipio',
-  'Telefono']
+  'Telefono',
+  'Nombre Titular']
 
 class AccumulatedReport(models.TransientModel):
   _name = 'pabs.accumulated.report'
@@ -161,4 +162,5 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
         sheet.write(count, 18, contract_id.neighborhood_id.name or "")
         sheet.write(count, 19, contract_id.municipality_id.name or "")
         sheet.write(count, 20, contract_id.phone or "")
+        sheet.write(count, 21, contract_id.full_name or "")
         count+=1
