@@ -148,4 +148,4 @@ class PabsVerificationReportXLSX(models.AbstractModel):
         sheet.write(count, 18, contract_id.agent_id or "")
         ### Comentarios
         sheet.write(count, 19, contract_id.comments or "")
-        
+        count+=1
