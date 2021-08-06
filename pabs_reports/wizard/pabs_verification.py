@@ -135,7 +135,7 @@ class PabsVerificationReportXLSX(models.AbstractModel):
         ### Inversión inicial
         sheet.write(count, 12, move_id.inversion_inicial or 0, money_format)
         ### Asistente
-        sheet.write(count, 13, contract_id.sale_employee_id.name or "")
+        sheet.write(count, 13, contract_id.lot_id.employee_id.name or "")
         ### Oficina
         sheet.write(count, 14, line.lot_id.warehouse_id.name or "")
         ### Origen
