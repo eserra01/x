@@ -27,6 +27,8 @@ class ResCompany(models.Model):
   deposit_analytic_account_id = fields.Many2one(comodel_name='account.analytic.account',
     string='Cuenta analitica de deposito')
 
+  legal_signature = fields.binary(string='Firma Apoderado Legal')
+
 class PabsBankAccount(models.Model):
   _name = 'pabs.bank.account'
   _description = 'Cuentas de banco para ecobro'
