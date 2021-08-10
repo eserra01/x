@@ -27,7 +27,7 @@ class ResConfigSettings(models.TransientModel):
     allowed_days = params.get_param('pabs_custom.allowed_days')
     res.update({
       'last_day' : last_day,
-      'allow_last_days' : allowed_days})
+      'allow_last_days' : int(allowed_days)})
     return res
 
   @api.onchange('actually_day')

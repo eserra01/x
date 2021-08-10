@@ -19,9 +19,17 @@
                 <label for="last_day" string="Fecha por default"/>
                 <field name="last_day" attrs="{'readonly' : [('actually_day','=',False)], 'required' : [('actually_day','!=',False)]}"/>
               </div>
-              <div class="o_setting_left_pane">
-                <label for="allow_last_days" string="Días permitidos"/>
-                <field name="allow_last_days"/>
+              <div class="col-12 col-lg-6 o_setting_box">
+                <div class="o_setting_left_pane"/>
+                <div class="o_setting_right_pane">
+                  <span class="o_form_label"></span>
+                  <div class="text-muted">
+                    <label for="allow_last_days" string="Días permitidos"/>
+                  </div>
+                  <div class="text-muted">
+                    <field name="allow_last_days"/>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
