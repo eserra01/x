@@ -305,7 +305,7 @@
     <field name="type">form</field>
     <field name="model">pabs.contract</field>
     <field name="arch" type="xml">
-       <form create="0" delete="false" duplicate="false">
+       <form delete="false" duplicate="false">
         <header>
           <field name="captured" invisible="1"/>
           <field name="contract_status" invisible="1"/>
@@ -399,6 +399,8 @@
               <field name="employee_id"/>
               <field name="create_date" string="Fecha de activación" readonly="1"/>
               <field name="agent_id" string="Agente que activó" readonly="1"/>
+              <field name="excedent" readonly="1"/>
+              <field name="stationery" readonly="1"/>
               <field name="initial_investment" readonly="1"/>
               <field name="investment_bond" readonly="1"/>
               <field name="comments" readonly="1"/>
@@ -446,7 +448,7 @@
           </group>
 
           <group string="Árbol de comisiones" attrs="{'invisible' : [('lot_id','=',False)]}">
-              <field name="commission_tree" nolabel="1" readonly="1"/>
+              <field name="commission_tree" nolabel="1"/>
           </group>
 
         </sheet>

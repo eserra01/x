@@ -153,7 +153,8 @@ class StockMove(models.Model):
     lot_obj = self.env['stock.production.lot']
     contract_obj = self.env['pabs.contract']
     for rec in self:
-      if rec.codigo_de_activacion_valid:
+      activation_code = rec.codigo_de_activacion_valid.upper()
+      if activation_code:
         lot_id = lot_obj.search([
           ('name','=',rec.series),('company_id','=',self.company_id.id)],limit=1)
         if not lot_id:
@@ -164,7 +165,7 @@ class StockMove(models.Model):
         if not contract_id:
           raise ValidationError((
             "La solicitud {} No ha sido activado previamente".format(rec.series)))
-        if contract_id.activation_code != rec.codigo_de_activacion_valid:
+        if contract_id.activation_code != activation_code:
           raise ValidationError((
             "El número de activación no es correcto, favor de intentarlo nuevamente"))
 
