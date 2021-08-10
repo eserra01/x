@@ -6,28 +6,25 @@
     <field name="inherit_id" ref="base.res_config_settings_view_form"/>
     <field name="arch" type="xml">
       <xpath expr="//div[hasclass('settings')]" position="inside">
-        <div class="app_settings_block" data-string="Contratos" string="Contratos" data-key="pabs_contract">
-          <h2>Contratos</h2>
+        <div class="app_settings_block" data-string="Contratos" string="Contratos" data-key="contract">
           <div class="row mt16 o_settings_container">
             <div class="col-12 col-lg-6 o_setting_box">
-              <div class="o_setting_left_pane">
-                <field name="actually_day"/>
-              </div>
+              <div class="o_setting_left_pane"/>
               <div class="o_setting_right_pane">
-                <label for="actually_day" string="¿Fecha custom?"/>
-                <br/>
-                <label for="last_day" string="Fecha por default"/>
-                <field name="last_day" attrs="{'readonly' : [('actually_day','=',False)], 'required' : [('actually_day','!=',False)]}"/>
-              </div>
-              <div class="col-12 col-lg-6 o_setting_box">
-                <div class="o_setting_left_pane"/>
-                <div class="o_setting_right_pane">
-                  <span class="o_form_label"></span>
-                  <div class="text-muted">
-                    <label for="allow_last_days" string="Días permitidos"/>
+                <div class="text-muted">
+                    Configuración de Contratos
+                </div>
+                <div class="content-group">
+                  <div class="row mt16">
+                    <label for="actually_day" string="¿Fecha custom?" class="col-lg-3 o_light_label"/>
+                    <field name="actually_day"/>
+                    <br/>
+                    <label for="last_day" string="Fecha por default" attrs="{'invisible' : [('actually_day','=',False)]}"/>
+                    <field name="last_day" attrs="{'readonly' : [('actually_day','=',False)], 'required' : [('actually_day','!=',False)]}"/>
                   </div>
-                  <div class="text-muted">
-                    <field name="allow_last_days"/>
+                  <div class="mt8">
+                      <label for="allow_last_days" string="Días permitidos"/>
+                      <field name="allow_last_days"/>
                   </div>
                 </div>
               </div>

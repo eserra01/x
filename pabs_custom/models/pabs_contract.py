@@ -180,7 +180,6 @@ class PABSContracts(models.Model):
       'target' : 'new',
       'domain' : [('contract_id','=',self.id)]
     }
-    
 
   def calc_invoice_date(self):
     params = self.env['ir.config_parameter'].sudo()
@@ -188,9 +187,27 @@ class PABSContracts(models.Model):
     last_day = params.get_param('pabs_custom.last_day')
     if actually_day:
       if last_day:
-        return last_day
+         return last_day
+    return fields.Date.today()
+
+  def validate_date(self, date):
+    params = self.env['ir.config_parameter'].sudo()
+    allow_last_days = int(params.get_param('pabs_custom.allowed_days'))
+    date_format = datetime.strptime(date, '%Y-%m-%d').date()
+    today = fields.Date.today()
+    if allow_last_days > 0:
+      allowed_date = fields.Date.today() - timedelta(days=allow_last_days)
+    elif allow_last_days == 0:
+      allowed_date = fields.Date.today()
     else:
-      return fields.Date.today()
+      raise ValidationError("No tienes permitido crear contratos a futuro")
+    ### Validación de creación
+    if date_format < allowed_date:
+      raise ValidationError("No tienes permitido crear contratos con una fecha anterior a {}".format(allowed_date))
+    elif date_format > today:
+      raise ValidationError("No puedes crear un contrato con una fecha superior a {}".format(today))
+    else:
+      return date_format
 
 
   #Al elegir un estatus diferente borrar el motivo actual
@@ -852,7 +869,7 @@ class PABSContracts(models.Model):
 
           #Asignar asistente de venta PRODUCCION
           vals['sale_employee_id'] = previous.employee_id
-          vals['invoice_date'] = self.calc_invoice_date()
+          self.validate_date(vals['invoice_date'])
 
           previous.write(vals)
           invoice_id = self.create_invoice(previous)
