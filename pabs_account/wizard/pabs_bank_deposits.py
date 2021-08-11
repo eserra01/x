@@ -113,7 +113,7 @@ class PabsBankDeposits(models.TransientModel):
       if line.account_id:
         lines.append([0,0,{
           'account_id' : line.account_id.id,
-          'name' : '{} - ref {}'.format(line.debt_collector, line.ref),
+          'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
           'debit' : line.amount,
           'credit' : 0,
         }])
