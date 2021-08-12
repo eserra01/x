@@ -153,8 +153,8 @@ class StockMove(models.Model):
     lot_obj = self.env['stock.production.lot']
     contract_obj = self.env['pabs.contract']
     for rec in self:
-      activation_code = rec.codigo_de_activacion_valid.upper()
-      if activation_code:
+      if rec.codigo_de_activacion_valid:
+        activation_code = rec.codigo_de_activacion_valid.upper()
         lot_id = lot_obj.search([
           ('name','=',rec.series),('company_id','=',self.company_id.id)],limit=1)
         if not lot_id:
