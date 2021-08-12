@@ -34,64 +34,59 @@ class Stock(models.TransientModel):
     
   @api.onchange('request')
   def calc_estatus(self):
+    ### LIMPIAMOS LA VENTANA
     self.empty_window()
-    global MY_VAL 
-    global MY_VAL2
+    ### DECLARACIÓN DE OBJETOS
+    quant_obj = self.env['stock.quant']
 
-    lot_obj = self.env['stock.production.lot']
-    product_obj = self.env['product.product']
-    mov_obj = self.env['stock.move.line']
-    pick_obj = self.env['stock.picking']
-    loc_obj = self.env['stock.location']
-    hr_obj = self.env['hr.employee']
-    stkmove_obj = self.env['stock.move']
-    cont_obj = self.env['pabs.contract']
+    ### SI SE ESCRIBIO UNA SOLICITUD
+    if self.request:
+      ### BUSCAMOS LA SOLICITUD
+      quant_id = quant_obj.search([
+        ('lot_id', '=', self.request.id)]).filtered(lambda r: r.quantity >= 1)
 
-    request_id = lot_obj.search([('name','=',self.request.name)], limit=1)
+      ### UBICACIÓN
+      location_id = quant_id.location_id
 
-    if request_id:
-      prod_id = product_obj.search([('id','=',self.request.product_id.id)], limit = 1)
-      for stk in mov_obj.search([('lot_id','=',self.request.product_id.id)], limit = 1):
-        MY_VAL = stk.picking_id.id
-        MY_VAL2 = stk.location_dest_id.id
-        pick_id = pick_obj.search([('id','=',MY_VAL)], limit = 1)
-        loc_id = loc_obj.search([('id','=',MY_VAL2)])
+      ### SI EXISTE EN ALGUNA UBICACIÓN
+      if quant_id: 
+        ### Fecha
+        self.date_emission = quant_id.in_date.date()
+        ### Promotor
+        self.promoter = quant_id.lot_id.employee_id.name or 'N/A'
+        ### Almacén
+        self.warehouse = location_id.location_id.get_warehouse().name or ''
+        ### DESCRIPCIÓN DE LA SOLICITUD
+        self.description = quant_id.lot_id.product_id.name or ''
+        ### INSERTAMOS EL CÓDIGO DEL ASISTENTE
+        self.code = quant_id.lot_id.employee_id.barcode or 'No asignada'
 
-      empl_id = hr_obj.search([('id','=',self.request.id)], limit = 1)
-      stkmove_id = stkmove_obj.search([('series','=',self.request.name)],limit =1)
-      cont_id = cont_obj.search([('lot_id','=',self.request.id)],limit =1)
-      if cont_id:
-        
-        if cont_id.state == "contract" :
-            self.status_sol = "No disponible"
-        else:
-          self.status_sol = "Disponible"
-      elif stkmove_id:
-          if stkmove_id.origen_solicitud == "cancelada" or stkmove_id.origen_solicitud == "extravio" :
-            self.status_sol = "No disponible"
-          else:
-            self.status_sol="Disponible"
-      else:
-        self.status_sol = "Disponible"
-
-      if empl_id:
-        self.code = empl_id.barcode
-        self.promoter = empl_id.name
-        self.date_emission = pick_id.date_done
-        self.warehouse = loc_id.complete_name
-        #status_sol
-        self.description = prod_id.name
-      else:
-        self.promoter = "No asignado"
-        self.description = prod_id.name
-        self.date_emission = pick_id.date_done
-        self.warehouse = loc_id.complete_name
-        #self.warehouse = mov_id.date
+        ### VALIDANDO ESTATUS DE SOLICITUD
+        ### SI ES UNA UBICACIÓN CENTRAL
+        if location_id.central_location:
+          ### INSERTAMOS LA INFORMACIÓN
+          self.status_sol = 'Sin Asignar a Oficina'
+        ### SI ES UNA UBICACIÓN DE CONTRATOS Y RECEPCIÓN
+        if location_id.contract_location and location_id.received_location:
+          ### INSERTAMOS LA INFORMACIÓN
+          self.status_sol = 'Recepción de Contratos'
+        ### SI ES UNA UBICACIÓN DE OFICINA Y ES UNA UBICACIÓN DE CONTRATOS
+        if location_id.office_location and location_id.contract_location:
+          ### INSERTAMOS LA INFORMACIÓN
+          self.status_sol = 'Disponible Contratos'
+        ### SI ES UNA UBICACIÓN DE OFICINAS
+        if location_id.office_location:
+          self.status_sol = 'Disponible'
+        ### SI ES UNA UBICACIÓN DE CHATARRA
+        if location_id.scrap_location:
+          self.status_sol = 'Cancelada'
+        ### SI ES UNA UBICACIÓN DE CONSIGNACIÓN
+        if location_id.consignment_location:
+          self.status_sol = 'Asignada'
+        ### SI ES UNA UBICACIÓN DE RECEPCIÓN
+        if location_id.received_location:
+          self.status_sol = 'Recepción de Oficina'
     
-
-       
-        
-
   def empty_window(self):
     self.date_emission = False
     self.promoter = False
