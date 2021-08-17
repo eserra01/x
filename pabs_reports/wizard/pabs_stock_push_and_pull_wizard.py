@@ -58,7 +58,7 @@ class StockPushAndPullWizard(models.TransientModel):
     line_ids = order_line_obj.search(domain, order="date_planned")
 
     existants = qty_product
-    total = 0
+    total = (product_id.standard_price * existants)
     ### RECORREMOS LOS REGISTROS ENCONTRADOS
     for count,line_id in enumerate(line_ids):
       ### CARGAMOS EXISTENCIAS + LO RECIBIDO
@@ -106,6 +106,9 @@ class StockPushAndPullWizard(models.TransientModel):
         'credit' : credit,
         'saldo' : total
       })
+
+    if not records:
+      raise ValidationError("No se encontró información para procesar")
 
     data = {'records' : records}
     return self.env.ref('pabs_reports.stock_push_and_pull_report_xlsx').report_action(self, data=data)
