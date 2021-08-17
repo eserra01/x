@@ -119,7 +119,7 @@ class StockPushAndPullReportXLSX(models.AbstractModel):
 
 
   def generate_xlsx_report(self, workbook, data, lines):
-    product_obj = self.env['product.template']
+    product_obj = self.env['product.product']
 
     product_id = product_obj.browse(data['product_id'])
 
