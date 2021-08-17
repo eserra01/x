@@ -78,6 +78,18 @@ class StockPushAndPullWizard(models.TransientModel):
         'credit' : '',
         'saldo' : total
       })
+    if not records:
+      records.append({
+        'date' : '',
+        'ref' : '',
+        'push' : '',
+        'output' : '',
+        'exist' : existants,
+        'cost' : '',
+        'debit' : '',
+        'credit' : '',
+        'saldo' : total,
+      })
 
     ### GENERAMOS DOMINIO PARA LAS SALIDAS DE INVENTARIO
     domain_out = [
