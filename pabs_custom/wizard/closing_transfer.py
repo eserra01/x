@@ -58,11 +58,10 @@ class ClosingTransfers(models.TransientModel):
         'scheme' : contract_id.payment_scheme_id.name
       }
       data.append(data_dict)
-      if not previus:
-        contract_id.initial_investment = move_id.inversion_inicial or 0
-        contract_id.stationery = move_id.papeleria or 0
-        contract_id.comission = move_id.toma_comision or 0
-        contract_id.state = 'precontract'
+      contract_id.initial_investment = move_id.inversion_inicial or 0
+      contract_id.stationery = move_id.papeleria or 0
+      contract_id.comission = move_id.toma_comision or 0
+      contract_id.state = 'precontract'
 
     return data
 
