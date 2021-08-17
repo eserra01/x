@@ -46,7 +46,7 @@ class StockPushAndPullWizard(models.TransientModel):
     end_date = self.end_date
 
     ### GENERAMOS EL ULTIMO MOMENTO DEL DÍA
-    date_qty = datetime.strptime('{} 23:59:59'.format(start_date),"%Y/%m/%d %H:%M:%S")
+    date_qty = datetime.strptime('{} 23:59:59'.format(start_date),"%Y-%m-%d %H:%M:%S")
 
     ### LA CANTIDAD QUE HABIA A LA FECHA INGRESADA
     qty_product = product_id.with_context({'to_date': date_qty}).qty_available
