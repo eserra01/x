@@ -135,7 +135,7 @@ class StockPushAndPullReportXLSX(models.AbstractModel):
     ### ENCABEZADOS
     count = 2
     sheet.write(0,1,'Articulo Seleccionado:', bold_format)
-    sheet.write(0,2,product_id.get_name(),bold_format)
+    sheet.write(0,2,product_id.name_get(),bold_format)
     for row, row_data in enumerate(HEADERS):
       sheet.write(count, row, row_data, bold_format)
     count+=1
