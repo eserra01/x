@@ -110,7 +110,7 @@ class StockPushAndPullWizard(models.TransientModel):
     if not records:
       raise ValidationError("No se encontró información para procesar")
 
-    data = {'records' : records}
+    data = {'product_id': product_id.id, 'records' : records}
     return self.env.ref('pabs_reports.stock_push_and_pull_report_xlsx').report_action(self, data=data)
 
 class StockPushAndPullReportXLSX(models.AbstractModel):
@@ -119,6 +119,10 @@ class StockPushAndPullReportXLSX(models.AbstractModel):
 
 
   def generate_xlsx_report(self, workbook, data, lines):
+    product_obj = self.env['product.template']
+
+    product_id = product_obj.browse(data['product_id'])
+
     ### GENERAMOS LA HOJA
     sheet = workbook.add_worksheet("Entradas y Salidas")
 
@@ -129,7 +133,9 @@ class StockPushAndPullReportXLSX(models.AbstractModel):
     money_format = workbook.add_format({'num_format': '$#,##0.00'})
 
     ### ENCABEZADOS
-    count = 0
+    count = 2
+    sheet.write(0,1,'Articulo Seleccionado:', bold_format)
+    sheet.write(0,2,product_id.get_name(),bold_format)
     for row, row_data in enumerate(HEADERS):
       sheet.write(count, row, row_data, bold_format)
     count+=1
