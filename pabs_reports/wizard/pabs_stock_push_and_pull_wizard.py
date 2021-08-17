@@ -2,6 +2,7 @@
 
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
+from datetime import datetime
 
 HEADERS = [
   'FECHA',
@@ -44,8 +45,11 @@ class StockPushAndPullWizard(models.TransientModel):
     start_date = self.start_date
     end_date = self.end_date
 
+    ### GENERAMOS EL ULTIMO MOMENTO DEL DÍA
+    date_qty = datetime.strptime('{} 23:59:59'.format(start_date),"%Y/%m/%d %H:%M:%S")
+
     ### LA CANTIDAD QUE HABIA A LA FECHA INGRESADA
-    qty_product = product_id.with_context({'to_date': start_date}).qty_available
+    qty_product = product_id.with_context({'to_date': date_qty}).qty_available
 
     ### GENEERAMOS DOMINIO DE BUSQUEDA
     domain = [
