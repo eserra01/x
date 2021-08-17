@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_stock_push_and_pull_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.stock.push.and.pull.wizard.view</field>
+		<field name="model">pabs.stock.push_and_pull_wizard</field>
+		<field name="arch" type="xml">
+			<form string="Reporte de Entradas y Salidas de Stock">
+        <h3>Reporte de Entradas y Salidas de Stock</h3>
+        <div>
+          <field name="product_id"/>
+        </div>
+        <group coslpan="2">
+          <group>
+            <field name="start_date"/>
+          </group>
+          <group>
+            <field name="end_date"/>
+          </group>
+        </group>
+        <footer>
+          <button name="print_xls_report" string="Generar XLS" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+			</form>
+		</field>
+	</record>
+
+  <record id="action_pabs_stock_push_and_pull_action" model="ir.actions.act_window">
+    <field name="name">Entradas y Salidas de Stock</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.stock.push_and_pull_wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_stock_push_and_pull_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    action="action_pabs_stock_push_and_pull_action" 
+    id="push_and_pull_report_menu"
+    name="Entradas y Salidas de Stock" 
+    parent="stock.menu_warehouse_report"
+    sequence="7"/>
+
+  <report
+    id="stock_push_and_pull_report_xlsx"
+    model="pabs.stock.push_and_pull_wizard"
+    string="Entrada y Salida de Ataudes y Urnas XLSX"
+    report_type="xlsx"
+    name="pabs_reports.push_and_pull_stock_xlsx"
+    file="pabs_reports.push_and_pull_stock_xlsx"
+    attachment_use="False"/>
+    
+</odoo>

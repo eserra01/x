@@ -12,3 +12,4 @@ from . import pabs_debt_collector
 from . import pabs_contracts_done
 from . import mortuary_product_invoiced
 from . import pabs_verification
+from . import pabs_stock_push_and_pull_wizard
