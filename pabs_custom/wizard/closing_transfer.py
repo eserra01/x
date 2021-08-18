@@ -41,11 +41,14 @@ class ClosingTransfers(models.TransientModel):
       move_id = move_obj.search([
         ('series','=',lot),
         ('codigo_de_activacion_valid','!=',False)],limit=1)
+      if not move_id:
+        raise ValidationError("No se pudo encontrar el movimiento de recepción de solicitud")
       activation_code = move_id.codigo_de_activacion_valid.upper()
       contract_id = contract_obj.search([
         ('lot_id','=',lot_id.id),
         ('activation_code','=',activation_code)])
-      raise ValidationError("Contrato: {}\nMove:{}".format(contract_id.name,move_id.name))
+      if not contract_id:
+        raise ValidationError("No se pudo encontrar la solicitud para llenar la información capturada")
       data_dict = {
         'code' : move_id.picking_id.employee_id.barcode,
         'employee' : move_id.picking_id.employee_id.name,
