@@ -61,7 +61,8 @@ class ClosingTransfers(models.TransientModel):
       contract_id.initial_investment = move_id.inversion_inicial or 0
       contract_id.stationery = move_id.papeleria or 0
       contract_id.comission = move_id.toma_comision or 0
-      contract_id.state = 'precontract'
+      if contract_id.state == 'actived':
+        contract_id.state = 'precontract'
 
     return data
 
