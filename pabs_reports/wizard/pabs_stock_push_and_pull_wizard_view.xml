@@ -6,9 +6,12 @@
 		<field name="arch" type="xml">
 			<form string="Reporte de Entradas y Salidas de Stock">
         <h3>Reporte de Entradas y Salidas de Stock</h3>
-        <div>
-          <field name="product_id"/>
-        </div>
+        <group>
+          <label for="category_id"/>
+          <div style="text-align:center">
+            <field name="category_id"/>
+          </div>
+        </group>
         <group coslpan="2">
           <group>
             <field name="start_date"/>

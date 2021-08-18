@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data noupdate="0"> 
+  <data noupdate="0">
+
+    <record id="reports_custom_category" model="ir.module.category">
+      <field name="name">Reportes</field>
+    </record>
 
     <record id="pabs_reports.transfer_portfolio_partners_group" model="res.groups">
       <field name="name">Transferencia de Cartera de Clientes</field>
-      <field name="category_id" ref="pabs_custom.pabs_category"/>
+      <field name="category_id" ref="pabs_reports.reports_custom_category"/>
     </record>
 
     <record model="res.users" id="base.user_root">
       <field eval="[(4,ref('pabs_reports.transfer_portfolio_partners_group'))]" name="groups_id"/>
     </record>
 
-</data>
+    <record id="pabs_reports.stock_push_and_pull_group" model="res.groups">
+      <field name="name">Reporte de Entradas y salidas</field>
+      <field name="category_id" ref="pabs_reports.reports_custom_category"/>
+    </record>
+
+  </data>
 </odoo>
