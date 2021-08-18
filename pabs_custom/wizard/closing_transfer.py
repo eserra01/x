@@ -186,6 +186,7 @@ class ClosingTransfers(models.TransientModel):
           stock_move_line_obj.create(line_data)
         picking_id.button_validate()
         ### CALCULANDO EL DETALLE
+        raise ValidationError("Error 1")
         lines = self.calc_lines(picking_id,previus=False)
         data.update({
           'move_lines' : lines,
