@@ -35,6 +35,7 @@ class ClosingTransfers(models.TransientModel):
     move_obj = self.env['stock.move']
     contract_obj = self.env['pabs.contract']
     lot_obj = self.env['stock.production.lot']
+    raise ValidationError("Error encontrado: {}".format(picking_id.name))
     for line in picking_id.move_line_ids_without_package:
       lot = line.lot_id.name
       lot_id = lot_obj.search([('name','=',lot)],limit=1)
@@ -186,7 +187,6 @@ class ClosingTransfers(models.TransientModel):
           stock_move_line_obj.create(line_data)
         picking_id.button_validate()
         ### CALCULANDO EL DETALLE
-        raise ValidationError("Error 1")
         lines = self.calc_lines(picking_id,previus=False)
         data.update({
           'move_lines' : lines,
