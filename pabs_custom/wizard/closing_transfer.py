@@ -35,7 +35,6 @@ class ClosingTransfers(models.TransientModel):
     move_obj = self.env['stock.move']
     contract_obj = self.env['pabs.contract']
     lot_obj = self.env['stock.production.lot']
-    raise ValidationError("Error encontrado: {}".format(picking_id.name))
     for line in picking_id.move_line_ids_without_package:
       lot = line.lot_id.name
       lot_id = lot_obj.search([('name','=',lot)],limit=1)
@@ -45,6 +44,7 @@ class ClosingTransfers(models.TransientModel):
       contract_id = contract_obj.search([
         ('lot_id','=',lot_id.id),
         ('activation_code','=',move_id.codigo_de_activacion_valid)])
+      raise ValidationError("Contrato: {}\nMove:{}".format(contract_id.name,move_id.name))
       data_dict = {
         'code' : move_id.picking_id.employee_id.barcode,
         'employee' : move_id.picking_id.employee_id.name,
