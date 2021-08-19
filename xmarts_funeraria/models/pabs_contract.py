@@ -44,7 +44,7 @@ class PabsContract(models.Model):
                     'name' : "",
                     'amount' : refund_id.amount_total,
                     'collector' : self.employee_id.name,
-                    'description' : 'BONO POR INVERSIÓN INICIAL'
+                    'description' : refund_id.ref.upper()
                 })
         for transfers_id in self.transfer_balance_ids:
             if transfers_id.parent_state == "posted":
@@ -177,7 +177,7 @@ class PabsContract(models.Model):
                 cont = 0
                 date = rec.date_first_payment - relativedelta(days=15)
                 pay = []
-                dates = 0
+                dates = 1
                 month = 0
                 while i > 0:
                     if dates == 0:
