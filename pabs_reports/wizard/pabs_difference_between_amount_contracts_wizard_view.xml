@@ -29,7 +29,7 @@
     id="difference_between_amount_contracts_menu"
     name="Diferencia en monto de pagos de contratos" 
     parent="xmarts_funeraria.report_root_menu"
-    groups="pabs_custom.difference_between_amount_contracts_group"
+    groups="pabs_reports.difference_between_amount_contracts_group"
     sequence="7"/>
 
   <report
