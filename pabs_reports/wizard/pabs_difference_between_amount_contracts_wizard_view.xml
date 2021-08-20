@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="difference_between_amount_contracts_wizard" model="ir.ui.view">
+		<field name="name">difference.between.amount.contracts.wizard</field>
+		<field name="model">pabs.difference.between.amount.contracts</field>
+		<field name="arch" type="xml">
+			<form string="Diferencia en monto de pagos de contratos">
+        <h3>Diferencia en monto de pagos de contratos</h3>
+        <footer>
+          <button name="print_xls_report" string="Generar XLS" type="object" icon="fa-windows" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+			</form>
+		</field>
+	</record>
+
+  <record id="action_pabs_difference_between_amount_contracts" model="ir.actions.act_window">
+    <field name="name">Diferencia en monto de pagos de contratos</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.difference.between.amount.contracts</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="difference_between_amount_contracts_wizard"/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    action="action_pabs_difference_between_amount_contracts" 
+    id="difference_between_amount_contracts_menu"
+    name="Diferencia en monto de pagos de contratos" 
+    parent="xmarts_funeraria.report_root_menu"
+    groups="pabs_custom.difference_between_amount_contracts_group"
+    sequence="7"/>
+
+  <report
+    id="difference_between_amount_contracts_report_xlsx"
+    model="pabs.difference.between.amount.contracts"
+    string="Diferencia en monto de pagos de contratos XLSX"
+    report_type="xlsx"
+    name="pabs_reports.diff_amount_contracts_xlsx"
+    file="pabs_reports.diff_amount_contracts_xlsx"
+    attachment_use="False"/>
+    
+</odoo>

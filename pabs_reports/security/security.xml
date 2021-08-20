@@ -20,5 +20,18 @@
       <field name="category_id" ref="pabs_reports.reports_custom_category"/>
     </record>
 
+    <record id="pabs_reports.difference_between_amount_contracts_group" model="res.groups">
+      <field name="name">Reporte de Diferencia en monto de pagos de contratos</field>
+      <field name="category_id" ref="pabs_reports.reports_custom_category"/>
+    </record>
+
+    <record model="res.users" id="base.user_root">
+      <field eval="[(4,ref('pabs_reports.stock_push_and_pull_group'))]" name="groups_id"/>
+    </record>
+
+    <record model="res.users" id="base.user_root">
+      <field eval="[(4,ref('pabs_reports.difference_between_amount_contracts_group'))]" name="groups_id"/>
+    </record>
+
   </data>
 </odoo>

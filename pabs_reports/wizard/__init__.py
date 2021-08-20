@@ -13,3 +13,4 @@ from . import pabs_contracts_done
 from . import mortuary_product_invoiced
 from . import pabs_verification
 from . import pabs_stock_push_and_pull_wizard
+from . import pabs_difference_between_amount_contracts_wizard

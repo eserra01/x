@@ -8,3 +8,4 @@ access_pabs_contracts_done,access.pabs.contracts.done,pabs_reports.model_pabs_co
 access_mortuary_product_invoiced,access.mortuary.product.invoiced,pabs_reports.model_mortuary_product_invoiced,base.group_user,1,1,1,1
 access_pabs_call_center_verification_report,access.pabs.call.center.verification.report,pabs_reports.model_pabs_call_center_verification_report,base.group_user,1,1,1,1
 access_pabs_stock_push_and_pull_wizard,access.pabs.stock.push.and.pull.wizard,pabs_reports.model_pabs_stock_push_and_pull_wizard,base.group_user,1,1,1,1
+access_pabs_difference_between_amount_contracts,access.pabs.difference.between.amount.contracts,pabs_reports.model.pabs_difference_between_amount_contracts,base.group_user,1,1,1,1
