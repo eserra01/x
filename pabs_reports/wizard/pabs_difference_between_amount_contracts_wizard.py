@@ -97,7 +97,6 @@ class DifferenceBetweenContractsReports(models.AbstractModel):
   _inherit = 'report.report_xlsx.abstract'
 
   def generate_xlsx_report(self, workbook, data, lines):
-    raise ValidationError("valores recibidos: {}".format(data))
     ### NOMBRE DE LA HOJA
     report_name = "Fecha Generación: {}".format(fields.Date.today())
     ### GENERAMOS LA HOJA
@@ -113,9 +112,9 @@ class DifferenceBetweenContractsReports(models.AbstractModel):
     ### INSERTAMOS LOS ENCABEZADOS
     for row, row_data in enumerate(HEADERS):
       sheet.write(count, row, row_data, bold_format)
-      count+=1
+    count+=1
 
-    """### RECORREMOS LA INFORMACIÓN
+    ### RECORREMOS LA INFORMACIÓN
     for res in data.get('query_data'):
       ### INSERTAMOS FECHA DE CONTRATO
       sheet.write(count, 0, res[0], date_format)
@@ -134,5 +133,5 @@ class DifferenceBetweenContractsReports(models.AbstractModel):
       ### INSERTAMOS MONTO ACTUAL
       sheet.write(count, 7, res[7], money_format)
       ### AUMENTAMOS CONTADOR
-      count+=1"""
+      count+=1
       
