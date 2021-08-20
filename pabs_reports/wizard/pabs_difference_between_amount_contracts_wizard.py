@@ -20,7 +20,7 @@ class DiferenceBetweenAmountContracts(models.TransientModel):
 
   def print_xls_report(self):
     ### RETORNAMOS EL REPORTE
-    return self.env.ref('pabs_reports.difference_amount_contract_report_xlsx').report_action(self, data=data)
+    return self.env.ref('pabs_reports.difference_amount_contract_report_xlsx').report_action(self, data={})
 
 class DifferenceBetweenContractsReports(models.AbstractModel):
   _name = 'report.pabs_reports.diff_amount_xlsx'
