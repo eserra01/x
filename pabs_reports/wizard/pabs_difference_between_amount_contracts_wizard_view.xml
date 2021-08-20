@@ -33,12 +33,12 @@
     sequence="7"/>
 
   <report
-    id="difference_between_amount_contracts_report_xlsx"
+    id="difference_amount_contract_report_xlsx"
     model="pabs.difference.between.amount.contracts"
     string="Diferencia en monto de pagos de contratos XLSX"
     report_type="xlsx"
-    name="pabs_reports.diff_amount_contracts_xlsx"
-    file="pabs_reports.diff_amount_contracts_xlsx"
+    name="pabs_reports.diff_amount_xlsx"
+    file="pabs_reports.diff_amount_xlsx"
     attachment_use="False"/>
     
 </odoo>

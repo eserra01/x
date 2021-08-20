@@ -25,7 +25,7 @@ class DiferenceBetweenAmountContracts(models.TransientModel):
     company_id = self.env.company.id
 
     ### VARIABLE CON EL QUERY
-    query = """
+    QUERY = """
       SELECT 
         fecha_contrato,
         contrato,
@@ -90,10 +90,10 @@ class DiferenceBetweenAmountContracts(models.TransientModel):
     }
 
     ### RETORNAMOS EL REPORTE
-    return self.env.ref('pabs_reports.difference_between_amount_contracts_report_xlsx').report_action(self, data=data)
+    return self.env.ref('pabs_reports.difference_amount_contract_report_xlsx').report_action(self, data=data)
 
 class DifferenceBetweenContractsReports(models.AbstractModel):
-  _name = 'report.pabs_reports.diff_amount_contracts_xlsx'
+  _name = 'report.pabs_reports.diff_amount_xlsx'
   _inherit = 'report.report_xlsx.abstract'
 
   def generate_xlsx_report(self, workbook, data, lines):
