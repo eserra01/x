@@ -97,7 +97,6 @@ class DifferenceBetweenContractsReports(models.AbstractModel):
   _inherit = 'report.report_xlsx.abstract'
 
   def generate_xlsx_report(self, workbook, data, lines):
-    raise ValidationError("Si entra al método")
     ### NOMBRE DE LA HOJA
     report_name = "Fecha Generación: {}".format(fields.Date.today())
     ### GENERAMOS LA HOJA
