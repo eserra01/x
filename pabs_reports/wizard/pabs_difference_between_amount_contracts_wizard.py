@@ -25,7 +25,7 @@ class DiferenceBetweenAmountContracts(models.TransientModel):
     company_id = self.env.company.id
 
     ### VARIABLE CON EL QUERY
-    QUERY = """
+    query = """
       SELECT 
         fecha_contrato,
         contrato,
