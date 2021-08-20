@@ -86,10 +86,6 @@ class DifferenceBetweenContractsReports(models.AbstractModel):
     ### EJECUTAMOS EL QUERY
     cr.execute(query)
 
-    ### SI NO SE ENCUENTRA INFORMACIÓN
-    if not res:
-      raise ValidationError("No se encontraron diferencias entre monto esperado vs monto recibido")
-
     ### NOMBRE DE LA HOJA
     report_name = "Fecha Generación: {}".format(fields.Date.today())
     ### GENERAMOS LA HOJA
