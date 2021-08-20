@@ -89,6 +89,8 @@ class DiferenceBetweenAmountContracts(models.TransientModel):
       'query_data' : res
     }
 
+    raise ValidationError("valores recibidos: {}".format(data))
+
     ### RETORNAMOS EL REPORTE
     return self.env.ref('pabs_reports.difference_between_amount_contracts_report_xlsx').report_action(self, data=data)
 
