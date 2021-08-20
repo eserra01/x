@@ -114,7 +114,7 @@ class DifferenceBetweenContractsReports(models.AbstractModel):
       sheet.write(count, row, row_data, bold_format)
       count+=1
 
-    ### RECORREMOS LA INFORMACIÓN
+    """### RECORREMOS LA INFORMACIÓN
     for res in data.get('query_data'):
       ### INSERTAMOS FECHA DE CONTRATO
       sheet.write(count, 0, res[0], date_format)
@@ -132,4 +132,6 @@ class DifferenceBetweenContractsReports(models.AbstractModel):
       sheet.write(count, 6, res[6], money_format)
       ### INSERTAMOS MONTO ACTUAL
       sheet.write(count, 7, res[7], money_format)
+      ### AUMENTAMOS CONTADOR
+      count+=1"""
       
