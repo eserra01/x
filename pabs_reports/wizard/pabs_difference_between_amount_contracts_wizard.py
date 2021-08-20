@@ -19,6 +19,14 @@ class DiferenceBetweenAmountContracts(models.TransientModel):
   _description = 'Diferencia en monto de pagos de contratos'
 
   def print_xls_report(self):
+    ### RETORNAMOS EL REPORTE
+    return self.env.ref('pabs_reports.difference_amount_contract_report_xlsx').report_action(self, data=data)
+
+class DifferenceBetweenContractsReports(models.AbstractModel):
+  _name = 'report.pabs_reports.diff_amount_xlsx'
+  _inherit = 'report.report_xlsx.abstract'
+
+  def generate_xlsx_report(self, workbook, data, lines):
     ### CREAMOS UN CURSOS DE BD
     cr = self._cr
     ### BUSCAMOS EL ID DE LA COMPAÑIA QUE ESTA GENERANDO EL REPORTE
@@ -77,26 +85,11 @@ class DiferenceBetweenAmountContracts(models.TransientModel):
         con.contrato""".format(company_id)
     ### EJECUTAMOS EL QUERY
     cr.execute(query)
-    ### GUARDAMOS EL RESULTADO DE LA CONSULTA
-    res = cr.fetchall()
 
     ### SI NO SE ENCUENTRA INFORMACIÓN
     if not res:
       raise ValidationError("No se encontraron diferencias entre monto esperado vs monto recibido")
 
-    ### AGREGAMOS LA INFORMACIÓN A UN DICCIONARIO
-    data = {
-      'query_data' : res
-    }
-
-    ### RETORNAMOS EL REPORTE
-    return self.env.ref('pabs_reports.difference_amount_contract_report_xlsx').report_action(self, data=data)
-
-class DifferenceBetweenContractsReports(models.AbstractModel):
-  _name = 'report.pabs_reports.diff_amount_xlsx'
-  _inherit = 'report.report_xlsx.abstract'
-
-  def generate_xlsx_report(self, workbook, data, lines):
     ### NOMBRE DE LA HOJA
     report_name = "Fecha Generación: {}".format(fields.Date.today())
     ### GENERAMOS LA HOJA
@@ -115,7 +108,7 @@ class DifferenceBetweenContractsReports(models.AbstractModel):
     count+=1
 
     ### RECORREMOS LA INFORMACIÓN
-    for res in data.get('query_data'):
+    for res in cr.fetchall():
       ### INSERTAMOS FECHA DE CONTRATO
       sheet.write(count, 0, res[0], date_format)
       ### INSERTAMOS NÚMERO DE CONTRATO
