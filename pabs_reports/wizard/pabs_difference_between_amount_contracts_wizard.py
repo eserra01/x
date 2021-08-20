@@ -3,6 +3,17 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 
+HEADERS = [
+  'Fecha de Contrato',
+  'Número de Contrato',
+  'Nombre de Plan',
+  'Cobrador',
+  'Asistente Social',
+  'Forma de Pago',
+  'Monto de Pago Esperado',
+  'Monto Actual'
+]
+
 class DiferenceBetweenAmountContracts(models.TransientModel):
   _name = 'pabs.difference.between.amount.contracts'
   _description = 'Diferencia en monto de pagos de contratos'
@@ -69,6 +80,56 @@ class DiferenceBetweenAmountContracts(models.TransientModel):
     ### GUARDAMOS EL RESULTADO DE LA CONSULTA
     res = cr.fetchall()
 
-    raise ValidationError(res)
+    ### SI NO SE ENCUENTRA INFORMACIÓN
+    if not res:
+      raise ValidationError("No se encontraron diferencias entre monto esperado vs monto recibido")
 
-    return True
+    ### AGREGAMOS LA INFORMACIÓN A UN DICCIONARIO
+    data = {
+      'query_data' : res
+    }
+
+    ### RETORNAMOS EL REPORTE
+    return self.env.ref('pabs_reports.difference_between_amount_contracts_report_xlsx').report_action(self, data=data)
+
+class DifferenceBetweenContractsReports(models.AbstractModel):
+  _name = 'report.pabs_reports.diff_amount_contracts_xlsx'
+  _inherit = 'report.report_xlsx.abstract'
+
+  def generate_xlsx_report(self, workbook, data, lines):
+    ### NOMBRE DE LA HOJA
+    report_name = "Fecha Generación: {}".format(fields.Date.today())
+    ### GENERAMOS LA HOJA
+    sheet = workbook.add_worksheet(report_name)
+
+    ### AGREGAMOS FORMATOS
+    bold_format = workbook.add_format({'bold': True,'align': 'center'})
+    date_format = workbook.add_format({'num_format': 'dd/mm/yy'})
+    money_format = workbook.add_format({'num_format': '$#,##0.00'})
+
+    ### CONTADOR DE CELDAS
+    count = 0
+    ### INSERTAMOS LOS ENCABEZADOS
+    for row, row_data in enumerate(HEADERS):
+      sheet.write(count, row, row_data, bold_format)
+      count+=1
+
+    ### RECORREMOS LA INFORMACIÓN
+    for res in data.get('query_data'):
+      ### INSERTAMOS FECHA DE CONTRATO
+      sheet.write(count, 0, res[0], date_format)
+      ### INSERTAMOS NÚMERO DE CONTRATO
+      sheet.write(count, 1, res[1])
+      ### INSERTAMOS NOMBRE DEL PLAN
+      sheet.write(count, 2, res[2])
+      ### INSERTAMOS NOMBRE DEL COBRADOR
+      sheet.write(count, 3, res[3])
+      ### INSERTAMOS ASISTENTE SOCIAL
+      sheet.write(count, 4, res[4])
+      ### INSERTAMOS FORMA DE PAGO
+      sheet.write(count, 5, res[5])
+      ### INSERTAMOS MONTO DE PAGO ESPERADO
+      sheet.write(count, 6, res[6], money_format)
+      ### INSERTAMOS MONTO ACTUAL
+      sheet.write(count, 7, res[7], money_format)
+      
