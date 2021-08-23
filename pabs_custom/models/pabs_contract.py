@@ -145,6 +145,11 @@ class PABSContracts(models.Model):
     inverse_name='contract_id',
     string='Traspasos')
 
+  _sql_constraints = [
+    ('unique_activation_lot',
+      'UNIQUE(lot_id)',
+      'No se puede crear el registro: ya existe un registro referenciado al número de solicitud')]
+
   #Función que busca por nombre completo mediante una consuta a la base utilizando like
   def _search_full_name(self, operator, value):
     #Construye cadena de busqueda
