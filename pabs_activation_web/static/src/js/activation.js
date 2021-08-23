@@ -25,8 +25,8 @@ $( document ).ready(function() {
   /* Método de formateo de string */
   String.prototype.format = function() {
     var str = this;
-    for (var i = 0; i < arguments.length; i++) {       
-      var reg = new RegExp("\\{" + i + "\\}", "gm");             
+    for (var i = 0; i < arguments.length; i++) {
+      var reg = new RegExp("\\{" + i + "\\}", "gm");
       str = str.replace(reg, arguments[i]);
     }
     return str;
@@ -105,6 +105,7 @@ $( document ).ready(function() {
   });
 
   $("#activation_form").submit(function (){
+    $("#submit").addClass("disabled");
     var company_id = $("#company option:selected").val();
     var args = "company_id={0}&".format(company_id);
     var args = args + $("#activation_form").serialize();
