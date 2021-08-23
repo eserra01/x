@@ -132,10 +132,9 @@
                         </div>
                       </fieldset>
                       <div class="modal-footer">
-                        <div class="form-group col-md-10">
+                        <div class="form-group col-md-8">
                           <h3 id="activation_code"></h3>
                           <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
-                          <a id="val_address" href="#" class="btn btn-blue">Validar Dirección</a>
                           <button type="submit" id="submit" class="btn btn-blue">Activar Solicitud</button>
                         </div>
                       </div>
@@ -146,11 +145,6 @@
             </div>
           </div>
         </div>
-        <!--<div class="modal fade" id="val-address-form" tabindex="-1" role="dialog" aria-labelledby="val-address-form" aria-hidden="true" data-backdrop="static">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-body">
-                <div class="form-row">-->
       </div>
     </body>
     

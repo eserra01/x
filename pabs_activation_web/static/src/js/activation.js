@@ -55,7 +55,6 @@ $( document ).ready(function() {
       $("#comment").val('');
       $("#employee_id").text('');
       $("#product_id").text('');
-      $('#submit').hide();
 
       var title = "{0}".format(value.text());
       $("#modal-title").text(title);
