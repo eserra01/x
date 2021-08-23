@@ -5,6 +5,7 @@
     <field name="model">account.move</field>
     <field name="inherit_id" ref="account.view_move_form"/>
     <field name="arch" type="xml">
+      
       <xpath expr="//field[@name='ref']" position="attributes">
         <attribute name="attrs">{'required' : [('type','=','in_invoice')]}</attribute>
       </xpath>
@@ -14,6 +15,11 @@
           <field name="comission_output_ids" nolabel="1"/>
         </group>
       </xpath>
+
+      <xpath expr="//field[@name='ref']" position="attributes">
+        <attribute name="attrs">{'required' : [('type','=','out_refund')]}</attribute>
+      </xpath>
+
     </field>
    </record>
 </odoo>
