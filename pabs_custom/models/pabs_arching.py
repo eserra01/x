@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 STATES = [
   ('open','Abierto'),
   ('closed','Cerrado')]
+  
 
 class PabsArching(models.Model):
   _name = 'pabs.arching'
