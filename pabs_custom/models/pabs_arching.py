@@ -8,7 +8,6 @@ STATES = [
   ('open','Abierto'),
   ('closed','Cerrado')]
 
-
 class PabsArching(models.Model):
   _name = 'pabs.arching'
 
