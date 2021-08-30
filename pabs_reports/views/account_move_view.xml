@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="print_account_move" model="ir.ui.view">
+    <field name="name">print.account.move</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_move_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//button[@name='button_draft']" position="after">
+        <button name="print_account" type="object" string="Imprimir Póliza" attrs="{'invisible':[('state','!=','posted'),('type','!=','entry')]}" class="oe_highlight"/>
+      </xpath>
+    </field>
+  </record>
+</odoo>

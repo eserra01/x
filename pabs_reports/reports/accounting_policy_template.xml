@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <template id="accounting_policy_body">
+      <style>
+        .column {
+          float: left;
+          padding: 10px;
+          width: 45%;
+        }
+
+        .row:after {
+          content: "";
+          display: table;
+          clear: both;
+        }
+
+        thead tr th {
+          border-bottom: 2px solid black; 
+        } 
+
+        header th {
+          text-align : center;
+        }
+
+        tr td {
+          text-align : center;
+          border-bottom : 1px solid gray;
+        }
+
+        .total {
+          width : 40%;
+          float: right;
+        }
+
+        .total tr td {
+          border-top : 2px solid black;
+        }
+
+        .left {
+          text-align : left;
+          font-weight : bold;
+        }
+
+        .right {
+          text-align : right;
+        }
+      </style>
+      <p>
+        <h3>
+          Póliza: <span t-esc="doc.name_get()[0][1]"/>
+        </h3>
+      </p>
+      <div class="row">
+        <div class="column">
+          <strong>
+            Fecha Contable:
+          </strong>
+          <span t-field="doc.date"/>
+          <br/>
+          <strong>
+            Compañia:
+          </strong>
+          <span t-field="doc.company_id.name"/>
+        </div>
+        <div class="column">
+          <strong>
+            Diario:
+          </strong>
+          <span t-esc="doc.journal_id.name_get()[0][1]"/>
+        </div>
+      </div>
+      <table width="100%">
+        <thead>
+          <tr>
+            <th>Cuenta Contable</th>
+            <th>Descripción</th>
+            <th>Cuenta analitica</th>
+            <th>Debe</th>
+            <th>Haber</th>
+          </tr>
+        </thead>
+        <t t-set="subtotal" t-value="0"/>
+        <t t-set="total" t-value="0"/>
+        <tbody t-foreach="doc.line_ids" t-as="line_id">
+          <tr>
+            <td><t t-esc="line_id.account_id.name"/></td>
+            <td><t t-esc="line_id.name"/></td>
+            <td><t t-esc="line_id.analytic_account_id.name or ''"/></td>
+            <td><t t-esc="'${0:,.2f}'.format(int(line_id.debit))"/></td>
+            <td><t t-esc="'${0:,.2f}'.format(int(line_id.credit))"/></td>
+          </tr>
+          <t t-set="subtotal" t-value="subtotal + line_id.debit"/>
+          <t t-set="total" t-value="total + line_id.debit"/>
+        </tbody>
+      </table>
+      <table class="total">
+        <tr>
+          <td class="left">Subtotal</td>
+          <td class="right"><t t-esc="'${0:,.2f}'.format(subtotal)"/></td>
+        </tr>
+        <tr>
+          <td class="left">Total</td>
+          <td class="right"><t t-esc="'${0:,.2f}'.format(total)"/></td>
+        </tr>
+      </table>
+    </template>
+
+    <template id="accounting_policy_template">
+      <t t-foreach="docs" t-as="doc">
+        <t t-call="web.basic_layout">
+          <t t-call="pabs_reports.accounting_policy_body"/>
+          <p style="page-break-after: always;"/>
+        </t>
+      </t>
+    </template>
+
+    <report
+      id="accounting_policy_report"
+      model="account.move"
+      string="Impresión de póliza"
+      report_type="qweb-pdf"
+      name="pabs_reports.accounting_policy_template"
+      file="pabs_reports.accounting_policy_template"
+      attachment_use="False"/>
+  </data>
+</odoo>
