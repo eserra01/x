@@ -33,6 +33,7 @@
       </xpath>
 
       <xpath expr="//field[@name='job_id']" position="replace">
+        <field name="ecobro_id" groups="pabs_custom.admin_profile"/>
         <field name="job_id" string="Puesto Laboral"/>
         <field name="date_of_admission" required="True"/>
         <field name="payment_scheme" attrs="{'required' : [('job_title','in',('PRESIDENTE''DIRECTOR NACIONAL','DIRECTOR REGIONAL','GERENTE SR','GERENTE JR','COORDINADOR','GERENTE DE OFICINA','ASISTENTE SOCIAL'))]}"/>

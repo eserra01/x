@@ -210,13 +210,15 @@ class StockMove(models.Model):
         raise ValidationError((
           "La solicitud {} no puede ser ingresada por que está {}".format(rec.series,dict(rec._fields['origen_solicitud'].selection).get(rec.origen_solicitud))))
       mode_prod = self.env['stock.production.lot'].search(
-        [('name', '=', str(rec.series)),('company_id','=',self.company_id.id)], limit=1)        
+        [('name', '=', str(rec.series)),('company_id','=',self.company_id.id)], limit=1)
       if rec.series and rec.picking_id.type_transfer in ('ov-as','cont-ov'):
         if not mode_prod:
             raise ValidationError("el número de solicitud {} no fue encontrado en el sistema, favor de verificarlo".format(rec.series))
         for prodc in mode_prod:
           quant_id = quant_obj.search([
-            ('lot_id','=',prodc.id),('company_id','=',self.company_id.id)],limit=1,order="id desc")
+            ('lot_id','=',prodc.id),('inventory_quantity','>',0)])
+          if len(quant_id) > 1:
+            raise ValidationError("el número de solicitud {} esta en {} ubicaciones diferentes".format(prodc.name,len(quant_id)))
           if not quant_id:
             raise ValidationError("el número de solicitud {} no fue encontrado en el sistema, favor de verificarlo".format(rec.series))
           if quant_id.location_id != rec.location_id:
