@@ -8,7 +8,7 @@
       <link rel="icon" type="image/png" href="/pabs_activation_web/static/src/img/favicon-pabs.png"/>
         <title>Activacion de Solicitudes</title>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
-      <link rel="stylesheet" href="/pabs_activation_web/static/src/css/style.css?v=2" type="text/css" media="screen"/>
+      <link rel="stylesheet" href="/pabs_activation_web/static/src/css/style.css" type="text/css" media="screen"/>
       <script src="https://s.codepen.io/assets/libs/modernizr.js" type="text/javascript"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -132,10 +132,10 @@
                         </div>
                       </fieldset>
                       <div class="modal-footer">
-                        <div class="form-group col-md-8">
-                          <h3 id="activation_code"></h3>
-                          <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
+                        <div class="form-group col-md-12">
                           <button type="submit" id="submit_rec" class="btn btn-blue">Activar Solicitud</button>
+                          <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
+                          <span id="activation_code" style="font-weight:bold; font-size:21px"></span>
                         </div>
                       </div>
                     </fieldset>
