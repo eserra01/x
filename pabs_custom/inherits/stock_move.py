@@ -215,8 +215,7 @@ class StockMove(models.Model):
         if not mode_prod:
             raise ValidationError("el número de solicitud {} no fue encontrado en el sistema, favor de verificarlo".format(rec.series))
         for prodc in mode_prod:
-          quant_id = quant_obj.search([
-            ('lot_id','=',prodc.id),('inventory_quantity','>',0)])
+          quant_id = quant_obj.search([('lot_id','=',prodc.id),('quantity','>',0)])
           if len(quant_id) > 1:
             raise ValidationError("el número de solicitud {} esta en {} ubicaciones diferentes".format(prodc.name,len(quant_id)))
           if not quant_id:
