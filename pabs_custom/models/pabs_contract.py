@@ -565,7 +565,6 @@ class PABSContracts(models.Model):
             rec.payment_amount = pricelist_id.payment_amount * 4
 
   #Se cambia cálculo de costo. Pasa de ser buscado en la tabla de tarifas a ser la suma de los montos de las facturas
-  @api.onchange('product_id')
   def calc_price(self):
     for rec in self:
       invoice_ids = self.env['account.move'].search([('contract_id','=',rec.id), ('type','=','out_invoice'), ('state','=','posted')])
@@ -726,18 +725,20 @@ class PABSContracts(models.Model):
     sequence_obj = self.env['ir.sequence']
     pricelist_obj = self.env['product.pricelist.item']
 
-    #Obtener costo del paquete de la tabla de tarifas
-    costo = 0
-    if self.name_service:
-      pricelist_id = pricelist_obj.search([('product_id','=',self.name_service.id)], limit=1)
-      if pricelist_id:
-        costo = pricelist_id.fixed_price
-      elif costo == 0:
-        raise ValidationError("No se puede crear el paquete porque tiene asignado un costo 0")
-      else:
-        raise ValidationError("No se encontró el costo del paquete en la tabla de tarifas")
-
     if previous:
+      #Obtener costo del paquete de la tabla de tarifas
+      costo = 0
+      if previous.name_service:
+        pricelist_id = pricelist_obj.search([('product_id','=',previous.name_service.id)], limit=1)
+        if pricelist_id:
+          costo = pricelist_id.fixed_price
+        elif costo == 0:
+          raise ValidationError("El paquete tiene asignado un costo 0")
+        else:
+          raise ValidationError("No se encontró el costo del paquete en la tabla de tarifas")
+      else:
+          raise ValidationError("El contrato no tiene un paquete asignado")
+
       journal_id = account_obj.with_context(
         default_type='out_invoice')._get_default_journal()
       currency_id = account_obj.with_context(
