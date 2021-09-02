@@ -564,21 +564,21 @@ class PABSContracts(models.Model):
           else:
             rec.payment_amount = pricelist_id.payment_amount * 4
 
-  #Se cambia cálculo de costo. Pasa de ser buscado en la tabla de tarifas a ser la suma de los montos de las facturas
+  #Se cambia el cálculo del costo. Ahora es la suma de las facturas, de no exister será el costo asignado en la tabla de tarifas.
   def calc_price(self):
     for rec in self:
       invoice_ids = self.env['account.move'].search([('contract_id','=',rec.id), ('type','=','out_invoice'), ('state','=','posted')])
-      if not invoice_ids:
-        raise ValidationError("No se puede mostrar el costo porque no se encontraron las facturas del contrato")
-      else:
+      if len(invoice_ids) > 0:
         self.product_price = sum(invoice_ids.mapped('amount_total'))
-    # pricelist_obj = self.env['product.pricelist.item']
-    # for rec in self:
-    #   if rec.name_service:
-    #     pricelist_id = pricelist_obj.search([
-    #       ('product_id','=',rec.name_service.id)], limit=1)
-    #     if pricelist_id:
-    #       self.product_price = pricelist_id.fixed_price
+      else:
+        if rec.name_service:
+          pricelist_id = self.env['product.pricelist.item'].search([('product_id','=',rec.name_service.id)], limit=1)
+          if pricelist_id:
+            self.product_price = pricelist_id.fixed_price
+          else:
+            raise ValidationError("calc_price: No se encontró la tarifa del producto")
+        else:
+            raise ValidationError("calc_price: No se encontró el producto del contrato")
       
   @api.onchange('lot_id')
   def calc_employee(self):
