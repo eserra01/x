@@ -12,7 +12,7 @@ class ActivationWeb(http.Controller):
   @http.route('/main/activation', auth="user", type="http")
   def get_main_page(self):
     company_obj = request.env['res.company'].sudo()
-    company_ids = company_obj.search([])
+    company_ids = company_obj.search([('company_id','not in','(9,10)')])
     values = []
     for company_id in company_ids:
       values.append('<option value="{}">{}</option>'.format(company_id.id, company_id.name))
