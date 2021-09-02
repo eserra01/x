@@ -572,7 +572,7 @@ class PABSContracts(models.Model):
       if not invoice_ids:
         raise ValidationError("No se puede mostrar el costo porque no se encontraron las facturas del contrato")
       else:
-        return sum(invoice_ids.mapped('amount_total'))
+        self.product_price = sum(invoice_ids.mapped('amount_total'))
     # pricelist_obj = self.env['product.pricelist.item']
     # for rec in self:
     #   if rec.name_service:
