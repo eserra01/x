@@ -234,7 +234,7 @@ class PABSContracts(models.Model):
     invoice_obj = self.env['account.move']
     for rec in self:
       #Obtener facturas del contrato
-      invoice_ids = invoice_obj.search([('type','=','out_invoice'),('contract_id','=',rec.id)])
+      invoice_ids = invoice_obj.search([('type','=','out_invoice'),('contract_id','=',rec.id),('state','=','posted')])
       Costo = sum(invoice_ids.mapped('amount_total'))
       Abonado = sum(invoice_ids.mapped('amount_residual'))
       rec.paid_balance = Costo - Abonado
@@ -286,7 +286,7 @@ class PABSContracts(models.Model):
   def _calc_balance(self):
     invoice_obj = self.env['account.move']
     for rec in self:
-      invoice_ids = invoice_obj.search([('type','=','out_invoice'),('contract_id','=',rec.id)])
+      invoice_ids = invoice_obj.search([('type','=','out_invoice'),('contract_id','=',rec.id),('state','=','posted')])
       result = sum(invoice_ids.mapped('amount_residual'))
       rec.balance = result
 
@@ -564,15 +564,22 @@ class PABSContracts(models.Model):
           else:
             rec.payment_amount = pricelist_id.payment_amount * 4
 
+  #Se cambia cálculo de costo. Pasa de ser buscado en la tabla de tarifas a ser la suma de los montos de las facturas
   @api.onchange('product_id')
   def calc_price(self):
-    pricelist_obj = self.env['product.pricelist.item']
     for rec in self:
-      if rec.name_service:
-        pricelist_id = pricelist_obj.search([
-          ('product_id','=',rec.name_service.id)], limit=1)
-        if pricelist_id:
-          self.product_price = pricelist_id.fixed_price
+      invoice_ids = self.env['account.move'].search([('contract_id','=',rec.id), ('type','=','out_invoice'), ('state','=','posted')])
+      if not invoice_ids:
+        raise ValidationError("No se puede mostrar el costo porque no se encontraron las facturas del contrato")
+      else:
+        return sum(invoice_ids.mapped('amount_total'))
+    # pricelist_obj = self.env['product.pricelist.item']
+    # for rec in self:
+    #   if rec.name_service:
+    #     pricelist_id = pricelist_obj.search([
+    #       ('product_id','=',rec.name_service.id)], limit=1)
+    #     if pricelist_id:
+    #       self.product_price = pricelist_id.fixed_price
       
   @api.onchange('lot_id')
   def calc_employee(self):
@@ -718,6 +725,18 @@ class PABSContracts(models.Model):
     account_line_obj = self.env['account.move.line'].with_context(check_move_validity=False)
     sequence_obj = self.env['ir.sequence']
     pricelist_obj = self.env['product.pricelist.item']
+
+    #Obtener costo del paquete de la tabla de tarifas
+    costo = 0
+    if self.name_service:
+      pricelist_id = pricelist_obj.search([('product_id','=',self.name_service.id)], limit=1)
+      if pricelist_id:
+        costo = pricelist_id.fixed_price
+      elif costo == 0:
+        raise ValidationError("No se puede crear el paquete porque tiene asignado un costo 0")
+      else:
+        raise ValidationError("No se encontró el costo del paquete en la tabla de tarifas")
+
     if previous:
       journal_id = account_obj.with_context(
         default_type='out_invoice')._get_default_journal()
@@ -746,8 +765,8 @@ class PABSContracts(models.Model):
           'move_id' : invoice_id.id,
           'account_id' : account_id.id,
           'quantity' : 1,
-          'price_unit' : previous.product_price,
-          'credit' : previous.product_price,
+          'price_unit' : costo,
+          'credit' : costo,
           'product_uom_id' : product_id.uom_id.id,
           'partner_id' : previous.partner_id.id,
           'amount_currency' : 0,
@@ -768,8 +787,8 @@ class PABSContracts(models.Model):
           'tax_exigible' : False,
           'is_rounding_line' : False,
           'exclude_from_invoice_tab' : True,
-          #'price_unit' : (previous.product_price * -1),
-          'debit' : previous.product_price,
+          #'price_unit' : (costo * -1),
+          'debit' : costo,
         }
         account_line_obj.create(partner_line_data)
         invoice_id.action_post()
