@@ -569,8 +569,7 @@ class PABSContracts(models.Model):
     for rec in self:
       invoice_ids = rec.refund_ids.filtered(lambda r: r.type == 'out_invoice')
       invoice_ids = invoice_ids.filtered(lambda r: r.state == 'posted')
-      raise ValidationError("facturas: {}".format(invoice_ids))
-      if invoice_ids:
+      if len(invoice_ids) > 0:
         self.product_price = sum(invoice_ids.mapped('amount_total'))
       else:
         if rec.name_service:
