@@ -34,7 +34,7 @@
                                     <t t-set="entregadas" t-value="len(doc.move_ids_without_package)"/>
                                     <t t-foreach="doc.move_ids_without_package" t-as="result">
                                         <tr>
-                                            <td style="border: 1px solid black;"><span t-esc="result.description_picking"/></td>
+                                            <td style="border: 1px solid black;"><span t-esc="result.product_id.name"/></td>
                                             <td style="border: 1px solid black;"><span t-esc="result.series"/></td>
                                         </tr>
                                     </t>
