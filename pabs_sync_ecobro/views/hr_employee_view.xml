@@ -5,9 +5,13 @@
     <field name="model">hr.employee</field>
     <field name="inherit_id" ref="pabs_custom.pabs_hr_employee_form_view"/>
     <field name="arch" type="xml">
-      <xpath expr="//header" position="inside">
+      <!-- <xpath expr="//header" position="inside">
         <field name="ecobro_id" invisible="1"/>
-      </xpath>
+      </xpath> -->
+
+      <xpath expr="//field[@name='job_id']" position="replace">
+        <field name="ecobro_id" groups="pabs_custom.admin_profile"/>
+       </xpath>
     </field>
   </record>
 </odoo>
