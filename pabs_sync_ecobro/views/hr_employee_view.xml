@@ -9,7 +9,7 @@
         <field name="ecobro_id" invisible="1"/>
       </xpath> -->
 
-      <xpath expr="//field[@name='job_id']" position="replace">
+      <xpath expr="//field[@name='job_id']" position="before">
         <field name="ecobro_id" groups="pabs_custom.admin_profile"/>
        </xpath>
     </field>
