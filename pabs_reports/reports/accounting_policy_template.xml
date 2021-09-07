@@ -50,8 +50,6 @@
         <h3>
           Póliza: <span t-esc="doc.name_get()[0][1]"/>
         </h3>
-      </p>
-      <div class="row">
         <div class="column">
           <strong>
             Fecha Contable:
@@ -69,7 +67,11 @@
           </strong>
           <span t-esc="doc.journal_id.name_get()[0][1]"/>
         </div>
+      </p>
+
+      <div class="row">
       </div>
+      
       <table width="100%">
         <thead>
           <tr>
