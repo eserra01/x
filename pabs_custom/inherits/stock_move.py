@@ -178,8 +178,7 @@ class StockMove(models.Model):
     if not lot_id:
       raise ValidationError((
         'No se encontro la solicitud {} en el sistema'.format(serie)))
-    quant_id = quant_obj.search([
-      ('lot_id','=',lot_id.id),('company_id','=',self.company_id.id)],limit=1,order="id desc")
+    quant_id = quant_obj.search([('lot_id','=',lot_id.id),('company_id','=',self.company_id.id),('quantity','=',1)],limit=1,order="id desc")
     if location_id != quant_id.location_id:
       raise ValidationError((
         'La solicitud {} no se encuentra en el almacén indicado, se encuentra en {}\n favor de verificarlo'.format(
@@ -261,7 +260,7 @@ class StockMove(models.Model):
     self.delete()
     for rec in self:
       series_start = ''
-      if rec.picking_id.type_transfer == 'ac-ov':
+      if rec.picking_id.type_transfer in ('ac-ov','ov-ac'):
         if rec.series_start:
           series_start = rec.series_start
         else:
@@ -442,7 +441,7 @@ class StockMove(models.Model):
             ### PONE LA SOLICITUD EN EL ALMACÉN DE LA TRANSFERENCIA
             lot_id.warehouse_id = warehouse_id.id
         res.state = 'assigned'
-      if picking_id.type_transfer == 'ac-ov':
+      if picking_id.type_transfer in ('ac-ov','ov-ac'):
         ### VALIDAR TODOS LOS NÚMEROS DE SERIE
         caught_initial_number = regex_findall("\d+", res.series_start)
         initial_number = caught_initial_number[-1]
