@@ -71,7 +71,7 @@ class account_Payment(models.Model):
       res = super(account_Payment, self).post()
       context = self._context
       IdPago = self.id
-      if self.contract:
+      if self.contract and self.contract.company_id.id != 9:
         if self.reference in ('payment','stationary','surplus'):
           CodigoCobrador = self.debt_collector_code.barcode
           NumeroContrato = self.contract.id
@@ -119,7 +119,7 @@ class account_Payment(models.Model):
       self.disassociate_payment()
       res = super(account_Payment, self).cancel()
       IdPago = self.id
-      if self.contract and self.comission_output_ids:
+      if self.contract and self.comission_output_ids and self.contract.company_id.id != 9:
         NumeroContrato = self.contract.id
         comission_tree_obj.RevertirSalidas(
           IdPago=IdPago,NumeroContrato=NumeroContrato)
