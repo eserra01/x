@@ -784,6 +784,8 @@ class PABSContracts(models.Model):
           'exclude_from_invoice_tab' : False,
           'name' : product_id.description_sale or product_id.name,
         }
+
+        raise ValidationError("{}".format(line_data))
         account_line_obj.create(line_data)
 
         partner_line_data = {
