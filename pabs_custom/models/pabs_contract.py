@@ -902,10 +902,18 @@ class PABSContracts(models.Model):
 
           #Asignar asistente de venta PRODUCCION
           vals['sale_employee_id'] = previous.employee_id
-          raise ValidationError('{}'.format(vals['invoice_date']))
-          self.validate_date(vals['invoice_date'])
 
+          #Validar fecha de creación
+          fecha_creacion = 0
+          if vals.get('invoice_date'):
+            fecha_creacion = vals.get('invoice_date')
+          else:
+            fecha_creacion = previous.invoice_date
+          self.validate_date(str(fecha_creacion))
+
+          #Actualizar campos asignados hasta el momento
           previous.write(vals)
+
           invoice_id = self.create_invoice(previous)
           account_id = invoice_id.partner_id.property_account_receivable_id.id
           journal_id = account_obj.with_context(
