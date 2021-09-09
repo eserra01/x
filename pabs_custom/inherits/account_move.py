@@ -20,9 +20,8 @@ class AcccountMove(models.Model):
     if context.get('investment_bond') or (self.type in ('out_refund','entry') and self.contract_id):
       NumeroContrato = self.contract_id.id,
       MontoPago = self.amount_total
-      comission_tree_obj.CrearSalidasEnganche(
-        IdPago=self.id, NumeroContrato=NumeroContrato,
-        MontoPago=MontoPago, TipoPago='Bono')
+      if self.contract_id.company_id != 9:
+        comission_tree_obj.CrearSalidasEnganche(IdPago=self.id, NumeroContrato=NumeroContrato, MontoPago=MontoPago, TipoPago='Bono')
     return res
 
   def action_invoice_register_payment(self):
