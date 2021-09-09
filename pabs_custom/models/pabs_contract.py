@@ -784,7 +784,6 @@ class PABSContracts(models.Model):
           'exclude_from_invoice_tab' : False,
           'name' : product_id.description_sale or product_id.name,
         }
-
         account_line_obj.create(line_data)
 
         partner_line_data = {
@@ -800,12 +799,8 @@ class PABSContracts(models.Model):
           #'price_unit' : (costo * -1),
           'debit' : costo,
         }
-
         account_line_obj.create(partner_line_data)
-
         invoice_id.action_post()
-
-        raise ValidationError("factura posteada {}".format(line_data))
         previous.allow_create = False
         if not previous.partner_id:
           raise ValidationError((
@@ -957,6 +952,9 @@ class PABSContracts(models.Model):
               'payment_method_id' : payment_method_id.id,
             }
             initial_payment_id = payment_obj.create(payment_data)
+
+            raise ValidationError("pago creado {}".format(payment_data))
+
             initial_payment_id.with_context(stationery=True).post()
             if initial_payment_id.move_line_ids:
               for obj in initial_payment_id.move_line_ids:
