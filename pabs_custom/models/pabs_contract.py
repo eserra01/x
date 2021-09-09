@@ -1048,7 +1048,7 @@ class PABSContracts(models.Model):
           previous.name = contract_name
         else:
           contract_name = previous.name
-        previous.partner_id.write({'name' : contract_name}, {'company_id' : previous.company_id.id})
+        previous.partner_id.write({'name' : contract_name, 'company_id' : previous.company_id.id})
         self.reconcile_all(reconcile)
     except Exception as e:
       self._cr.rollback()
