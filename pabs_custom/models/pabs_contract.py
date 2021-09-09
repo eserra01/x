@@ -902,6 +902,7 @@ class PABSContracts(models.Model):
 
           #Asignar asistente de venta PRODUCCION
           vals['sale_employee_id'] = previous.employee_id
+          raise ValidationError('{}'.format(vals['invoice_date']))
           self.validate_date(vals['invoice_date'])
 
           previous.write(vals)
