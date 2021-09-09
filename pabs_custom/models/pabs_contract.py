@@ -786,7 +786,6 @@ class PABSContracts(models.Model):
         }
 
         account_line_obj.create(line_data)
-        raise ValidationError("creada linea de credito factura{}".format(line_data))
 
         partner_line_data = {
           'move_id' : invoice_id.id,
@@ -801,7 +800,11 @@ class PABSContracts(models.Model):
           #'price_unit' : (costo * -1),
           'debit' : costo,
         }
+
         account_line_obj.create(partner_line_data)
+
+        raise ValidationError("creada linea de debito factura{}".format(line_data))
+
         invoice_id.action_post()
         previous.allow_create = False
         if not previous.partner_id:
