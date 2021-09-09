@@ -1035,9 +1035,8 @@ class PABSContracts(models.Model):
                 'exclude_from_invoice_tab' : False,
                 'name' : product_id.description_sale or product_id.name,
               }
-              raise ValidationError("nota: linea de debito creada {}".format(line_data))
-              line = account_line_obj.create(line_data)
 
+              line = account_line_obj.create(line_data)
 
               ### CONTRAPARTIDA DEL DOCUMENTO
               partner_line_data = {
