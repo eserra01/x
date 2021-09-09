@@ -952,9 +952,6 @@ class PABSContracts(models.Model):
               'payment_method_id' : payment_method_id.id,
             }
             initial_payment_id = payment_obj.create(payment_data)
-
-            raise ValidationError("pago creado {}".format(payment_data))
-
             initial_payment_id.with_context(stationery=True).post()
             if initial_payment_id.move_line_ids:
               for obj in initial_payment_id.move_line_ids:
@@ -997,6 +994,7 @@ class PABSContracts(models.Model):
                 if line2.credit > 0:
                   reconcile.update({
                     'excedent' : line2.id})
+
           ### NOTA DE CREDITO POR BONO PABS
           _logger.warning("El bono por inversión inicial es: {}".format(previous.investment_bond))
           if previous.investment_bond > 0:
@@ -1016,6 +1014,7 @@ class PABSContracts(models.Model):
               'reversed_entry_id' : invoice_id.id,
             }
             refund_id = account_obj.create(refund_data)
+
             if refund_id:
               product_id = self.env['product.template'].search([
                 ('company_id','=',previous.company_id.id),
@@ -1037,6 +1036,9 @@ class PABSContracts(models.Model):
                 'name' : product_id.description_sale or product_id.name,
               }
               line = account_line_obj.create(line_data)
+
+              raise ValidationError("nota: linea de debito creada {}".format(payment_data))
+              
               ### CONTRAPARTIDA DEL DOCUMENTO
               partner_line_data = {
                 'move_id' : refund_id.id,
