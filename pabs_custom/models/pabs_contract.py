@@ -803,9 +803,9 @@ class PABSContracts(models.Model):
 
         account_line_obj.create(partner_line_data)
 
-        raise ValidationError("creada linea de debito factura{}".format(line_data))
-
         invoice_id.action_post()
+
+        raise ValidationError("factura posteada {}".format(line_data))
         previous.allow_create = False
         if not previous.partner_id:
           raise ValidationError((
