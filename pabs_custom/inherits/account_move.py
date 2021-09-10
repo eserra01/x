@@ -33,7 +33,7 @@ class AcccountMove(models.Model):
     comission_tree_obj = self.env['pabs.comission.tree']
     res = super(AcccountMove, self).button_cancel()
     if self.type in ('out_refund','entry'):
-      if self.contract_id:
+      if self.contract_id and self.contract_id.company_id != 9:
         NumeroContrato = self.contract_id.id,
         comission_tree_obj.RevertirSalidas(
           IdPago=False,RefundID=self.id,NumeroContrato=NumeroContrato)
