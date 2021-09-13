@@ -1331,12 +1331,11 @@ class PABSContracts(models.Model):
       rec.days_without_payment = days
       return days
 
-  def create_contracts(self):
-    _logger.warning('El contrato')
+  def create_contracts(self, cantidad):
     contract_obj = self.env['pabs.contract']
-    contract_ids = contract_obj.search([
-      ('state','=','precontract')],limit=10,order="name")
+    contract_ids = contract_obj.search([('state','=','precontract')], limit=cantidad, order="name")
+    _logger.warning('Contratos a crear: {}'.format(len(contract_ids)))
     for contract_id in contract_ids:
       lot_id = contract_id.lot_id.id
-      _logger.warning('El contrato {}'.format(lot_id))
+      _logger.warning('Siguiente solicitud: {}'.format(lot_id))
       self.create_contract(vals={'lot_id' : lot_id})
