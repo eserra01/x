@@ -894,10 +894,10 @@ class PABSContracts(models.Model):
               ('plan_id', '=', pricelist_id.id),
               ('job_id', '=', job_id)])
 
-            if not comission_template:
+            if not comission_template and previous.company_id.id != 9:
               raise ValidationError("No se encontró la plantilla de comisiones del asistente")
 
-            if comission_template.comission_amount <= 0:
+            if comission_template.comission_amount <= 0 and previous.company_id.id != 9:
               raise ValidationError(("El A.S {} tiene asignado ${} en su plantilla de comisiones. Debe asignarle un monto mayor a cero".format(comission_template.comission_agent_id.name, comission_template.comission_amount)))
           ### TERMINA VALIDACION COMISIONES
 
