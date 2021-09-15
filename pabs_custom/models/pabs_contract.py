@@ -924,19 +924,19 @@ class PABSContracts(models.Model):
           for line in invoice_id.line_ids:
             if line.debit > 0:
               reconcile.update({'debit_move_id' : line.id})     
+
+          #Buscar diario de efectivo
+          cash_journal_id = journal_obj.search([('type','=','cash'), ('name','=','EFECTIVO')],limit=1)
+          if not cash_journal_id:
+            raise ValidationError("No se encontró ningun diario de efectivo")
+
+          #Buscar método de pago
+          payment_method_id = payment_method_obj.search([('payment_type','=','inbound'),('code','=','manual')],limit=1)
+          if not payment_method_id:
+            raise ValidationError("No se encontró el método de pago, favor de comunicarse con sistemas")
+
           ### CREANDO PAGO POR INVERSIÓN INICIAL
           if previous.stationery:
-            cash_journal_id = journal_obj.search([
-              ('type','=','cash')],limit=1)
-            if not cash_journal_id:
-              raise ValidationError((
-                "No se encontró ningun diario de efectivo"))
-            payment_method_id = payment_method_obj.search([
-              ('payment_type','=','inbound'),
-              ('code','=','manual')],limit=1)
-            if not payment_method_id:
-              raise ValidationError((
-                "No se encontró el método de pago, favor de comunicarse con sistemas"))
             payment_data = {
               'payment_reference' : 'Inversión inicial',
               'reference' : 'stationary',
@@ -962,17 +962,6 @@ class PABSContracts(models.Model):
 
           ### CREANDO PAGO POR EXCEDENTE
           if previous.excedent:
-            cash_journal_id = journal_obj.search([
-              ('type','=','cash')],limit=1)
-            if not cash_journal_id:
-              raise ValidationError((
-                "No se encontró ningun diario de efectivo"))
-            payment_method_id = payment_method_obj.search([
-              ('payment_type','=','inbound'),
-              ('code','=','manual')],limit=1)
-            if not payment_method_id:
-              raise ValidationError((
-                "No se encontró el método de pago, favor de comunicarse con sistemas"))
             excedent_data = {
               'payment_reference' : 'Excedente Inversión Inicial',
               'reference' : 'surplus',
@@ -1017,10 +1006,13 @@ class PABSContracts(models.Model):
             refund_id = account_obj.create(refund_data)
 
             if refund_id:
-              product_id = self.env['product.template'].search([
-                ('company_id','=',previous.company_id.id),
-                ('name','=','BONO POR INVERSION INICIAL')])
+              product_id = self.env['product.template'].search([('company_id','=',previous.company_id.id),('name','=','BONO POR INVERSION INICIAL')])
+              if not product_id:
+                raise ValidationError("No se encontró el producto BONO POR INVERSION INICIAL")
+
               account_id = product_id.property_account_income_id or product_id.categ_id.property_account_income_categ_id
+              if not account_id:
+                raise ValidationError("No se encontró la cuenta en los campos product_id.property_account_income_id o product_id.categ_id.property_account_income_categ_id")
 
               line_data = {
                 'move_id' : refund_id.id,
