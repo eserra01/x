@@ -965,3 +965,124 @@ class PABSEcobroSync(models.Model):
     query = "DELETE FROM account_payment where id in {}".format(del_ids).replace("[","(").replace("]",")")
     self._cr.execute(query)
     self._cr.commit()
+
+  # A. Cambia los contratos con saldo = 0 a estatus PAGADO
+  # B. Cambia los contratos con saldo = 0 y estatus o detalle REALIZADO POR COBRAR a estatus REALIZADO
+  # Actualiza todas las compañias
+  def mover_a_estatus_final(self):  
+    _logger.warning("Comienza proceso: Mover a estatus final")
+
+    #####     1. Buscar estatus con los que se trabajará     #####
+
+    # 1.1 Estatus PAGADO
+    obj_estatus_pagado = self.env['pabs.contract.status'].search([('status','=','PAGADO')])
+    if not obj_estatus_pagado:
+      _logger.warning("No se encontró el estatus PAGADO")
+      raise ValidationError("{}".format("No se encontró el estatus PAGADO"))
+
+    # 1.2 Estatus REALIZADO
+    obj_estatus_realizado = self.env['pabs.contract.status'].search([('status','=','REALIZADO')])
+    if not obj_estatus_realizado:
+      raise ValidationError("{}".format("No se encontró el estatus REALIZADO"))
+
+    # 1.3 Estatus ACTIVO
+    obj_estatus_activo = self.env['pabs.contract.status'].search([('status','=','ACTIVO')])
+    if not obj_estatus_activo:
+      raise ValidationError("{}".format("No se encontró el estatus ACTIVO"))
+
+    # 1.4 Motivo REALIZADO POR COBRAR del estatus ACTIVO
+    obj_realizado_por_cobrar = self.env['pabs.contract.status.reason'].search([('status_id','=',obj_estatus_activo.id), ('reason','=','REALIZADO POR COBRAR')])
+    id_realizado_por_cobrar = 0
+    if obj_realizado_por_cobrar:
+      id_realizado_por_cobrar = obj_realizado_por_cobrar.id
+
+    #####     2. Proceso para pasar contratos a pagado     #####  
+    # Criterios: Los contratos deben tener saldo 0, no estar en estatus PAGADO ni REALIZADO, no tener motivo ni detalle de servicio REALIZADO POR COBRAR
+
+    # 2.1 Buscar motivo PAGADO del estatus PAGADO
+    obj_motivo_pagado = self.env['pabs.contract.status.reason'].search([('status_id','=',obj_estatus_pagado.id), ('reason','=','PAGADO')])
+    if not obj_motivo_pagado:
+      _logger.warning("No se encontró el motivo PAGADO para el estatus PAGADO")
+      raise ValidationError("{}".format("No se encontró el motivo PAGADO para el estatus PAGADO"))
+
+    # 2.2 Buscar contratos. Nota: Se cambió a consulta sql porque obtener el saldo mediante api es lento
+    consulta = """
+      SELECT 
+        con.id, comp.name, con.name
+      FROM pabs_contract AS con
+      INNER JOIN account_move AS fac ON con.id = fac.contract_id AND fac.type = 'out_invoice' AND fac.state = 'posted'
+      INNER JOIN res_company as comp ON con.company_id = comp.id
+        WHERE con.state = 'contract'
+        AND con.contract_status_item NOT IN ({},{})
+        AND con.service_detail IN ('unrealized')
+        AND NOT (con.contract_status_reason = {})
+          GROUP BY con.id, comp.name, con.name HAVING SUM(fac.amount_residual) = 0 AND COUNT(fac.id) > 0
+            ORDER BY con.company_id, con.name
+      """.format(obj_estatus_pagado.id, obj_estatus_realizado.id, id_realizado_por_cobrar,)
+    
+    self.env.cr.execute(consulta)
+
+    # 2.3 Escribir en log los contratos a pagar y construir lista con los id de los contratos obtenidos
+    lista_id_contratos = []
+
+    for row in self.env.cr.fetchall():
+      lista_id_contratos.append(row[0])
+      #bitacora = bitacora + row[1] + " -> " + row[2] + "\n"
+
+    _logger.warning("Contratos a pagar: {}".format( len(lista_id_contratos) ))
+
+    # 2.4 Obtener contratos mediante ORM 
+    contratos_a_pagar = self.env['pabs.contract'].sudo().browse(lista_id_contratos)
+
+    # 2.5 Actualizar estatus y motivo
+    indice = 1
+    for con in contratos_a_pagar:
+      con.write({'contract_status_item': obj_estatus_pagado.id, 'contract_status_reason': obj_motivo_pagado.id})
+      _logger.warning("{}. Contrato pagado: {} -> {}".format(indice, con.company_id.name, con.name))
+      indice = indice + 1
+    
+    #####     3. Proceso para pasar contratos a realizado     #####  
+    # Los contratos deben tener saldo 0, tener motivo o detalle de servicio REALIZADO POR COBRAR
+
+    # 3.1 Buscar motivo REALIZADO del estatus REALIZADO
+    obj_motivo_realizado = self.env['pabs.contract.status.reason'].search([('status_id','=',obj_estatus_realizado.id), ('reason','=','REALIZADO')])
+    if not obj_motivo_realizado:
+      _logger.warning("No se encontró el motivo REALIZADO para el estatus REALIZADO")
+      raise ValidationError("{}".format("No se encontró el motivo REALIZADO para el estatus REALIZADO"))
+
+    # 3.2 Buscar contratos. Nota: Se cambió a consulta sql porque obtener el saldo mediante api es lento
+    consulta = """
+      SELECT 
+        con.id, comp.name, con.name
+      FROM pabs_contract AS con
+      INNER JOIN account_move AS fac ON con.id = fac.contract_id AND fac.type = 'out_invoice' AND fac.state = 'posted'
+      INNER JOIN res_company as comp ON con.company_id = comp.id
+        WHERE con.state = 'contract'
+        AND con.contract_status_item NOT IN ({},{})
+        AND (con.contract_status_reason = {} OR con.service_detail IN ('made_receivable', 'realized') )
+          GROUP BY con.id, comp.name, con.name HAVING SUM(fac.amount_residual) = 0 AND COUNT(fac.id) > 0
+            ORDER BY con.company_id, con.name
+      """.format(obj_estatus_pagado.id, obj_estatus_realizado.id, id_realizado_por_cobrar)
+
+    self.env.cr.execute(consulta)
+
+    # 3.3 Escribir en log los contratos a realizar y construir lista con los id de los contratos obtenidos
+    lista_id_contratos = []
+
+    for row in self.env.cr.fetchall():
+      lista_id_contratos.append(row[0])
+      #bitacora = bitacora + row[1] + " -> " + row[2] + "\n"
+
+    _logger.warning("Contratos a realizar: {}".format( len(lista_id_contratos) ))
+
+    # 3.4 Obtener contratos mediante ORM
+    contratos_a_realizar = self.env['pabs.contract'].sudo().browse(lista_id_contratos)
+
+    # 3.5 Actualizar estatus, motivo y detalle de servicio
+    indice = 1
+    for con in contratos_a_realizar:
+      con.write({'contract_status_item': obj_estatus_realizado.id, 'contract_status_reason': obj_motivo_realizado.id, 'service_detail' : 'realized'})
+      _logger.warning("{}. Contrato realizado: {} -> {}".format(indice, con.company_id.name, con.name))
+      indice = indice + 1
+
+    _logger.warning("Se terminó proceso Mover contratos a estatus final")
