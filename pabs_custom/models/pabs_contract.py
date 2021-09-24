@@ -37,6 +37,7 @@ SERVICE = [
   ('realized','Realizado'),
   ('made_receivable','Realizado por cobrar')]
 
+#limit-time-real=2000
 class PABSContracts(models.Model):
   _name = 'pabs.contract'
   _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
