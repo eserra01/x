@@ -402,6 +402,16 @@ class Mortuary(models.Model):
         readonly=True,
         related='company_id.currency_id')
 
+    id_contrato = fields.Many2one(comodel_name="pabs.contract", string="Contrato PABS")
+
+    # Al seleccionar un contrato por ID actualiza los campos "numero de contrato" y "nombre de titular"
+    @api.onchange('id_contrato')
+    def _onchange_tc_no_contrato(self):
+        for rec in self:
+            if rec.id_contrato:
+                rec.tc_no_contrato = rec.id_contrato.name
+                rec.tc_nomb_titular = rec.id_contrato.full_name
+
     def _calc_balance(self):
         move_obj = self.env['account.move']
         for rec in self:

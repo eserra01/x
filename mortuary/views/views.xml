@@ -71,6 +71,18 @@
                 </div>
               </button>
             </div>
+
+            <group string="Información necesaria para facturar" attrs="{'invisible' : [('company_id','in',(1,6))]}">
+              <field name="company_id" invisible="1"/>
+              <field name="ii_fecha_creacion"/>
+              <field name="name"/>
+              <field name="ii_finado"/>
+              <field name="ds_tipo_de_servicio"/>
+              <field name="id_contrato" attrs="{'required' : [('ds_tipo_de_servicio', '=', 1)]}" options="{'no_quick_create':True}"/>
+              <field name="ds_sucursal_de_velacion" options="{'no_quick_create':True}"/>
+              <field name="ii_servicio_2" options="{'no_quick_create':True}"/>
+            </group>
+
             <group>
               <group string="Información inicial" priority="1">
                 <div class="o_row">
@@ -233,7 +245,8 @@
                   />
               </group>
               <group string="Titular de contrato" priority="5">
-                <field name="tc_no_contrato" />
+                <field name="id_contrato" attrs="{'required' : [('ds_tipo_de_servicio', '=', 1)]}" options="{'no_quick_create':True}"/>
+                <field name="tc_no_contrato" invisible="1"/>
                 <field name="tc_nomb_titular" />
               </group>
               </group>
