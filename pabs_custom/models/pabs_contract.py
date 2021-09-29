@@ -222,23 +222,44 @@ class PABSContracts(models.Model):
     for rec in self:
       rec.contract_status_reason = None
 
-  def _calc_balance(self):
-    invoice_obj = self.env['account.move']
+  # Costo: Es la suma de las facturas, de no existir facturas será el costo del plan registrado en la tabla de tarifas.
+  def calc_price(self):
     for rec in self:
-      invoice_ids = rec.refund_ids.filtered(lambda r: r.type == 'out_invoice')
-      invoice_ids = invoice_ids.filtered(lambda r: r.state == 'posted')
-      result = sum(invoice_ids.mapped('amount_residual'))
-      rec.balance = result
+      invoice_ids = rec.refund_ids.filtered(lambda r: r.type == 'out_invoice' and r.state == 'posted')
+      if len(invoice_ids) > 0:
+        rec.product_price = sum(invoice_ids.mapped('amount_total'))
+      else:
+        if rec.name_service:
+          pricelist_id = self.env['product.pricelist.item'].search([('product_id','=',rec.name_service.id)], limit=1)
+          if pricelist_id:
+            rec.product_price = pricelist_id.fixed_price
+          else:
+            raise ValidationError("No se encontró la tarifa del producto")
+        else:
+            raise ValidationError("No se encontró el producto del contrato")
 
-  #Abonado = Costo - Saldo
-  def _calc_paid_balance(self):
-    invoice_obj = self.env['account.move']
+  # Saldo: Es la suma del monto pendiente de las facturas mas el monto entregado por traspasos
+  def _calc_balance(self):
     for rec in self:
-      #Obtener facturas del contrato
-      invoice_ids = invoice_obj.search([('type','=','out_invoice'),('contract_id','=',rec.id),('state','=','posted')])
-      Costo = sum(invoice_ids.mapped('amount_total'))
-      Abonado = sum(invoice_ids.mapped('amount_residual'))
-      rec.paid_balance = Costo - Abonado
+      
+      saldo = 99999
+
+      # Sumar el monto restante de las facturas
+      facturas = rec.refund_ids.filtered(lambda x: x.type == 'out_invoice' and x.state == 'posted')
+      if len(facturas) > 0:
+        saldo = sum(facturas.mapped('amount_residual'))
+      
+      # Aumentar el monto entregado por traspasos
+      traspasos = rec.transfer_balance_ids.filtered(lambda x: x.move_id.state == 'posted')
+      if len(traspasos) > 0:
+        saldo = saldo + sum(traspasos.mapped('debit'))
+
+      rec.balance = saldo
+
+  # Abonado = Costo - Saldo
+  def _calc_paid_balance(self):
+    for rec in self:
+      rec.paid_balance = rec.product_price - rec.balance
 
   @api.onchange('partner_name','partner_fname','partner_mname')
   def calc_full_name(self):
@@ -281,15 +302,6 @@ class PABSContracts(models.Model):
       self.lot_id = search.lot_id.id
     else:
       self.lot_id = False
-
-
-  #Obtiene el saldo del contrato sumando el monto pendiente de las facturas
-  def _calc_balance(self):
-    invoice_obj = self.env['account.move']
-    for rec in self:
-      invoice_ids = invoice_obj.search([('type','=','out_invoice'),('contract_id','=',rec.id),('state','=','posted')])
-      result = sum(invoice_ids.mapped('amount_residual'))
-      rec.balance = result
 
   @api.onchange('invoice_date')
   def calc_first_payment(self):
@@ -564,30 +576,6 @@ class PABSContracts(models.Model):
             rec.payment_amount = pricelist_id.payment_amount * 2
           else:
             rec.payment_amount = pricelist_id.payment_amount * 4
-
-  #Se cambia el cálculo del costo. Ahora es la suma de las facturas, de no exister será el costo asignado en la tabla de tarifas.
-  def calc_price(self):
-    for rec in self:
-      invoice_ids = rec.refund_ids.filtered(lambda r: r.type == 'out_invoice')
-      invoice_ids = invoice_ids.filtered(lambda r: r.state == 'posted')
-      if len(invoice_ids) > 0:
-        self.product_price = sum(invoice_ids.mapped('amount_total'))
-      else:
-        if rec.name_service:
-          pricelist_id = self.env['product.pricelist.item'].search([('product_id','=',rec.name_service.id)], limit=1)
-          if pricelist_id:
-            self.product_price = pricelist_id.fixed_price
-          else:
-            raise ValidationError("calc_price: No se encontró la tarifa del producto")
-        else:
-            raise ValidationError("calc_price: No se encontró el producto del contrato")
-    # pricelist_obj = self.env['product.pricelist.item']
-    # for rec in self:
-    #   if rec.name_service:
-    #     pricelist_id = pricelist_obj.search([
-    #       ('product_id','=',rec.name_service.id)], limit=1)
-    #     if pricelist_id:
-    #       self.product_price = pricelist_id.fixed_price
       
   @api.onchange('lot_id')
   def calc_employee(self):
