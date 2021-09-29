@@ -6,9 +6,15 @@
     <field name="model">account.move</field>
     <field name="inherit_id" ref="account.view_move_form"/>
     <field name="arch" type="xml">
-      <xpath expr="//header" position="inside">
+
+      <!-- <xpath expr="//header" position="inside">
         <field name="bitacora_id" invisible="1"/>
-      </xpath>
+      </xpath> -->
+
+      <xpath expr="//field[@name='contract_id']" position="after">
+        <field name="recibo" attrs="{'invisible': [('type','!=','out_refund')]}"/>
+       </xpath>
+
     </field>
   </record>
 

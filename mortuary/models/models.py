@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import pytz
@@ -749,6 +749,221 @@ class Mortuary(models.Model):
                             'service_detail' : 'realized',
                         })
         return super(Mortuary, self).write(vals)
+
+    ########################################################################################################################
+    ########################################        CREAR NOTA A BITÁCORA           ########################################
+    ########################################################################################################################
+    def crear_nota_a_bitacora(self, facturas, cliente, recibo):
+
+        company_id = recibo['company_id']
+        numero_bitacora = recibo['bitacora']
+        recibo_serie_numero = recibo['numero_de_recibo']
+        monto_recibo = recibo['monto']
+        fecha_oficina = recibo['fecha_oficina']
+
+        reconciliacion = {}
+
+        # Buscar que no exista una nota previa
+        existe_nota = self.env['account.move'].search([
+            ('type','=','out_refund'), 
+            ('state','=', 'posted'), 
+            ('recibo','=',recibo_serie_numero), 
+            ('company_id','=',company_id)
+        ])
+
+        if len(existe_nota) > 0:
+            raise ValidationError("Ya existe(n) {} nota(s) con el recibo {}".format(len(existe_nota), recibo_serie_numero))
+
+        if not cliente:
+            raise ValidationError("No se encontró una cliente con el nombre {}".format(numero_bitacora))
+
+        if not facturas:
+            raise ValidationError("No se encontró ninguna factura para la bitácora".format(numero_bitacora))
+
+        # Calcular el saldo restante
+        saldo = 0
+        for fac in facturas:
+            saldo = saldo + float(fac.amount_residual)
+
+        if saldo < monto_recibo:
+            raise ValidationError("El monto del recibo {} es mayor que el saldo de la bitácora {}".format(recibo_serie_numero, numero_bitacora))
+        
+        # Obtener la linea de la factura a afectar. Debe tener débito mayor a cero
+        
+        if len(facturas) >= 1:
+            factura_seleccionada = facturas[0]
+            for fac in facturas:
+                linea = fac.line_ids.filtered(lambda x: x.debit > 0)[0]
+                reconciliacion.update({'factura' : linea.id})
+
+        if monto_recibo > 0:
+            account_obj = self.env['account.move']
+
+            #Buscar datos contables necesarios (diario, moneda y producto)
+            diario = self.env['account.journal'].search([('name','ilike','ventas'), ('company_id', '=', company_id)]) #Diario de VENTAS
+            if not diario:
+                raise ValidationError("No se encontró el diario para notas: ventas")
+            if len(diario) > 1:
+                raise ValidationError("Se encontró más de un diario con el nombre: ventas")
+
+            moneda = account_obj.with_context(default_type='out_invoice')._get_default_currency()
+            if not moneda:
+                raise ValidationError("No se encontró la moneda por defecto para notas")
+
+            producto = self.env['product.template'].search([('name','=','ABONOS A CONTRATOS PABS'), ('company_id', '=', company_id)])
+            if not producto:
+                raise ValidationError("No se encontró el producto ABONOS A CONTRATOS PABS")
+            if not (producto.property_account_income_id.id or producto.categ_id.property_account_income_categ_id.id):
+                raise ValidationError("No se encontró la cuenta para el producto ABONOS A CONTRATOS PABS")
+            
+            cuenta_analitica = self.env['account.analytic.account'].search([('name','=','2001 Funeraria - Administración'), ('company_id', '=', company_id)])
+            if not cuenta_analitica:
+                raise ValidationError("No se encontró la cuenta analítica 2001 Funeraria - Administración")
+
+            try:
+
+                account_line_obj = self.env['account.move.line'].with_context(check_move_validity=False)
+
+                # Llenar datos de encabezado
+                datos_de_encabezado = {
+                'date' : date.today(),
+                'commercial_partner_id' : cliente.id,
+                'partner_id' : cliente.id,
+                'ref' : 'Nota a bitacora, abono: {}'.format(recibo_serie_numero),
+                'type' : 'out_refund',
+                'journal_id' : diario.id,
+                'state' : 'draft',
+                'currency_id' : moneda.id,
+                'invoice_date' : fecha_oficina,
+                'auto_post' : False,
+                'invoice_user_id' : self.env.user.id,
+                'reversed_entry_id' : factura_seleccionada.id,
+                'recibo' : recibo_serie_numero
+                }
+
+                nota = account_obj.create(datos_de_encabezado)
+
+                if nota:
+                    # Llenar datos de linea de débito
+                    datos_de_debito = {
+                        'move_id' : nota.id,
+                        'account_id' : producto.property_account_income_id.id or producto.categ_id.property_account_income_categ_id.id,
+                        'quantity' : 1,
+                        'price_unit' : monto_recibo,
+                        'debit' : monto_recibo,
+                        'product_uom_id' : producto.uom_id.id,
+                        'partner_id' : cliente.id,
+                        'amount_currency' : 0,
+                        'product_id' : producto.id,
+                        'is_rounding_line' : False,
+                        'exclude_from_invoice_tab' : False,
+                        'name' : producto.description_sale or producto.name,
+                        'analytic_account_id' : cuenta_analitica.id
+                    }
+
+                    linea_de_debito = account_line_obj.create(datos_de_debito)
+
+                    # Llenar datos de linea de crédito
+                    datos_de_credito = {
+                        'move_id' : nota.id,
+                        'account_id' : cliente.property_account_receivable_id.id,
+                        'quantity' : 1,
+                        'date_maturity' : date.today(),
+                        'amount_currency' : 0,
+                        'partner_id' : cliente.id,
+                        'tax_exigible' : False,
+                        'is_rounding_line' : False,
+                        'exclude_from_invoice_tab' : True,
+                        'credit' : monto_recibo,
+                    }
+
+                    linea_de_credito = account_line_obj.create(datos_de_credito)
+                    reconciliacion.update({'nota' : linea_de_credito.id})
+                    
+                    # Validar nota
+                    nota.contract_id = False #imporante: Se coloca nota.contract_id = FALSE para evitar que la valicadión genere salida de comisiones en el contrato
+                    nota.action_post()
+                    
+                    # Conciliar nota con factura
+                    if reconciliacion.get('factura'):
+                        if reconciliacion.get('nota'):
+                            linea = account_line_obj.browse(reconciliacion.get('nota'))
+                            data = {
+                                'debit_move_id' : reconciliacion.get('factura'),
+                                'credit_move_id' : reconciliacion.get('nota'),
+                                'amount' : abs(linea.balance)
+                            }
+                            self.env['account.partial.reconcile'].create(data)
+            except Exception as e:
+                self._cr.rollback()
+                raise ValidationError(e)
+
+    def buscar_pagos_para_generar_nota(self, company_id, fecha_inicial, fecha_final):
+
+        if not isinstance(fecha_inicial, date):
+            raise ValidationError("{} no es una fecha valida".format(fecha_inicial))
+        if not isinstance(fecha_final, date):
+            raise ValidationError("{} no es una fecha valida".format(fecha_final))
+
+        # Buscar producto SALDO PROGRAMA DE APOYO
+        producto = self.env['product.template'].search([('name','=','SALDO PROGRAMA DE APOYO'), ('company_id','=', company_id)])
+        
+        if not producto:
+            raise ValidationError("No se encontró el producto SALDO PROGRAMA DE APOYO")
+
+        # Consultar todas las bitácoras con facturas pendientes hechas al producto de saldo PABS
+        lineas_de_facturas = self.env['account.move.line'].search([
+            ('move_id.type','=','out_invoice'),
+            ('move_id.state','=','posted'),
+            ('move_id.amount_residual','>',0),
+            ('move_id.mortuary_id.id','>',0),
+            ('product_id', '=', producto.id),
+            ('company_id', '=', company_id)
+        ])
+
+        # De la lista de facturas filtrar aquellas con bitácoras que tengan un contrato asignado
+        lineas_de_facturas_con_contrato = lineas_de_facturas.filtered(lambda x: x.move_id.mortuary_id.id_contrato.id)
+
+        # Iterar en cada factura
+        for fac in lineas_de_facturas_con_contrato.move_id:
+            
+            # Buscar los pagos entre dos fechas para el contrato
+            abonos = fac.mortuary_id.id_contrato.payment_ids.filtered(lambda x: 
+                x.state == 'posted' 
+                and x.reference == 'payment' 
+                and x.payment_date >= fecha_inicial and x.payment_date <= fecha_final
+            )
+
+            # Buscar las notas entre dos fechas para el contrato
+            notas = fac.mortuary_id.id_contrato.refund_ids.filtered(lambda x:
+                x.type == 'out_refund'
+                and x.state == 'posted'
+                and x.invoice_date >= fecha_inicial and x.invoice_date <= fecha_final
+            )
+
+            # Crear la bitácora para cada abono
+            for abono in abonos:
+                recibo = {
+                    'company_id' : company_id,
+                    'bitacora' : fac.mortuary_id.name,
+                    'numero_de_recibo' : abono.ecobro_receipt,
+                    'monto': abono.amount,
+                    'fecha_oficina' : abono.payment_date
+                }
+
+                self.crear_nota_a_bitacora(fac, fac.partner_id, recibo)
+
+            # Crear la bitácora para cada nota
+            for nota in notas:
+                recibo = {
+                    'company_id' : company_id,
+                    'bitacora' : fac.mortuary_id.name,
+                    'numero_de_recibo' : nota.name,
+                    'monto': nota.amount_total,
+                    'fecha_oficina' : nota.invoice_date
+                }
+
+                self.crear_nota_a_bitacora(fac, fac.partner_id, recibo)
 
     _sql_constraints = [
         (

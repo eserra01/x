@@ -50,6 +50,7 @@
         'views/mortuary_cremation.xml',
         'views/res_company_view.xml',
         'report/receipt.xml',
+        'views/account_move_view.xml',
         'views/account_payment_view.xml',
         'report/mortuary_payment_report.xml',
         'wizard/mortuary_cutting_payments_wizzard.xml',
