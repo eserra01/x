@@ -419,8 +419,8 @@ class Mortuary(models.Model):
         move_obj = self.env['account.move']
         for rec in self:
             move_ids = move_obj.search([
-                ('state','=','posted'),
                 ('type','=','out_invoice'),
+                ('state','=','posted'),
                 ('mortuary_id','=',rec.id)])
             balance = sum(move_ids.mapped('amount_residual'))
             rec.balance = balance
@@ -430,6 +430,7 @@ class Mortuary(models.Model):
         for rec in self:
             move_ids = move_obj.search([
                 ('type','=','out_invoice'),
+                ('state','=','posted'),
                 ('mortuary_id','=',rec.id)])
             total_invoiced = sum(move_ids.mapped('amount_total'))
             rec.total_invoiced = total_invoiced
@@ -660,6 +661,7 @@ class Mortuary(models.Model):
         data = []
         move_ids = move_obj.search([
             ('type','=','out_invoice'),
+            ('state','=','posted'),
             ('mortuary_id','=',self.id)])
         for move_id in move_ids:
             for line in move_id.invoice_line_ids:
