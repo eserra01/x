@@ -589,7 +589,9 @@ class PABSEcobroSync(models.Model):
         invoice_ids = account_obj.search([
           ('company_id','=',company_id),
           ('type','=','out_invoice'),
-          ('mortuary_id','=',mortuary_id.id)])
+          ('state','=','posted'),
+          ('mortuary_id','=',mortuary_id.id)
+        ])
 
       ### SI NO HAY NINGUNA FACTURA
       if not invoice_ids:
