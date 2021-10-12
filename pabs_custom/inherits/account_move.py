@@ -20,8 +20,7 @@ class AcccountMove(models.Model):
     if context.get('investment_bond') or (self.type in ('out_refund','entry') and self.contract_id):
       NumeroContrato = self.contract_id.id,
       MontoPago = self.amount_total
-      if self.contract_id.company_id.id != 9:
-        comission_tree_obj.CrearSalidasEnganche(IdPago=self.id, NumeroContrato=NumeroContrato, MontoPago=MontoPago, TipoPago='Bono')
+      comission_tree_obj.CrearSalidasEnganche(IdPago=self.id, NumeroContrato=NumeroContrato, MontoPago=MontoPago, TipoPago='Bono')
     return res
 
   def action_invoice_register_payment(self):
@@ -33,7 +32,7 @@ class AcccountMove(models.Model):
     comission_tree_obj = self.env['pabs.comission.tree']
     res = super(AcccountMove, self).button_cancel()
     if self.type in ('out_refund','entry'):
-      if self.contract_id and self.contract_id.company_id.id != 9:
+      if self.contract_id:
         NumeroContrato = self.contract_id.id,
         comission_tree_obj.RevertirSalidas(
           IdPago=False,RefundID=self.id,NumeroContrato=NumeroContrato)

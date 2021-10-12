@@ -222,7 +222,7 @@ class PABSContracts(models.Model):
     for rec in self:
       rec.contract_status_reason = None
 
-  # Costo: Es la suma de las facturas, de no existir facturas será el costo del plan registrado en la tabla de tarifas.
+  #Costo: Es la suma de las facturas, de no existir facturas será el costo del plan registrado en la tabla de tarifas.
   def calc_price(self):
     for rec in self:
       invoice_ids = rec.refund_ids.filtered(lambda r: r.type == 'out_invoice' and r.state == 'posted')
@@ -234,9 +234,9 @@ class PABSContracts(models.Model):
           if pricelist_id:
             rec.product_price = pricelist_id.fixed_price
           else:
-            raise ValidationError("No se encontró la tarifa del producto")
+            raise ValidationError("calc_price: No se encontró la tarifa del producto")
         else:
-            raise ValidationError("No se encontró el producto del contrato")
+            raise ValidationError("calc_price: No se encontró el producto del contrato")
 
   # Saldo: Es la suma del monto pendiente de las facturas mas el monto entregado por traspasos
   def _calc_balance(self):
@@ -670,35 +670,20 @@ class PABSContracts(models.Model):
       ajuste_por_sueldo = 0
       contratoEsSueldo = (self.payment_scheme_id.name == "SUELDO")
 
+      ##### MODIFICACIONES FISCAL 20/09/2021 #####
+      monto_acumulado = 0     #Se utiliza para calcular el monto de fideicomiso en una compañia fiscal
+      #ultima_prioridad = max(comission_template_id.mapped('pay_order'))
+
       ### RECORRER TODAS LAS LINEAS DEL DETALLE DE LA PLANTILLA e insertar el registro
       for line in comission_template_id:
-        if line.job_id.name != 'FIDEICOMISO':
-          data = {
-            'contract_id' : self.id,
-            'pay_order' : line.pay_order,
-            'job_id' : line.job_id.id,
-            'comission_agent_id' : line.comission_agent_id.id,
-            'corresponding_commission' : line.comission_amount,
-            'remaining_commission' : line.comission_amount,
-            'commission_paid' : 0,
-            'actual_commission_paid' : 0,
-          }
-        else:
-          data = {
-            'contract_id' : self.id,
-            'pay_order' : line.pay_order,
-            'job_id' : line.job_id.id,
-            'comission_agent_id' : line.comission_agent_id.id,
-            'corresponding_commission' : line.comission_amount,
-            'remaining_commission' : line.comission_amount,
-            'commission_paid' : 0,
-            'actual_commission_paid' : 0,
-          }
-        
         monto_comision = line.comission_amount
+
+        if line.job_id.name != "FIDEICOMISO":
+          monto_acumulado = monto_acumulado + monto_comision
 
         if contratoEsSueldo and line.job_id.name == "ASISTENTE SOCIAL":
           ajuste_por_sueldo = monto_comision
+          monto_acumulado = monto_acumulado - monto_comision
           monto_comision = 0
         elif contratoEsSueldo and line.job_id.name == "FIDEICOMISO":
           monto_comision = monto_comision + ajuste_por_sueldo
@@ -713,6 +698,54 @@ class PABSContracts(models.Model):
           'commission_paid' : 0,
           'actual_commission_paid' : 0,
         }
+        
+        if line.job_id.name == "FIDEICOMISO":
+          es_fiscal = self.company_id.apply_taxes
+
+          ### Cálculo de comisión de fideicomiso e iva para empresa fiscal ###
+          if es_fiscal:             
+            impuesto_IVA = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', self.company_id.id)]) # Buscar impuesto de IVA
+            if not impuesto_IVA:
+              raise ValidationError("No se encontró el impuesto con nombre IVA")
+
+            # Buscar puesto IVA
+            cargo_iva = self.env['hr.job'].search([('name','=','IVA'), ('company_id','=', self.company_id.id)])
+            if not cargo_iva:
+              raise ValidationError("No se encontró el puesto de trabajo con nombre IVA")
+
+            # Buscar empleado IVA
+            empleado_iva = self.env['hr.employee'].search([('barcode','=','IVA'), ('company_id','=', self.company_id.id)])
+            if not empleado_iva:
+              raise ValidationError("No se encontró el empleado con código IVA")
+
+            factor_iva = 1 + (impuesto_IVA.amount/100)
+            monto_para_iva = round(pricelist_id.fixed_price - round(pricelist_id.fixed_price / factor_iva, 2), 2)
+
+            # Llenar datos de linea de IVA
+            linea_iva = {
+              'contract_id' : self.id,
+              'pay_order' : 0,
+              'job_id' : cargo_iva.id,
+              'comission_agent_id' : empleado_iva.id,
+              'corresponding_commission' : monto_para_iva,
+              'remaining_commission' : monto_para_iva,
+              'commission_paid' : 0,
+              'actual_commission_paid' : 0,
+            }
+
+            # Almacenar datos de fideicomiso (En una sola lista se enviará la creación de la linea de fideicomiso y de IVA)
+            linea_fideicomiso = data
+
+            # Actualizar el monto del fideicomiso
+            monto_fideicomiso = round(pricelist_id.fixed_price - monto_acumulado - monto_para_iva ,2)
+            linea_fideicomiso.update({'corresponding_commission': monto_fideicomiso, 'remaining_commission': monto_fideicomiso})
+
+            data = []
+            data.append(linea_fideicomiso)
+            data.append(linea_iva)
+
+            ##### FIN MODIFICACIONES FISCAL 20/09/2021 #####
+
         comission_tree_obj.create(data)
 
   #Crea la factura
@@ -759,6 +792,29 @@ class PABSContracts(models.Model):
         product_id = previous.name_service
         account_id = product_id.property_account_income_id or product_id.categ_id.property_account_income_categ_id
 
+        factor_iva = 0
+        # FISCAL
+        if previous.company_id.apply_taxes:
+          #Buscar impuesto a agregar
+          iva_tax = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', previous.company_id.id)])
+          
+          if not iva_tax:
+            raise ValidationError("No se encontró el impuesto con nombre IVA")
+
+          #Buscar linea de repartición de impuesto para facturas
+          iva_repartition_line = iva_tax.invoice_repartition_line_ids.filtered_domain([
+            ('repartition_type','=','tax'), 
+            ('invoice_tax_id','=', iva_tax.id), 
+            ('company_id','=', previous.company_id.id)
+          ])
+
+          if not iva_repartition_line:
+            raise ValidationError("No se encontró la repartición de facturas del impuesto {}".format(iva_tax.name))
+          if len(iva_repartition_line) > 1:
+            raise ValidationError("Se definió mas de una linea (sin incluir la linea base) en la repartición de facturas del impuesto {}".format(iva_tax.name))
+
+          factor_iva = 1 + (iva_tax.amount/100)
+
         line_data = {
           'move_id' : invoice_id.id,
           'account_id' : account_id.id,
@@ -773,7 +829,36 @@ class PABSContracts(models.Model):
           'exclude_from_invoice_tab' : False,
           'name' : product_id.description_sale or product_id.name,
         }
+
+        # FISCAL
+        if previous.company_id.apply_taxes:
+          line_data.update({
+            'credit' : round(costo / factor_iva, 2),
+            'tax_exigible' : True,
+            'tax_ids' : [(4, iva_tax.id, 0)]
+          })
         account_line_obj.create(line_data)
+
+        if previous.company_id.apply_taxes:
+          #Llenar datos para línea de IVA
+          iva_data = {
+            'move_id' : invoice_id.id,
+            'account_id' : iva_repartition_line.account_id.id,
+            'quantity' : 1,
+            'credit' : round(costo - round( costo / factor_iva, 2), 2),
+            'tax_base_amount' : round(costo - round( costo / factor_iva, 2), 2),
+            'partner_id' : previous.partner_id.id,
+            'amount_currency' : 0,
+            'is_rounding_line' : False,
+            'exclude_from_invoice_tab' : True,
+            'tax_exigible' : False,
+            'name' : iva_tax.name,
+            'tax_line_id' : iva_tax.id,
+            'tax_group_id' : iva_tax.tax_group_id.id,
+            'tax_repartition_line_id' : iva_repartition_line.id,
+          }
+
+          account_line_obj.create(iva_data)
 
         partner_line_data = {
           'move_id' : invoice_id.id,
@@ -790,6 +875,7 @@ class PABSContracts(models.Model):
         }
         account_line_obj.create(partner_line_data)
         invoice_id.action_post()
+
         previous.allow_create = False
         if not previous.partner_id:
           raise ValidationError((
@@ -798,8 +884,7 @@ class PABSContracts(models.Model):
           partner_id = previous.partner_id
           partner_id.write({'name' : previous.name})
         previous.state = 'contract'
-        if previous.company_id.id != 9:
-          previous.create_commision_tree(invoice_id=invoice_id)
+        previous.create_commision_tree(invoice_id=invoice_id)
         return invoice_id
 
   def reconcile_all(self, reconcile={}):
@@ -883,10 +968,10 @@ class PABSContracts(models.Model):
               ('plan_id', '=', pricelist_id.id),
               ('job_id', '=', job_id)])
 
-            if not comission_template and previous.company_id.id != 9:
+            if not comission_template:
               raise ValidationError("No se encontró la plantilla de comisiones del asistente")
 
-            if comission_template.comission_amount <= 0 and previous.company_id.id != 9:
+            if comission_template.comission_amount <= 0:
               raise ValidationError(("El A.S {} tiene asignado ${} en su plantilla de comisiones. Debe asignarle un monto mayor a cero".format(comission_template.comission_agent_id.name, comission_template.comission_amount)))
           ### TERMINA VALIDACION COMISIONES
 
@@ -943,6 +1028,7 @@ class PABSContracts(models.Model):
             }
             initial_payment_id = payment_obj.create(payment_data)
             initial_payment_id.with_context(stationery=True).post()
+            
             if initial_payment_id.move_line_ids:
               for obj in initial_payment_id.move_line_ids:
                 if obj.credit > 0:
@@ -977,6 +1063,28 @@ class PABSContracts(models.Model):
           ### NOTA DE CREDITO POR BONO PABS
           _logger.warning("El bono por inversión inicial es: {}".format(previous.investment_bond))
           if previous.investment_bond > 0:
+
+            # FISCAL
+            if previous.company_id.apply_taxes:
+              #Buscar impuesto a agregar
+              iva_tax = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', previous.company_id.id)])
+              
+              if not iva_tax:
+                raise ValidationError("No se encontró el impuesto con nombre IVA")
+
+              #Buscar linea de repartición de impuesto para facturas
+              iva_repartition_line = iva_tax.refund_repartition_line_ids.filtered_domain([
+                ('repartition_type','=','tax'), 
+                ('refund_tax_id','=', iva_tax.id), 
+                ('company_id','=', previous.company_id.id)
+              ])
+
+              if not iva_repartition_line:
+                raise ValidationError("No se encontró la repartición de facturas rectificativas del impuesto {}".format(iva_tax.name))
+              if len(iva_repartition_line) > 1:
+                raise ValidationError("Se definió mas de una linea (sin incluir la linea base) en la repartición de facturas rectificativas del impuesto {}".format(iva_tax.name))
+
+            #Encabezado
             refund_data = {
               'date' : previous.invoice_date,
               'commercial_partner_id' : previous.partner_id.id,
@@ -995,6 +1103,7 @@ class PABSContracts(models.Model):
             refund_id = account_obj.create(refund_data)
 
             if refund_id:
+              # Buscar producto Bono por inversión inicial
               product_id = self.env['product.template'].search([('company_id','=',previous.company_id.id),('name','=','BONO POR INVERSION INICIAL')])
               if not product_id:
                 raise ValidationError("No se encontró el producto BONO POR INVERSION INICIAL")
@@ -1003,6 +1112,7 @@ class PABSContracts(models.Model):
               if not account_id:
                 raise ValidationError("No se encontró la cuenta en los campos product_id.property_account_income_id o product_id.categ_id.property_account_income_categ_id")
 
+              # Llenar datos de Linea principal de débito
               line_data = {
                 'move_id' : refund_id.id,
                 'account_id' : account_id.id,
@@ -1018,9 +1128,40 @@ class PABSContracts(models.Model):
                 'name' : product_id.description_sale or product_id.name,
               }
 
+              # FISCAL
+              if previous.company_id.apply_taxes:
+                line_data.update({
+                  'tax_exigible' : True,
+                  'tax_ids' : [(4, iva_tax.id, 0)],
+                  'debit' : round(previous.investment_bond / (1 + iva_tax.amount/100), 2),
+                })
               line = account_line_obj.create(line_data)
 
-              ### CONTRAPARTIDA DEL DOCUMENTO
+              # FISCAL
+              # Llenar datos para línea de IVA
+              if previous.company_id.apply_taxes:
+                iva_data = {
+                  'move_id' : refund_id.id,
+                  'account_id' : iva_repartition_line.account_id.id,
+                  'quantity' : 1,
+                  'price_unit' : previous.investment_bond,
+                  'debit' : round(previous.investment_bond - round( (previous.investment_bond / (1 + iva_tax.amount/100)), 2), 2),
+                  'tax_base_amount' : round(previous.investment_bond - round( (previous.investment_bond / (1 + iva_tax.amount/100)), 2), 2),
+                  'product_uom_id' : product_id.uom_id.id,
+                  'partner_id' : previous.partner_id.id,
+                  'amount_currency' : 0,
+                  'product_id' : product_id.id,
+                  'is_rounding_line' : False,
+                  'exclude_from_invoice_tab' : True,
+                  'name' : iva_tax.name,
+                  'tax_line_id' : iva_tax.id,
+                  'tax_group_id' : iva_tax.tax_group_id.id,
+                  'tax_repartition_line_id' : iva_repartition_line.id,
+                }
+
+              line = account_line_obj.create(iva_data)
+
+              ### CONTRAPARTIDA DEL DOCUMENTO #Linea de crédito
               partner_line_data = {
                 'move_id' : refund_id.id,
                 'account_id' : refund_id.partner_id.property_account_receivable_id.id,
@@ -1034,9 +1175,11 @@ class PABSContracts(models.Model):
                 'credit' : previous.investment_bond,
               }
               line = account_line_obj.create(partner_line_data)
+
               ### VALIDANDO NOTA DE CRÉDITO
               reconcile.update({'pabs' : line.id})
               refund_id.with_context(investment_bond=True).action_post()
+
         _logger.info("Se creó la factura del contrato")
         if previous.name == 'Nuevo Contrato':
           contract_name = pricelist_id.sequence_id._next()
@@ -1295,22 +1438,26 @@ class PABSContracts(models.Model):
   #Calcular dias sin abonar
   def calcular_dias_sin_abonar(self):
     for rec in self:
-      days = 0
-      today = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')).date()
-      #Obtener registro del último pago de cobranza
-      ultimo_abono_cobranza = self.payment_ids.filtered(lambda r: r.state == 'posted' and r.reference == 'payment')
-      if ultimo_abono_cobranza:
-        ultimo_abono_cobranza = ultimo_abono_cobranza.sorted(key=lambda r: r.date_receipt)
-        days = (today - ultimo_abono_cobranza[-1].date_receipt).days
-        rec.days_without_payment = days
-        return days
-      if rec.date_first_payment:
-        if rec.date_first_payment < today:
-          days = (today - rec.date_first_payment).days
+      if rec.state == 'contract':
+        days = 0
+        today = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')).date()
+        #Obtener registro del último pago de cobranza
+        ultimo_abono_cobranza = self.payment_ids.filtered(lambda r: r.state == 'posted' and r.reference == 'payment')
+        if ultimo_abono_cobranza:
+          ultimo_abono_cobranza = ultimo_abono_cobranza.sorted(key=lambda r: r.date_receipt)
+          days = (today - ultimo_abono_cobranza[-1].date_receipt).days
           rec.days_without_payment = days
           return days
-      rec.days_without_payment = days
-      return days
+        if rec.date_first_payment:
+          if rec.date_first_payment < today:
+            days = (today - rec.date_first_payment).days
+            rec.days_without_payment = days
+            return days
+        rec.days_without_payment = days
+        return days
+      else:
+        rec.days_without_payment = 0
+        return 0
 
   def create_contracts(self, cantidad):
     contract_obj = self.env['pabs.contract']
