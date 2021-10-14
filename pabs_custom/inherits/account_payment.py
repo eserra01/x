@@ -258,6 +258,10 @@ class account_Payment(models.Model):
           if not impuesto_IVA:
             raise ValidationError("No se encontró el impuesto con nombre IVA")
 
+          # Buscar contra cuenta de IVA
+          if not impuesto_IVA.inverse_tax_account:
+            raise ValidationError("No se ha definido la contra cuenta de IVA en el impuesto IVA")
+            
           # Buscar cuenta a aplicar en linea de repartición de impuesto
           linea_de_impuesto = impuesto_IVA.invoice_repartition_line_ids.filtered_domain([
             ('repartition_type','=','tax'), 
@@ -292,21 +296,34 @@ class account_Payment(models.Model):
                 'name': liquidity_line_name,
                 'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
                 'currency_id': liquidity_line_currency_id,
-                'debit': balance < 0.0 and round(-balance / factor_iva ,2) or 0.0,
-                'credit': balance > 0.0 and round(balance / factor_iva ,2) or 0.0,
+                'debit': balance < 0.0 and -balance or 0.0,
+                'credit': balance > 0.0 and balance or 0.0,
                 'date_maturity': payment.payment_date,
                 'partner_id': payment.partner_id.commercial_partner_id.id,
                 'account_id': liquidity_line_account.id,
                 'payment_id': payment.id,
             }),
 
-            # IVA = Cantidad - Subtotal
+            # IVA trasladado cobrado = Importe / 1.16
             (0, 0, {
                 'name': impuesto_IVA.name,
                 'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
                 'currency_id': liquidity_line_currency_id,
                 'debit': balance < 0.0 and round(-balance - round(-balance / factor_iva ,2) ,2) or 0.0,
                 'credit': balance > 0.0 and round( balance + round(balance / factor_iva ,2) ,2) or 0.0,
+                'date_maturity': payment.payment_date,
+                'partner_id': payment.partner_id.commercial_partner_id.id,
+                'account_id': impuesto_IVA.inverse_tax_account.id,
+                'payment_id': payment.id,
+            }),
+
+            # IVA trasladado no cobrado = Importe / 1.16
+            (0, 0, {
+                'name': impuesto_IVA.name,
+                'amount_currency': counterpart_amount + write_off_amount if currency_id else 0.0,
+                'currency_id': currency_id,
+                'debit': balance + write_off_balance > 0.0 and round( (balance + write_off_balance) - round( (balance + write_off_balance) / factor_iva , 2), 2) or 0.0,
+                'credit': balance + write_off_balance < 0.0 and round( (-balance - write_off_balance) - round( (-balance - write_off_balance) / factor_iva, 2), 2) or 0.0,
                 'date_maturity': payment.payment_date,
                 'partner_id': payment.partner_id.commercial_partner_id.id,
                 'account_id': linea_de_impuesto.account_id.id,
