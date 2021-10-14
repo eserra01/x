@@ -34,9 +34,25 @@ class PabsBankDeposits(models.TransientModel):
 
   def get_deposits(self):
     # TEST TEST TEST TEST
+    rec_data = []
+    rec_data.append([0,0,
+      {
+        'bank_name' : 'Oficina',
+        'employee_code' : 'C0001',
+        'debt_collector' : 'COBRADOR UNO',
+        'amount' : 100,
+        'deposit_date' : '2021-09-20 00:00:00',
+        'cashier' : 'Cajero uno',
+        'ref' : 'Referencia 1',
+        'id_ref' : '1',
+      }
+    ])
+
+    self.deposit_line_ids = rec_data
+    self.name = "Depositos del {}".format(self.ecobro_date)
     return
     # TEST TEST TEST TEST
-
+    
     ### ENCABEZADO DE LA PETICIÓN
     headers = {'Content-type': 'application/json'}
     ### LIMPIAMOS LA LISTA
