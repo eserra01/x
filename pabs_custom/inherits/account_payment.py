@@ -296,15 +296,15 @@ class account_Payment(models.Model):
                 'name': liquidity_line_name,
                 'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
                 'currency_id': liquidity_line_currency_id,
-                'debit': balance < 0.0 and -balance or 0.0,
-                'credit': balance > 0.0 and balance or 0.0,
+                'debit': balance < 0.0 and round(-balance / factor_iva ,2) or 0.0,
+                'credit': balance > 0.0 and round(balance / factor_iva ,2) or 0.0,
                 'date_maturity': payment.payment_date,
                 'partner_id': payment.partner_id.commercial_partner_id.id,
                 'account_id': liquidity_line_account.id,
                 'payment_id': payment.id,
             }),
 
-            # IVA trasladado cobrado = Importe / 1.16
+            # IVA = Cantidad - subtotal
             (0, 0, {
                 'name': impuesto_IVA.name,
                 'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
@@ -314,19 +314,6 @@ class account_Payment(models.Model):
                 'date_maturity': payment.payment_date,
                 'partner_id': payment.partner_id.commercial_partner_id.id,
                 'account_id': linea_de_impuesto.account_id.id,
-                'payment_id': payment.id,
-            }),
-
-            # IVA trasladado no cobrado = Importe / 1.16
-            (0, 0, {
-                'name': impuesto_IVA.name,
-                'amount_currency': counterpart_amount + write_off_amount if currency_id else 0.0,
-                'currency_id': currency_id,
-                'debit': balance + write_off_balance > 0.0 and round( (balance + write_off_balance) - round( (balance + write_off_balance) / factor_iva , 2), 2) or 0.0,
-                'credit': balance + write_off_balance < 0.0 and round( (-balance - write_off_balance) - round( (-balance - write_off_balance) / factor_iva, 2), 2) or 0.0,
-                'date_maturity': payment.payment_date,
-                'partner_id': payment.partner_id.commercial_partner_id.id,
-                'account_id': impuesto_IVA.inverse_tax_account.id,
                 'payment_id': payment.id,
             }),
           ]
