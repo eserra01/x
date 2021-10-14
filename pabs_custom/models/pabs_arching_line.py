@@ -34,8 +34,7 @@ class PabsArchingLine(models.Model):
       raise ValidationError("La solicitud {} no existe".format(self.lot_id.name))
 
     # Validar si la solicitud se encuentra en la ubicación del asistente (Mostrará error si el asistente tiene mas de una ubicación activa)
-    stock_location_obj = self.env['stock.location'].search([('name', '=', self.lot_id.employee_id.barcode), ('active', '=', True)])
-    stock_quant_obj = self.env['stock.quant'].search([('lot_id','=',self.lot_id.id), ('location_id', '=', stock_location_obj.id), ('quantity','=','1')])
+    stock_quant_obj = self.env['stock.quant'].search([('lot_id','=',self.lot_id.id), ('location_id', '=', self.arching_id.employee_id.local_location_id.id), ('quantity','=','1')])
     if not stock_quant_obj:
       actual_stock_quant_obj = self.env['stock.quant'].search([('lot_id','=',self.lot_id.id), ('quantity','=','1')])
       raise ValidationError("La solicitud {} no se encuentra en la ubicación del asistente. Su ubicación actual es: {}".format(self.lot_id.name, actual_stock_quant_obj.location_id.complete_name))
