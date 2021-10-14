@@ -73,16 +73,24 @@ class PabsAccountMove(models.TransientModel):
     self.total = total
     ### Buscamos que no exista una póliza generada previamente
     name = "INVERSIONES INICIALES Y EXCEDENTES {}".format(date)
-    res = self.validate_account_move(name)
-    if res:
-      self.status = 'generated'
-    else:
-      self.status = 'not_generated'
+    
+    # TEST. EN PRODUCCION DESCOMENTAR
+    # res = self.validate_account_move(name)
+    # if res:
+    #   self.status = 'generated'
+    # else:
+    #   self.status = 'not_generated'
+
+    # TEST TEST TEST TEST
+    self.status = 'not_generated'
+    # TEST TEST TEST TEST
+
     return {
       'initial_investment' : initial_investment,
       'excedent' : excedent,
       'total' : total
     }
+
   def validate_account_move(self,name):
     ### Generación de objetos.
     move_obj = self.env['account.move']

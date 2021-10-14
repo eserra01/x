@@ -33,6 +33,10 @@ class PabsBankDeposits(models.TransientModel):
     self.total = sum(self.deposit_line_ids.mapped('amount')) or 0
 
   def get_deposits(self):
+    # TEST TEST TEST TEST
+    return
+    # TEST TEST TEST TEST
+
     ### ENCABEZADO DE LA PETICIÓN
     headers = {'Content-type': 'application/json'}
     ### LIMPIAMOS LA LISTA
@@ -165,15 +169,18 @@ class PabsBankDeposits(models.TransientModel):
     move_id = move_obj.create(data)
     ### Validamos la póliza
     move_id.action_post()
-    ### Generamos encabezado de la petición
-    payload = {
-      'doc_entry' : move_id.id,
-      'result' : ids_line,
-    }
-    ### Enviamos la petición
-    req = requests.post(url, json=payload, headers=headers)
-    ### leemos la respuesta de la petición
-    response = json.loads(req.text)
+    
+    # TEST. EN PRODUCCION DESCOMENTAR
+    # ### Generamos encabezado de la petición
+    # payload = {
+    #   'doc_entry' : move_id.id,
+    #   'result' : ids_line,
+    # }
+    # ### Enviamos la petición
+    # req = requests.post(url, json=payload, headers=headers)
+    # ### leemos la respuesta de la petición
+    # response = json.loads(req.text)
+
     ### Retornamos la póliza
     return {
       'name' : name,
