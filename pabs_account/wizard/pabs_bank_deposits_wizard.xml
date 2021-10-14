@@ -17,7 +17,8 @@
               <button name="get_account_move" string="Generar Póliza" type="object" class="btn-primary" style="margin-left : 20px;" attrs="{'invisible' : [('total','=',0)]}"/>
             </div>
           </div>
-          <field name="deposit_line_ids" nolabel="1" readonly="1" attrs="{'invisible' : [('deposit_line_ids','=',[])]}">
+          <!-- <field name="deposit_line_ids" nolabel="1" readonly="1" attrs="{'invisible' : [('deposit_line_ids','=',[])]}"> -->
+          <field name="deposit_line_ids" nolabel="1">
             <!-- <tree create="0" edit="0" delete="0" limit="99999"> -->
             <tree limit="99999"> <!-- TEST TEST TEST-->
               <field name="bank_name"/>
