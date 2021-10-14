@@ -313,7 +313,7 @@ class account_Payment(models.Model):
                 'credit': balance > 0.0 and round( balance + round(balance / factor_iva ,2) ,2) or 0.0,
                 'date_maturity': payment.payment_date,
                 'partner_id': payment.partner_id.commercial_partner_id.id,
-                'account_id': impuesto_IVA.inverse_tax_account.id,
+                'account_id': linea_de_impuesto.account_id.id,
                 'payment_id': payment.id,
             }),
 
@@ -326,7 +326,7 @@ class account_Payment(models.Model):
                 'credit': balance + write_off_balance < 0.0 and round( (-balance - write_off_balance) - round( (-balance - write_off_balance) / factor_iva, 2), 2) or 0.0,
                 'date_maturity': payment.payment_date,
                 'partner_id': payment.partner_id.commercial_partner_id.id,
-                'account_id': linea_de_impuesto.account_id.id,
+                'account_id': impuesto_IVA.inverse_tax_account.id,
                 'payment_id': payment.id,
             }),
           ]
