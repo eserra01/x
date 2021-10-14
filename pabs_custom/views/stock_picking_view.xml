@@ -22,7 +22,6 @@
         <field name="operation_type" invisible="1"/>
         <field name="type_transfer" invisible="1"/>
         <field name="salary" invisible="1"/>
-        <field name="aplica_iva" invisible="1"/>
         <!--<field name="type_transfer" attrs="{'invisible' : ['|',('operation_type','in',('incoming','outgoing')),('operation_type','=',False)], 'required' : [('operation_type','=','internal')]}"/>-->
         <field name="employee_id" attrs="{
           'invisible': [('type_transfer','!=','ov-as'),('type_transfer','!=','as-ov')],
@@ -61,7 +60,7 @@
         <field name="inversion_inicial"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}" widget="monetary"/>
         <field name="toma_comision"
-          attrs="{'column_invisible': ['|', ('parent.type_transfer','!=','as-ov'), ('parent.aplica_iva','=',True)]}" widget="monetary"/>
+          attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}" widget="monetary"/>
         <field name="forma_pago"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>
         <field name="origen_solicitud"
@@ -106,7 +105,7 @@
         <field name="inversion_inicial"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}" widget="monetary"/>
         <field name="toma_comision"
-          attrs="{'column_invisible': ['|', ('parent.type_transfer','!=','as-ov'), ('parent.aplica_iva','=',True)],
+          attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')],
           'readonly': [('parent.salary','=',True)]}" widget="monetary"/>
         <field name="forma_pago"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>

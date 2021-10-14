@@ -18,8 +18,7 @@
             </div>
           </div>
           <field name="deposit_line_ids" nolabel="1" readonly="1" attrs="{'invisible' : [('deposit_line_ids','=',[])]}">
-            <!-- <tree create="0" edit="0" delete="0" limit="99999"> -->
-            <tree limit="99999"> <!-- TEST TEST TEST-->
+            <tree create="0" edit="0" delete="0" limit="99999">
               <field name="bank_name"/>
               <field name="employee_code"/>
               <field name="debt_collector"/>

@@ -12,8 +12,6 @@
           <group>
             <strong>Corrección de solicitudes en corte</strong><br/>
             <p>Capturar el número de solicitud a corregir, después en la parte inferior aparecerá la solicitud para modificar los respectivos valores</p>
-
-            <field name="aplica_iva" invisible="1"/>
           </group>
         </group>
         <field name="fix_move_ids" attrs="{'invisible' : [('fix_move_ids','=',False)]}">
@@ -22,7 +20,7 @@
             <field name="series" readonly="1"/>
             <field name="papeleria"/>
             <field name="inversion_inicial"/>
-            <field name="toma_comision" attrs="{'column_invisible': [('parent.aplica_iva','=',True)]}"/>
+            <field name="toma_comision"/>
             <field name="forma_pago"/>
             <field name="origen_solicitud"/>
             <field name="referencia"/>

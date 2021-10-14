@@ -16,13 +16,8 @@ class FixStockMove(models.TransientModel):
     column2='move_id',
     string='Solicitudes')
 
-  aplica_iva = fields.Boolean(store=False)
-
   @api.onchange('name')
   def find_request(self):
-
-    self.aplica_iva = self.env.company.apply_taxes
-    
     stock_obj = self.env['stock.move']
     location_obj = self.env['stock.location']
     lot_obj = self.env['stock.production.lot']
