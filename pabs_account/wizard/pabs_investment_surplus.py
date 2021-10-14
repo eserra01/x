@@ -73,16 +73,24 @@ class PabsAccountMove(models.TransientModel):
     self.total = total
     ### Buscamos que no exista una póliza generada previamente
     name = "INVERSIONES INICIALES Y EXCEDENTES {}".format(date)
-    res = self.validate_account_move(name)
-    if res:
-      self.status = 'generated'
-    else:
-      self.status = 'not_generated'
+    
+    # TEST. EN PRODUCCION DESCOMENTAR
+    # res = self.validate_account_move(name)
+    # if res:
+    #   self.status = 'generated'
+    # else:
+    #   self.status = 'not_generated'
+
+    # TEST TEST TEST TEST
+    self.status = 'not_generated'
+    # TEST TEST TEST TEST
+
     return {
       'initial_investment' : initial_investment,
       'excedent' : excedent,
       'total' : total
     }
+
   def validate_account_move(self,name):
     ### Generación de objetos.
     move_obj = self.env['account.move']
@@ -127,22 +135,67 @@ class PabsAccountMove(models.TransientModel):
       if not warehouse_id.analytic_account_id:
         raise ValidationError(("El almacén {} no tiene configurada una cuenta analitica".format(warehouse_id.name)))
       contracts = contract_ids.filtered(lambda r: r.warehouse_id.id == warehouse_id.id)
-      ### INVERSIONES INICIALES
-      lines.append([0,0,{
-        'account_id' : initial_investment,
-        'name' : name,
-        'debit' : 0,
-        'credit' : sum(contracts.payment_ids.filtered(lambda r : r.reference == 'stationary').mapped('amount')),
-        'analytic_account_id' : warehouse_id.analytic_account_id.id or False,
-      }])
-      ### EXCEDENTES
-      lines.append([0,0,{
-        'account_id' : excedent,
-        'name' : name,
-        'debit' : 0,
-        'credit' : sum(contracts.payment_ids.filtered(lambda r: r.reference == 'surplus').mapped('amount')),
-        'analytic_account_id' : warehouse_id.analytic_account_id.id or False,
-      }])
+
+      # Si es fiscal
+      if self.env.company.apply_taxes:
+        # Buscar impuesto de IVA
+        impuesto_IVA = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', self.env.company.id)])
+        if not impuesto_IVA:
+            raise ValidationError("No se encontró el impuesto con nombre IVA")
+
+        # Buscar contra cuenta de IVA
+        if not impuesto_IVA.inverse_tax_account:
+          raise ValidationError("No se ha definido la contra cuenta de IVA en el impuesto IVA")
+
+        factor_iva = 1 + (impuesto_IVA.amount / 100)
+
+        #Linea de Inversiones iniciales
+        monto_inversion = sum(contracts.payment_ids.filtered(lambda r : r.reference == 'stationary').mapped('amount'))
+        lines.append([0,0,{
+          'account_id' : initial_investment,
+          'name' : name,
+          'debit' : 0,
+          'credit' : round( monto_inversion / factor_iva, 2),
+          'analytic_account_id' : warehouse_id.analytic_account_id.id or False,
+        }])
+
+        #Linea de Excedentes
+        monto_excedente = sum(contracts.payment_ids.filtered(lambda r: r.reference == 'surplus').mapped('amount'))
+        lines.append([0,0,{
+          'account_id' : excedent,
+          'name' : name,
+          'debit' : 0,
+          'credit' : round( monto_excedente / factor_iva, 2),
+          'analytic_account_id' : warehouse_id.analytic_account_id.id or False,
+        }])
+
+        #Linea de IVA (Una linea sumando inversiones y excedentes)
+        lines.append([0,0,{
+          'account_id' : impuesto_IVA.inverse_tax_account.id,
+          'name' : "IVA",
+          'debit' : 0,
+          'credit' : round( (monto_inversion + monto_excedente) - (round( monto_inversion / factor_iva, 2) + round( monto_excedente / factor_iva, 2)), 2),
+          'tax_ids' : [(4, impuesto_IVA.id, 0)],
+        }])
+        
+      else:
+        ### INVERSIONES INICIALES
+        lines.append([0,0,{
+          'account_id' : initial_investment,
+          'name' : name,
+          'debit' : 0,
+          'credit' : sum(contracts.payment_ids.filtered(lambda r : r.reference == 'stationary').mapped('amount')),
+          'analytic_account_id' : warehouse_id.analytic_account_id.id or False,
+        }])
+        ### EXCEDENTES
+        lines.append([0,0,{
+          'account_id' : excedent,
+          'name' : name,
+          'debit' : 0,
+          'credit' : sum(contracts.payment_ids.filtered(lambda r: r.reference == 'surplus').mapped('amount')),
+          'analytic_account_id' : warehouse_id.analytic_account_id.id or False,
+        }])
+
     ### Linea de banco
     lines.append([0,0,{
       'account_id' : bank,

@@ -33,6 +33,10 @@ class PabsBankDeposits(models.TransientModel):
     self.total = sum(self.deposit_line_ids.mapped('amount')) or 0
 
   def get_deposits(self):
+    # TEST TEST TEST TEST
+    return
+    # TEST TEST TEST TEST
+
     ### ENCABEZADO DE LA PETICIÓN
     headers = {'Content-type': 'application/json'}
     ### LIMPIAMOS LA LISTA
@@ -120,27 +124,63 @@ class PabsBankDeposits(models.TransientModel):
       else:
         raise ValidationError("No se encontró la cuenta para el banco: {}".format(line.bank_name))
     if company_id.inverse_account:
-      lines.append([0,0,{
-        'account_id' : company_id.inverse_account.id,
-        'name' : 'Depósitos PABS',
-        'debit' : 0,
-        'credit' : self.total,
-        'analytic_account_id' : analytic_account_id,
-      }])
+
+      # Si es fiscal
+      if self.env.company.apply_taxes:
+        # Buscar impuesto de IVA
+        impuesto_IVA = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', self.env.company.id)])
+        if not impuesto_IVA:
+            raise ValidationError("No se encontró el impuesto con nombre IVA")
+
+        # Buscar contra cuenta de IVA
+        if not impuesto_IVA.inverse_tax_account:
+          raise ValidationError("No se ha definido la contra cuenta de IVA en el impuesto IVA")
+
+        factor_iva = 1 + (impuesto_IVA.amount / 100)
+
+        #Linea de crédito
+        lines.append([0,0,{
+          'account_id' : company_id.inverse_account.id,
+          'name' : 'Depósitos PABS',
+          'debit' : 0,
+          'credit' : round(self.total / factor_iva, 2),
+          'analytic_account_id' : analytic_account_id,
+        }])
+
+        #Linea de IVA
+        lines.append([0,0,{
+          'account_id' : impuesto_IVA.inverse_tax_account.id,
+          'name' : 'IVA',
+          'debit' : 0,
+          'credit' : round(self.total - round(self.total / factor_iva, 2), 2),
+          'tax_ids' : [(4, impuesto_IVA.id, 0)],
+        }])
+        
+      else:
+        lines.append([0,0,{
+          'account_id' : company_id.inverse_account.id,
+          'name' : 'Depósitos PABS',
+          'debit' : 0,
+          'credit' : self.total,
+          'analytic_account_id' : analytic_account_id,
+        }])
     data.update({'line_ids' : lines})
     ### Creamos la póliza
     move_id = move_obj.create(data)
     ### Validamos la póliza
     move_id.action_post()
-    ### Generamos encabezado de la petición
-    payload = {
-      'doc_entry' : move_id.id,
-      'result' : ids_line,
-    }
-    ### Enviamos la petición
-    req = requests.post(url, json=payload, headers=headers)
-    ### leemos la respuesta de la petición
-    response = json.loads(req.text)
+    
+    # TEST. EN PRODUCCION DESCOMENTAR
+    # ### Generamos encabezado de la petición
+    # payload = {
+    #   'doc_entry' : move_id.id,
+    #   'result' : ids_line,
+    # }
+    # ### Enviamos la petición
+    # req = requests.post(url, json=payload, headers=headers)
+    # ### leemos la respuesta de la petición
+    # response = json.loads(req.text)
+
     ### Retornamos la póliza
     return {
       'name' : name,

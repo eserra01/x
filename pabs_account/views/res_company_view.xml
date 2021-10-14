@@ -8,6 +8,11 @@
     <field name="arch" type="xml">
       <xpath expr="//notebook" position="inside">
         <page string="Contabilidad PABS">
+
+          <group string="Otras configuraciones">
+            <field name="apply_taxes"/>
+          </group>
+          
           <group string="Creación de Póliza de inversiones iniciales y excedentes">
             <group>
               <field name="initial_investment_account_id"/>

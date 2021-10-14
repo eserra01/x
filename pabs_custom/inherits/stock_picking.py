@@ -23,6 +23,8 @@ class StockPicking(models.Model):
 
   find_serie = fields.Char(String='Buscar Serie')
 
+  aplica_iva = fields.Boolean(store=False)
+
   ### Campos XMARTS
   type_transfer = fields.Selection([
     ('ac-ov', 'Almacén Central -> Oficina de Ventas'),
@@ -64,6 +66,9 @@ class StockPicking(models.Model):
 
   @api.onchange('picking_type_id', 'partner_id')
   def onchange_picking_type(self):
+    
+    self.aplica_iva = self.env.company.apply_taxes
+
     origin = ''
     #Si es Salida a servicios
     if self.picking_type_id.warehouse_id.name == 'SERVICIOS':
@@ -151,27 +156,28 @@ class StockPicking(models.Model):
 
   @api.onchange('find_serie')
   def search_serie(self):
-    lot_obj = self.env['stock.production.lot']
-    if self.find_serie:
-      serie = self.find_serie
-      lot_id = lot_obj.search([
-        ('name','=',serie)])
-      if not lot_id:
-        raise ValidationError((
-          "No se encontró el número de serie en el sistema"))
-      serie_data = {
-        'name' : lot_id.product_id.name,
-        'product_id' : lot_id.product_id.id,
-        'series' : serie,
-        'product_uom' : lot_id.product_id.uom_id.id,
-        'product_uom_qty' : 1,
+    pass
+    # lot_obj = self.env['stock.production.lot']
+    # if self.find_serie:
+    #   serie = self.find_serie
+    #   lot_id = lot_obj.search([
+    #     ('name','=',serie)])
+    #   if not lot_id:
+    #     raise ValidationError((
+    #       "No se encontró el número de serie en el sistema"))
+    #   serie_data = {
+    #     'name' : lot_id.product_id.name,
+    #     'product_id' : lot_id.product_id.id,
+    #     'series' : serie,
+    #     'product_uom' : lot_id.product_id.uom_id.id,
+    #     'product_uom_qty' : 1,
 
-      }
-      self.move_ids_without_package = [(0, 0, serie_data)]
-      self.find_serie = False
-      return {
-        'move_ids_without_package' : [(0, 0, serie_data)]
-      }      
+    #   }
+    #   self.move_ids_without_package = [(0, 0, serie_data)]
+    #   self.find_serie = False
+    #   return {
+    #     'move_ids_without_package' : [(0, 0, serie_data)]
+    #   }      
 
   def button_validate(self):
     ### INSTANCIACION DE OBJETOS

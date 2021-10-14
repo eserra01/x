@@ -29,6 +29,8 @@ class ResCompany(models.Model):
 
   legal_signature = fields.Binary(string='Firma Apoderado Legal')
 
+  apply_taxes = fields.Boolean(string = "Aplicar impuestos", default = False)
+
 class PabsBankAccount(models.Model):
   _name = 'pabs.bank.account'
   _description = 'Cuentas de banco para ecobro'
