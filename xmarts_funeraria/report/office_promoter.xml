@@ -8,9 +8,15 @@
                 <div class="page" style="font-size: 13pt;">
                     <t t-if="doc.type_transfer == 'ov-as'">
 
-                        <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">ENTREGA DE SOLICITUDES</span><br/>
-                        <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">** OFICINA A PROMOTOR **</span><br/>
-                        <br/>
+                        <div style="display: table; clear: both;">
+                            <div style="float: left; width: 25%; padding: 10px;">
+                                <img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="width:100px;"/>
+                            </div>
+                            <div style="float: left; width: 75%; padding: 10px;">
+                                <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">ENTREGA DE SOLICITUDES</span><br/>
+                                <span style="font-size:13pt;  font-weight:bold; margin-left: 10px;">** OFICINA A PROMOTOR **</span><br/>
+                            </div>
+                        </div>
 
                         <span>Folio:</span><span>&amp;nbsp;&amp;nbsp;</span><strong t-esc="doc.name"/><br/>
                         <span>Fecha:</span><span>&amp;nbsp;&amp;nbsp;</span><span t-esc="doc.date_done" t-options='{"widget": "date"}'/><br/>
