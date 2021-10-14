@@ -1108,6 +1108,10 @@ class PABSContracts(models.Model):
               if not product_id:
                 raise ValidationError("No se encontró el producto BONO POR INVERSION INICIAL")
 
+              product_product = self.env['product.product'].search([('product_tmpl_id', '=', product_id.id)])
+              if not product_product:
+                raise ValidationError("Problema el producto BONO POR INVERSION INICIAL: No se encontró la relación product_template({}) en la tabla product_product".format(product_id.id))
+
               account_id = product_id.property_account_income_id or product_id.categ_id.property_account_income_categ_id
               if not account_id:
                 raise ValidationError("No se encontró la cuenta en los campos product_id.property_account_income_id o product_id.categ_id.property_account_income_categ_id")
@@ -1122,7 +1126,7 @@ class PABSContracts(models.Model):
                 'product_uom_id' : product_id.uom_id.id,
                 'partner_id' : previous.partner_id.id,
                 'amount_currency' : 0,
-                'product_id' : product_id.id,
+                'product_id' : product_product.id,
                 'is_rounding_line' : False,
                 'exclude_from_invoice_tab' : False,
                 'name' : product_id.description_sale or product_id.name,
@@ -1150,7 +1154,7 @@ class PABSContracts(models.Model):
                   'product_uom_id' : product_id.uom_id.id,
                   'partner_id' : previous.partner_id.id,
                   'amount_currency' : 0,
-                  'product_id' : product_id.id,
+                  'product_id' : product_product.id,
                   'is_rounding_line' : False,
                   'exclude_from_invoice_tab' : True,
                   'name' : iva_tax.name,
