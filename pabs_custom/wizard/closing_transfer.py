@@ -40,7 +40,8 @@ class ClosingTransfers(models.TransientModel):
       lot_id = lot_obj.search([('name','=',lot)],limit=1)
       move_id = move_obj.search([
         ('series','=',lot),
-        ('codigo_de_activacion_valid','!=',False)],limit=1)
+        ('codigo_de_activacion_valid','!=',False)
+      ],order='create_date desc', limit=1)
       if not move_id:
         raise ValidationError("No se pudo encontrar el movimiento de recepción de solicitud")
       activation_code = move_id.codigo_de_activacion_valid.upper()

@@ -62,8 +62,8 @@ class FixStockMove(models.TransientModel):
           ('create_date','>',today_start),
           ('create_date','<',today_end),
           ('series','=',lot),
-          ('codigo_de_activacion_valid','!=',False)],
-          limit=1)
+          ('codigo_de_activacion_valid','!=',False)
+        ],order='create_date desc', limit=1)
         if not move_id:
           raise ValidationError((
           "La solicitud no se encuentra recibida el día de hoy"))
