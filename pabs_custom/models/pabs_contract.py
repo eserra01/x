@@ -1002,7 +1002,7 @@ class PABSContracts(models.Model):
           #Buscar diario de efectivo
           cash_journal_id = journal_obj.search([('type','=','cash'), ('name','=','EFECTIVO')],limit=1)
           if not cash_journal_id:
-            raise ValidationError("No se encontró ningun diario de efectivo")
+            raise ValidationError("No se encontró el diario EFECTIVO")
 
           #Buscar método de pago
           payment_method_id = payment_method_obj.search([('payment_type','=','inbound'),('code','=','manual')],limit=1)

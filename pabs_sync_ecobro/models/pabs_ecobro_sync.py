@@ -2,6 +2,7 @@
 
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
+from datetime import datetime, date
 import logging
 import requests
 from dateutil import tz
@@ -439,7 +440,10 @@ class PABSEcobroSync(models.Model):
     ### OBTENIENDO EL DIARIO POR DEFAULT
     cash_journal_id = journal_obj.search([
       ('company_id','=',company_id),
+      ('name', '=', 'EFECTIVO')
       ('type','=','cash')],limit=1)
+    if not cash_journal_id:
+      raise ValidationError("No se encontró el diario EFECTIVO")
     ### OBTENIENDO EL METODO DE PAGO
     payment_method_id = payment_method_obj.search([
       ('payment_type','=','inbound'),
@@ -494,7 +498,7 @@ class PABSEcobroSync(models.Model):
 
       ### VERIFICAMOS LA CANTIDAD DE RECIBOS ENCONTRADOS
       if len(recibo_afectado) > 1:
-        fail.append({
+        fails.append({
           'afectacionID' : rec['afectacionID'],
           'estatus' : 2,
           'detalle' : "Se encontro {} recibos".format(len(recibo_afectado))
@@ -748,7 +752,7 @@ class PABSEcobroSync(models.Model):
         ### RECORREMOS EL FAIL
         for o in response2['fail']:
           ### SI LA VARIABLE ESTA VACIA 
-          if receipt == "":
+          if receipts == "":
             ### ESCRIBIMOS EL PRIMER DATO
             receipts = "{}".format(o['afectacionID'])
           ### SI NO
