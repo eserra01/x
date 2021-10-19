@@ -254,13 +254,17 @@ class account_Payment(models.Model):
 
         ### Proceso para empresa fiscal ###
         if es_fiscal:            
-          impuesto_IVA = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', payment.company_id.id)]) # Buscar impuesto de IVA
-          if not impuesto_IVA:
-            raise ValidationError("No se encontró el impuesto con nombre IVA")
-
-          # Buscar contra cuenta de IVA
-          if not impuesto_IVA.inverse_tax_account:
-            raise ValidationError("No se ha definido la contra cuenta de IVA en el impuesto IVA")
+          
+          # Buscar impuesto a aplicar: para funeraria se utiliza el impuesto con nombre "IVA FUNERARIA", para los demas tipos de pago se utiliza el impuesto con nombre "IVA"
+          impuesto_IVA = 0
+          if payment.reference == 'payment_mortuary':
+            impuesto_IVA = self.env['account.tax'].search([('name','=','IVA FUNERARIA'), ('company_id','=', payment.company_id.id)])
+            if not impuesto_IVA:
+              raise ValidationError("No se encontró el impuesto con nombre IVA FUNERARIA")
+          else:
+            impuesto_IVA = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', payment.company_id.id)])
+            if not impuesto_IVA:
+              raise ValidationError("No se encontró el impuesto con nombre IVA")
             
           # Buscar cuenta a aplicar en linea de repartición de impuesto
           linea_de_impuesto = impuesto_IVA.invoice_repartition_line_ids.filtered_domain([
