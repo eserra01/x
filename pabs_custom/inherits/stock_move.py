@@ -393,6 +393,33 @@ class StockMove(models.Model):
     return self
 
   @api.model
+  def write(self, vals):
+    ### as-ov Validar enganche > 0 ###
+    picking_id = self.env['stock.picking'].browse(self.picking_id.id)
+    if picking_id.type_transfer == 'as-ov':
+      
+      inversion_inicial = 0
+      if vals.get('inversion_inicial'):
+        inversion_inicial = vals.get('inversion_inicial')
+      else:
+        inversion_inicial = self.inversion_inicial
+      
+      if inversion_inicial <= 0:
+        raise ValidationError("La inversión inicial de una solicitud está en cero")
+
+      toma_comision = 0
+      if vals.get('toma_comision'):
+        toma_comision = vals.get('toma_comision')
+      else:
+        toma_comision = self.toma_comision
+
+      importe_recibido = inversion_inicial - toma_comision
+      if importe_recibido < self.papeleria:
+        raise ValidationError("El importe recibido de una solicitud es menor a la papeleria")
+
+    return super(StockMove, self).write(vals)
+
+  @api.model
   def create(self, vals):
     picking_obj = self.env['stock.picking']
     move_line_obj = self.env['stock.move.line']
@@ -426,6 +453,14 @@ class StockMove(models.Model):
         }
         move_line_obj.create(data)
         lot_id.employee_id = picking_id.employee_id.id or False
+
+        # as-ov Validar enganche > 0
+        if picking_id.type_transfer == 'as-ov':
+          if vals.get('inversion_inicial') <= 0:
+            raise ValidationError("La inversión inicial de una solicitud está en cero")
+          if self.amount_received < self.papeleria:
+            raise ValidationError("El importe recibido de una solicitud es menor a la papeleria")
+
         ### SI EL MOVIMIENTO ES OFICINA DE VENTAS - ASISTENTE
         if picking_id.type_transfer == 'ov-as':
           location_id = picking_id.location_id
