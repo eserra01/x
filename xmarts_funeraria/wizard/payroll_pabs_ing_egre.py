@@ -136,7 +136,7 @@ class ReportAttendanceRecapINGEGRE(models.AbstractModel):
         # ]
 
         egresos_lista_comisionistas = []
-        egresos_sin_clasificar = {} #SOLO FIDEICOMISO
+        egresos_sin_clasificar = [] #Fideicomiso e IVA
         total_egresos = 0
 
         #Consultar id de cargo papeleria
@@ -147,7 +147,7 @@ class ReportAttendanceRecapINGEGRE(models.AbstractModel):
             ('payment_date', '>=', date_start), 
             ('payment_date', '<=', date_end),
             ('payment_status', 'in', ['posted','sent','reconciled']),
-            ('actual_commission_paid', '>', 0),
+            ('actual_commission_paid', '!=', 0),
             ('job_id', 'not in', [cargo_papeleria.id])
             ]
         )
@@ -161,22 +161,66 @@ class ReportAttendanceRecapINGEGRE(models.AbstractModel):
         if lista_salidas_error != "":
             raise ValidationError(lista_salidas_error)
 
-        ### EGRESOS SIN CLASIFICAR (Fideicomiso)
+        ### EGRESOS SIN CLASIFICAR (Fideicomiso e IVA)
         #Filtrar las salidas por cargo de fideicomiso
-        cargo_fideicomiso = self.env['hr.job'].search([('name','=','FIDEICOMISO')])
+        cargo_fideicomiso = self.env['hr.job'].search([('name','=','FIDEICOMISO'), ('company_id', '=', self.env.company.id)])
+        if not cargo_fideicomiso:
+            raise ValidationError("No se encontró el cargo FIDEICOMISO")
 
-        salidas_fideicomiso = salidas.filtered_domain([('job_id','=',cargo_fideicomiso.id)])
+        salidas_fideicomiso = salidas.filtered(lambda x: x.job_id.id == cargo_fideicomiso.id and x.actual_commission_paid > 0)
 
-        total_fideicomiso = 0
-        for salida in salidas_fideicomiso:
-            total_fideicomiso = total_fideicomiso + salida.actual_commission_paid
+        if salidas_fideicomiso:
+            total_fideicomiso = sum(salidas_fideicomiso.mapped('actual_commission_paid'))
+            egresos_sin_clasificar.append({
+                'codigo_comisionista': '', 
+                'nombre_comisionista': 'FIDEICOMISO', 
+                'cantidad_egresos': total_fideicomiso
+            })
 
-        total_egresos = total_egresos + total_fideicomiso
-        egresos_sin_clasificar.update({'codigo_comisionista': '', 'nombre_comisionista': 'FIDEICOMISO', 'cantidad_egresos':total_fideicomiso} )
+            total_egresos = total_egresos + total_fideicomiso
+
+        aplica_iva = self.env.company.apply_taxes
+        cargo_iva = 0
+        if aplica_iva:
+            # Salidas de fideicomiso que subsidian IVA
+            salidas_subsidio = salidas.filtered(lambda x: x.job_id.id == cargo_fideicomiso.id and x.actual_commission_paid < 0)
+
+            if salidas_subsidio:
+                subsidio_fideicomiso = sum(salidas_subsidio.mapped('actual_commission_paid'))
+                egresos_sin_clasificar.append({
+                    'codigo_comisionista': '', 
+                    'nombre_comisionista': 'SUBSIDIO FIDEICOMISO', 
+                    'cantidad_egresos': subsidio_fideicomiso
+                })
+
+                total_egresos = total_egresos + subsidio_fideicomiso
+
+            # Salidas por cargo de IVA
+            cargo_iva = self.env['hr.job'].search([('name','=','IVA'), ('company_id', '=', self.env.company.id)])
+
+            if not cargo_iva:
+                raise ValidationError("No se encontró el cargo IVA")
+
+            salidas_IVA = salidas.filtered(lambda x: x.job_id.id == cargo_iva.id)
+
+            if salidas_IVA:
+                total_iva = sum(salidas_IVA.mapped('actual_commission_paid'))
+
+                egresos_sin_clasificar.append({
+                    'codigo_comisionista': '', 
+                    'nombre_comisionista': 'IVA', 
+                    'cantidad_egresos': total_iva
+                })
+
+                total_egresos = total_egresos + total_iva
 
         ### EGRESOS CLASIFICADOS
-        #Quitar el cargo de fideicomiso al recordset de salidas
-        salidas_comisionistas = salidas.filtered_domain([('job_id', '!=', cargo_fideicomiso.id)])
+        #Quitar los egresos no clasificados al recordset de salidas}
+        salidas_comisionistas = []
+        if aplica_iva:
+            salidas_comisionistas = salidas.filtered(lambda x: x.job_id.id not in (cargo_fideicomiso.id, cargo_iva.id) )
+        else:
+            salidas_comisionistas = salidas.filtered(lambda x: x.job_id.id != cargo_fideicomiso.id)
 
         #Obtener el comisionista único de todas las salidas y ordenar por codigo
         codigos_unicos = salidas_comisionistas.mapped(lambda salida: salida.comission_agent_id)
@@ -221,7 +265,7 @@ class ReportAttendanceRecapINGEGRE(models.AbstractModel):
             'lista_ingresos':   ingresos_lista_cobradores,
             'total_ingresos':   total_ingresos,
             'lista_egresos':    egresos_lista_comisionistas,
-            'egresos_fideicomiso': egresos_sin_clasificar,
+            'lista_egresos_sin_clasificar': egresos_sin_clasificar,
             'total_egresos':    total_egresos
         }
         

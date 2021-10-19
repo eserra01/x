@@ -128,12 +128,14 @@
                 <tbody>
                     <!-- EGRESOS SIN CLASIFICAR (FIDEICOMISO) -->
                     <tr><td><strong>EGRESOS<br/>01 SIN CLASIFICAR</strong></td> <td colspan="3"></td> </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td><span t-esc="egresos_fideicomiso.get('nombre_comisionista')"></span></td>
-                        <td>$<span t-esc="'{0:,.2f}'.format(egresos_fideicomiso.get('cantidad_egresos'))"/></td>
-                    </tr>
+                    <t t-foreach="lista_egresos_sin_clasificar" t-as="cobrador">
+                        <tr>
+                            <td></td>
+                            <td><span t-esc="cobrador.get('codigo_comisionista')"/></td>
+                            <td><span t-esc="cobrador.get('nombre_comisionista')"/></td>
+                            <td>$<span t-esc="'{0:,.2f}'.format(cobrador.get('cantidad_egresos'))"/></td>
+                        </tr>
+                    </t>
 
                     <!-- EGRESOS CLASIFICADOS (COMISIONISTAS) -->
                     <tr><td><strong>02 CLASIFICADOS</strong></td> <td colspan="3"></td> </tr>
