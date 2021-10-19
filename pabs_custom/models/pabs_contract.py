@@ -351,16 +351,32 @@ class PABSContracts(models.Model):
     partner_obj = self.env['res.partner']
     lot_obj = self.env['stock.production.lot']
     lot_id = lot_obj.browse(vals.get('lot_id'))
+    account_obj = self.env['account.account']
+
+    # Buscar cuentas contables
+    cuenta_a_cobrar = account_obj.search([('code','=','110.01.001'),('company_id','=',self.env.company.id)]) #Afiliaciones plan previsión
+    cuenta_a_pagar = account_obj.search([('code','=','201.01.001'),('company_id','=',self.env.company.id)]) #Proveedores nacionales
+
+    if not cuenta_a_cobrar:
+      raise ValidationError("No se encontró la cuenta 110.01.001 Afiliaciones plan previsión")
+
+    if not cuenta_a_pagar:
+      raise ValidationError("No se encontró la cuenta 201.01.001 Proveedores nacionales")
+
     if lot_id:
       partner_id = partner_obj.search([
         ('name','=',lot_id.name)])
       if partner_id:
+        partner_id.write({"property_account_receivable_id": cuenta_a_cobrar.id, "property_account_payable_id": cuenta_a_pagar.id})
         return partner_id
       else: 
         data = {
           'company_type' : 'person',
           'name' : lot_id.name,
+          "property_account_receivable_id": cuenta_a_cobrar.id, 
+          "property_account_payable_id": cuenta_a_pagar.id
         }
+
       return partner_obj.create(data)
 
   @api.model
