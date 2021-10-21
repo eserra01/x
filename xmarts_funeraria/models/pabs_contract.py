@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
+from datetime import date
+import calendar
 
 class PabsContract(models.Model):
     _inherit = "pabs.contract"
@@ -78,255 +81,289 @@ class PabsContract(models.Model):
                 return pay
 
     def estimated_payment_date(self, pay):
-        date_term = ""
-        for rec in pay:
-            date_term = rec["date"]
-
-        
-        return date_term
+        return pay[-1]["date"]
 
     def late_amount_from_table(self, pay):
         late_amount = 0
         for rec in pay:
-            today = fields.Datetime.today()
-            if rec["date"] < today:
+            today = date.today()
+            if rec["date"] <= today:
                 late_amount = late_amount + rec['amount_p']
                 
         return late_amount
-            
 
-    def estimated_payment(self, ids):
+    def calcular_saldo_a_plazos(self):
+        # total facturado
+        total_facturado = self.product_price
+
+        #Obtener cantidad entregada en bono de inversión inicial
+        total_bono = sum(self.refund_ids.filtered(lambda r: r.type == 'out_refund' and r.state == 'posted').mapped('amount_total'))
+
+        #Obtener cantidad por traspasos
+        traspasos = self.transfer_balance_ids.filtered(lambda x: x.move_id.state == 'posted')
+        total_traspasos = 0
+        if len(traspasos) > 0:
+            total_traspasos = sum(traspasos.mapped('debit'))
+
+        #Cantidad a programar (no se toma en cuenta traspasos ni recibos de enganche: inversion, excedente y bono)
+        saldo_a_plazos = total_facturado - self.initial_investment - total_bono - total_traspasos
+
+        return saldo_a_plazos
+            
+    ### GENERAR ESTIMADO DE PAGOS ###
+    def estimated_payment(self):
         for rec in self:
-            ### total facturado
-            total_facturado = sum(self.refund_ids.filtered(lambda r: r.type == 'out_invoice' and r.state == 'posted').mapped('amount_total'))
+
+            #Total facturado
+            total_facturado = rec.product_price
 
             #Obtener cantidad entregada en bono de inversión inicial
-            total_bono = sum(self.refund_ids.filtered(lambda r: r.type == 'out_refund' and r.state == 'posted').mapped('amount_total'))
+            total_bono = sum(rec.refund_ids.filtered(lambda r: r.type == 'out_refund' and r.state == 'posted').mapped('amount_total'))
 
-            #Cantidad a programar (no se toma en cuenta recibos de enganche: inversion, excedente y bono)
-            saldo_a_plazos = total_facturado - rec.initial_investment - total_bono
+            #Obtener cantidad por traspasos
+            traspasos = rec.transfer_balance_ids.filtered(lambda x: x.move_id.state == 'posted')
+            total_traspasos = 0
+            if len(traspasos) > 0:
+                total_traspasos = sum(traspasos.mapped('debit'))
 
+            #Cantidad a programar (no se toma en cuenta traspasos ni recibos de enganche: inversion, excedente y bono)
+            saldo_a_plazos = total_facturado - rec.initial_investment - total_bono - total_traspasos
+
+            #Obtener monto abonado
+            abonado = rec.paid_balance - rec.initial_investment - total_bono - total_traspasos
+            
+            ### Forma de pago: SEMANAL
             if rec.way_to_payment == 'weekly':
-                
-                payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment'),('state','in',('posted','reconciled'))])
-                paid = 0
-                if payment:
-                    for p in payment:
-                        paid += p.amount
-                print("---------",paid)
-                i = saldo_a_plazos
                 cont = 0
-                date = rec.date_first_payment - relativedelta(days=7)
+                siguiente_fecha = rec.date_first_payment
                 pay = []
-                while i > 0:
-                    i -= rec.payment_amount
+
+                while saldo_a_plazos > 0:
                     cont += 1
-                    date_new = fields.Datetime.from_string(date) + relativedelta(days=7)
-                    date = date_new
-                    print("c vale", i)
-                    if i > 0:
-                        if paid > 0:
-                            if paid > rec.payment_amount:
+                    saldo_a_plazos = saldo_a_plazos - rec.payment_amount
+
+                    #Si hay saldo por programar
+                    if saldo_a_plazos > 0:
+                        
+                        #Si hay monto abonado
+                        if abonado > 0:
+                            #Si el monto abonado es mayor al monto programado
+                            if abonado > rec.payment_amount:
                                 vals = {
                                     'item': cont,
-                                    'date': date_new,
+                                    'date': siguiente_fecha,
+                                    'saldo': saldo_a_plazos,
                                     'amount': rec.payment_amount,
                                     'amount_p': 0.00,
                                 }
                                 pay.append(vals)
-                                paid -= rec.payment_amount
+                                abonado = abonado - rec.payment_amount
+                            #Si el monto abonado es menor o igual al monto programado
                             else:
                                 vals = {
                                     'item': cont,
-                                    'date': date_new,
+                                    'date': siguiente_fecha,
+                                    'saldo': saldo_a_plazos - abonado,
                                     'amount': rec.payment_amount,
-                                    'amount_p': rec.payment_amount - paid,
+                                    'amount_p': rec.payment_amount - abonado,
                                 }
                                 pay.append(vals)
-                                paid -= rec.payment_amount
+                                abonado = 0
+                        #Si ya no hay monto abonado
                         else:
                             vals = {
                                 'item': cont,
-                                'date': date_new,
+                                'date': siguiente_fecha,
+                                'saldo': saldo_a_plazos,
                                 'amount': rec.payment_amount,
                                 'amount_p': rec.payment_amount,
                             }
                             pay.append(vals)
+                    #Si ya no hay saldo a programar colocar último pago
                     else:
                         vals = {
-                                'item': cont,
-                                'date': date_new,
-                                'amount': rec.payment_amount + i,
-                                'amount_p': rec.payment_amount + i,
+                            'item': cont,
+                            'date': siguiente_fecha,
+                            'saldo': 0,
+                            'amount': rec.payment_amount + saldo_a_plazos,
+                            'amount_p': rec.payment_amount + saldo_a_plazos,
                         }
                         pay.append(vals)
 
-                               
+                    siguiente_fecha = siguiente_fecha + relativedelta(days=7)
                 return pay
 
+            ### Forma de pago: QUINCENAL
             elif rec.way_to_payment == 'biweekly':
-
-            
-                payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment'),('state','in',('posted','reconciled'))])
-                paid = 0
-                if payment:
-                    for p in payment:
-                        paid += p.amount
-                print("---------",paid)
-                i = saldo_a_plazos
                 cont = 0
-                date = rec.date_first_payment - relativedelta(days=15)
+                siguiente_fecha = rec.date_first_payment
                 pay = []
-                dates = 1
-                month = 0
-                while i > 0:
-                    if dates == 0:
-                        dates = 1
-                        i -= rec.payment_amount
-                        cont += 1
-                        date_new = fields.Datetime.from_string(date) + relativedelta(days=15)
-                        date = date_new
-                        print("c vale", i, "dates", dates)
-                        if i > 0:
-                            if paid > 0:
-                                if paid > rec.payment_amount:
-                                    vals = {
-                                        'item': cont,
-                                        'date': date_new,
-                                        'amount': rec.payment_amount,
-                                        'amount_p': 0.00,
-                                    }
-                                    pay.append(vals)
-                                    paid -= rec.payment_amount
-                                else:
-                                    vals = {
-                                        'item': cont,
-                                        'date': date_new,
-                                        'amount': rec.payment_amount,
-                                        'amount_p': rec.payment_amount - paid,
-                                    }
-                                    pay.append(vals)
-                                    paid -= rec.payment_amount
-                            else:
-                                vals = {
-                                    'item': cont,
-                                    'date': date_new,
-                                    'amount': rec.payment_amount,
-                                    'amount_p': rec.payment_amount,
-                                }
-                                pay.append(vals)
-                        else:
-                            vals = {
-                                    'item': cont,
-                                    'date': date_new,
-                                    'amount': rec.payment_amount + i,
-                                    'amount_p': rec.payment_amount + i,
-                            }
-                            pay.append(vals)
-                    else:
-                        dates = 0
-                        i -= rec.payment_amount
-                        cont += 1
-                        month += 1
-                        date_new = fields.Datetime.from_string(rec.date_first_payment) + relativedelta(months=month)
-                        date = date_new
-                        print("c vale", i, "dates", dates)
-                        if i > 0:
-                            if paid > 0:
-                                if paid > rec.payment_amount:
-                                    vals = {
-                                        'item': cont,
-                                        'date': date_new,
-                                        'amount': rec.payment_amount,
-                                        'amount_p': 0.00,
-                                    }
-                                    pay.append(vals)
-                                    paid -= rec.payment_amount
-                                else:
-                                    vals = {
-                                        'item': cont,
-                                        'date': date_new,
-                                        'amount': rec.payment_amount,
-                                        'amount_p': rec.payment_amount - paid,
-                                    }
-                                    pay.append(vals)
-                                    paid -= rec.payment_amount
-                            else:
-                                vals = {
-                                    'item': cont,
-                                    'date': date_new,
-                                    'amount': rec.payment_amount,
-                                    'amount_p': rec.payment_amount,
-                                }
-                                pay.append(vals)
-                        else:
-                            vals = {
-                                    'item': cont,
-                                    'date': date_new,
-                                    'amount': rec.payment_amount + i,
-                                    'amount_p': rec.payment_amount + i,
-                            }
-                            pay.append(vals)
-                               
-                return pay
 
-            elif rec.way_to_payment == 'monthly':
-
-            
-                payment = self.env['account.payment'].search([('contract','=', ids),('reference','=', 'payment'),('state','in',('posted','reconciled'))])
-                paid = 0
-                if payment:
-                    for p in payment:
-                        paid += p.amount
-                print("---------",paid)
-                i = saldo_a_plazos
-                cont = 0
-                date = rec.date_first_payment - relativedelta(months=1)
-                pay = []
-                while i > 0:
-                    i -= rec.payment_amount
+                while saldo_a_plazos > 0:
                     cont += 1
-                    date_new = fields.Datetime.from_string(date) + relativedelta(months=1)
-                    date = date_new
-                    print("c vale", i)
-                    if i > 0:
-                        if paid > 0:
-                            if paid > rec.payment_amount:
+                    saldo_a_plazos = saldo_a_plazos - rec.payment_amount
+
+                    #Si hay saldo por programar
+                    if saldo_a_plazos > 0:
+                        
+                        #Si hay monto abonado
+                        if abonado > 0:
+                            #Si el monto abonado es mayor al monto programado
+                            if abonado > rec.payment_amount:
                                 vals = {
                                     'item': cont,
-                                    'date': date_new,
+                                    'date': siguiente_fecha,
+                                    'saldo': saldo_a_plazos,
                                     'amount': rec.payment_amount,
                                     'amount_p': 0.00,
                                 }
                                 pay.append(vals)
-                                paid -= rec.payment_amount
+                                abonado = abonado - rec.payment_amount
+                            #Si el monto abonado es menor o igual al monto programado
                             else:
                                 vals = {
                                     'item': cont,
-                                    'date': date_new,
+                                    'date': siguiente_fecha,
+                                    'saldo': saldo_a_plazos - abonado,
                                     'amount': rec.payment_amount,
-                                    'amount_p': rec.payment_amount - paid,
+                                    'amount_p': rec.payment_amount - abonado,
                                 }
                                 pay.append(vals)
-                                paid -= rec.payment_amount
+                                abonado = 0
+                        #Si ya no hay monto abonado
                         else:
                             vals = {
                                 'item': cont,
-                                'date': date_new,
+                                'date': siguiente_fecha,
+                                'saldo': saldo_a_plazos,
                                 'amount': rec.payment_amount,
                                 'amount_p': rec.payment_amount,
                             }
                             pay.append(vals)
+                    #Si ya no hay saldo a programar colocar último pago
                     else:
                         vals = {
-                                'item': cont,
-                                'date': date_new,
-                                'amount': rec.payment_amount + i,
-                                'amount_p': rec.payment_amount + i,
+                            'item': cont,
+                            'date': siguiente_fecha,
+                            'saldo': 0,
+                            'amount': rec.payment_amount + saldo_a_plazos,
+                            'amount_p': rec.payment_amount + saldo_a_plazos,
                         }
                         pay.append(vals)
 
-                               
+                    #siguiente_fecha = siguiente_fecha + relativedelta(days=15)
+                    siguiente_fecha = self.add_one_biweek(siguiente_fecha, siguiente_fecha.day)
                 return pay
+
+            ### Forma de pago: MENSUAL
+            elif rec.way_to_payment == 'monthly':
+                cont = 0
+                siguiente_fecha = rec.date_first_payment
+                pay = []
+
+                while saldo_a_plazos > 0:
+                    cont += 1
+                    saldo_a_plazos = saldo_a_plazos - rec.payment_amount
+
+                    #Si hay saldo por programar
+                    if saldo_a_plazos > 0:
+
+                        #Si hay monto abonado
+                        if abonado > 0:
+                            #Si el monto abonado es mayor al monto programado
+                            if abonado > rec.payment_amount:
+                                vals = {
+                                    'item': cont,
+                                    'date': siguiente_fecha,
+                                    'saldo': saldo_a_plazos,
+                                    'amount': rec.payment_amount,
+                                    'amount_p': 0.00,
+                                }
+                                pay.append(vals)
+                                abonado = abonado - rec.payment_amount
+                            #Si el monto abonado es menor o igual al monto programado
+                            else:
+                                vals = {
+                                    'item': cont,
+                                    'date': siguiente_fecha,
+                                    'saldo': saldo_a_plazos - abonado,
+                                    'amount': rec.payment_amount,
+                                    'amount_p': rec.payment_amount - abonado,
+                                }
+                                pay.append(vals)
+                                abonado = 0
+                        #Si ya no hay monto abonado
+                        else:
+                            vals = {
+                                'item': cont,
+                                'date': siguiente_fecha,
+                                'saldo': saldo_a_plazos,
+                                'amount': rec.payment_amount,
+                                'amount_p': rec.payment_amount,
+                            }
+                            pay.append(vals)
+                    #Si ya no hay saldo a programar colocar último pago
+                    else:
+                        vals = {
+                                'item': cont,
+                                'date': siguiente_fecha,
+                                'saldo': 0,
+                                'amount': rec.payment_amount + saldo_a_plazos,
+                                'amount_p': rec.payment_amount + saldo_a_plazos,
+                        }
+                        pay.append(vals)
+
+                    #siguiente_fecha = siguiente_fecha + relativedelta(days=30)
+                    siguiente_fecha = self.add_one_month(siguiente_fecha, siguiente_fecha.day)               
+                return pay
+
+    def add_one_biweek(self, orig_date, dia_primer_abono):
+        #Si el dia es menor o igual a 14 se calculará en el mes actual (ejemplo si la quincena uno cae en dia 2, la quincena dos caerá en dia 16)
+        if orig_date.day <= 14:
+            new_year = orig_date.year
+            new_month = orig_date.month
+            new_day = orig_date.day + 14
+
+            if dia_primer_abono >= 28:
+                last_day_of_month = calendar.monthrange(new_year, new_month)[1]
+                new_day = min(dia_primer_abono, last_day_of_month) #Para mantener el día mas próximo al día del primer abono
+
+            return orig_date.replace(year=new_year, month=new_month, day=new_day)
+
+        #Si el día es mayor o igual a 15 se calculará con el mes siguiente (ejemplo si la quincena uno cae en dia 31, la quincena dos caerá en dia 14)
+        if orig_date.day >= 15:
+            ### Validar cambio de año ###
+            # advance year and month by one month
+            new_year = orig_date.year
+            new_month = orig_date.month + 1
+
+            # note: in datetime.date, months go from 1 to 12
+            if new_month > 12:
+                new_year = new_year + 1
+                new_month = new_month - 12
+
+            if orig_date.day >= 28:
+                new_day = 14
+            else:
+                new_day = orig_date.day - 14
+
+            return orig_date.replace(year=new_year, month=new_month, day=new_day)
+
+    def add_one_month(self, orig_date, dia_primer_abono):
+        ### Validar cambio de año ###
+        # advance year and month by one month
+        new_year = orig_date.year
+        new_month = orig_date.month + 1
+        # note: in datetime.date, months go from 1 to 12
+        if new_month > 12:
+            new_year = new_year + 1
+            new_month = new_month - 12
+
+        last_day_of_month = calendar.monthrange(new_year, new_month)[1]
+        #new_day = min(orig_date.day, last_day_of_month) #Linea original
+
+        new_day = min(dia_primer_abono, last_day_of_month) #Para mantener el día mas próximo al día del primer abono
+
+        return orig_date.replace(year=new_year, month=new_month, day=new_day)
 
                 

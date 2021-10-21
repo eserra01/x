@@ -1,193 +1,166 @@
 <?xml version="1.0"?>
 <odoo>
 	<data>
-    	<template id="xmarts_funeraria.estimado_pago">
-        <t t-call="web.html_container">
-          <t t-call="web.basic_layout">
-            <t t-foreach="docs" t-as="doc">
-              <div class="page">
+    <template id="xmarts_funeraria.estimado_pago">
+      <t t-call="web.html_container">
+        <t t-call="web.basic_layout">
+          <t t-foreach="docs" t-as="doc">
+            <div class="page">
+              <style>
+                .tabla_encabezado{
+                  border: 1px solid black; 
+                  border-collapse: collapse;
+                  text-align: center;
+                }
 
-                <table width="100%" cellspacing="0" cellpadding="0">
+                .tabla_pagos{
+                  border: none; 
+                  border-bottom: 1px solid black;
+                  text-align: center;
+                }
+              </style>
+
+              <!-- Logo y Titulo -->
+              <table width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td width="20%" rowspan="2" aling="top">
+                    <img src="xmarts_funeraria/static/description/image.png" style="width:250px;" />
+                  </td>
+                  <td  class="text-center" aling="top">
+                    <h3><strong>PABS - Programa de Apoyo De Beneficio Social <br/>ESTIMADOS DE PAGO</strong></h3>
+                  </td>
+                  <td width="20%" rowspan="2" aling="top">
+                  </td>
+                </tr>
+              </table><br/>
+
+              <!-- Datos de encabezado -->
+              <t t-set="ids" t-value="doc.id"/>
+              <t t-set="pay" t-value="doc.estimated_payment()"/>
+              <t t-set="date" t-value="doc.estimated_payment_date(pay)"/>
+              <t t-set="late_amount" t-value="doc.late_amount_from_table(pay)"/>
+
+              <table width="100%" class="tabla_encabezado">
+                <thead>
                   <tr>
-                    <td width="20%" rowspan="2" aling="top">
-                      <img src="xmarts_funeraria/static/description/image.png" style="width:250px;" />
-                    </td>
-                    <td  class="text-center" aling="top">
-                      <h3><strong>PABS - Programa de Apoyo De Beneficio Social <br/>ESTIMADOS DE PAGO</strong></h3>
-                    </td>
-                    <td width="20%" rowspan="2" aling="top">
-                    </td>
+                    <th class="tabla_encabezado">Contrato</th>
+                    <th class="tabla_encabezado">Titular</th>
+                    <th class="tabla_encabezado">Monto de pago</th>
+                    <th class="tabla_encabezado">Forma de pago</th>
                   </tr>
-                </table><br/>
+                </thead>
+                <tr>
+                  <td class="tabla_encabezado"><t t-esc="doc.name"/></td>
+                  <td class="tabla_encabezado"><t t-esc="doc.full_name"/></td>
+                  <td class="tabla_encabezado">$<t t-esc="doc.payment_amount"/></td>
+                  <td class="tabla_encabezado"><t t-esc="dict(doc._fields['way_to_payment'].selection).get(doc.way_to_payment)"/></td>
+                </tr>
+              </table>
+              <br/>
 
-                <table width="100%">
+              <table width="100%" class="tabla_encabezado">
+                <thead>
                   <tr>
-                    <td width="7%"><ins><strong>Contrato:</strong></ins></td>
-                    <td><t t-esc="doc.name"/></td>
-                    <td class="text-right" width="20%"><ins><strong>Costo:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                    <td>$<span>&amp;nbsp;&amp;nbsp;</span><t t-esc="doc.product_price"/></td>
-                    <td class="text-right" width="20%"><ins><strong>Saldo:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                    <td>$<span>&amp;nbsp;&amp;nbsp;</span><t t-esc="doc.balance"/></td>
-                    <td class="text-right" width="20%"><ins><strong>Inversión inicial:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                    <td>$<span>&amp;nbsp;&amp;nbsp;</span><t t-esc="doc.payment_amount"/></td>
+                    <th class="tabla_encabezado">Costo</th>
+                    <th class="tabla_encabezado">Saldo restante</th>
+                    <th class="tabla_encabezado">Saldo programado</th>
+                    <th class="tabla_encabezado">Monto atrasado</th>
+                    <th class="tabla_encabezado">Fecha límite de pago</th>
                   </tr>
-                </table>
+                </thead>
+                <tr>
+                  <td class="tabla_encabezado">$<t t-esc="doc.product_price"/></td>
+                  <td class="tabla_encabezado">$<t t-esc="doc.balance"/></td>
+                  <td class="tabla_encabezado">$<t t-esc="doc.calcular_saldo_a_plazos()"/></td>
+                  <td class="tabla_encabezado">$<t t-esc="late_amount"/></td>
+                  <td class="tabla_encabezado"><t t-esc="date" t-options='{"widget": "date"}'/></td>
+                </tr>
+              </table>
+              <br/>
 
+              <!-- Tabla de pagos programados -->
+              <table width="100%">
 
+                <!-- Calcular el número de filas que iran en la columna izquierda y en la derecha -->
+                <t t-set="filas" t-value="0"/>
+                <t t-foreach="pay" t-as="d">
+                  <t t-set="filas" t-value="filas + 1"/>
+                </t>
 
-                 <t t-set="ids" t-value="doc.id"/>
-                  <t t-set="pay" t-value="doc.estimated_payment(ids)"/>
-                  <t t-set="date" t-value="doc.estimated_payment_date(pay)"/>
-                  <t t-set="late_amount" t-value="doc.late_amount_from_table(pay)"/>
-                <table width="100%">
-                  <tr>
-                    <td width="7%"><ins><strong>Cliente:</strong></ins></td>
-                    <td width="40%"><t t-esc="doc.full_name"/></td>
-                    <td class="text-right" width="35%"><ins><strong>Fecha LÍmite de Pagos:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                    <td class="text-center"><t t-esc="date" t-options='{"widget": "date"}'/></td>
-                  </tr>
-                  <tr>
-                    <td width="7%"><ins><strong>Atrazado:</strong></ins></td>
-                    <td width="40%">$<span>&amp;nbsp;&amp;nbsp;</span><t t-esc="late_amount"/></td>
-                    <td class="text-right" width="35%"><ins><strong>Código Activación:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                    <td class="text-center"><t t-esc="doc.activation_code"/></td>
-                  </tr>
-                </table><br/>
+                <t t-set="filas_izq" t-value="round(filas/2,0)"/>
 
-                 <table width="100%">
-                   <t t-set="fil" t-value="0"/>
-                   <t t-foreach="pay" t-as="d">
-                     <t t-set="fil" t-value="fil + 1"/>
-                   </t>
-                  <tr>
-                    <td width="50%">
+                <tr>
+                  <!-- Columna 1 -->
+                  <td width="45%">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th class="tabla_pagos" style="width: 7%"># Pago</th>
+                          <th class="tabla_pagos" style="width: 15%">Fecha Pago</th>
+                          <th class="tabla_pagos" style="width: 9%">Saldo</th>
+                          <th class="tabla_pagos" style="width: 9%">Importe</th>
+                          <th class="tabla_pagos" style="width: 9%">Resta</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <t t-foreach="pay" t-as="d">
+                          <t t-if="d['item'] &lt;= filas_izq">
+                            <tr>
+                              <td class="tabla_pagos"><t t-esc="d['item']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['date']" t-options='{"widget": "date"}'/></td>
+                              <td class="tabla_pagos"><t t-esc="d['saldo']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['amount']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['amount_p']"/></td>
+                            </tr>
+                          </t>
+                        </t>
+                      </tbody>
+                    </table>
+                  </td>
+                  <!-- Fin columna 1 -->
+
+                  <td width="3%"/>
+
+                  <!-- Columna 2 -->
+                  <td width="45%">
                       <table class="table">
-                        <thead>
-                          <tr>
-                            <th class="text-center" style="width: 10%; border: none; border-bottom: 1px solid black;">Pago Número</th>
-                            <th class="text-center" style="width: 14%; border: none; border-bottom: 1px solid black;">Fecha Pago</th>
-                            <th class="text-center" style="width: 13%; border: none; border-bottom: 1px solid black;">Importe</th>
-                            <th class="text-center" style="width: 13%; border: none; border-bottom: 1px solid black;">Resta</th>
-                            
-                          </tr>
-                        </thead>
+                      <thead>
+                        <tr>
+                          <th class="tabla_pagos" style="width: 7%"># Pago</th>
+                          <th class="tabla_pagos" style="width: 15%">Fecha Pago</th>
+                          <th class="tabla_pagos" style="width: 9%">Saldo</th>
+                          <th class="tabla_pagos" style="width: 9%">Importe</th>
+                          <th class="tabla_pagos" style="width: 9%">Resta</th>
+                        </tr>
+                      </thead>
 
-                        <tbody>
-                          <t t-foreach="pay" t-as="d">
-                            <t t-if="d['item'] &lt; 29">
+                      <tbody>
+                        <t t-foreach="pay" t-as="d">
+                          <t t-if="d['item'] &gt; filas_izq">
                             <tr>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span/><t t-esc="d['item']"/></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span/><ins><t t-esc="d['date']" t-options='{"widget": "date"}'/></ins></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span><t t-esc="d['amount']"/></span></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span/><t t-esc="d['amount_p']"/></td>
-                             
+                              <td class="tabla_pagos"><t t-esc="d['item']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['date']" t-options='{"widget": "date"}'/></td>
+                              <td class="tabla_pagos"><t t-esc="d['saldo']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['amount']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['amount_p']"/></td>
                             </tr>
                           </t>
-                          </t>
-                        
-                        </tbody>
-                      </table>
-                    </td>
-                    <td width="50%">
-                       <table class="table">
-                        <thead>
-                          <tr>
-                            <th class="text-center" style="width: 10%; border: none; border-left: 1px solid black; border-bottom: 1px solid black;">Pago Número</th>
-                            <th class="text-center" style="width: 14%; border: none; border-bottom: 1px solid black;">Fecha Pago</th>
-                            <th class="text-center" style="width: 13%; border: none; border-bottom: 1px solid black;">Importe</th>
-                            <th class="text-center" style="width: 13%; border: none; border-bottom: 1px solid black;">Resta</th>
-                            
-                          </tr>
-                        </thead>
+                        </t>
+                      </tbody>
+                    </table>
+                  </td>
+                  <!-- Fin columna 2 -->
+                </tr>
 
-                        <tbody>
-                          <t t-foreach="pay" t-as="d">
-                            <t t-if="d['item'] > 28 and d['item'] &lt; 57">
-                            <tr>
-                              <td class="text-center" style="border-left: 1px solid black; border-bottom: 1px solid black;"><span/><t t-esc="d['item']"/></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span/><ins><t t-esc="d['date']" t-options='{"widget": "date"}'/></ins></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span><t t-esc="d['amount']"/></span></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span/><t t-esc="d['amount_p']"/></td>
-                             
-                            </tr>
-                          </t>
-                          </t>
-                        
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                  <t t-if="fil > 56">
-                  <tr>
-                    <td width="50%">
-                      <table class="table">
-                        <thead>
-                          <tr>
-                            <th class="text-center" style="width: 10%; border: none; border-bottom: 1px solid black;">Pago Número</th>
-                            <th class="text-center" style="width: 14%; border: none; border-bottom: 1px solid black;">Fecha Pago</th>
-                            <th class="text-center" style="width: 13%; border: none; border-bottom: 1px solid black;">Importe</th>
-                            <th class="text-center" style="width: 13%; border: none; border-bottom: 1px solid black;">Resta</th>
-                            
-                          </tr>
-                        </thead>
+              </table>
 
-                        <tbody>
-                          <t t-foreach="pay" t-as="d">
-                            <t t-if="d['item'] > 56 and d['item'] &lt; 85">
-                            <tr>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span/><t t-esc="d['item']"/></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span/><ins><t t-esc="d['date']" t-options='{"widget": "date"}'/></ins></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span><t t-esc="d['amount']"/></span></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span/><t t-esc="d['amount_p']"/></td>
-                             
-                            </tr>
-                          </t>
-                          </t>
-                        
-                        </tbody>
-                      </table>
-                    </td>
-                    <td width="50%">
-                       <table class="table">
-                        <thead>
-                          <tr>
-                            <th class="text-center" style="width: 10%; border: none; border-left: 1px solid black; border-bottom: 1px solid black;">Pago Número</th>
-                            <th class="text-center" style="width: 14%; border: none; border-bottom: 1px solid black;">Fecha Pago</th>
-                            <th class="text-center" style="width: 13%; border: none; border-bottom: 1px solid black;">Importe</th>
-                            <th class="text-center" style="width: 13%; border: none; border-bottom: 1px solid black;">Resta</th>
-                            
-                          </tr>
-                        </thead>
-
-                        <tbody>
-                          <t t-foreach="pay" t-as="d">
-                            <t t-if="d['item'] > 84 and d['item'] &lt; 112">
-                            <tr>
-                              <td class="text-center" style="border-left: 1px solid black; border-bottom: 1px solid black;"><span/><t t-esc="d['item']"/></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span/><ins><t t-esc="d['date']" t-options='{"widget": "date"}'/></ins></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span><t t-esc="d['amount']"/></span></td>
-                              <td class="text-center" style="border-bottom: 1px solid black;"><span/><t t-esc="d['amount_p']"/></td>
-                             
-                            </tr>
-                          </t>
-                          </t>
-                        
-                        </tbody>
-                      </table>
-                    </td>
-                  </tr>
-                   </t>
-                </table>
-
-
-                <br/>
-
-              </div>
-            </t>
+              <br/>
+            </div>
           </t>
         </t>
-    	</template>
-
+      </t>
+    </template>
   </data>
 
 	<record id="paperformat_estimado_pago" model="report.paperformat">

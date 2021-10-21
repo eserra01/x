@@ -93,7 +93,7 @@ class PabsContractsDoneReportXLSX(models.AbstractModel):
       count+=1
 
       ### BUSCAMOS LA BITACORA RELACIONADA AL CONTRATO.
-      mortuary_id = mortuary_obj.search([('tc_no_contrato' , '=', contract_id.name)])
+      mortuary_id = mortuary_obj.search([('id_contrato' , '=', contract_id.id)])
 
       ### ESCRIBIMOS LA BITACORA
       sheet.write(row, count, mortuary_id.name or 'No se encontró bitacora' or '')

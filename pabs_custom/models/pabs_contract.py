@@ -89,7 +89,7 @@ class PABSContracts(models.Model):
   status_of_contract = fields.Char(tracking=True, string="Estatus")
   contract_expires = fields.Date(tracking=True, string="Vencimiento contrato", compute ="calcular_vencimiento_y_atraso")
   days_without_payment = fields.Integer(tracking=True, string="Dias sin abonar", compute="calcular_dias_sin_abonar")
-  late_amount = fields.Float(tracking=True, string="Monto atrasado", compute="calcular_vencimiento_y_atraso")
+  late_amount = fields.Float(tracking=True, string="Monto atrasado", compute="calculo_rapido_del_monto_atrasado")
   comments = fields.Text(tracking=True, string='Comentarios de activación')
   service_detail = fields.Selection(tracking=True, selection=SERVICE, string='Detalle de servicio', default="unrealized", required="1")
 
@@ -1267,82 +1267,36 @@ class PABSContracts(models.Model):
   @api.depends('payment_amount', 'way_to_payment', 'date_first_payment')
   def calcular_vencimiento_y_atraso(self):
     for rec in self:
-      #Obtener información del contrato
-      monto_pago = rec.payment_amount
-      forma_pago = rec.way_to_payment
-      fecha_primer_abono = rec.date_first_payment
+      if rec.state == 'contract':
+        #Obtener información del contrato
+        monto_pago = rec.payment_amount
+        forma_pago = rec.way_to_payment
+        fecha_primer_abono = rec.date_first_payment
 
-      if fecha_primer_abono == False or forma_pago == False or monto_pago == False:
-        rec.contract_expires = None
-        rec.late_amount = 0
-        return
+        if fecha_primer_abono == False or forma_pago == False or monto_pago == False:
+          rec.contract_expires = None
+          rec.late_amount = 0
+          return
 
-      #Obtener cantidad entregada en bono de inversión inicial
-      bonos_por_inversion = self.env['account.move'].search([
-        ('partner_id','=',rec.partner_id.id),
-        ('type','=', 'out_refund'),
-        ('ref','=', 'Bono por inversión inicial')
-      ])
-      total_bono = sum(reg.amount_total for reg in bonos_por_inversion) or 0
+        #Obtener cantidad entregada en bono de inversión inicial
+        bonos_por_inversion = self.env['account.move'].search([
+          ('partner_id','=',rec.partner_id.id),
+          ('type','=', 'out_refund'),
+          ('ref','=', 'Bono por inversión inicial')
+        ])
+        total_bono = sum(reg.amount_total for reg in bonos_por_inversion) or 0
 
-      #Cantidad a programar (no se toma en cuenta recibos de enganche: inversion, excedente y bono)
-      saldo_a_plazos = rec.product_price - rec.initial_investment - total_bono
-      abonado = rec.paid_balance - rec.initial_investment - total_bono
+        #Cantidad a programar (no se toma en cuenta recibos de enganche: inversion, excedente y bono)
+        saldo_a_plazos = rec.product_price - rec.initial_investment - total_bono
+        abonado = rec.paid_balance - rec.initial_investment - total_bono
 
-      lista_pagos = []
-      monto_atrasado = 0
+        lista_pagos = []
+        monto_atrasado = 0
 
-      #
-      ##
-      ### Proceso exclusivo para primer pago #####
-      indice = 1
-
-      #Calcular importe a pagar
-      importe_a_pagar = 0
-
-      if saldo_a_plazos >= monto_pago:
-        importe_a_pagar = monto_pago
-      else:
-        importe_a_pagar = saldo_a_plazos
-
-      #Calcular importe restante
-      importe_restante = 0
-      
-      if abonado >= importe_a_pagar:
-        importe_restante = 0
-        abonado = abonado - importe_a_pagar
-      else:
-        importe_restante = importe_a_pagar - abonado
-        abonado = 0
-
-      #Calcular importe_pagado
-      importe_pagado = importe_a_pagar - importe_restante
-
-      #Sumar al monto atrasado
-      if fecha_primer_abono < fields.Date.today():
-        monto_atrasado = monto_atrasado + importe_restante
-
-      pago = {
-        "numero_de_pago": indice, 
-        "fecha_pago": fecha_primer_abono,
-        "importe_a_pagar": importe_a_pagar,
-        "importe_restante": importe_restante,
-        "importe_pagado": importe_pagado,
-        "saldo_restante": saldo_a_plazos,
-        "monto_atrasado": monto_atrasado
-      }
-
-      lista_pagos.append(pago)
-
-      saldo_a_plazos = saldo_a_plazos - importe_a_pagar
-      indice = indice + 1
-
-      fecha_pago_anterior = fecha_primer_abono
-      
-      #
-      ##
-      ### Proceso exclusivo para los demas pagos #####
-      while saldo_a_plazos > 0:
+        #
+        ##
+        ### Proceso exclusivo para primer pago #####
+        indice = 1
 
         #Calcular importe a pagar
         importe_a_pagar = 0
@@ -1365,26 +1319,13 @@ class PABSContracts(models.Model):
         #Calcular importe_pagado
         importe_pagado = importe_a_pagar - importe_restante
 
-        #Calcular siguiente fecha
-        fecha_pago = ""
-        if forma_pago == 'weekly':
-          fecha_pago = fecha_pago_anterior + timedelta(days=7)
-          fecha_pago_anterior = fecha_pago
-        elif forma_pago == 'biweekly':
-          pass
-          fecha_pago = rec.add_one_biweek(fecha_pago_anterior, fecha_primer_abono.day)
-          fecha_pago_anterior = fecha_pago
-        elif forma_pago == 'monthly':
-          fecha_pago = rec.add_one_month(fecha_pago_anterior, fecha_primer_abono.day)
-          fecha_pago_anterior = fecha_pago
-
         #Sumar al monto atrasado
-        if fecha_pago < fields.Date.today():
+        if fecha_primer_abono < fields.Date.today():
           monto_atrasado = monto_atrasado + importe_restante
 
         pago = {
           "numero_de_pago": indice, 
-          "fecha_pago": fecha_pago,
+          "fecha_pago": fecha_primer_abono,
           "importe_a_pagar": importe_a_pagar,
           "importe_restante": importe_restante,
           "importe_pagado": importe_pagado,
@@ -1393,16 +1334,160 @@ class PABSContracts(models.Model):
         }
 
         lista_pagos.append(pago)
-        
+
         saldo_a_plazos = saldo_a_plazos - importe_a_pagar
         indice = indice + 1
 
-      #retornar valores de actualización
-      fecha_vencimiento = fecha_pago_anterior.strftime("%Y-%m-%d")
-      
-      #Actualizaciones a los campos
-      rec.contract_expires = fecha_vencimiento
-      rec.late_amount = monto_atrasado
+        fecha_pago_anterior = fecha_primer_abono
+        
+        #
+        ##
+        ### Proceso exclusivo para los demas pagos #####
+        while saldo_a_plazos > 0:
+
+          #Calcular importe a pagar
+          importe_a_pagar = 0
+
+          if saldo_a_plazos >= monto_pago:
+            importe_a_pagar = monto_pago
+          else:
+            importe_a_pagar = saldo_a_plazos
+
+          #Calcular importe restante
+          importe_restante = 0
+          
+          if abonado >= importe_a_pagar:
+            importe_restante = 0
+            abonado = abonado - importe_a_pagar
+          else:
+            importe_restante = importe_a_pagar - abonado
+            abonado = 0
+
+          #Calcular importe_pagado
+          importe_pagado = importe_a_pagar - importe_restante
+
+          #Calcular siguiente fecha
+          fecha_pago = ""
+          if forma_pago == 'weekly':
+            fecha_pago = fecha_pago_anterior + timedelta(days=7)
+            fecha_pago_anterior = fecha_pago
+          elif forma_pago == 'biweekly':
+            pass
+            fecha_pago = rec.add_one_biweek(fecha_pago_anterior, fecha_primer_abono.day)
+            fecha_pago_anterior = fecha_pago
+          elif forma_pago == 'monthly':
+            fecha_pago = rec.add_one_month(fecha_pago_anterior, fecha_primer_abono.day)
+            fecha_pago_anterior = fecha_pago
+
+          #Sumar al monto atrasado
+          if fecha_pago < fields.Date.today():
+            monto_atrasado = monto_atrasado + importe_restante
+
+          pago = {
+            "numero_de_pago": indice, 
+            "fecha_pago": fecha_pago,
+            "importe_a_pagar": importe_a_pagar,
+            "importe_restante": importe_restante,
+            "importe_pagado": importe_pagado,
+            "saldo_restante": saldo_a_plazos,
+            "monto_atrasado": monto_atrasado
+          }
+
+          lista_pagos.append(pago)
+          
+          saldo_a_plazos = saldo_a_plazos - importe_a_pagar
+          indice = indice + 1
+
+        #retornar valores de actualización
+        fecha_vencimiento = fecha_pago_anterior.strftime("%Y-%m-%d")
+        
+        #Actualizaciones a los campos
+        rec.contract_expires = fecha_vencimiento
+        #rec.late_amount = monto_atrasado
+
+  @api.depends('payment_amount', 'way_to_payment', 'date_first_payment')
+  def calculo_rapido_del_monto_atrasado(self):
+    # ('weekly','Semanal'),
+    # ('biweekly','Quincenal'),
+    # ('monthly', 'Mensual')]
+    for rec in self:
+      if rec.state == 'contract':
+        #Obtener cantidad entregada en bono de inversión inicial
+        total_bono = sum(rec.refund_ids.filtered(lambda r: r.type == 'out_refund' and r.state == 'posted').mapped('amount_total'))
+
+        #Obtener cantidad por traspasos
+        traspasos = rec.transfer_balance_ids.filtered(lambda x: x.move_id.state == 'posted')
+        total_traspasos = 0
+        if len(traspasos) > 0:
+            total_traspasos = sum(traspasos.mapped('debit'))
+
+        #Obtener monto abonado menos bonos y traspasos
+        abonado = rec.paid_balance - rec.initial_investment - total_bono - total_traspasos
+        monto_atrasado = 0
+
+        fecha_hoy = date.today()
+        fecha_primer_abono = rec.date_first_payment
+
+        ### Forma de pago: SEMANAL
+        if rec.way_to_payment == 'weekly':
+          dias_transcurridos = fecha_hoy - fecha_primer_abono
+          semanas = 0
+
+          if dias_transcurridos.days % 7 != 0:
+            semanas = math.ceil(dias_transcurridos.days/7)
+          else:
+            semanas = dias_transcurridos.days/7
+
+          estimado_abonado = semanas * rec.payment_amount  
+          monto_atrasado = estimado_abonado - abonado
+
+        ### Forma de pago: QUINCENAL
+        elif rec.way_to_payment == 'biweekly':
+          meses = (fecha_hoy.year - fecha_primer_abono.year) * 12 + (fecha_hoy.month - fecha_primer_abono.month)
+          quincenas = meses * 2
+
+          periodo_quincena = 0 #Utilizado en excel de donde se originó este proceso
+          dia_segunda_quincena = 0
+
+          #La primer quincena esta antes del dia 14
+          if fecha_primer_abono.day <= 14:
+            periodo_quincena = 1
+            dia_segunda_quincena = fecha_primer_abono.day + 14
+
+            if fecha_hoy.day >= dia_segunda_quincena:
+              quincenas = quincenas + 2
+            else:
+              quincenas = quincenas + 1
+          #La primer quincena esta después del dia 14
+          else:
+            periodo_quincena = 2
+            dia_segunda_quincena = fecha_primer_abono.day - 14
+            if fecha_hoy.day < fecha_primer_abono.day:
+              pass #No es necesario cambiar el número de quincenas
+            else:
+              quincenas = quincenas + 1
+
+          estimado_abonado = quincenas * rec.payment_amount  
+          monto_atrasado = estimado_abonado - abonado
+
+        ### Forma de pago: MENSUAL
+        elif rec.way_to_payment == 'monthly':
+          meses = (fecha_hoy.year - fecha_primer_abono.year) * 12 + (fecha_hoy.month - fecha_primer_abono.month)
+
+          if fecha_hoy.day >= fecha_primer_abono.day:
+            meses = meses + 1
+
+          estimado_abonado = meses * rec.payment_amount  
+          monto_atrasado = estimado_abonado - abonado
+        
+        ### Otra forma de pago???
+        else:
+          monto_atrasado = 99999
+
+        ###Asignar monto atrasado
+        if monto_atrasado < 0:
+          monto_atrasado = 0
+        rec.late_amount = monto_atrasado
 
   def add_one_month(self, orig_date, dia_primer_abono):
 
