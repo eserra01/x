@@ -78,84 +78,82 @@
               </table>
               <br/>
 
-              <div>
-                <!-- Tabla de pagos programados -->
-                <table width="100%">
+              <!-- Tabla de pagos programados -->
+              <table width="100%">
 
-                  <!-- Calcular el número de filas que iran en la columna izquierda y en la derecha -->
-                  <t t-set="filas" t-value="0"/>
-                  <t t-foreach="pay" t-as="d">
-                    <t t-set="filas" t-value="filas + 1"/>
-                  </t>
+                <!-- Calcular el número de filas que iran en la columna izquierda y en la derecha -->
+                <t t-set="filas" t-value="0"/>
+                <t t-foreach="pay" t-as="d">
+                  <t t-set="filas" t-value="filas + 1"/>
+                </t>
 
-                  <t t-set="filas_izq" t-value="round(filas/2,0)"/>
+                <t t-set="filas_izq" t-value="round(filas/2,0)"/>
 
-                  <tr>
-                    <!-- Columna 1 -->
-                    <td width="45%">
+                <tr style="page-break-inside: avoid">
+                  <!-- Columna 1 -->
+                  <td width="45%">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th class="tabla_pagos" style="width: 7%"># Pago</th>
+                          <th class="tabla_pagos" style="width: 15%">Fecha Pago</th>
+                          <th class="tabla_pagos" style="width: 9%">Saldo</th>
+                          <th class="tabla_pagos" style="width: 9%">Importe</th>
+                          <th class="tabla_pagos" style="width: 9%">Resta</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <t t-foreach="pay" t-as="d">
+                          <t t-if="d['item'] &lt;= filas_izq">
+                            <tr>
+                              <td class="tabla_pagos"><t t-esc="d['item']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['date']" t-options='{"widget": "date"}'/></td>
+                              <td class="tabla_pagos"><t t-esc="d['saldo']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['amount']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['amount_p']"/></td>
+                            </tr>
+                          </t>
+                        </t>
+                      </tbody>
+                    </table>
+                  </td>
+                  <!-- Fin columna 1 -->
+
+                  <td width="3%"/>
+
+                  <!-- Columna 2 -->
+                  <td width="45%">
                       <table class="table">
-                        <thead>
-                          <tr>
-                            <th class="tabla_pagos" style="width: 7%"># Pago</th>
-                            <th class="tabla_pagos" style="width: 15%">Fecha Pago</th>
-                            <th class="tabla_pagos" style="width: 9%">Saldo</th>
-                            <th class="tabla_pagos" style="width: 9%">Importe</th>
-                            <th class="tabla_pagos" style="width: 9%">Resta</th>
-                          </tr>
-                        </thead>
+                      <thead>
+                        <tr>
+                          <th class="tabla_pagos" style="width: 7%"># Pago</th>
+                          <th class="tabla_pagos" style="width: 15%">Fecha Pago</th>
+                          <th class="tabla_pagos" style="width: 9%">Saldo</th>
+                          <th class="tabla_pagos" style="width: 9%">Importe</th>
+                          <th class="tabla_pagos" style="width: 9%">Resta</th>
+                        </tr>
+                      </thead>
 
-                        <tbody>
-                          <t t-foreach="pay" t-as="d">
-                            <t t-if="d['item'] &lt;= filas_izq">
-                              <tr>
-                                <td class="tabla_pagos"><t t-esc="d['item']"/></td>
-                                <td class="tabla_pagos"><t t-esc="d['date']" t-options='{"widget": "date"}'/></td>
-                                <td class="tabla_pagos"><t t-esc="d['saldo']"/></td>
-                                <td class="tabla_pagos"><t t-esc="d['amount']"/></td>
-                                <td class="tabla_pagos"><t t-esc="d['amount_p']"/></td>
-                              </tr>
-                            </t>
+                      <tbody>
+                        <t t-foreach="pay" t-as="d">
+                          <t t-if="d['item'] &gt; filas_izq">
+                            <tr>
+                              <td class="tabla_pagos"><t t-esc="d['item']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['date']" t-options='{"widget": "date"}'/></td>
+                              <td class="tabla_pagos"><t t-esc="d['saldo']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['amount']"/></td>
+                              <td class="tabla_pagos"><t t-esc="d['amount_p']"/></td>
+                            </tr>
                           </t>
-                        </tbody>
-                      </table>
-                    </td>
-                    <!-- Fin columna 1 -->
+                        </t>
+                      </tbody>
+                    </table>
+                  </td>
+                  <!-- Fin columna 2 -->
+                </tr>
 
-                    <td width="3%"/>
-
-                    <!-- Columna 2 -->
-                    <td width="45%">
-                        <table class="table">
-                        <thead>
-                          <tr>
-                            <th class="tabla_pagos" style="width: 7%"># Pago</th>
-                            <th class="tabla_pagos" style="width: 15%">Fecha Pago</th>
-                            <th class="tabla_pagos" style="width: 9%">Saldo</th>
-                            <th class="tabla_pagos" style="width: 9%">Importe</th>
-                            <th class="tabla_pagos" style="width: 9%">Resta</th>
-                          </tr>
-                        </thead>
-
-                        <tbody>
-                          <t t-foreach="pay" t-as="d">
-                            <t t-if="d['item'] &gt; filas_izq">
-                              <tr>
-                                <td class="tabla_pagos"><t t-esc="d['item']"/></td>
-                                <td class="tabla_pagos"><t t-esc="d['date']" t-options='{"widget": "date"}'/></td>
-                                <td class="tabla_pagos"><t t-esc="d['saldo']"/></td>
-                                <td class="tabla_pagos"><t t-esc="d['amount']"/></td>
-                                <td class="tabla_pagos"><t t-esc="d['amount_p']"/></td>
-                              </tr>
-                            </t>
-                          </t>
-                        </tbody>
-                      </table>
-                    </td>
-                    <!-- Fin columna 2 -->
-                  </tr>
-
-                </table>
-              </div>
+              </table>
 
               <br/>
             </div>
