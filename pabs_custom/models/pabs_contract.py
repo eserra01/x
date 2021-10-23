@@ -1267,7 +1267,7 @@ class PABSContracts(models.Model):
   @api.depends('payment_amount', 'way_to_payment', 'date_first_payment')
   def calcular_vencimiento_y_atraso(self):
     for rec in self:
-      #if rec.state == 'contract':
+      if rec.state == 'contract':
         #Obtener información del contrato
         monto_pago = rec.payment_amount
         forma_pago = rec.way_to_payment
@@ -1404,6 +1404,8 @@ class PABSContracts(models.Model):
         #Actualizaciones a los campos
         rec.contract_expires = fecha_vencimiento
         #rec.late_amount = monto_atrasado
+      else:
+        rec.contract_expires = fields.Date.today()
 
   @api.depends('payment_amount', 'way_to_payment', 'date_first_payment')
   def calculo_rapido_del_monto_atrasado(self):
@@ -1411,7 +1413,7 @@ class PABSContracts(models.Model):
     # ('biweekly','Quincenal'),
     # ('monthly', 'Mensual')]
     for rec in self:
-      #if rec.state == 'contract':
+      if rec.state == 'contract':
         #Obtener cantidad entregada en bono de inversión inicial
         total_bono = sum(rec.refund_ids.filtered(lambda r: r.type == 'out_refund' and r.state == 'posted').mapped('amount_total'))
 
@@ -1488,6 +1490,8 @@ class PABSContracts(models.Model):
         if monto_atrasado < 0:
           monto_atrasado = 0
         rec.late_amount = monto_atrasado
+      else:
+        rec.late_amount = 0
 
   def add_one_month(self, orig_date, dia_primer_abono):
 
