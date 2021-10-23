@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from re import findall as regex_findall, split as regex_split
 
@@ -396,26 +396,29 @@ class StockMove(models.Model):
   def write(self, vals):
     ### as-ov Validar enganche > 0 ###
     picking_id = self.env['stock.picking'].browse(self.picking_id.id)
+
     if picking_id.type_transfer == 'as-ov':
-      
-      inversion_inicial = 0
-      if vals.get('inversion_inicial'):
-        inversion_inicial = vals.get('inversion_inicial')
-      else:
-        inversion_inicial = self.inversion_inicial
-      
-      if inversion_inicial <= 0:
-        raise ValidationError("La inversión inicial de una solicitud está en cero")
+      for rec in self:
+        
+        inversion_inicial = 0
+        if vals.get('inversion_inicial'):
+          inversion_inicial = vals.get('inversion_inicial')
+        else:
+          inversion_inicial = rec.inversion_inicial
+        
+        if inversion_inicial <= 0:
+          raise ValidationError("La inversión inicial de una solicitud está en cero")
 
-      toma_comision = 0
-      if vals.get('toma_comision'):
-        toma_comision = vals.get('toma_comision')
-      else:
-        toma_comision = self.toma_comision
+        toma_comision = 0
+        if vals.get('toma_comision'):
+          toma_comision = vals.get('toma_comision')
+        else:
+          toma_comision = rec.toma_comision
 
-      importe_recibido = inversion_inicial - toma_comision
-      if importe_recibido < self.papeleria:
-        raise ValidationError("El importe recibido de una solicitud es menor a la papeleria")
+        importe_recibido = 0
+        importe_recibido = inversion_inicial - toma_comision
+        if importe_recibido < rec.papeleria:
+          raise ValidationError("El importe recibido de una solicitud es menor a la papeleria")
 
     return super(StockMove, self).write(vals)
 
