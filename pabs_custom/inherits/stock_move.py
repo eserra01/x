@@ -559,6 +559,9 @@ class StockMove(models.Model):
         if rec.product_uom_qty > available_quantity:
           raise ValidationError("El almacén {} solo cuenta con {} unidades. Eliga una cantidad menor".format(rec.picking_id.location_id.name, available_quantity))
 
+  ##########                              ##########
+  ##########     SALIDAS DE FUNERARIA     ##########
+  ##########                              ##########
   ### Validar que existe la bitácora
   @api.onchange('service_number')
   def onchange_service_number(self):

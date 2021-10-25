@@ -99,6 +99,7 @@
         <field name="date_of_death"/>
         <field name="place_of_death"/>
         <field name="additional"/>
+        <field name="destino_de_pago_funeraria" attrs="{'invisible': [('reference','!=','payment_mortuary')], 'required': [('reference','=','payment_mortuary')]}"/>
       </xpath>
 
        <xpath expr="//field[@name='payment_date']" position="attributes">

@@ -17,6 +17,12 @@ REFERENCE =[('payment','Abono'),
 
 TYPE_CARD =[('tdc','Tarjeta de Crédito'),
   ('tdd','Tarjeta Débito')]
+
+DESTINO_DE_PAGO_FUNERARIA =[
+  ('directo', 'Servicio directo'),
+  ('adicionales', 'Adicionales')
+]
+
 class account_Payment(models.Model):
     _inherit = 'account.payment'
 
@@ -55,6 +61,8 @@ class account_Payment(models.Model):
     transfer_reference = fields.Char(string = "Referencia")
 
     comission_output_ids = fields.One2many(comodel_name="pabs.comission.output", inverse_name="payment_id", string="Salidas de comisiones")
+
+    destino_de_pago_funeraria =  fields.Selection(selection = DESTINO_DE_PAGO_FUNERARIA, string = 'Destino de pago funeraria')
 
     def post(self):
       contract_status_obj = self.env['pabs.contract.status']
@@ -280,49 +288,142 @@ class account_Payment(models.Model):
 
           factor_iva = 1 + (impuesto_IVA.amount/100)
 
-          ### Construir los apuntes con IVA
-          apuntes = [
-            # Receivable / Payable / Transfer line. Subtotal = (Cantidad / 1.16)
-            (0, 0, {
-                'name': rec_pay_line_name,
-                'amount_currency': counterpart_amount + write_off_amount if currency_id else 0.0,
-                'currency_id': currency_id,
-                'debit': balance + write_off_balance > 0.0 and balance + write_off_balance or 0.0,
-                'credit': balance + write_off_balance < 0.0 and -balance - write_off_balance or 0.0,
-                'date_maturity': payment.payment_date,
-                'partner_id': payment.partner_id.commercial_partner_id.id,
-                'account_id': payment.destination_account_id.id,
-                'payment_id': payment.id,
-            }),
+          ### Referencia: Cobro funeraria (Existen 2 destinos de pago: 1. directo y 2. adicionales)
+          if payment.reference == 'payment_mortuary':
 
-            # Liquidity line.
-            (0, 0, {
-                'name': liquidity_line_name,
-                'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
-                'currency_id': liquidity_line_currency_id,
-                'debit': balance < 0.0 and round(-balance / factor_iva ,2) or 0.0,
-                'credit': balance > 0.0 and round(balance / factor_iva ,2) or 0.0,
-                'date_maturity': payment.payment_date,
-                'partner_id': payment.partner_id.commercial_partner_id.id,
-                'account_id': liquidity_line_account.id,
-                'payment_id': payment.id,
-            }),
+            # Buscar contra cuenta de IVA
+            if not impuesto_IVA.inverse_tax_account:
+              raise ValidationError("No se ha definido la contra cuenta de IVA en el impuesto IVA")
+            
+            ### 1. Con aplicación de IVA (SERVICIO DIRECTO)
+            if payment.destino_de_pago_funeraria == 'directo':
+              apuntes = [
+                # Receivable / Payable / Transfer line. Subtotal = (Cantidad / 1.16)
+                (0, 0, {
+                    'name': rec_pay_line_name,
+                    'amount_currency': counterpart_amount + write_off_amount if currency_id else 0.0,
+                    'currency_id': currency_id,
+                    'debit': balance + write_off_balance > 0.0 and balance + write_off_balance or 0.0,
+                    'credit': balance + write_off_balance < 0.0 and -balance - write_off_balance or 0.0,
+                    'date_maturity': payment.payment_date,
+                    'partner_id': payment.partner_id.commercial_partner_id.id,
+                    'account_id': payment.destination_account_id.id,
+                    'payment_id': payment.id,
+                }),
 
-            # IVA = Cantidad - subtotal
-            (0, 0, {
-                'name': impuesto_IVA.name,
-                'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
-                'currency_id': liquidity_line_currency_id,
-                'debit': balance < 0.0 and round(-balance - round(-balance / factor_iva ,2) ,2) or 0.0,
-                'credit': balance > 0.0 and round( balance + round(balance / factor_iva ,2) ,2) or 0.0,
-                'date_maturity': payment.payment_date,
-                'partner_id': payment.partner_id.commercial_partner_id.id,
-                'account_id': linea_de_impuesto.account_id.id,
-                'payment_id': payment.id,
-            }),
-          ]
-        else: ### Sin aplicación de IVA ###
+                # Liquidity line.
+                (0, 0, {
+                    'name': liquidity_line_name,
+                    'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
+                    'currency_id': liquidity_line_currency_id,
+                    'debit': balance < 0.0 and -balance or 0.0,
+                    'credit': balance > 0.0 and balance or 0.0,
+                    'date_maturity': payment.payment_date,
+                    'partner_id': payment.partner_id.commercial_partner_id.id,
+                    'account_id': liquidity_line_account.id,
+                    'payment_id': payment.id,
+                }),
+
+                # IVA
+                (0, 0, {
+                    'name': impuesto_IVA.name,
+                    'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
+                    'currency_id': liquidity_line_currency_id,
+                    'debit': balance < 0.0 and round(-balance - round(-balance / factor_iva ,2) ,2) or 0.0,
+                    'credit': balance > 0.0 and round( balance + round(balance / factor_iva ,2) ,2) or 0.0,
+                    'date_maturity': payment.payment_date,
+                    'partner_id': payment.partner_id.commercial_partner_id.id,
+                    'account_id': linea_de_impuesto.account_id.id,
+                    'payment_id': payment.id,
+                }),
+
+                # Contra partida de IVA
+                (0, 0, {
+                    'name': impuesto_IVA.name,
+                      'amount_currency': counterpart_amount + write_off_amount if currency_id else 0.0,
+                      'currency_id': currency_id,
+                      'debit': balance + write_off_balance > 0.0 and round(balance + write_off_balance - round( (balance + write_off_balance) / factor_iva, 2), 2)  or 0.0,
+                      'credit': balance + write_off_balance < 0.0 and round(-balance - write_off_balance - round( (-balance - write_off_balance) / factor_iva, 2), 2) or 0.0,
+                      'date_maturity': payment.payment_date,
+                      'partner_id': payment.partner_id.commercial_partner_id.id,
+                      'account_id': impuesto_IVA.inverse_tax_account.id,
+                      'payment_id': payment.id,
+                }),
+              ]
+            ### 2. SIN APLICACIÓN DE IVA (Adicionales de funeraria)
+            else:
+              apuntes = [
+              # Receivable / Payable / Transfer line.
+              (0, 0, {
+                  'name': rec_pay_line_name,
+                  'amount_currency': counterpart_amount + write_off_amount if currency_id else 0.0,
+                  'currency_id': currency_id,
+                  'debit': balance + write_off_balance > 0.0 and balance + write_off_balance or 0.0,
+                  'credit': balance + write_off_balance < 0.0 and -balance - write_off_balance or 0.0,
+                  'date_maturity': payment.payment_date,
+                  'partner_id': payment.partner_id.commercial_partner_id.id,
+                  'account_id': payment.destination_account_id.id,
+                  'payment_id': payment.id,
+              }),
+              # Liquidity line.
+              (0, 0, {
+                  'name': liquidity_line_name,
+                  'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
+                  'currency_id': liquidity_line_currency_id,
+                  'debit': balance < 0.0 and -balance or 0.0,
+                  'credit': balance > 0.0 and balance or 0.0,
+                  'date_maturity': payment.payment_date,
+                  'partner_id': payment.partner_id.commercial_partner_id.id,
+                  'account_id': liquidity_line_account.id,
+                  'payment_id': payment.id,
+              }),
+            ]
+          
+          ### Construir los apuntes con IVA para los demas tipos de pago
+          else:
+            apuntes = [
+              # Receivable / Payable / Transfer line. Subtotal = (Cantidad / 1.16)
+              (0, 0, {
+                  'name': rec_pay_line_name,
+                  'amount_currency': counterpart_amount + write_off_amount if currency_id else 0.0,
+                  'currency_id': currency_id,
+                  'debit': balance + write_off_balance > 0.0 and balance + write_off_balance or 0.0,
+                  'credit': balance + write_off_balance < 0.0 and -balance - write_off_balance or 0.0,
+                  'date_maturity': payment.payment_date,
+                  'partner_id': payment.partner_id.commercial_partner_id.id,
+                  'account_id': payment.destination_account_id.id,
+                  'payment_id': payment.id,
+              }),
+
+              # Liquidity line.
+              (0, 0, {
+                  'name': liquidity_line_name,
+                  'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
+                  'currency_id': liquidity_line_currency_id,
+                  'debit': balance < 0.0 and round(-balance / factor_iva ,2) or 0.0,
+                  'credit': balance > 0.0 and round(balance / factor_iva ,2) or 0.0,
+                  'date_maturity': payment.payment_date,
+                  'partner_id': payment.partner_id.commercial_partner_id.id,
+                  'account_id': liquidity_line_account.id,
+                  'payment_id': payment.id,
+              }),
+
+              # IVA = Cantidad - subtotal
+              (0, 0, {
+                  'name': impuesto_IVA.name,
+                  'amount_currency': -liquidity_amount if liquidity_line_currency_id else 0.0,
+                  'currency_id': liquidity_line_currency_id,
+                  'debit': balance < 0.0 and round(-balance - round(-balance / factor_iva ,2) ,2) or 0.0,
+                  'credit': balance > 0.0 and round( balance + round(balance / factor_iva ,2) ,2) or 0.0,
+                  'date_maturity': payment.payment_date,
+                  'partner_id': payment.partner_id.commercial_partner_id.id,
+                  'account_id': linea_de_impuesto.account_id.id,
+                  'payment_id': payment.id,
+              }),
+            ]
+        ### Sin aplicación de IVA ###
         ##### FIN MODIFICACIONES FISCAL #####
+        else: 
           apuntes = [
             # Receivable / Payable / Transfer line.
             (0, 0, {
