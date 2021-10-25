@@ -45,6 +45,21 @@ class PabsBankDeposits(models.TransientModel):
         'cashier' : 'Cajero uno',
         'ref' : 'Referencia 1',
         'id_ref' : '1',
+        'aplica_iva' : 'True'
+      }
+    ])
+
+    rec_data.append([0,0,
+      {
+        'bank_name' : 'Oficina',
+        'employee_code' : 'C0002',
+        'debt_collector' : 'COBRADOR 2',
+        'amount' : 200,
+        'deposit_date' : '2021-09-20 00:00:00',
+        'cashier' : 'Cajero dos',
+        'ref' : 'Referencia 2',
+        'id_ref' : '2',
+        'aplica_iva' : 'False'
       }
     ])
 
@@ -125,23 +140,13 @@ class PabsBankDeposits(models.TransientModel):
       'journal_id' : journal_id,
       'company_id' : company_id.id,
     }
-    ids_line = []
-    lines = []
-    ### Reccorremos detalles
-    for line in self.deposit_line_ids:
-      ids_line.append(line.id_ref)
-      if line.account_id:
-        lines.append([0,0,{
-          'account_id' : line.account_id.id,
-          'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
-          'debit' : line.amount,
-          'credit' : 0,
-        }])
-      else:
-        raise ValidationError("No se encontró la cuenta para el banco: {}".format(line.bank_name))
+    
+    ids_line = [] #Arreglo con ids de depósitos a actualizar en eCobro
+    lines = [] #Arreglo para apuntes contables
+    
     if company_id.inverse_account:
 
-      # Si es fiscal
+      ##### MODIFICACIONES FISCAL 20-09-2021 #####
       if self.env.company.apply_taxes:
         # Buscar impuesto de IVA
         impuesto_IVA = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', self.env.company.id)])
@@ -152,27 +157,88 @@ class PabsBankDeposits(models.TransientModel):
         if not impuesto_IVA.inverse_tax_account:
           raise ValidationError("No se ha definido la contra cuenta de IVA en el impuesto IVA")
 
+        # Llenar arreglos de ids y de apuntes
+        for line in self.deposit_line_ids:
+          ids_line.append(line.id_ref)
+          if line.account_id:
+            if line.aplica_iva:
+              lines.append([0,0,{
+                'account_id' : line.account_id.id,
+                'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
+                'debit' : line.amount,
+                'credit' : 0,
+                'tax_ids' : [(4, impuesto_IVA.id, 0)]
+              }])
+            else:
+              lines.append([0,0,{
+                'account_id' : line.account_id.id,
+                'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
+                'debit' : line.amount,
+                'credit' : 0
+              }])
+          else:
+            raise ValidationError("No se encontró la cuenta para el banco: {}".format(line.bank_name))
+
         factor_iva = 1 + (impuesto_IVA.amount / 100)
 
-        #Linea de crédito
-        lines.append([0,0,{
-          'account_id' : company_id.inverse_account.id,
-          'name' : 'Depósitos PABS',
-          'debit' : 0,
-          'credit' : round(self.total / factor_iva, 2),
-          'analytic_account_id' : analytic_account_id,
-        }])
+        #Obtener totales que aplican y que no aplican iva
+        monto_aplica_iva = 0
+        depositos_con_iva = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == True)
+        if depositos_con_iva:
+          monto_aplica_iva = sum(depositos_con_iva.mapped('amount'))
+
+        monto_sin_iva = 0
+        depositos_sin_iva = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == False)
+        if depositos_sin_iva:
+          monto_sin_iva = sum(depositos_sin_iva.mapped('amount'))
+
+        #Linea de crédito sin iva
+        if monto_sin_iva > 0:
+          lines.append([0,0,{
+            'account_id' : company_id.inverse_account.id,
+            'name' : 'Depósitos PABS',
+            'debit' : 0,
+            'credit' : monto_sin_iva,
+            'analytic_account_id' : analytic_account_id
+          }])
+
+        #Linea de crédito con iva
+        if monto_aplica_iva > 0:
+          lines.append([0,0,{
+            'account_id' : company_id.inverse_account.id,
+            'name' : 'Depósitos PABS',
+            'debit' : 0,
+            'credit' : round(monto_aplica_iva / factor_iva, 2),
+            'analytic_account_id' : analytic_account_id,
+            'tax_ids' : [(4, impuesto_IVA.id, 0)]
+          }])
 
         #Linea de IVA
         lines.append([0,0,{
           'account_id' : impuesto_IVA.inverse_tax_account.id,
           'name' : 'IVA',
           'debit' : 0,
-          'credit' : round(self.total - round(self.total / factor_iva, 2), 2),
-          'tax_ids' : [(4, impuesto_IVA.id, 0)],
+          'credit' : round(monto_aplica_iva - round(monto_aplica_iva / factor_iva, 2), 2),
+          'tax_ids' : [(4, impuesto_IVA.id, 0)]
         }])
-        
+
+      ### FIN MODIFICACIONES FISCAL
+      
+      #Sin aplicación de IVA
       else:
+        # Llenar arreglos de ids y de apuntes
+        for line in self.deposit_line_ids:
+          ids_line.append(line.id_ref)
+          if line.account_id:
+            lines.append([0,0,{
+              'account_id' : line.account_id.id,
+              'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
+              'debit' : line.amount,
+              'credit' : 0,
+            }])
+          else:
+            raise ValidationError("No se encontró la cuenta para el banco: {}".format(line.bank_name))
+
         lines.append([0,0,{
           'account_id' : company_id.inverse_account.id,
           'name' : 'Depósitos PABS',
@@ -180,6 +246,7 @@ class PabsBankDeposits(models.TransientModel):
           'credit' : self.total,
           'analytic_account_id' : analytic_account_id,
         }])
+
     data.update({'line_ids' : lines})
     ### Creamos la póliza
     move_id = move_obj.create(data)
@@ -234,6 +301,8 @@ class PabsBankDepositsLine(models.TransientModel):
 
   deposit_id = fields.Many2one(comodel_name='pabs.bank.deposits',
     string='Depósito')
+
+  aplica_iva = fields.Boolean(string = 'Aplica IVA')
 
   @api.depends('bank_name')
   def _calc_account(self):

@@ -28,6 +28,7 @@
               <field name="deposit_date"/>
               <field name="cashier"/>
               <field name="ref"/>
+              <field name="aplica_iva"/>
               <field name="account_id" optional="hide"/>
             </tree>
           </field>
