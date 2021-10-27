@@ -259,12 +259,6 @@ class PABSEcobroSync(models.Model):
       ### AGREGANDO INFORMACIÓN DE CONTRATO A LA LISTA
       log += 'Contrato {} de {} \n'.format((index + 1), len_contract)
 
-      monto_atrasado = 0
-      if company_id == 7:
-        monto_atrasado = 0
-      else:
-        monto_atrasado = contract_id.late_amount or 0
-
       contract_info.append({
         'contratoID' : int(contract_id.ecobro_id) or contract_id.id,
         'serie' : contract_id.name[0:3],
@@ -283,7 +277,7 @@ class PABSEcobroSync(models.Model):
         'cobradorID' : contract_id.debt_collector.ecobro_id or contract_id.debt_collector.id,
         'estatus' : contract_id.contract_status_item.ecobro_code or 1,
         'fecha_ultimo_abono' : self.calc_last_payment(contract_id),
-        'monto_atrasado' : monto_atrasado, #contract_id.late_amount or 0,
+        'monto_atrasado' : contract_id.late_amount or 0,
         'fecha_primer_abono' : contract_id.date_first_payment.strftime('%Y-%m-%d') if contract_id.date_first_payment else "",
         'fecha_reactivacion' : contract_id.reactivation_date.strftime('%Y-%m-%d') if contract_id.reactivation_date else "",
         'detalle_servicio' : '',
