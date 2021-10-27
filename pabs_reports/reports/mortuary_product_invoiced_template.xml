@@ -9,13 +9,13 @@
               <table width="100%" cellspacing="0" cellpadding="0">
                 <tr>
                   <td width="20%" rowspan="2" aling="top">
-                    <img src="mortuary/static/description/imagen.jpg" style="width:250px;" />
+                    <img src="mortuary/static/description/imagen.jpg" style="width:100px;" />
                   </td>
                   <td class="text-center" aling="top">
-                    <h3>
-                      LATINOAMERICANA RECINTO FUNERAL <br/><br/>
+                    <h5>
+                      LATINOAMERICANA RECINTO FUNERAL <br/>
                       Reporte de Facturación de Funeraria<br/>
-                    </h3>
+                    </h5>
                     <h5>
                       <span t-esc="name"/>
                     </h5>
@@ -26,10 +26,45 @@
             </div>
 
             <div class="page">
+              <h4 style="text-align:center">Detalle de facturas</h4>
+              <table>
+                <tr>
+                  <th>Factura</th>
+                  <th>Bitácora</th>
+                  <th>Fecha</th>
+                  <th>Tipo de servicio</th>
+                  <th>Finado</th>
+                  <th>Descripción</th>
+                  <th>Cantidad</th>
+                  <th>Subtotal</th>
+                </tr>
+                
+                <tr t-foreach="lineas_de_facturas" t-as="linea">
+                  <td><t t-esc="linea.get('numero_de_factura')"/></td>
+                  <td><t t-esc="linea.get('bitacora')"/></td>
+                  <td><t t-esc="linea.get('fecha')" t-options='{"widget": "date"}'/></td>
+                  <td><t t-esc="linea.get('tipo_de_servicio')"/></td>
+                  <td><t t-esc="linea.get('finado')"/></td>
+                  <td><t t-esc="linea.get('producto')"/></td>
+                  <td><t t-esc="linea.get('cantidad')"/></td>
+                  <td>$<t t-esc="linea.get('subtotal')"/></td>
+                </tr>
+
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td style="text-align:right; font-weight: bold">Total:</td>
+                  <td>$<t t-esc="total_facturado"/></td>
+                </tr>
+              </table>
 
               <br/><br/>
               <div style="width:99%; margin:auto; border:1px solid black;">
-                <div style="width:100%; margin-top:10px; margin-bottom:10px;" class="text-center"><strong>CONCEPTOS FACTURADOS</strong></div>
+                <div style="width:100%; margin-top:10px; margin-bottom:10px; text-align:center"><strong>Concentrado de conceptos facturados</strong></div>
                 <hr style="margin-left:2%; margin-right:2%; margin-bottom:10px; margin-top:0px; border:1px solid black;" />
 
                 <table width="96%" style="margin:auto; margin-bottom:10px;">
@@ -50,4 +85,29 @@
         </t>
     </template>
   </data>
+
+  <record id="paperformat_facturacion_funeraria" model="report.paperformat">
+    <field name="name">PF facturacion funeraria</field>
+    <field name="default" eval="True"/>
+    <field name="format">Letter</field>
+    <field name="orientation">Landscape</field>
+    <field name="margin_top">10</field>
+    <field name="margin_bottom">10</field>
+    <field name="margin_left">7</field>
+    <field name="margin_right">7</field>
+    <field name="header_line" eval="False"/>
+    <field name="header_spacing">3</field>
+    <field name="dpi">90</field>
+ </record>
+
+ <report
+    string="Facturacion funeraria"
+    id="id_facturacion_funeraria"
+    model='mortuary.product.invoiced'
+    name="funeraria.facturacion_funeraria"
+    file="funeraria.facturacion_funeraria"
+    report_type="qweb-pdf"
+    print_report_name="'Facturacion de funeraria'"
+    paperformat="paperformat_facturacion_funeraria"
+  />
 </odoo>

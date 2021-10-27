@@ -3,11 +3,6 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 
-HEADERS = [
-  'Concepto',
-  'Cantidad',
-  'Total']
-
 class MortuaryProductInvoiced(models.TransientModel):
   _name = 'mortuary.product.invoiced'
 
@@ -20,7 +15,7 @@ class MortuaryProductInvoiced(models.TransientModel):
     ### DECLARACIÓN DE OBJETOS
     invoice_obj = self.env['account.move']
     ### DECLARAMOS VARIABLE DOMINIO
-    domain = [('mortuary_id', '!=', False),('type', '=', 'out_invoice')]
+    domain = [('mortuary_id', '!=', False), ('type', '=', 'out_invoice'), ('state','=','posted')]
 
     ### GENERAMOS EL DOMINIO
     if self.end_date:
@@ -91,10 +86,48 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
         'total' : "${:,.2f}".format(total)
       })
 
+    ### Crear lista con las lineas de las facturas ###
+    lista_facturas = invoice_ids.sorted(key=lambda x: x.partner_id.name)
+    lista_lineas_factura = []
+    total_facturado = 0
+    for factura in lista_facturas:
+      
+      #Buscar bitácora ligada a la factura
+      if not factura.partner_id:
+        raise ValidationError("No se puede generar el reporte porque la factura {} no tiene una bitácora ligada".format(factura.name))
+
+      numero_de_bitacora = factura.partner_id.name
+      bitacora = self.env['mortuary'].search([
+        ('name', '=', numero_de_bitacora),
+        ('company_id', '=', self.env.company.id)
+      ])
+
+      if not bitacora:
+        raise ValidationError("No se puede generar el reporte porque la factura {} apunta a la bitácora {} y dicha bitácora no existe".format(factura.name, numero_de_bitacora))
+
+      #Recorrer cada linea de la factura y llenar lista
+      for linea in factura.invoice_line_ids:
+        nueva_linea = {
+          'numero_de_factura': factura.name,
+          'bitacora': numero_de_bitacora,
+          'fecha': factura.invoice_date,
+          'tipo_de_servicio': bitacora.ds_tipo_de_servicio.name,
+          'finado': bitacora.ii_finado,
+          'producto': linea.product_id.name,
+          'cantidad': linea.quantity,
+          'subtotal': linea.price_subtotal,
+        }
+
+        lista_lineas_factura.append(nueva_linea)
+        
+        total_facturado = total_facturado + linea.price_subtotal
+
     ### retornamos los datos
     return {
       'name' : data.get('name'),
       'detail' : details,
+      'lineas_de_facturas': lista_lineas_factura,
+      'total_facturado' : total_facturado
     }
 
 class MortuaryProductInvoicedPDFReport(models.AbstractModel):
@@ -119,17 +152,97 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
     bold_format = workbook.add_format({'bold': True,'bg_color': '#2978F8'})
     money_format = workbook.add_format({'num_format': '$#,##0.00'})
 
-     ### INSERTAMOS LOS ENCABEZADOS
-    for row, row_data in enumerate(HEADERS):
-      sheet.write(0,row,row_data,bold_format)
+    ############## ENCABEZADO #############
+    formato_titulo = workbook.add_format({'bold': True, 'font_size': 14})
+    sheet.write(0,0, "INFORME DE FACTURACION FUNERARIA", formato_titulo)
+    sheet.write(1,0, data.get('name'), formato_titulo)
+
+    sheet.write(3, 0, "Detallado de facturas", formato_titulo)
+
+    ############## DETALLADO #############
+    ### Crear lista con las lineas de las facturas ###
+    lista_facturas = invoice_ids.sorted(key=lambda x: x.partner_id.name)
+    lista_lineas_factura = []
+    total_facturado  = 0
+
+    for factura in lista_facturas:
+      
+      #Buscar bitácora ligada a la factura
+      if not factura.partner_id:
+        raise ValidationError("No se puede generar el reporte porque la factura {} no tiene una bitácora ligada".format(factura.name))
+
+      numero_de_bitacora = factura.partner_id.name
+      bitacora = self.env['mortuary'].search([
+        ('name', '=', numero_de_bitacora),
+        ('company_id', '=', self.env.company.id)
+      ])
+
+      if not bitacora:
+        raise ValidationError("No se puede generar el reporte porque la factura {} apunta a la bitácora {} y dicha bitácora no existe".format(factura.name, numero_de_bitacora))
+
+      #Recorrer cada linea de la factura y llenar lista
+      for linea in factura.invoice_line_ids:
+        nueva_linea = {
+          'numero_de_factura': factura.name,
+          'bitacora': numero_de_bitacora,
+          'fecha': factura.invoice_date,
+          'tipo_de_servicio': bitacora.ds_tipo_de_servicio.name,
+          'finado': bitacora.ii_finado,
+          'producto': linea.product_id.name,
+          'cantidad': linea.quantity,
+          'subtotal': linea.price_subtotal,
+        }
+
+        lista_lineas_factura.append(nueva_linea)
+        
+        total_facturado = total_facturado + linea.price_subtotal
+
+    #Escribir nombres de columnas
+    formato_header = workbook.add_format({'bold': True, 'align': 'center', 'bg_color': '#00FFFF'})
+    sheet.write(4,0, "Factura", formato_header)
+    sheet.write(4,1, "Bitácora", formato_header)
+    sheet.write(4,2, "Fecha", formato_header)
+    sheet.write(4,3, "Tipo de servicio", formato_header)
+    sheet.write(4,4, "Finado", formato_header)
+    sheet.write(4,5, "Descripción", formato_header)
+    sheet.write(4,6, "Cantidad", formato_header)
+    sheet.write(4,7, "Subtotal", formato_header)
+
+    #Escribir detalles
+    formato_fecha = workbook.add_format({'num_format': 'dd/mm/yyyy'})
+    fila = 5
+
+    for linea in lista_lineas_factura:
+      sheet.write(fila, 0, linea.get('numero_de_factura'))
+      sheet.write(fila, 1, linea.get('bitacora'))
+      sheet.write(fila, 2, linea.get('fecha'), formato_fecha)
+      sheet.write(fila, 3, linea.get('tipo_de_servicio'))
+      sheet.write(fila, 4, linea.get('finado'))
+      sheet.write(fila, 5, linea.get('producto'))
+      sheet.write(fila, 6, linea.get('cantidad'))
+      sheet.write(fila, 7, linea.get('subtotal'), money_format)
+
+      fila = fila + 1
+
+    sheet.write(fila, 6, "Total:")
+    sheet.write(fila, 7, total_facturado, money_format)
+
+    ############## CONCENTRADO #############
+
+    #Escribir nombres de columnas
+    fila = fila + 3
+    sheet.write(fila, 0, "Resumen de facturas", formato_titulo)
+    
+    fila = fila + 1
+    sheet.write(fila, 0, "Concepto", bold_format)
+    sheet.write(fila, 1, "Cantidad", bold_format)
+    sheet.write(fila, 2, "Total", bold_format)
+    fila = fila + 1
 
     ### TRAEMOS TODAS LAS LINEAS DE LAS FACTURAS
     lines = invoice_ids.mapped('invoice_line_ids')
     ### LISTAMOS TODOS LOS PRODUCTOS FACTURADOS
     product_ids =  lines.mapped('product_id')
-
-    ### CONTADOR DE REGISTROS
-    count = 1
 
     ### RECORREMOS LA LISTA DE PRODUCTOS
     for product_id in product_ids:
@@ -140,7 +253,8 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
       ### SUMAMOS EL TOTAL FACTURADO POR ESE PRODUCTO
       total = sum(product_lines.mapped('price_total'))
 
-      sheet.write(count, 0, product_id.name)
-      sheet.write(count, 1, int(qty))
-      sheet.write(count, 2, total, money_format)
-      count+= 1
+      #Escribir detalle
+      sheet.write(fila, 0, product_id.name)
+      sheet.write(fila, 1, int(qty))
+      sheet.write(fila, 2, total, money_format)
+      fila = fila + 1

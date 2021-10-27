@@ -9,6 +9,7 @@
 
 			<xpath expr="//field[@name='website']" position="after">
 				<field name="salary_contract_limit"/>
+				<field name="visible_activador"/>
 			</xpath>
 
 		</field>

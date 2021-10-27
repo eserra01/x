@@ -39,6 +39,7 @@
               <field name="employee_id" readonly="1" force_save="1"/>
               <field name="create_date" readonly="1" force_save="1"/>
               <field name="warehouse_name" readonly="1" force_save="1"/>
+              <field name="user_name" readonly="1" force_save="1"/>
               <field name="closing_date" readonly="1" force_save="1"/>
           </group>
 
