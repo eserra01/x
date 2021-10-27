@@ -74,16 +74,11 @@ class PabsAccountMove(models.TransientModel):
     ### Buscamos que no exista una póliza generada previamente
     name = "INVERSIONES INICIALES Y EXCEDENTES {}".format(date)
     
-    # TEST. EN PRODUCCION DESCOMENTAR
-    # res = self.validate_account_move(name)
-    # if res:
-    #   self.status = 'generated'
-    # else:
-    #   self.status = 'not_generated'
-
-    # TEST TEST TEST TEST
-    self.status = 'not_generated'
-    # TEST TEST TEST TEST
+    res = self.validate_account_move(name)
+    if res:
+      self.status = 'generated'
+    else:
+      self.status = 'not_generated'
 
     return {
       'initial_investment' : initial_investment,
@@ -195,7 +190,6 @@ class PabsAccountMove(models.TransientModel):
           'credit' : sum(contracts.payment_ids.filtered(lambda r: r.reference == 'surplus').mapped('amount')),
           'analytic_account_id' : warehouse_id.analytic_account_id.id or False,
         }])
-
     ### Linea de banco
     lines.append([0,0,{
       'account_id' : bank,
@@ -210,8 +204,6 @@ class PabsAccountMove(models.TransientModel):
       'company_id' : company_id.id,
       'line_ids' : lines
     }
-
-
     
   def generate_account_move(self):
     ### Generación de objetos

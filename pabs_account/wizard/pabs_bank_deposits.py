@@ -33,40 +33,6 @@ class PabsBankDeposits(models.TransientModel):
     self.total = sum(self.deposit_line_ids.mapped('amount')) or 0
 
   def get_deposits(self):
-    # TEST TEST TEST TEST
-    rec_data = []
-    rec_data.append([0,0,
-      {
-        'bank_name' : 'Oficina',
-        'employee_code' : 'C0001',
-        'debt_collector' : 'COBRADOR UNO',
-        'amount' : 100,
-        'deposit_date' : '2021-09-20 00:00:00',
-        'cashier' : 'Cajero uno',
-        'ref' : 'Referencia 1',
-        'id_ref' : '1',
-        'aplica_iva' : 'True'
-      }
-    ])
-
-    rec_data.append([0,0,
-      {
-        'bank_name' : 'Oficina',
-        'employee_code' : 'C0002',
-        'debt_collector' : 'COBRADOR 2',
-        'amount' : 200,
-        'deposit_date' : '2021-09-20 00:00:00',
-        'cashier' : 'Cajero dos',
-        'ref' : 'Referencia 2',
-        'id_ref' : '2',
-        'aplica_iva' : 'False'
-      }
-    ])
-
-    self.deposit_line_ids = rec_data
-    self.name = "Depositos del {}".format(self.ecobro_date)
-    return
-    # TEST TEST TEST TEST
     
     ### ENCABEZADO DE LA PETICIÓN
     headers = {'Content-type': 'application/json'}
@@ -253,16 +219,15 @@ class PabsBankDeposits(models.TransientModel):
     ### Validamos la póliza
     move_id.action_post()
     
-    # TEST. EN PRODUCCION DESCOMENTAR
-    # ### Generamos encabezado de la petición
-    # payload = {
-    #   'doc_entry' : move_id.id,
-    #   'result' : ids_line,
-    # }
-    # ### Enviamos la petición
-    # req = requests.post(url, json=payload, headers=headers)
-    # ### leemos la respuesta de la petición
-    # response = json.loads(req.text)
+    ### Generamos encabezado de la petición
+    payload = {
+      'doc_entry' : move_id.id,
+      'result' : ids_line,
+    }
+    ### Enviamos la petición
+    req = requests.post(url, json=payload, headers=headers)
+    ### leemos la respuesta de la petición
+    response = json.loads(req.text)
 
     ### Retornamos la póliza
     return {
