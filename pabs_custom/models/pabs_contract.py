@@ -309,6 +309,16 @@ class PABSContracts(models.Model):
       if rec.invoice_date:
         rec.date_first_payment = rec.invoice_date + timedelta(days=15)
 
+  @api.onchange('date_first_payment')
+  def validar_fecha_primer_abono(self):
+    for rec in self:
+      if rec.state == 'precontract' and rec.date_first_payment:
+        if rec.date_first_payment < fields.Date.today():
+          rec.date_first_payment = fields.Date.today() + timedelta(days=15)
+          return {
+            'warning': {'title': "Valor no permitido", 'message': "No se puede asignar una fecha de primer abono menor al dia actual"},
+          }
+
   @api.onchange('amount_received','stationery')
   def _calc_excedent(self):
     for rec in self:
