@@ -434,7 +434,7 @@ class PABSEcobroSync(models.Model):
     ### OBTENIENDO EL DIARIO POR DEFAULT
     cash_journal_id = journal_obj.search([
       ('company_id','=',company_id),
-      ('name', '=', 'EFECTIVO')
+      ('name', '=', 'EFECTIVO'),
       ('type','=','cash')],limit=1)
     if not cash_journal_id:
       raise ValidationError("No se encontró el diario EFECTIVO")
