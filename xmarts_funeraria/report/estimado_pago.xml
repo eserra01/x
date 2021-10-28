@@ -18,6 +18,19 @@
                   border-bottom: 1px solid black;
                   text-align: center;
                 }
+
+                table {
+                  page-break-inside: auto;
+                }
+                
+                tr {
+                  page-break-inside: avoid;
+                  page-break-after: auto;
+                }
+
+                thead {
+                  display: table-header-group;
+                }
               </style>
 
               <!-- Logo y Titulo -->
@@ -79,7 +92,7 @@
               <br/>
 
               <!-- Tabla de pagos programados -->
-              <table>
+              <table width="100%">
 
                 <!-- Calcular el número de filas que iran en la columna izquierda y en la derecha -->
                 <t t-set="filas" t-value="0"/>
@@ -89,7 +102,7 @@
 
                 <t t-set="filas_izq" t-value="round(filas/2,0)"/>
 
-                <tr style="page-break-inside: avoid">
+                <tr>
                   <!-- Columna 1 -->
                   <td width="45%">
                     <table class="table">
