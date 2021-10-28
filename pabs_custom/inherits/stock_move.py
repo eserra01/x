@@ -459,10 +459,24 @@ class StockMove(models.Model):
 
         # as-ov Validar enganche > 0
         if picking_id.type_transfer == 'as-ov':
-          if vals.get('inversion_inicial') <= 0:
-            raise ValidationError("La inversión inicial de una solicitud está en cero")
-          if self.amount_received < self.papeleria:
-            raise ValidationError("El importe recibido de una solicitud es menor a la papeleria")
+          origen = ""
+          if vals.get('origen_solicitud'):
+            origen = vals.get('origen_solicitud')
+          else:
+            origen = self.origen_solicitud
+
+          if not origen in ('cancelada','extravio','sobrantes'):
+            inversion_inicial = 0
+            if vals.get('inversion_inicial'):
+              inversion_inicial = vals.get('inversion_inicial')
+            else:
+              inversion_inicial = self.inversion_inicial
+            
+            if inversion_inicial <= 0:
+              raise ValidationError("La inversión inicial de una solicitud está en cero")
+
+            if self.amount_received < self.papeleria:
+              raise ValidationError("El importe recibido de una solicitud es menor a la papeleria")
 
         ### SI EL MOVIMIENTO ES OFICINA DE VENTAS - ASISTENTE
         if picking_id.type_transfer == 'ov-as':
