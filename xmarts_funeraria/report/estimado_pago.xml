@@ -21,8 +21,9 @@
 
                 table {
                   page-break-inside: auto;
+                  page-break-before: avoid;
                 }
-                
+
                 tr {
                   page-break-inside: avoid;
                   page-break-after: auto;
