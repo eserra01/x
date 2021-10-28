@@ -399,26 +399,26 @@ class StockMove(models.Model):
 
     if picking_id.type_transfer == 'as-ov':
       for rec in self:
-        
-        inversion_inicial = 0
-        if vals.get('inversion_inicial'):
-          inversion_inicial = vals.get('inversion_inicial')
-        else:
-          inversion_inicial = rec.inversion_inicial
-        
-        if inversion_inicial <= 0:
-          raise ValidationError("La inversión inicial de una solicitud está en cero")
+        if not rec.origen_solicitud in ('cancelada','extravio','sobrantes'):
+          inversion_inicial = 0
+          if vals.get('inversion_inicial'):
+            inversion_inicial = vals.get('inversion_inicial')
+          else:
+            inversion_inicial = rec.inversion_inicial
+          
+          if inversion_inicial <= 0:
+            raise ValidationError("La inversión inicial de una solicitud está en cero")
 
-        toma_comision = 0
-        if vals.get('toma_comision'):
-          toma_comision = vals.get('toma_comision')
-        else:
-          toma_comision = rec.toma_comision
+          toma_comision = 0
+          if vals.get('toma_comision'):
+            toma_comision = vals.get('toma_comision')
+          else:
+            toma_comision = rec.toma_comision
 
-        importe_recibido = 0
-        importe_recibido = inversion_inicial - toma_comision
-        if importe_recibido < rec.papeleria:
-          raise ValidationError("El importe recibido de una solicitud es menor a la papeleria")
+          importe_recibido = 0
+          importe_recibido = inversion_inicial - toma_comision
+          if importe_recibido < rec.papeleria:
+            raise ValidationError("El importe recibido de una solicitud es menor a la papeleria")
 
     return super(StockMove, self).write(vals)
 
