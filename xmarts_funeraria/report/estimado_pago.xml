@@ -18,6 +18,10 @@
                   border-bottom: 1px solid black;
                   text-align: center;
                 }
+
+                table, thead, th, tbody, tr, td{
+                  page-break-inside: avoid
+                }
               </style>
 
               <!-- Logo y Titulo -->
@@ -79,7 +83,7 @@
               <br/>
 
               <!-- Tabla de pagos programados -->
-              <table width="100%" style="page-break-inside: avoid">
+              <table width="100%">
 
                 <!-- Calcular el número de filas que iran en la columna izquierda y en la derecha -->
                 <t t-set="filas" t-value="0"/>
