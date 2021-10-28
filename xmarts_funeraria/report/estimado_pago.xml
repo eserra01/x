@@ -79,7 +79,7 @@
               <br/>
 
               <!-- Tabla de pagos programados -->
-              <table width="100%">
+              <table width="100%" style="page-break-inside: avoid">
 
                 <!-- Calcular el número de filas que iran en la columna izquierda y en la derecha -->
                 <t t-set="filas" t-value="0"/>
