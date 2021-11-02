@@ -37,6 +37,14 @@ class MortuaryReceipt(models.AbstractModel):
             encabezado.append("RFC DEGB-820517-3T5")
             encabezado.append("CURP. DEGB820317MNTLLT07")
             encabezado.append("TEL. 01(777) 170 4870")
+        if self.env.company.id == 1: #ACAPULCO
+            encabezado.append("Calle Vasco Núñez de Balboa, ")
+            encabezado.append("Fracc: Hornos No 3. CP: 39350")
+            encabezado.append("Acapulco, Gro")
+            encabezado.append("ABELARDO AHUMADA RANGEL")
+            encabezado.append("RFC AURORA -781005-TL3")
+            encabezado.append("CURP. AURA781005HNTHNB09")
+            encabezado.append("Teléfono: 3310418052")
 
         cuerpo = {
             'bitacora': mortuary_obj.name,
