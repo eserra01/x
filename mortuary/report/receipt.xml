@@ -11,12 +11,12 @@
                     }
 
                     .domicilio {
-                        font-size: 13px;
+                        font-size: 11px;
                         text-align: center;
                     }
 
                     .fiscal {
-                        font-size: 15px;
+                        font-size: 13px;
                         text-align: center;
                     }
 
