@@ -43,6 +43,20 @@ class ReportCarnetPagoRango(models.AbstractModel):
         else:
             raise ValidationError("Elige el contrato inicial y el contrato final")
 
+        #Obtener campos de compañia
+        compañia = self.env.company.id
+        if not compañia:
+            raise ValidationError("No se tiene asignada una compañia")
+        if len(compañia) > 1:
+            raise ValidationError("Se tien asignada mas de una compañia")
+
+        nombre_compañia = compañia.name
+        telefonos_compañia = ""
+        if compañia.service_phone:
+            telefonos_compañia = telefonos_compañia + compañia.service_phone
+        if compañia.phone:
+            telefonos_compañia = telefonos_compañia + compañia.phone
+
         contracts_list = []
         #Ingresar cada contrato a la lista
         for con in contract_ids:
@@ -102,5 +116,7 @@ class ReportCarnetPagoRango(models.AbstractModel):
         #raise ValidationError("{}".format(info))
 
         return {
-            "docs": contracts_list
+            "docs": contracts_list,
+            "compañia": nombre_compañia,
+            "telefonos": telefonos_compañia
         }
