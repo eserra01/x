@@ -44,9 +44,11 @@ class ReportCarnetPagoRango(models.AbstractModel):
             raise ValidationError("Elige el contrato inicial y el contrato final")
 
         #Obtener campos de compañia
-        compañia = self.env.company.id
+        compañia = self.env.company
         if not compañia:
             raise ValidationError("No se tiene asignada una compañia")
+        if len(compañia) > 1:
+            raise ValidationError("Se tien asignada mas de una compañia")
 
         nombre_compañia = compañia.name
         telefonos_compañia = ""
