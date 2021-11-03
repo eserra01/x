@@ -48,14 +48,10 @@ class ReportCarnetPagoRango(models.AbstractModel):
         if not compañia:
             raise ValidationError("No se tiene asignada una compañia")
         if len(compañia) > 1:
-            raise ValidationError("Se tien asignada mas de una compañia")
+            raise ValidationError("Se tiene asignada mas de una compañia")
 
         nombre_compañia = compañia.name
-        telefonos_compañia = ""
-        if compañia.service_phone:
-            telefonos_compañia = telefonos_compañia + compañia.service_phone
-        if compañia.phone:
-            telefonos_compañia = telefonos_compañia + compañia.phone
+        telefonos_compañia = compañia.service_phone
 
         contracts_list = []
         #Ingresar cada contrato a la lista
