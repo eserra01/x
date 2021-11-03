@@ -56,20 +56,20 @@
                     <!-- CUERNAVACA -->
                     <div class="domicilio">
                         <hr style=" height: 3px; border:none; color:#333; background-color:#333;"/>
-                        <h3>
+                        <h2>
                             <t t-esc="encabezado[0]"/> <br/>
                             <t t-esc="encabezado[1]"/> <br/>
                             <t t-esc="encabezado[2]"/>
-                        </h3>
+                        </h2>
                         <hr style=" height: 3px; border:none; color:#333; background-color:#333;"/>
                     </div>
                     <div class="fiscal">
-                        <h3>
+                        <h2>
                             <t t-esc="encabezado[3]"/> <br/>
                             <t t-esc="encabezado[4]"/> <br/>
                             <t t-esc="encabezado[5]"/> <br/>
                             <t t-esc="encabezado[6]"/>
-                        </h3>
+                        </h2>
                         <hr style=" height: 3px; border:none; color:#333; background-color:#333;"/>
                     </div>
 
