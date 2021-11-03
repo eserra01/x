@@ -118,5 +118,5 @@ class ReportCarnetPagoRango(models.AbstractModel):
         return {
             "docs": contracts_list,
             "compañia": nombre_compañia,
-            "telefonos": telefonos_compañia
+            "telefonos_compañia": telefonos_compañia
         }
