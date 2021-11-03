@@ -47,8 +47,6 @@ class ReportCarnetPagoRango(models.AbstractModel):
         compañia = self.env.company.id
         if not compañia:
             raise ValidationError("No se tiene asignada una compañia")
-        if len(compañia) > 1:
-            raise ValidationError("Se tien asignada mas de una compañia")
 
         nombre_compañia = compañia.name
         telefonos_compañia = ""
