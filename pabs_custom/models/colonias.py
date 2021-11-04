@@ -6,6 +6,8 @@ class Colonias(models.Model):
     _name = 'colonias'
     _description = 'colonias'
 
+    # comentario
+
     name = fields.Char(
         string="Nombre",
         required=True
