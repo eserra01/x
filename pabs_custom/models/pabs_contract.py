@@ -374,8 +374,7 @@ class PABSContracts(models.Model):
       raise ValidationError("No se encontró la cuenta 201.01.001 Proveedores nacionales")
 
     if lot_id:
-      partner_id = partner_obj.search([
-        ('name','=',lot_id.name)])
+      partner_id = partner_obj.search([('name','=',lot_id.name), ('company_id','=',self.env.company.id)])
       if partner_id:
         partner_id.write({"property_account_receivable_id": cuenta_a_cobrar.id, "property_account_payable_id": cuenta_a_pagar.id})
         return partner_id
@@ -387,7 +386,9 @@ class PABSContracts(models.Model):
           "property_account_payable_id": cuenta_a_pagar.id
         }
 
-      return partner_obj.create(data)
+        return partner_obj.create(data)
+    else:
+      raise ValidationError("Create_partner: No se encontró la solicitud")
 
   @api.model
   def create(self, vals):
