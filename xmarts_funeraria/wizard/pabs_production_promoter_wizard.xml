@@ -7,7 +7,7 @@
       <form string="Producción de un asistente">
         <group>
           <group>
-              <field name="employee_id" domain="[('job_id','=','ASISTENTE SOCIAL')]"/>
+              <field name="employee_id" domain="[('department_id', '=', 'VENTAS')]"/>
           </group>
         </group>
         <footer>
