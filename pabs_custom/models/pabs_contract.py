@@ -382,8 +382,9 @@ class PABSContracts(models.Model):
         data = {
           'company_type' : 'person',
           'name' : lot_id.name,
-          "property_account_receivable_id": cuenta_a_cobrar.id, 
-          "property_account_payable_id": cuenta_a_pagar.id
+          'property_account_receivable_id': cuenta_a_cobrar.id, 
+          'property_account_payable_id': cuenta_a_pagar.id,
+          'company_id': company_id
         }
 
         return partner_obj.create(data)
@@ -418,7 +419,6 @@ class PABSContracts(models.Model):
       ### Se cambia el estado del registro a "Pre-Contrato"
       
     partner_id = self.create_partner(vals, company_id)
-    partner_id.write({'company_id' : self.env.company.id})
     vals['partner_id'] = partner_id.id
     vals['state'] = 'actived'
     full_name = ''
