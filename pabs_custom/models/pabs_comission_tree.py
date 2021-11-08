@@ -216,7 +216,7 @@ class ComissionTree(models.Model):
 
             #Obtener id del cargo de cobrador
             id_cargo_cobrador = self.env['hr.job'].search([('name', '=', "COBRADOR"),('company_id', '=', contrato.company_id.id)]).id
-            registroCobradorEnArbol = contrato.commission_tree.filtered(lambda x: x.comission_agent_id == empleado.id and x.job_id == id_cargo_cobrador)
+            registroCobradorEnArbol = contrato.commission_tree.filtered(lambda x: x.comission_agent_id.id == empleado.id and x.job_id.id == id_cargo_cobrador)
 
             if len(registroCobradorEnArbol) > 1:
                 raise ValidationError("Se encontró mas de una linea en el árbol de comisiones {} del cobrador {}".format(contrato.name, empleado.name))
