@@ -40,7 +40,7 @@ class ComissionTree(models.Model):
         # 'No se puede crear el registro: ya existe el orden a insertar en el árbol'),
     ]
 
-#Para papeleria, bono y traspasos
+    #Para papeleria, bono y traspasos
     def CrearSalidasEnganche(self, IdPago, NumeroContrato, MontoPago, TipoPago):
         # IdPago = 1
         # NumeroContrato = 'C00000002'
@@ -56,7 +56,7 @@ class ComissionTree(models.Model):
         #Instanciar objeto Salida de comisiones
         salida_comisiones_obj = self.env['pabs.comission.output'].with_context(force_company=contrato.company_id.id)
 
-######################## PAPELERIA ##########################
+    ######################## PAPELERIA ##########################
         if TipoPago == "Papeleria":
             #Obtener id del cargo
             cargo_papeleria = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "PAPELERIA")])
@@ -164,7 +164,7 @@ class ComissionTree(models.Model):
                 salida_comisiones_obj.create([{"payment_id":IdPago, "job_id": arbol_fideicomiso.job_id.id, "comission_agent_id": arbol_fideicomiso.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
 
 
-#Para excedente y abono
+    #Para excedente y abono
     def CrearSalidas(self, IdPago, NumeroContrato, CodigoCobrador, MontoPago, EsExcedente = False):
 
         ################################################################################################################################################################
