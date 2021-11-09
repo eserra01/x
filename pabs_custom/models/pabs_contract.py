@@ -358,10 +358,10 @@ class PABSContracts(models.Model):
 
   #Crear Contacto (Cliente)
   def create_partner(self, vals, company_id):
-    partner_obj = self.env['res.partner']
+    partner_obj = self.env['res.partner'].sudo()
     lot_obj = self.env['stock.production.lot']
     lot_id = lot_obj.browse(vals.get('lot_id'))
-    account_obj = self.env['account.account']
+    account_obj = self.env['account.account'].sudo()
 
     # Buscar cuentas contables
     cuenta_a_cobrar = account_obj.search([('code','=','110.01.001'),('company_id','=',company_id)]) #Afiliaciones plan previsión
