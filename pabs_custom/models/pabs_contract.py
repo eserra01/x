@@ -362,6 +362,7 @@ class PABSContracts(models.Model):
     lot_obj = self.env['stock.production.lot']
     lot_id = lot_obj.browse(vals.get('lot_id'))
     account_obj = self.env['account.account'].sudo()
+    #
 
     # Buscar cuentas contables
     cuenta_a_cobrar = account_obj.search([('code','=','110.01.001'),('company_id','=',company_id)]) #Afiliaciones plan previsión
