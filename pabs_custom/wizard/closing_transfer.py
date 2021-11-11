@@ -63,6 +63,20 @@ class ClosingTransfers(models.TransientModel):
         'origin' : move_id.origen_solicitud,
         'scheme' : contract_id.payment_scheme_id.name
       }
+      # Se buscan todos los registros en los que el lot_id corresponda
+      move_line_ids = self.env['stock.move.line'].search([('lot_id','=',line.lot_id.id)])
+      for movl in move_line_ids:
+        # Si se especificó un agente de buen fin
+          if movl.move_id.asistente_social_bf:
+            # Se busca el empleado y si se encuentra se asigna como Agente de ventas en el contrato
+            employee_id = self.env['hr.employee'].search([('local_location_id','=', movl.move_id.asistente_social_bf.id)], limit = 1)
+            if employee_id:
+              data_dict.update(
+              {
+                'code': employee_id.barcode,
+                'employee': employee_id.name 
+              })
+
       data.append(data_dict)
       contract_id.initial_investment = move_id.inversion_inicial or 0
       contract_id.stationery = move_id.papeleria or 0

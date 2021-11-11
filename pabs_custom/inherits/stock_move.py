@@ -66,7 +66,10 @@ class StockMove(models.Model):
     ('directo', 'Directo'),
     ('sobrantes', 'Sobrantes'),
     ('extravio', 'Extravio'),
+    ('buenfin', 'Buen fin')
   ], string="Origen de solicitud")
+
+  asistente_social_bf = fields.Many2one(comodel_name='stock.location',string="AS - Buen fin", domain="[('usage','=','internal'),('name','=ilike','BF%')]")
 
   referencia = fields.Char(
     string="Referencia")
@@ -332,6 +335,13 @@ class StockMove(models.Model):
             order="create_date desc",limit=1)
           if item_id:
             self.papeleria = item_id.stationery
+          # Si Seleccionaron Buen fin
+          if self.origen_solicitud == 'buenfin':
+            # Buscamos la ubicación del asistente social            
+            nm = '%' + str(self.picking_id.picking_type_id.name.split('->')[1]).strip() + '%'
+            location_ids = self.env['stock.location'].search([('usage','=','internal'),('name','=like',nm),('company_id','=',self.env.company.id)], limit=1)
+            if location_ids:
+              self.asistente_social_bf = location_ids.id
 
   @api.onchange('product_id')
   def onchange_product_id_papeleria(self):
@@ -396,7 +406,6 @@ class StockMove(models.Model):
   def write(self, vals):
     ### as-ov Validar enganche > 0 ###
     picking_id = self.env['stock.picking'].browse(self.picking_id.id)
-
     if picking_id.type_transfer == 'as-ov':
       for rec in self:
         if not rec.origen_solicitud in ('cancelada','extravio','sobrantes'):
@@ -405,10 +414,8 @@ class StockMove(models.Model):
             inversion_inicial = vals.get('inversion_inicial')
           else:
             inversion_inicial = rec.inversion_inicial
-          
           if inversion_inicial <= 0:
             raise ValidationError("La inversión inicial de una solicitud está en cero")
-
           toma_comision = 0
           if vals.get('toma_comision'):
             toma_comision = vals.get('toma_comision')

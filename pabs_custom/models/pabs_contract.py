@@ -688,9 +688,23 @@ class PABSContracts(models.Model):
         raise ValidationError(("No se encontró la información del plan {}".format(self.product_id.name)))
       ### BUSCA LA PLANTILLA DE LAS COMISIONES
       comission_template_id = comission_template_obj.search([
-        ('employee_id','=',self.employee_id.id),
-        ('plan_id','=',pricelist_id.id),
-        ('comission_amount','>',0)],order="pay_order")
+          ('employee_id','=',self.employee_id.id),
+          ('plan_id','=',pricelist_id.id),
+          ('comission_amount','>',0)],order="pay_order")
+      # Se buscan todos los registros en los que el lot_id corresponda
+      move_line_ids = self.env['stock.move.line'].search([('lot_id','=',self.lot_id.id)])
+      for movl in move_line_ids:
+        # Si se especificó un agente de buen fin
+        if movl.move_id.asistente_social_bf:
+          # Se busca el empleado y si se encuentra se asigna como Agente de ventas en el contrato
+          employee_id = self.env['hr.employee'].search([('local_location_id','=',movl.move_id.asistente_social_bf.id)], limit = 1)
+          if employee_id:
+            comission_template_id = comission_template_obj.search([
+              ('employee_id','=',employee_id.id),
+              ('plan_id','=',pricelist_id.id),
+              ('comission_amount','>',0)],order="pay_order")
+            break
+      
       ### ENVIA MENSAJE SI NO ENCUENTRA LA PLANTILLA
       if not comission_template_id:
         raise ValidationError(("El A.S {} no cuenta con un arbol de comisiones".format(self.employee_id.name)))
@@ -760,14 +774,11 @@ class PABSContracts(models.Model):
               'commission_paid' : 0,
               'actual_commission_paid' : 0,
             }
-
             # Almacenar datos de fideicomiso (En una sola lista se enviará la creación de la linea de fideicomiso y de IVA)
             linea_fideicomiso = data
-
             # Actualizar el monto del fideicomiso
             monto_fideicomiso = round(pricelist_id.fixed_price - monto_acumulado - monto_para_iva ,2)
             linea_fideicomiso.update({'corresponding_commission': monto_fideicomiso, 'remaining_commission': monto_fideicomiso})
-
             data = []
             data.append(linea_fideicomiso)
             data.append(linea_iva)
@@ -1005,6 +1016,16 @@ class PABSContracts(models.Model):
 
           #Asignar asistente de venta PRODUCCION
           vals['sale_employee_id'] = previous.employee_id
+          # Se buscan todos los registros en los que el lot_id corresponda
+          move_line_ids = self.env['stock.move.line'].search([('lot_id','=',previous.lot_id.id)])
+          for movl in move_line_ids:
+            # Si se especificó un agente social para el buen fin
+            if movl.move_id.asistente_social_bf:
+              # Se busca el empleado y si se encuentra se asigna como Agente de ventas en el contrato
+              employee_id = self.env['hr.employee'].search([('local_location_id','=',movl.move_id.asistente_social_bf.id)], limit = 1)
+              if employee_id:
+                vals['sale_employee_id'] = employee_id
+              break
 
           #Validar fecha de creación
           fecha_creacion = 0

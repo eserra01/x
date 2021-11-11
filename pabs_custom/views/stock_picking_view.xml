@@ -66,6 +66,11 @@
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>
         <field name="origen_solicitud"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>
+
+        <field name="asistente_social_bf" 
+          attrs="{'invisible':[('origen_solicitud','!=','buenfin')], 'required':[('origen_solicitud','=','buenfin')]}" 
+          options="{'no_open': True, 'no_create':True}"/>
+          
         <field name="referencia"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>
         <field name="amount_received"
@@ -112,6 +117,11 @@
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>
         <field name="origen_solicitud"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>
+
+        <field name="asistente_social_bf" 
+          attrs="{'invisible':[('origen_solicitud','!=','buenfin')], 'required':[('origen_solicitud','=','buenfin')]}" 
+          options="{'no_open': True, 'no_create':True}"/>
+
         <field name="referencia"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>
         <field name="amount_received"
