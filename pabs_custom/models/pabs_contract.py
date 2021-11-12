@@ -702,9 +702,8 @@ class PABSContracts(models.Model):
             comission_template_id = comission_template_obj.search([
               ('employee_id','=',employee_id.id),
               ('plan_id','=',pricelist_id.id),
-              ('comission_amount','>',0)],order="pay_order")
-            break
-      
+              ('comission_agent_id','!=',False)],order="pay_order")
+            break     
       ### ENVIA MENSAJE SI NO ENCUENTRA LA PLANTILLA
       if not comission_template_id:
         raise ValidationError(("El A.S {} no cuenta con un arbol de comisiones".format(self.employee_id.name)))
