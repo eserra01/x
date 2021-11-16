@@ -36,6 +36,7 @@
     'wizard/mortuary_product_invoiced_wizard.xml',
     'wizard/pabs_verification_wizard.xml',
     'wizard/pabs_difference_between_amount_contracts_wizard_view.xml',
+    'wizard/pabs_commissions_as_wizard.xml',
     'views/stock_quant_view.xml',
     'views/account_move_view.xml',
     'views/menus.xml',

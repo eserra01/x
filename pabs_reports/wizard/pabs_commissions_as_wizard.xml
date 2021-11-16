@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="pabs_commissions_as_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.commissions.as.wizard.view</field>
+		<field name="model">pabs.commissions.as</field>
+		<field name="arch" type="xml">
+			<form string="Generación de reporte de comisiones de Asistente social">     
+        <group coslpan="2">
+          <group>
+            <field name="start_date"/>
+          </group>
+          <group>
+            <field name="end_date"/>
+          </group>
+          <group>
+            <field name="all" />
+            <field name="agent_id" attrs="{'invisible':[('all','=',True)], 'required': [('all','=',False)]}" />
+          </group>          
+        </group>
+        <footer>
+          <button name="generate_xlsx_report" string="Generar XLS" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+			</form>
+		</field>
+	</record>
+
+  <record id="action_pabs_commissions_as_report_action" model="ir.actions.act_window">
+    <field name="name">Reporte de comisiones de Asistente social</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.commissions.as</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_commissions_as_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    action="action_pabs_commissions_as_report_action" 
+    id="commissions_as_menu"
+    name="Comisiones de Asistente social" 
+    parent="xmarts_funeraria.report_root_menu"
+    groups=""
+    sequence="900"/>
+
+  <report
+    id="pabs_commissions_as_xlsx"
+    model="pabs.commissions.as"
+    string="Comisiones de asistente social XLSX"
+    report_type="xlsx"
+    name="pabs_reports.pabs_commissions_as_xlsx"
+    file="pabs_reports.pabs_commissions_as_xlsx"
+    attachment_use="False"
+    />
+    
+</odoo>
