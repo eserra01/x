@@ -137,6 +137,7 @@ class PABSContracts(models.Model):
   service_detail = fields.Selection(tracking=True, selection=SERVICE, string='Detalle de servicio', default="unrealized", required="1")
   debt_collector = fields.Many2one(tracking=True, comodel_name="hr.employee", string='Nombre del cobrador')
   contract_status = fields.Selection(selection=STATUS, string='Estatus de contrato', tracking=True)
+  has_bf_bonus = fields.Boolean(string="Bono buen fin", default=False)
 
   company_id = fields.Many2one(
     'res.company', 'Compañia', required=True,
@@ -150,6 +151,178 @@ class PABSContracts(models.Model):
     ('unique_activation_lot',
       'UNIQUE(lot_id)',
       'No se puede crear el registro: ya existe un registro referenciado al número de solicitud')]
+
+  # NC de buen fin 
+  def update_bf_contracts(self, company_id):
+    journal_id = self.env['account.move'].with_context(default_type='out_invoice')._get_default_journal()
+    currency_id = self.env['account.move'].with_context(default_type='out_invoice')._get_default_currency()
+    aml_obj = self.env['account.move.line'].with_context(check_move_validity=False)
+    #
+    contract_ids = self.search([('company_id','=',company_id),('has_bf_bonus','=',False)])   
+    for contract in contract_ids:
+      error_log = str(contract.name) + ' - ' + 'Se intentó crear una NC por Bono de inversión inicial (Buen fin) - '
+      bf = False
+      # Se buscan todos los registros en los que el lot_id corresponda con el contrato
+      move_line_ids = self.env['stock.move.line'].search([('lot_id','=',contract.lot_id.id)])
+      for movl in move_line_ids:
+        # Si se especificó un agente de buen fin
+        if movl.move_id.asistente_social_bf:
+          bf = True            
+          break
+      # Si es un contrato de buen fin
+      if bf:
+        invoice_id = self.env['account.move'].search([('contract_id','=',contract.id)], limit = 1)
+        if invoice_id:
+          # Se crea la NC             
+          # FISCAL
+          if contract.company_id.apply_taxes:
+            #Buscar impuesto a agregar
+            iva_tax = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', contract.company_id.id)])        
+            if not iva_tax:
+              error_log += "No se encontró el impuesto con nombre IVA"
+              contract.message_post(body=(error_log))
+              continue
+
+            #Buscar linea de repartición de impuesto para facturas
+            iva_repartition_line = iva_tax.refund_repartition_line_ids.filtered_domain([
+              ('repartition_type','=','tax'), 
+              ('refund_tax_id','=', iva_tax.id), 
+              ('company_id','=', contract.company_id.id)
+            ])
+
+            if not iva_repartition_line:
+              error_log += "No se encontró la repartición de facturas rectificativas del impuesto {}".format(iva_tax.name)
+              contract.message_post(body=(error_log))
+              continue
+            if len(iva_repartition_line) > 1:
+              error_log += "Se definió mas de una linea (sin incluir la linea base) en la repartición de facturas rectificativas del impuesto {}".format(iva_tax.name)
+              contract.message_post(body=(error_log))
+              continue
+          # Datos de la NC
+          refund_data = {
+            'date' : contract.invoice_date,
+            'commercial_partner_id' : contract.partner_id.id,
+            'partner_id' : contract.partner_id.id,
+            'ref' : 'Bono por inversión inicial',
+            'type' : 'out_refund',
+            'journal_id' : journal_id.id,
+            'state' : 'draft',
+            'currency_id' : currency_id.id,
+            'invoice_date' : contract.invoice_date,
+            'auto_post' : False,
+            'contract_id' : contract.id,
+            'invoice_user_id' : self.env.user.id,
+            'reversed_entry_id' : invoice_id.id,
+          }
+          refund_id = self.env['account.move'].create(refund_data)
+          if refund_id:
+             # Buscar producto Bono por inversión inicial
+              product_id = self.env['product.template'].search([('company_id','=',contract.company_id.id),('name','=','BONO POR INVERSION INICIAL')])
+              if not product_id:
+                error_log += "No se encontró el producto BONO POR INVERSION INICIAL"
+                contract.message_post(body=(error_log))
+                continue
+
+              product_product = self.env['product.product'].search([('product_tmpl_id', '=', product_id.id)])
+              if not product_product:
+                error_log += "Problema el producto BONO POR INVERSION INICIAL: No se encontró la relación product_template({}) en la tabla product_product".format(product_id.id)
+                contract.message_post(body=(error_log))
+                continue
+
+              account_id = product_id.property_account_income_id or product_id.categ_id.property_account_income_categ_id
+              if not account_id:
+                error_log = "No se encontró la cuenta en los campos product_id.property_account_income_id o product_id.categ_id.property_account_income_categ_id"
+                contract.message_post(body=(error_log))
+                continue
+              # Llenar datos de Linea principal de débito
+              amount= 6000
+              if contract.payment_amount >= 100:
+                amount = 6500              
+
+              line_data = {
+                'move_id' : refund_id.id,
+                'account_id' : account_id.id,
+                'quantity' : 1,
+                'price_unit' :amount,
+                'debit' : amount,
+                'product_uom_id' : product_id.uom_id.id,
+                'partner_id' : contract.partner_id.id,
+                'amount_currency' : 0,
+                'product_id' : product_product.id,
+                'is_rounding_line' : False,
+                'exclude_from_invoice_tab' : False,
+                'name' : product_id.description_sale or product_id.name,
+              }
+              # FISCAL
+              if contract.company_id.apply_taxes:
+                line_data.update({
+                  'tax_exigible' : True,
+                  'tax_ids' : [(4, iva_tax.id, 0)],
+                  'debit' : round(amount / (1 + iva_tax.amount/100), 2),
+                })
+              line = aml_obj.create(line_data)
+              
+              # FISCAL
+              # Llenar datos para línea de IVA
+              if contract.company_id.apply_taxes:
+                iva_data = {
+                  'move_id' : refund_id.id,
+                  'account_id' : iva_repartition_line.account_id.id,
+                  'quantity' : 1,
+                  'price_unit' : amount,
+                  'debit' : round(amount - round( (amount / (1 + iva_tax.amount/100)), 2), 2),
+                  'tax_base_amount' : round(amount - round( (amount / (1 + iva_tax.amount/100)), 2), 2),
+                  'product_uom_id' : product_id.uom_id.id,
+                  'partner_id' : contract.partner_id.id,
+                  'amount_currency' : 0,
+                  'product_id' : product_product.id,
+                  'is_rounding_line' : False,
+                  'exclude_from_invoice_tab' : True,
+                  'name' : iva_tax.name,
+                  'tax_line_id' : iva_tax.id,
+                  'tax_group_id' : iva_tax.tax_group_id.id,
+                  'tax_repartition_line_id' : iva_repartition_line.id,
+                }
+                line = aml_obj.create(iva_data)
+              ### CONTRAPARTIDA DEL DOCUMENTO #Linea de crédito
+              partner_line_data = {
+                'move_id' : refund_id.id,
+                'account_id' : refund_id.partner_id.property_account_receivable_id.id,
+                'quantity' : 1,
+                'date_maturity' : contract.invoice_date,
+                'amount_currency' : 0,
+                'partner_id' : contract.partner_id.id,
+                'tax_exigible' : False,
+                'is_rounding_line' : False,
+                'exclude_from_invoice_tab' : True,
+                'credit' : amount,
+              }
+              line = aml_obj.create(partner_line_data)
+              ### VALIDANDO NOTA DE CRÉDITO
+              try:
+                refund_id.with_context(investment_bond=True).action_post()
+                # Se concilia la NC
+                reconcile = {}
+                for line_m in invoice_id.line_ids:
+                  if line_m.debit > 0:
+                    reconcile.update({'debit_move_id' : line_m.id})
+                #
+                data = {
+                  'debit_move_id' : reconcile.get('debit_move_id'),
+                  'credit_move_id' : line.id,
+                  'amount' : abs(line.balance)
+                }
+                self.env['account.partial.reconcile'].create(data)
+                contract.has_bf_bonus = True
+                contract.message_post(body=("Se creó una NC por Bono de inversión inicial (Buen fin)"))
+              except:
+                contract.message_post(body=("Error inesperado al intentar validar la NC por inversión inicial (Buen fin), posiblemente el monto de la NC es mayor al monto resiudal del a factura asociada."))
+                continue
+        else:
+          error_log += 'No existe factura asociada al contrato'
+          contract.message_post(body=(error_log))    
+          continue
+    return True
 
   #Función que busca por nombre completo mediante una consuta a la base utilizando like
   def _search_full_name(self, operator, value):
