@@ -269,7 +269,7 @@ class ComissionTree(models.Model):
 
                     #Ajuste a fideicomiso (el fideicomiso subsidia la comisión que debería de pagar el IVA al cobrador)
                     if PorcentajeCobrador > 0:
-                        cargo_fideicomiso = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "FIDEICOMISO")])
+                        cargo_fideicomiso = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "FIDEICOMISO"),('company_id','=',contrato.company_id.id)])
                         arbol_fideicomiso = contrato.commission_tree.filtered(lambda x: x.job_id.id == cargo_fideicomiso.id)
                         monto_ajuste_fideicomiso = (comision_iva * PorcentajeCobrador) * -1
 
