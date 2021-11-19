@@ -71,6 +71,12 @@
                 <field name="contract_location_id" domain="[('contract_location','=',True)]"/>
               </group>
             </group>
+            <group name="managers" string="Responsibles" invisible="1">
+                <field name="coach_id"/>
+                <field name="bank_account_id"/>
+                <field name="address_home_id"/>
+                <field name="resource_calendar_id"/>
+              </group>
           </div>
         </page>
       </xpath>
