@@ -36,7 +36,7 @@ class MortuaryReceipt(models.AbstractModel):
             encabezado.append("BETZABE DELGADO GALBILLO")
             encabezado.append("RFC DEGB-820517-3T5")
             encabezado.append("CURP. DEGB820317MNTLLT07")
-            encabezado.append("TEL. 01(777) 170 4870")
+            encabezado.append("TEL. 777 170 4870")
         if self.env.company.id == 1: #ACAPULCO
             encabezado.append("Calle Vasco Núñez de Balboa, ")
             encabezado.append("Fracc: Hornos No 3. CP: 39350")
@@ -44,7 +44,15 @@ class MortuaryReceipt(models.AbstractModel):
             encabezado.append("ABELARDO AHUMADA RANGEL")
             encabezado.append("RFC AURORA -781005-TL3")
             encabezado.append("CURP. AURA781005HNTHNB09")
-            encabezado.append("Teléfono: 3310418052")
+            encabezado.append("Teléfono: 331 041 8052")
+        if self.env.company.id == 6: #TUXTLA
+            encabezado.append("NOVENA NORTE #450, ")
+            encabezado.append("COLONIA SAN JACINTO CP: 29000")
+            encabezado.append("TUXTLA GUTIEREZ, CHIAPAS")
+            encabezado.append("BETZABE DELGADO GALBILLO")
+            encabezado.append("RFC DEGB8203173T5")
+            encabezado.append("CURP. DEGB820317MNTLLT07")
+            encabezado.append("TEL. 961 291 1906")
 
         cuerpo = {
             'bitacora': mortuary_obj.name,
