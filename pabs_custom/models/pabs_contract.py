@@ -567,7 +567,7 @@ class PABSContracts(models.Model):
 
   @api.model
   def create(self, vals):
-    company_id = vals.get('company_id') or self.env.context.get('company_id') or False
+    company_id = vals.get('company_id') or self.env.context.get('company_id') or self.env.company.id or False
     ### Valida que si ya existe una activación con ese número de serie, no permita generarla nuevamente
     if company_id:
       domain = [('lot_id','=',vals['lot_id']),('company_id','=',company_id)]
