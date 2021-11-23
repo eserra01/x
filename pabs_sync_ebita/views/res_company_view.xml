@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="sync_ebita_parameters" model="ir.ui.view">
+    <field name="name">sync.ebita.parameters</field>
+    <field name="model">res.company</field>
+    <field name="inherit_id" ref="base.view_company_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//notebook" position="inside">
+        <page string="Parametros Ebita">
+          <group string="Sincronización con Ebita">
+            <group>
+              <field name="mysql_ip_ebita"/>
+              <field name="mysql_port_ebita"/>
+              <field name="mysql_db_ebita"/>
+              <field name="mysql_user_ebita"/>
+              <field name="mysql_pass_ebita" password="True"/>
+              <button string="Probar conexión" name="test_mysql_ebita" class="oe_highlight" type="object" />              
+            </group>
+            <group>
+              <field name="journal_id_ebita" options="{'no_create':True, 'no_open': True}" />
+              <field name="coffin_cost_account_ebita" options="{'no_create':True, 'no_open': True}" />
+              <field name="urn_cost_account_ebita" options="{'no_create':True, 'no_open': True}" />
+              <field name="coffin_stock_account_ebita" options="{'no_create':True, 'no_open': True}" />
+              <field name="urn_stock_account_ebita" options="{'no_create':True, 'no_open': True}" />
+              <field name="set_date" />
+              <field name="sync_date" attrs="{'invisible': [('set_date','=',False)], 'required': [('set_date','=',True)]}"/>
+              <button string="Sincronizar" name="create_account_move_ebita" class="oe_highlight" type="object" />
+            </group>
+          </group>
+          <button string="Borrar log" name="delete_log_ebita" class="oe_highlight" type="object" />
+          <group>            
+            <field name="log_ids" nolabel="1" >
+              <tree editable="bottom" >                                                                               
+                  <field name="description" />                                        
+                  <field name="create_date" string="Fecha"/>  
+                  <field name="company_id" invisible="1"/>                
+              </tree>                            
+          </field>
+          </group>
+        </page>
+      </xpath>
+    </field>
+  </record>
+</odoo>
