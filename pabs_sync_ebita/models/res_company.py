@@ -29,6 +29,7 @@ class ResCompany(models.Model):
   urn_cost_account_ebita = fields.Many2one(string='Cuenta de costos urnas', comodel_name='account.account')
   coffin_stock_account_ebita = fields.Many2one(string='Cuenta de inventario ataúdes', comodel_name='account.account')
   urn_stock_account_ebita = fields.Many2one(string='Cuenta de inventario urnas', comodel_name='account.account')
+  analytic_cost_account_id = fields.Many2one(string='Cuenta analítica de costos', comodel_name='account.analytic.account')
   
   set_date = fields.Boolean(string="Especificar fecha", help="Permite especificar una fecha para la cual se creará la póliza, este campo solo debe seleccionarse cuando se ejecuta en modo manual; en modo automático debe permanecer sin seleccionarse.")
   sync_date = fields.Date(string="Fecha", default=fields.Date.today())  
@@ -103,10 +104,11 @@ class ResCompany(models.Model):
             'account_id': company_id.coffin_stock_account_ebita.id,
           }))
           lines.append((0,0,{
-            'name': _(row[2] + ' (p.u. $' + str(row[4])),
+            'name': _(row[2] + ' (p.u. $' + str(row[4])+')'),
             'debit':  row[4] * row[10],
             'credit': 0.0,
             'account_id': company_id.coffin_cost_account_ebita.id,
+            'analytic_account_id': company_id.analytic_cost_account_id.id
           }))
         # Si es una urna
         if 'UR' in row[2]:
@@ -117,17 +119,18 @@ class ResCompany(models.Model):
             'account_id': company_id.urn_stock_account_ebita.id,
           }))
           lines.append((0,0,{
-            'name': _(row[2] + ' (p.u. $' + str(row[4])),
+            'name': _(row[2] + ' (p.u. $' + str(row[4])+')'),
             'debit':  row[4] * row[10],
             'credit': 0.0,
             'account_id': company_id.urn_cost_account_ebita.id,
+            'analytic_account_id': company_id.analytic_cost_account_id.id
           }))   
         #        
       try:
         # Se crea la póliza
         move_row = self.env['account.move'].create({
             'journal_id': company_id.journal_id_ebita.id,
-            'ref': '---',
+            'ref': 'Costo de venta',
             'line_ids': lines,
         })          
         # Se publica la póliza
