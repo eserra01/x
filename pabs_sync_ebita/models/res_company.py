@@ -60,7 +60,7 @@ class ResCompany(models.Model):
     try:  
       # Abre conexion con la base de datos
       db = pymysql.connect(host=company_id.mysql_ip_ebita, port=int(company_id.mysql_port_ebita), db=company_id.mysql_db_ebita, 
-      user=company_id.mysql_user_ebita, password=company_id.mysql_pass_ebita)
+      user=company_id.mysql_user_ebita, password=company_id.mysql_pass_ebita, autocommit=True)
       cursor = db.cursor()
       #
       if company_id.set_date:
@@ -134,21 +134,29 @@ class ResCompany(models.Model):
             'line_ids': lines,
         })          
         # Se publica la póliza
-        move_row.post()  
+        move_row.post()                  
+        # Se obtienen los ids de EBITA y se actualizan 
+        cursor.execute("SELECT id FROM salidas_de_articulos_de_inventario WHERE fecha BETWEEN '"+start_date+"' AND '"+end_date+"';")
+        ids = cursor.fetchall()
+        ids_string = ''
+        for id in ids:
+          ids_string += str(id[0]) + ','
+        ids_string = ids_string[0:-1]        
+        cursor.execute("UPDATE inventory_receipt_issue set sync = 1 WHERE id IN("+ids_string+");")
+        db.close()                
         # Se crea el log con el número de póliza
         vals = {
-          'description': u'Se creó la póliza número ' + str(move_row.name),
+          'description': u'Se creó la póliza número ' + str(move_row.name) + '\nLos ids actualizados en EBITA son: ' + ids_string,
           'company_id': company_id.id
-        }      
+        }    
         self.env['sync.ebita.log'].create(vals)   
-        db.close()        
-      except:
+      except Exception as e:
         # Se crea el log 
         txt_lines = ''
         for line in lines:
           txt_lines += str(line) + '\n'
         vals = {
-          'description': u'Ocurrió un error al CREAR ó PUBLICAR la póliza, los datos de las lineas de la póliza son: \n' + str(txt_lines),
+          'description': u'Ocurrió un error al CREAR ó PUBLICAR la póliza, los datos de las lineas de la póliza son: \n' + str(txt_lines) + '\n' + str(e),
           'company_id': company_id.id
         }
         self.env['sync.ebita.log'].create(vals)           
