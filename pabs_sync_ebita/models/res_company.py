@@ -55,9 +55,18 @@ class ResCompany(models.Model):
     if company_id:
       company_id = self.browse(company_id)
     else:
-      company_id = self
-    # 
+      company_id = self   
+    #
     try:  
+       # Se valida que estén todos los parámetros configurados
+      if not company_id.coffin_stock_account_ebita or not company_id.coffin_cost_account_ebita or not company_id.urn_stock_account_ebita or not company_id.urn_cost_account_ebita or not company_id.analytic_cost_account_id or not company_id.journal_id_ebita:
+        # Se crea el log con el error de la conexión a MySQL
+        vals = {
+          'description': "Se solicitó sincronización pero no se han definidio todos los parámetros para crear la póliza contable correctamente.",
+          'company_id': company_id.id
+        }
+        self.env['sync.ebita.log'].create(vals)   
+        return True
       # Abre conexion con la base de datos
       db = pymysql.connect(host=company_id.mysql_ip_ebita, port=int(company_id.mysql_port_ebita), db=company_id.mysql_db_ebita, 
       user=company_id.mysql_user_ebita, password=company_id.mysql_pass_ebita, autocommit=True)
