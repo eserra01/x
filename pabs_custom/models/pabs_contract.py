@@ -1182,7 +1182,15 @@ class PABSContracts(models.Model):
             if not comission_template:
               raise ValidationError("No se encontró la plantilla de comisiones del asistente")
 
-            if comission_template.comission_amount <= 0:
+            # Se buscan todos los registros en los que el lot_id corresponda (para saber si es solicitud de Buen fin)
+            bf = False
+            move_line_ids = self.env['stock.move.line'].search([('lot_id','=',previous.lot_id.id)])
+            for movl in move_line_ids:
+              # Si se especificó un agente social para el buen fin
+              if movl.move_id.asistente_social_bf:    
+                bf = True          
+                break
+            if comission_template.comission_amount <= 0 and not bf:
               raise ValidationError(("El A.S {} tiene asignado ${} en su plantilla de comisiones. Debe asignarle un monto mayor a cero".format(comission_template.comission_agent_id.name, comission_template.comission_amount)))
           ### TERMINA VALIDACION COMISIONES
 
