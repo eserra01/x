@@ -40,7 +40,7 @@ class PabsBankDeposits(models.TransientModel):
     # Calcualr montos separados para PABS y ODOO
     total_pabs = 0
     total_odoo = 0
-    for rec in self:
+    for rec in self.deposit_line_ids:
       if rec.tipo == 'PABS':
         total_pabs += rec.amount
       if rec.tipo == 'ODOO':
