@@ -26,6 +26,8 @@
           <group string="Creación de póliza de depósitos">
             <group>
               <field name="deposit_analytic_account_id"/>
+              <field name="pabs_account_analytic_tag_id"/>
+              <field name="odoo_account_analytic_tag_id"/>           
               <field name="inverse_account"/>
             </group>
             <field name="bank_account_ids">

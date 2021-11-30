@@ -27,6 +27,12 @@ class ResCompany(models.Model):
   deposit_analytic_account_id = fields.Many2one(comodel_name='account.analytic.account',
     string='Cuenta analitica de deposito')
 
+  pabs_account_analytic_tag_id = fields.Many2one(comodel_name='account.analytic.tag',
+    string='Etiqueta analitica depósitos PABS')
+  
+  odoo_account_analytic_tag_id = fields.Many2one(comodel_name='account.analytic.tag',
+    string='Etiqueta analitica depósitos ODOO')
+
   legal_signature = fields.Binary(string='Firma Apoderado Legal')
 
   apply_taxes = fields.Boolean(string = "Aplicar impuestos", default = False)
