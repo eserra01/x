@@ -65,32 +65,32 @@ class PabsBankDeposits(models.TransientModel):
       ### MENSAJE DE ERROR
       raise ValidationError("No se pudo generar la URL de petición, favor de comunicarse con sistemas.")
     ### INTENTAMOS
-    try:
-      ### PARAMETROS PARA EL WEBSERVICE
-      payload = {
-        'startDate' : self.ecobro_date.strftime("%Y-%m-%d"),
-        'endDate' : self.ecobro_date.strftime("%Y-%m-%d")
-      }
-      ### ENVIAMOS LOS PARAMETROS A LA URL GENERADA BAJO EL METODO POST
-      req = requests.post(url, json=payload, headers=headers)
-      response = json.loads(req.text)
-      rec_data = []
-      for rec in response['result']:
-        rec_data.append([0,0,{
-          'bank_name' : rec['NombreBanco'],
-          'employee_code' : rec['CobradorECobro'],
-          'debt_collector' : rec['Cobrador'],
-          'amount' : float(rec['MontoDeposito']),
-          'deposit_date' : rec['FechaDeposito'],
-          'cashier' : rec['Cajero'],
-          'ref' : rec['ReferenciaDeposito'],
-          'id_ref' : rec['ids'],
-          'tipo': rec['tipo']
-        }])
-      self.deposit_line_ids = rec_data
-      self.name = 'Depositos del {}'.format(self.ecobro_date)
-    except Exception as e:
-      raise ValidationError("Información recibida: {}".format(e))
+    # try:
+    ### PARAMETROS PARA EL WEBSERVICE
+    payload = {
+      'startDate' : self.ecobro_date.strftime("%Y-%m-%d"),
+      'endDate' : self.ecobro_date.strftime("%Y-%m-%d")
+    }
+    ### ENVIAMOS LOS PARAMETROS A LA URL GENERADA BAJO EL METODO POST
+    req = requests.post(url, json=payload, headers=headers)
+    response = json.loads(req.text)
+    rec_data = []
+    for rec in response['result']:
+      rec_data.append([0,0,{
+        'bank_name' : rec['NombreBanco'],
+        'employee_code' : rec['CobradorECobro'],
+        'debt_collector' : rec['Cobrador'],
+        'amount' : float(rec['MontoDeposito']),
+        'deposit_date' : rec['FechaDeposito'],
+        'cashier' : rec['Cajero'],
+        'ref' : rec['ReferenciaDeposito'],
+        'id_ref' : rec['ids'],
+        'tipo': rec['tipo']
+      }])
+    self.deposit_line_ids = rec_data
+    self.name = 'Depositos del {}'.format(self.ecobro_date)
+    # except Exception as e:
+    #   raise ValidationError("Información recibida: {}".format(e))
 
   def get_account_move(self):
     ### Encabezado de la petición
