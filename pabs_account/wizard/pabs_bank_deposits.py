@@ -154,7 +154,7 @@ class PabsBankDeposits(models.TransientModel):
               analytic_tag_id = pabs_account_analytic_tag_id
             if line.tipo == 'ODOO':
               analytic_tag_id = odoo_account_analytic_tag_id
-            if line.aplica_iva:
+            if line.aplica_iva or line.tipo == 'ODOO':
               lines.append([0,0,{
                 'account_id' : line.account_id.id,
                 'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
