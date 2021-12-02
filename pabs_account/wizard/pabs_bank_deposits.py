@@ -76,6 +76,15 @@ class PabsBankDeposits(models.TransientModel):
     response = json.loads(req.text)
     rec_data = []
     for rec in response['result']:
+      # Buscamos la cuenta contable dependiendo del NombreBanco
+      account_id = False
+      if rec['NombreBanco']:
+        line = self.env.company.bank_account_ids.filtered(lambda r: r.name == rec['NombreBanco'])
+        if line:
+          account_id = line.account_id.id
+        else:
+          raise ValidationError("El banco especificado en el registro con id: %s, no puede identificarse, por favor de comunicarse con sistemas."%( rec['ids']))
+      # Se asignam los valores a los registros    
       rec_data.append([0,0,{
         'bank_name' : rec['NombreBanco'],
         'employee_code' : rec['CobradorECobro'],
@@ -85,7 +94,8 @@ class PabsBankDeposits(models.TransientModel):
         'cashier' : rec['Cajero'],
         'ref' : rec['ReferenciaDeposito'],
         'id_ref' : rec['ids'],
-        'tipo': rec['tipo']
+        'tipo': rec['tipo'],
+        'account_id': account_id,
       }])
     self.deposit_line_ids = rec_data
     self.name = 'Depositos del {}'.format(self.ecobro_date)
@@ -341,7 +351,6 @@ class PabsBankDepositsLine(models.TransientModel):
   cashier = fields.Char(string='Cajero')
   ref = fields.Char(string='Referencia')
   account_id = fields.Many2one(comodel_name='account.account',
-    compute="_calc_account",
     string='Cuenta Contable')
   deposit_id = fields.Many2one(comodel_name='pabs.bank.deposits',
     string='Depósito')
