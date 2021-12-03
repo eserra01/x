@@ -207,84 +207,84 @@ class PabsBankDeposits(models.TransientModel):
        
         #Obtener totales que aplican y que no aplican iva
         monto_aplica_iva = 0
-        depositos_con_iva = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == True and x.tipo == 'PABS')
+        depositos_con_iva = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == True)
         if depositos_con_iva:
           monto_aplica_iva = sum(depositos_con_iva.mapped('amount'))
 
-        monto_aplica_iva_odoo = 0
-        depositos_con_iva_odoo = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == True and x.tipo == 'ODOO')
-        if depositos_con_iva_odoo:
-          monto_aplica_iva_odoo = sum(depositos_con_iva_odoo.mapped('amount'))
+        # monto_aplica_iva_odoo = 0
+        # depositos_con_iva_odoo = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == True and x.tipo == 'ODOO')
+        # if depositos_con_iva_odoo:
+        #   monto_aplica_iva_odoo = sum(depositos_con_iva_odoo.mapped('amount'))
 
         monto_sin_iva = 0
-        depositos_sin_iva = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == False and x.tipo == 'PABS')
+        depositos_sin_iva = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == False)
         if depositos_sin_iva:
           monto_sin_iva = sum(depositos_sin_iva.mapped('amount'))
         
-        monto_sin_iva_odoo = 0
-        depositos_sin_iva_odoo = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == False and x.tipo == 'ODOO')
-        if depositos_sin_iva_odoo:
-          monto_sin_iva_odoo = sum(depositos_sin_iva_odoo.mapped('amount'))
+        # monto_sin_iva_odoo = 0
+        # depositos_sin_iva_odoo = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == False and x.tipo == 'ODOO')
+        # if depositos_sin_iva_odoo:
+        #   monto_sin_iva_odoo = sum(depositos_sin_iva_odoo.mapped('amount'))
 
         #Linea de crédito sin iva
         if monto_sin_iva > 0:
           lines.append([0,0,{
             'account_id' : company_id.inverse_account.id,
-            'name' : 'Depósitos PABS',
+            'name' : 'Depósitos',
             'debit' : 0,
             'credit' : monto_sin_iva,
             'analytic_account_id' : analytic_account_id
           }])
         
-        #Linea de crédito sin iva
-        if monto_sin_iva > 0:
-          lines.append([0,0,{
-            'account_id' : company_id.inverse_account.id,
-            'name' : 'Depósitos ODOO',
-            'debit' : 0,
-            'credit' : monto_sin_iva_odoo,
-            'analytic_account_id' : analytic_account_id
-          }])
+        # #Linea de crédito sin iva
+        # if monto_sin_iva > 0:
+        #   lines.append([0,0,{
+        #     'account_id' : company_id.inverse_account.id,
+        #     'name' : 'Depósitos ODOO',
+        #     'debit' : 0,
+        #     'credit' : monto_sin_iva_odoo,
+        #     'analytic_account_id' : analytic_account_id
+        #   }])
 
         #Linea de crédito con iva
         if monto_aplica_iva > 0:
           lines.append([0,0,{
             'account_id' : company_id.inverse_account.id,
-            'name' : 'Depósitos PABS',
+            'name' : 'Depósitos',
             'debit' : 0,
             'credit' : round(monto_aplica_iva / factor_iva, 2),
             'analytic_account_id' : analytic_account_id,
             'tax_ids' : [(4, impuesto_IVA.id, 0)]
           }])
         
-        #Linea de crédito con iva
-        if monto_aplica_iva_odoo > 0:
-          lines.append([0,0,{
-            'account_id' : company_id.inverse_account.id,
-            'name' : 'Depósitos ODOO',
-            'debit' : 0,
-            'credit' : round(monto_aplica_iva_odoo / factor_iva, 2),
-            'analytic_account_id' : analytic_account_id,
-            'tax_ids' : [(4, impuesto_IVA.id, 0)]
-          }])
+        # #Linea de crédito con iva
+        # if monto_aplica_iva_odoo > 0:
+        #   lines.append([0,0,{
+        #     'account_id' : company_id.inverse_account.id,
+        #     'name' : 'Depósitos ODOO',
+        #     'debit' : 0,
+        #     'credit' : round(monto_aplica_iva_odoo / factor_iva, 2),
+        #     'analytic_account_id' : analytic_account_id,
+        #     'tax_ids' : [(4, impuesto_IVA.id, 0)]
+        #   }])
 
         #Linea de IVA
         lines.append([0,0,{
           'account_id' : impuesto_IVA.inverse_tax_account.id,
-          'name' : 'IVA PABS',
+          'name' : 'IVA',
           'debit' : 0,
           'credit' : round(monto_aplica_iva - round(monto_aplica_iva / factor_iva, 2), 2),
           'tax_ids' : [(4, impuesto_IVA.id, 0)]
         }])
 
-        #Linea de IVA
-        lines.append([0,0,{
-          'account_id' : impuesto_IVA.inverse_tax_account.id,
-          'name' : 'IVA ODOO',
-          'debit' : 0,
-          'credit' : round(monto_aplica_iva_odoo - round(monto_aplica_iva_odoo / factor_iva, 2), 2),
-          'tax_ids' : [(4, impuesto_IVA.id, 0)]
-        }])
+        # #Linea de IVA
+        # lines.append([0,0,{
+        #   'account_id' : impuesto_IVA.inverse_tax_account.id,
+        #   'name' : 'IVA ODOO',
+        #   'debit' : 0,
+        #   'credit' : round(monto_aplica_iva_odoo - round(monto_aplica_iva_odoo / factor_iva, 2), 2),
+        #   'tax_ids' : [(4, impuesto_IVA.id, 0)]
+        # }])
 
       ### FIN MODIFICACIONES FISCAL
       
