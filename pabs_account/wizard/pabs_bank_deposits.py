@@ -41,10 +41,13 @@ class PabsBankDeposits(models.TransientModel):
     total_pabs = 0
     total_odoo = 0
     for rec in self.deposit_line_ids:
-      if rec.tipo == 'PABS':
-        total_pabs += rec.amount
-      if rec.tipo == 'ODOO':
-        total_odoo += rec.amount
+      if not rec.tipo:      
+        total_pabs += rec.amount        
+      else:
+        if rec.tipo == 'PABS':
+          total_pabs += rec.amount
+        if rec.tipo == 'ODOO':
+          total_odoo += rec.amount
     self.total_pabs = total_pabs
     self.total_odoo = total_odoo
 
@@ -308,23 +311,25 @@ class PabsBankDeposits(models.TransientModel):
           else:
             raise ValidationError("No se encontró la cuenta para el banco: {}".format(line.bank_name))
         # Contra cuenta PABS
-        lines.append([0,0,{
-          'account_id' : company_id.inverse_account.id,
-          'name' : 'Depósitos PABS',
-          'debit' : 0,
-          'credit' : self.total_pabs,
-          'analytic_account_id' : analytic_account_id,
-          'analytic_tag_ids' : [(4, pabs_account_analytic_tag_id, 0)] if analytic_tag_id else False,          
-        }])
+        if self.total_pabs > 0:
+          lines.append([0,0,{
+            'account_id' : company_id.inverse_account.id,
+            'name' : 'Depósitos',
+            'debit' : 0,
+            'credit' : self.total_pabs,
+            'analytic_account_id' : analytic_account_id,
+            'analytic_tag_ids' : [(4, pabs_account_analytic_tag_id, 0)] if analytic_tag_id else False,          
+          }])
         # Contra cuenta ODOO
-        lines.append([0,0,{
-          'account_id' : company_id.inverse_account.id,
-          'name' : 'Depósitos ODOO',
-          'debit' : 0,
-          'credit' : self.total_odoo,
-          'analytic_account_id' : analytic_account_id,
-          'analytic_tag_ids' : [(4, odoo_account_analytic_tag_id, 0)] if analytic_tag_id else False,
-        }])
+        if self.total_odoo > 0:
+          lines.append([0,0,{
+            'account_id' : company_id.inverse_account.id,
+            'name' : 'Depósitos ODOO',
+            'debit' : 0,
+            'credit' : self.total_odoo,
+            'analytic_account_id' : analytic_account_id,
+            'analytic_tag_ids' : [(4, odoo_account_analytic_tag_id, 0)] if analytic_tag_id else False,
+          }])
 
     data.update({'line_ids' : lines})
     ### Creamos la póliza
