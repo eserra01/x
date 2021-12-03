@@ -84,6 +84,11 @@ class PabsBankDeposits(models.TransientModel):
           account_id = line.account_id.id
         else:
           raise ValidationError("El banco: %s, especificado en el registro con id: %s, no puede identificarse, por favor de comunicarse con sistemas."%(rec['NombreBanco'],rec['ids']))
+      
+      # Si la compañia usa impuestos
+      tipo = False
+      if self.company.apply_taxes:
+        tipo =  rec['tipo']
       # Se asignam los valores a los registros    
       rec_data.append([0,0,{
         'bank_name' : rec['NombreBanco'],
@@ -94,8 +99,9 @@ class PabsBankDeposits(models.TransientModel):
         'cashier' : rec['Cajero'],
         'ref' : rec['ReferenciaDeposito'],
         'id_ref' : rec['ids'],
-        'tipo': rec['tipo'],
+        'tipo': tipo,
         'account_id': account_id,
+        'aplica_iva': True if line.tipo == 'ODOO' else False
       }])
     self.deposit_line_ids = rec_data
     self.name = 'Depositos del {}'.format(self.ecobro_date)
@@ -154,6 +160,7 @@ class PabsBankDeposits(models.TransientModel):
         if not impuesto_IVA.inverse_tax_account:
           raise ValidationError("No se ha definido la contra cuenta de IVA en el impuesto IVA")
 
+        factor_iva = 1 + (impuesto_IVA.amount / 100)
         analytic_tag_id = False
         # Llenar arreglos de ids y de apuntes
         for line in self.deposit_line_ids:
@@ -164,29 +171,37 @@ class PabsBankDeposits(models.TransientModel):
               analytic_tag_id = pabs_account_analytic_tag_id
             if line.tipo == 'ODOO':
               analytic_tag_id = odoo_account_analytic_tag_id
+            #
             if line.aplica_iva or line.tipo == 'ODOO':
+              # 
               lines.append([0,0,{
                 'account_id' : line.account_id.id,
                 'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
-                'debit' : line.amount,
+                'debit' :  round(line.amount / factor_iva, 2),
                 'credit' : 0,
                 'tax_ids' : [(4, impuesto_IVA.id, 0)],
                 'analytic_tag_ids' : [(4, analytic_tag_id, 0)],
-
               }])
+              #
+              lines.append([0,0,{
+                'account_id' :  impuesto_IVA.inverse_tax_account.id,
+                'name' : '{} - {} - IVA'.format(line.employee_code, line.debt_collector),
+                'debit' : line.amount - round(line.amount / factor_iva, 2),
+                'credit' : 0,
+                'analytic_tag_ids' : [(4, analytic_tag_id, 0)],
+              }])
+
             else:
               lines.append([0,0,{
                 'account_id' : line.account_id.id,
                 'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
                 'debit' : line.amount,
                 'credit' : 0,
-                'analytic_tag_ids' : [(4, analytic_tag_id, 0)],
+                'analytic_tag_ids' : [(4, analytic_tag_id, 0)] if line.tipo else False,
               }])
           else:
             raise ValidationError("No se encontró la cuenta para el banco: {}".format(line.bank_name))
-
-        factor_iva = 1 + (impuesto_IVA.amount / 100)
-
+       
         #Obtener totales que aplican y que no aplican iva
         monto_aplica_iva = 0
         depositos_con_iva = self.deposit_line_ids.filtered(lambda x: x.aplica_iva == True and x.tipo == 'PABS')
