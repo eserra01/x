@@ -101,7 +101,9 @@ class ReportCarnetPagoRango(models.AbstractModel):
                 "cobrador": cobrador,
                 "saldo": con.balance,
                 "asistente": con.employee_id.name,
-                "cobrador_contrato": cobrador_contrato
+                "cobrador_contrato": cobrador_contrato,
+                "company_id": self.env.company.id,
+                "activation_code": con.activation_code
             })
         
         # #Retornar información

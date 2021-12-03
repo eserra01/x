@@ -48,63 +48,119 @@
                         margin-left: 0mm;
                     }
                 </style>
-                <div>
-                    <!-- Margen superior -->
-                    <div style="height: 9mm;"> </div>
+               <!-- -->
+                <t t-if="doc['company_id']!=13">
+                    <div>
+                        <!-- Margen superior -->
+                        <div style="height: 9mm;"> </div>
+
+                        <!-- ENCABEZADO 1 -->
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 90%;"></td>
+                                <td style="width: 10%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['contrato']"></div></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td style="font-size: 8pt;" class="dato"><div class="dato_corto_rec" t-esc="doc['solicitud']"></div></td>
+                            </tr>
+                        </table>
+
+                        <!-- Margen de quitar bordes de tablas -->
+                        <!-- <div style="height: 1mm;"> </div> -->
+                    
+                        <!-- CUERPO 2 COLUMNAS -->
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 8%;"></td>
+                                <td style="width: 43%;" class="dato">
+                                    <div class="dato_largo_rec">
+                                        Forma de pago: 
+                                        <span t-esc="doc['forma_de_pago']"></span> 
+                                        $<span t-esc="doc['monto_de_pago']"></span>
+                                    </div>
+                                </td>
+                                <td style="width: 10%;"></td>
+                                <td style="width: 40%;" class="dato"><div class="dato_largo_rec" t-esc="doc['titular']"></div></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td class="dato" t-esc="compañia"></td>
+                                <td></td>
+                                <td class="dato"> <div class="dato_largo_rec" t-esc="doc['telefono_cobro']"> </div></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <!-- TELEFONOS DE LA FUNERARIA -->
+                                <td class="dato" t-esc="telefonos_compañia"></td>
+                                <td></td>
+                                <td class="dato">
+                                    <div class="dato_largo_rec">
+                                        <span t-esc="doc['calle_cobro']"></span>
+                                        # <span t-esc="doc['numero_cobro']"></span>
+                                        Col. <span t-esc="doc['colonia_cobro']"></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Margen de quitar bordes de tablas -->
+                        <div style="height: 1mm;"> </div>
+                    
+                        <!-- RECIBOS:  Obtener el ultimo recibo (por id) -->
+                        <table style="width: 100%;">
+                            <tr style="height: 5mm;">
+                            </tr>
+                            <tr style="height: 63mm;">
+                                <!-- Margen izquierdo -->
+                                <td style="width: 8%; font-size: 8pt;" class="dato_s"><span t-esc="doc['fecha_recibo']"></span></td>
+                                <td style="width: 10%;" class="dato_s"><span t-esc="doc['recibo']"></span></td>
+                                <td style="width: 12%;" class="dato_s">$<span t-esc="doc['monto']"></span></td>
+                                <td style="width: 10%;" class="dato_s"><span t-esc="doc['cobrador']"></span></td>
+                                <td style="width: 10%;" class="dato_s">$<span t-esc="doc['saldo']"></span></td>
+                                <td style="width: 50%;"></td>
+                            </tr>
+                        </table>
+
+                        <!-- Margen de quitar bordes de tablas -->
+                        <!-- <div style="height: 1mm;"> </div> -->
+                    
+                        <!-- PIE -->
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 13%;"></td>
+                                <td style="width: 38%;" class="dato"><div class="dato_largo_rec" t-esc="doc['asistente']"></div></td>
+                                <td style="width: 10%;"></td>
+                                <td style="width: 40%;" class="dato"><div class="dato_largo_rec" t-esc="doc['cobrador_contrato']"></div></td>
+                            </tr>
+                        </table>
+                        <div style="page-break-before: always;"></div>
+                    </div>
+                </t>
+                <!-- MONCLOVA -->
+                <t t-if="doc['company_id']==13">
+                     <!-- Margen superior -->
+                    <div style="height: 20mm;"> </div>
 
                     <!-- ENCABEZADO 1 -->
                     <table style="width: 100%;">
                         <tr>
-                            <td style="width: 90%;"></td>
-                            <td style="width: 10%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['contrato']"></div></td>
-                        </tr>
+                            <td style="width: 34%;"></td>
+                            <td style="width: 33%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['solicitud']"></div></td>
+                            <td style="width: 33%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['contrato']"></div></td>
+                        </tr>  
                         <tr>
-                            <td></td>
-                            <td style="font-size: 8pt;" class="dato"><div class="dato_corto_rec" t-esc="doc['solicitud']"></div></td>
-                        </tr>
+                            <td style="width: 34%;"></td>
+                            <td style="width: 33%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['activation_code']"></div></td>
+                            <td style="width: 33%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['telefono_cobro']"></div></td>
+                        </tr>                        
                     </table>
-
-                    <!-- Margen de quitar bordes de tablas -->
-                    <!-- <div style="height: 1mm;"> </div> -->
-                
-                    <!-- CUERPO 2 COLUMNAS -->
-                    <table style="width: 100%;">
-                        <tr>
-                            <td style="width: 8%;"></td>
-                            <td style="width: 43%;" class="dato">
-                                <div class="dato_largo_rec">
-                                    Forma de pago: 
-                                    <span t-esc="doc['forma_de_pago']"></span> 
-                                    $<span t-esc="doc['monto_de_pago']"></span>
-                                </div>
-                            </td>
-                            <td style="width: 10%;"></td>
-                            <td style="width: 40%;" class="dato"><div class="dato_largo_rec" t-esc="doc['titular']"></div></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td class="dato" t-esc="compañia"></td>
-                            <td></td>
-                            <td class="dato"> <div class="dato_largo_rec" t-esc="doc['telefono_cobro']"> </div></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <!-- TELEFONOS DE LA FUNERARIA -->
-                            <td class="dato" t-esc="telefonos_compañia"></td>
-                            <td></td>
-                            <td class="dato">
-                                <div class="dato_largo_rec">
-                                    <span t-esc="doc['calle_cobro']"></span>
-                                    # <span t-esc="doc['numero_cobro']"></span>
-                                    Col. <span t-esc="doc['colonia_cobro']"></span>
-                                </div>
-                            </td>
-                        </tr>
+                     <table style="width: 100%;">
+                        <tr>                       
+                            <td style="width: 50%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['asistente']"></div></td>
+                            <td style="width: 50%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['titular']"></div></td>
+                        </tr>                                          
                     </table>
-
-                    <!-- Margen de quitar bordes de tablas -->
-                    <div style="height: 1mm;"> </div>
-                
                     <!-- RECIBOS:  Obtener el ultimo recibo (por id) -->
                     <table style="width: 100%;">
                         <tr style="height: 5mm;">
@@ -119,21 +175,21 @@
                             <td style="width: 50%;"></td>
                         </tr>
                     </table>
-
-                    <!-- Margen de quitar bordes de tablas -->
-                    <!-- <div style="height: 1mm;"> </div> -->
-                
-                    <!-- PIE -->
+                     <!-- PIE -->
                     <table style="width: 100%;">
                         <tr>
-                            <td style="width: 13%;"></td>
-                            <td style="width: 38%;" class="dato"><div class="dato_largo_rec" t-esc="doc['asistente']"></div></td>
                             <td style="width: 10%;"></td>
-                            <td style="width: 40%;" class="dato"><div class="dato_largo_rec" t-esc="doc['cobrador_contrato']"></div></td>
+                            <td style="width: 90%;" class="dato">
+                                <span t-esc="doc['calle_cobro']"></span>
+                                <span >  </span>
+                                <span t-esc="doc['numero_cobro']"></span>
+                                <span >COL. </span>
+                                <span t-esc="doc['colonia_cobro']"></span>                               
+                            </td>                           
                         </tr>
                     </table>
                     <div style="page-break-before: always;"></div>
-                </div>
+                </t>
             </div>
         </t>
         </t>
