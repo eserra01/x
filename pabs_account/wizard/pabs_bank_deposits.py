@@ -135,8 +135,8 @@ class PabsBankDeposits(models.TransientModel):
     # Obtenemos las etiquetas analiticas
     pabs_account_analytic_tag_id = company_id.pabs_account_analytic_tag_id.id
     odoo_account_analytic_tag_id = company_id.odoo_account_analytic_tag_id.id
-    if not pabs_account_analytic_tag_id or not odoo_account_analytic_tag_id:
-      raise ValidationError("No se encuentran configuradas las etiquetas análiticas de depositos, favor de configurar una e intentarlo nuevamente.")
+    if self.env.company.apply_taxes and  (not pabs_account_analytic_tag_id or not odoo_account_analytic_tag_id):
+      raise ValidationError("No se encuentran configuradas las etiquetas análiticas de depósitos, favor de configurar una e intentarlo nuevamente.")
     
     ### Agregamos array del encabezado de la póliza
     data = {
