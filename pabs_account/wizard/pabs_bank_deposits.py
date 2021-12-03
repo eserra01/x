@@ -254,7 +254,6 @@ class PabsBankDeposits(models.TransientModel):
             'debit' : 0,
             'credit' : round(monto_aplica_iva / factor_iva, 2),
             'analytic_account_id' : analytic_account_id,
-            'tax_ids' : [(4, impuesto_IVA.id, 0)]
           }])
         
         # #Linea de crédito con iva
@@ -273,8 +272,7 @@ class PabsBankDeposits(models.TransientModel):
           'account_id' : impuesto_IVA.inverse_tax_account.id,
           'name' : 'IVA',
           'debit' : 0,
-          'credit' : round(monto_aplica_iva - round(monto_aplica_iva / factor_iva, 2), 2),
-          'tax_ids' : [(4, impuesto_IVA.id, 0)]
+          'credit' : round(monto_aplica_iva - round(monto_aplica_iva / factor_iva, 2), 2),         
         }])
 
         # #Linea de IVA
