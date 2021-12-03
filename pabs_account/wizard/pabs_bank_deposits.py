@@ -83,7 +83,7 @@ class PabsBankDeposits(models.TransientModel):
         if line:
           account_id = line.account_id.id
         else:
-          raise ValidationError("El banco especificado en el registro con id: %s, no puede identificarse, por favor de comunicarse con sistemas."%( rec['ids']))
+          raise ValidationError("El banco: %s, especificado en el registro con id: %s, no puede identificarse, por favor de comunicarse con sistemas."%(rec['NombreBanco'],rec['ids']))
       # Se asignam los valores a los registros    
       rec_data.append([0,0,{
         'bank_name' : rec['NombreBanco'],
