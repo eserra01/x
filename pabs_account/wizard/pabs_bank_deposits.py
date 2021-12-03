@@ -303,7 +303,7 @@ class PabsBankDeposits(models.TransientModel):
               'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
               'debit' : line.amount,
               'credit' : 0,
-              'analytic_tag_ids' : [(4, analytic_tag_id, 0)],
+              'analytic_tag_ids' : [(4, analytic_tag_id, 0)] if analytic_tag_id else False,
             }])
           else:
             raise ValidationError("No se encontró la cuenta para el banco: {}".format(line.bank_name))
@@ -314,7 +314,7 @@ class PabsBankDeposits(models.TransientModel):
           'debit' : 0,
           'credit' : self.total_pabs,
           'analytic_account_id' : analytic_account_id,
-          'analytic_tag_ids' : [(4, pabs_account_analytic_tag_id, 0)],          
+          'analytic_tag_ids' : [(4, pabs_account_analytic_tag_id, 0)] if analytic_tag_id else False,          
         }])
         # Contra cuenta ODOO
         lines.append([0,0,{
@@ -323,7 +323,7 @@ class PabsBankDeposits(models.TransientModel):
           'debit' : 0,
           'credit' : self.total_odoo,
           'analytic_account_id' : analytic_account_id,
-          'analytic_tag_ids' : [(4, odoo_account_analytic_tag_id, 0)],
+          'analytic_tag_ids' : [(4, odoo_account_analytic_tag_id, 0)] if analytic_tag_id else False,
         }])
 
     data.update({'line_ids' : lines})
