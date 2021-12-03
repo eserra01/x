@@ -101,7 +101,7 @@ class PabsBankDeposits(models.TransientModel):
         'id_ref' : rec['ids'],
         'tipo': tipo,
         'account_id': account_id,
-        'aplica_iva': True if line.tipo == 'ODOO' else False
+        'aplica_iva': True if tipo == 'ODOO' else False
       }])
     self.deposit_line_ids = rec_data
     self.name = 'Depositos del {}'.format(self.ecobro_date)
