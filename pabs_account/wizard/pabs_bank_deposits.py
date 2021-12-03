@@ -87,7 +87,7 @@ class PabsBankDeposits(models.TransientModel):
       
       # Si la compañia usa impuestos
       tipo = False
-      if self.company.apply_taxes:
+      if self.env.company.apply_taxes:
         tipo =  rec['tipo']
       # Se asignam los valores a los registros    
       rec_data.append([0,0,{
