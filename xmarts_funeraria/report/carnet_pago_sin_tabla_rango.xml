@@ -10,8 +10,7 @@
                     .dato {
                         /* background-color: yellow; */
                         font-size: 10pt;
-                    }
-
+                    }                   
                     .dato_largo_rec{
                         white-space: nowrap;
                         overflow: hidden;
@@ -139,47 +138,52 @@
                 </t>
                 <!-- MONCLOVA -->
                 <t t-if="doc['company_id']==13">
-                     <!-- Margen superior -->
-                    <div style="height: 20mm;"> </div>
-
-                    <!-- ENCABEZADO 1 -->
+                    <!-- Margen superior -->
+                    <div style="float: left; width: 100%; text-align:center; margin-top: 5mm;"><span t-esc="doc['cobrador_contrato']" /></div>                    
+                    <div style="height: 20mm;"> </div> 
+                                      
+                    <!-- ENCABEZADO 1 -->                  
                     <table style="width: 100%;">
-                        <tr>
-                            <td style="width: 34%;"></td>
-                            <td style="width: 33%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['solicitud']"></div></td>
-                            <td style="width: 33%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['contrato']"></div></td>
-                        </tr>  
-                        <tr>
-                            <td style="width: 34%;"></td>
-                            <td style="width: 33%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['activation_code']"></div></td>
-                            <td style="width: 33%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['telefono_cobro']"></div></td>
-                        </tr>                        
+                        <tr>                            
+                            <td style="width: 55%;"></td>
+                            <td style="width: 30%;" ><span t-esc="doc['solicitud']"></span></td>
+                            <td style="width: 20%;" ><span t-esc="doc['contrato']"></span></td>
+                        </tr>                                              
                     </table>
-                     <table style="width: 100%;">
-                        <tr>                       
-                            <td style="width: 50%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['asistente']"></div></td>
-                            <td style="width: 50%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['titular']"></div></td>
-                        </tr>                                          
+                    <table style="width: 100%;"> 
+                        <tr>                            
+                            <td style="width: 55%; "></td>
+                            <td style="width: 30%;" ><span t-esc="doc['activation_code']"></span></td>
+                            <td style="width: 15%;" ><span t-esc="doc['telefono_cobro']"></span></td>
+                        </tr>                                                                    
+                    </table>
+                    <table style="width: 100%;">
+                        <tr>                                                        
+                            <td style="width: 20%;" ></td>
+                            <td style="width: 40%;" ><span t-esc="doc['asistente']"></span> </td>
+                            <td style="width: 30%;" ><span t-esc="doc['titular']"></span> </td>
+                        </tr>                                                                
                     </table>
                     <!-- RECIBOS:  Obtener el ultimo recibo (por id) -->
-                    <table style="width: 100%;">
-                        <tr style="height: 5mm;">
+                    <br/>
+                    <table style="width: 100%;">                       
+                        <tr style="height: 45mm;">
+                            <!-- Margen izquierdo -->                           
+                            <td style="width: 10%; font-size: 9pt;" ></td>
+                            <td style="width: 10%; font-size: 9pt;" ><span t-esc="doc['fecha_recibo']"></span></td>
+                            <td style="width: 9%; font-size: 9pt;"><span t-esc="doc['recibo']"></span></td>
+                            <td style="width: 9%; font-size: 9pt;" >$<span t-esc="doc['monto']"></span></td>
+                            <td style="width: 9%; font-size: 9pt;" ><span t-esc="doc['cobrador']"></span></td>
+                            <td style="width: 9%; font-size: 9pt;" >$<span t-esc="doc['saldo']"></span></td>
+                            <td style="width: 44%; font-size: 9pt;" ></td>
+                            
                         </tr>
-                        <tr style="height: 63mm;">
-                            <!-- Margen izquierdo -->
-                            <td style="width: 8%; font-size: 8pt;" class="dato_s"><span t-esc="doc['fecha_recibo']"></span></td>
-                            <td style="width: 10%;" class="dato_s"><span t-esc="doc['recibo']"></span></td>
-                            <td style="width: 12%;" class="dato_s">$<span t-esc="doc['monto']"></span></td>
-                            <td style="width: 10%;" class="dato_s"><span t-esc="doc['cobrador']"></span></td>
-                            <td style="width: 10%;" class="dato_s">$<span t-esc="doc['saldo']"></span></td>
-                            <td style="width: 50%;"></td>
-                        </tr>
-                    </table>
+                    </table>                    
                      <!-- PIE -->
                     <table style="width: 100%;">
                         <tr>
-                            <td style="width: 10%;"></td>
-                            <td style="width: 90%;" class="dato">
+                            <td style="width: 30%;"></td>
+                            <td style="width: 70%;" class="dato">
                                 <span t-esc="doc['calle_cobro']"></span>
                                 <span >  </span>
                                 <span t-esc="doc['numero_cobro']"></span>
