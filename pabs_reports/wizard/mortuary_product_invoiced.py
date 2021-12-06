@@ -190,7 +190,7 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
           'finado': bitacora.ii_finado,
           'producto': linea.product_id.name,
           'cantidad': linea.quantity,
-          'subtotal': linea.price_subtotal,
+          'subtotal': linea.price_total,
         }
 
         lista_lineas_factura.append(nueva_linea)
