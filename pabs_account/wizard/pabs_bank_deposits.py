@@ -297,10 +297,10 @@ class PabsBankDeposits(models.TransientModel):
       'doc_entry' : move_id.id,
       'result' : ids_line,
     }
-    # ### Enviamos la petición
-    # req = requests.post(url, json=payload, headers=headers)
-    # ### leemos la respuesta de la petición
-    # response = json.loads(req.text)
+    ### Enviamos la petición
+    req = requests.post(url, json=payload, headers=headers)
+    ### leemos la respuesta de la petición
+    response = json.loads(req.text)
 
     ### Retornamos la póliza
     return {
