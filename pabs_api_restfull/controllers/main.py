@@ -874,3 +874,71 @@ class APIREST(http.Controller):
     except Exception as e:
       return str(e)
     return Response("Petición Denegada", status=400)
+
+  #
+  @http.route('/api/get/commisions_by_range', type='http', auth='none', csrf=False)
+  def get_commissions_by_range(self, **kargs):
+    if not kargs.get('company_id') or not kargs.get('date_start') or not kargs.get('date_end'):
+      return Response("Necesita enviar todos parametro de búsqueda", status=400)
+    else:
+      company_id = kargs.get('company_id')
+      date_start = kargs.get('date_start')
+      date_end = kargs.get('date_end')    
+    response_header = {'Content-Type': 'application/json'}
+    cr = request.cr
+    query = """
+    SELECT 
+      TO_CHAR(x.fecha_oficina :: DATE, 'yyyy-mm-dd'),
+      x.no_nomina,
+      x.cargo,
+      x.comision,
+      x.comision_cobrador
+    FROM
+    (
+      SELECT 
+          MIN(abo.payment_date) as "fecha_oficina",
+          emp.barcode as "no_nomina",
+          '' as "contrato",
+          car.name as "cargo",
+          SUM(com.actual_commission_paid) as "comision",
+          CASE
+            WHEN car.name IN ('COBRADOR', 'SUPERVISOR') THEN 0
+            ELSE SUM(com.commission_paid) - SUM(com.actual_commission_paid)
+          END as "comision_cobrador"
+      FROM account_payment AS abo
+      LEFT JOIN pabs_comission_output AS com ON abo.id = com.payment_id
+      LEFT JOIN pabs_contract AS con ON abo.contract = con.id
+      LEFT JOIN hr_employee AS emp ON com.comission_agent_id = emp.id
+      LEFT JOIN hr_job AS car ON emp.job_id = car.id
+          WHERE abo.state = 'posted' 
+          AND abo.reference in ('payment', 'surplus')
+          AND con.company_id = {} 
+          AND payment_date BETWEEN '{}' AND '{}' 
+              GROUP BY emp.barcode, car.name
+    ) as x
+      WHERE x.cargo != 'FIDEICOMISO'
+        ORDER BY x.no_nomina, x.cargo, x.fecha_oficina;
+        """.format(company_id, date_start,date_end)
+    #
+    try:
+      cr.execute(query)    
+      records = []
+      headers = [d[0] for d in cr.description]
+      for res in cr.fetchall():
+        data = {}
+        for ind, rec in enumerate(headers):
+          if isinstance(res[ind], datetime.date):
+            value = res[ind].strftime("%d/%m/%Y")
+          else:
+            value = res[ind]
+          data.update({
+            headers[ind] : value
+          })
+        records.append(data)
+      response = {
+        'result' : records
+      }
+      return Response(json.dumps(response),headers=response_header)
+    except Exception as e:
+      return str(e)
+ 
