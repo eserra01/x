@@ -888,7 +888,7 @@ class APIREST(http.Controller):
     cr = request.cr
     query = """
     SELECT 
-      TO_CHAR(x.fecha_oficina :: DATE, 'yyyy-mm-dd'),
+      TO_CHAR(x.fecha_oficina :: DATE, 'yyyy-mm-dd') AS fecha_oficina,
       x.no_nomina,
       x.cargo,
       x.comision,
