@@ -876,10 +876,10 @@ class APIREST(http.Controller):
     return Response("Petición Denegada", status=400)
 
   #
-  @http.route('/api/get/commisions_by_range', type='http', auth='none', csrf=False)
+  @http.route('/api/get/commissions_by_range', type='http', auth='none', csrf=False)
   def get_commissions_by_range(self, **kargs):
     if not kargs.get('company_id') or not kargs.get('date_start') or not kargs.get('date_end'):
-      return Response("Necesita enviar todos parametro de búsqueda", status=400)
+      return Response("Necesita enviar todos los parámetros de búsqueda", status=400)
     else:
       company_id = kargs.get('company_id')
       date_start = kargs.get('date_start')
