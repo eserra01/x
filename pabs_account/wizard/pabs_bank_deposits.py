@@ -175,33 +175,30 @@ class PabsBankDeposits(models.TransientModel):
             if line.tipo == 'ODOO':
               analytic_tag_id = odoo_account_analytic_tag_id
             #
-            if line.aplica_iva or line.tipo == 'ODOO':
-              # Se desglosa IVA
-              lines.append([0,0,{
+            lines.append([0,0,{
                 'account_id' : line.account_id.id,
                 'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
-                'debit' :  round(line.amount / factor_iva, 2),
-                'credit' : 0,
-                'tax_ids' : [(4, impuesto_IVA.id, 0)],
-                'analytic_tag_ids' : [(4, analytic_tag_id, 0)] if analytic_tag_id else False,
-              }])
-              # Linea del monto de IVA
-              lines.append([0,0,{
-                'account_id' :  impuesto_IVA.inverse_tax_account.id,
-                'name' : '{} - {} - IVA'.format(line.employee_code, line.debt_collector),
-                'debit' : line.amount - round(line.amount / factor_iva, 2),
+                'debit' :  line.amount,
                 'credit' : 0,
                 'analytic_tag_ids' : [(4, analytic_tag_id, 0)] if analytic_tag_id else False,
               }])
-
-            else:
-              lines.append([0,0,{
-                'account_id' : line.account_id.id,
-                'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
-                'debit' : line.amount,
-                'credit' : 0,
-                'analytic_tag_ids' : [(4, analytic_tag_id, 0)] if analytic_tag_id else False,
-              }])
+            # if line.aplica_iva:
+            #   lines.append([0,0,{
+            #     'account_id' : line.account_id.id,
+            #     'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
+            #     'debit' :  line.amount,
+            #     'credit' : 0,
+            #     'tax_ids' : [(4, impuesto_IVA.id, 0)],
+            #     'analytic_tag_ids' : [(4, analytic_tag_id, 0)] if analytic_tag_id else False,
+            #   }])
+            # else:
+            #   lines.append([0,0,{
+            #     'account_id' : line.account_id.id,
+            #     'name' : '{} - {}'.format(line.employee_code, line.debt_collector),
+            #     'debit' : line.amount,
+            #     'credit' : 0,
+            #     'analytic_tag_ids' : [(4, analytic_tag_id, 0)] if analytic_tag_id else False,
+            #   }])
           else:
             raise ValidationError("No se encontró la cuenta para el banco: {}".format(line.bank_name))
        
@@ -300,10 +297,10 @@ class PabsBankDeposits(models.TransientModel):
       'doc_entry' : move_id.id,
       'result' : ids_line,
     }
-    ### Enviamos la petición
-    req = requests.post(url, json=payload, headers=headers)
-    ### leemos la respuesta de la petición
-    response = json.loads(req.text)
+    # ### Enviamos la petición
+    # req = requests.post(url, json=payload, headers=headers)
+    # ### leemos la respuesta de la petición
+    # response = json.loads(req.text)
 
     ### Retornamos la póliza
     return {
