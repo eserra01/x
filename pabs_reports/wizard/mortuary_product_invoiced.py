@@ -195,7 +195,7 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
 
         lista_lineas_factura.append(nueva_linea)
         
-        total_facturado = total_facturado + linea.price_subtotal
+        total_facturado = total_facturado + linea.price_total
 
     #Escribir nombres de columnas
     formato_header = workbook.add_format({'bold': True, 'align': 'center', 'bg_color': '#00FFFF'})
