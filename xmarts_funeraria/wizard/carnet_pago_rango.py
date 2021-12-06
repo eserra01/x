@@ -95,6 +95,7 @@ class ReportCarnetPagoRango(models.AbstractModel):
                 "calle_cobro": con.street_name_toll,
                 "numero_cobro": con.street_number_toll,
                 "colonia_cobro": con.toll_colony_id.name,
+                "entrecalles_cobro": con.between_streets_toll,
                 "fecha_recibo": fecha_recibo,
                 "recibo": recibo,
                 "monto": monto,
