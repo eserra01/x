@@ -142,26 +142,50 @@ class ComissionTree(models.Model):
             if not arbol_fideicomiso:
                 raise ValidationError("No se encontro el monto de Fideicomiso en el árbol de comisiones")
             
-            #Validar que el monto de pago sea menor o igual a la comision restante
-            if arbol_fideicomiso.remaining_commission < MontoPago:
-                raise ValidationError("El monto del bono = ({}) es mayor a la comision restante del Fideicomiso = ({})".format(MontoPago, arbol_fideicomiso.remaining_commission))
+            # #Validar que el monto de pago sea menor o igual a la comision restante
+            # if arbol_fideicomiso.remaining_commission < MontoPago:
+            #     raise ValidationError("El monto del bono = ({}) es mayor a la comision restante del Fideicomiso = ({})".format(MontoPago, arbol_fideicomiso.remaining_commission))
 
             #Validar que aun queda comisión por restar
             if arbol_fideicomiso.remaining_commission <= 0:
                 raise ValidationError("La comisión restante de Fideicomiso ya se encuentra en cero")
-
-            #Actualizar arbol
-            comisionPagada = arbol_fideicomiso.commission_paid + MontoPago                 #2.1 Comision a pagar = Comision_pagada + Monto_pago
-            comisionRealPagada = arbol_fideicomiso.actual_commission_paid + MontoPago      #2.2 Comisión real pagada de arbol = Comision_real_pagada + Comision_real_pagada_salida
-            comisionRestante = arbol_fideicomiso.remaining_commission - MontoPago          #2.3 Comision restante = Comision_restante - Monto_pago
-
-            arbol_fideicomiso.write({"commission_paid":comisionPagada, "actual_commission_paid": comisionRealPagada, "remaining_commission": comisionRestante})
+            
+            # Si el monto del pago es mayor que el fideicomiso, se pagan todas las comisiones
+            if arbol_fideicomiso.remaining_commission < MontoPago:
+                # Obtenemos todas las lineas del arbol de comisiones
+                for line in contrato.commission_tree:
+                    line.remainnig_commision = 0
+                    line.commission_paid = line.corresponding_commission               
+                    line.actual_commission_paid = line.corresponding_commission
+            else:
+                #Actualizar arbol
+                comisionPagada = arbol_fideicomiso.commission_paid + MontoPago                 #2.1 Comision a pagar = Comision_pagada + Monto_pago
+                comisionRealPagada = arbol_fideicomiso.actual_commission_paid + MontoPago      #2.2 Comisión real pagada de arbol = Comision_real_pagada + Comision_real_pagada_salida
+                comisionRestante = arbol_fideicomiso.remaining_commission - MontoPago          #2.3 Comision restante = Comision_restante - Monto_pago
+                #
+                arbol_fideicomiso.write({"commission_paid":comisionPagada, "actual_commission_paid": comisionRealPagada, "remaining_commission": comisionRestante})
 
             #Crear registro en salida de comisiones
             if TipoPago == 'Bono':
-                salida_comisiones_obj.create([{"refund_id":IdPago, "job_id": arbol_fideicomiso.job_id.id, "comission_agent_id": arbol_fideicomiso.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
+                salida_comisiones_obj.create([
+                {
+                    "refund_id":IdPago, 
+                    "job_id": arbol_fideicomiso.job_id.id, 
+                    "comission_agent_id": arbol_fideicomiso.comission_agent_id.id, 
+                    "commission_paid":MontoPago, 
+                    "actual_commission_paid": MontoPago, 
+                    "company_id" : contrato.company_id.id
+                }])
             elif TipoPago == 'Transfer':
-                salida_comisiones_obj.create([{"payment_id":IdPago, "job_id": arbol_fideicomiso.job_id.id, "comission_agent_id": arbol_fideicomiso.comission_agent_id.id, "commission_paid":MontoPago, "actual_commission_paid": MontoPago, "company_id" : contrato.company_id.id}])
+                salida_comisiones_obj.create([
+                {
+                    "payment_id":IdPago, 
+                    "job_id": arbol_fideicomiso.job_id.id, 
+                    "comission_agent_id": arbol_fideicomiso.comission_agent_id.id, 
+                    "commission_paid":MontoPago, 
+                    "actual_commission_paid": MontoPago, 
+                    "company_id" : contrato.company_id.id
+                }])
 
 
     #Para excedente y abono
