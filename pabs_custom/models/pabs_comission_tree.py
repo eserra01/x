@@ -154,7 +154,7 @@ class ComissionTree(models.Model):
             if arbol_fideicomiso.remaining_commission < MontoPago:
                 # Obtenemos todas las lineas del arbol de comisiones
                 for line in contrato.commission_tree:
-                    line.remainnig_commision = 0
+                    line.remaining_commission = 0
                     line.commission_paid = line.corresponding_commission               
                     line.actual_commission_paid = line.corresponding_commission
             else:
