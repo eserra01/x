@@ -143,8 +143,7 @@ class ComissionTree(models.Model):
                 raise ValidationError("No se encontro el monto de Fideicomiso en el árbol de comisiones")
             
             #Validar que el monto de pago sea menor o igual a la comision restante
-            # if arbol_fideicomiso.remaining_commission < MontoPago:
-            if contrato.balance < MontoPago:
+            if arbol_fideicomiso.remaining_commission < MontoPago:
                 raise ValidationError("El monto del bono = ({}) es mayor a la comision restante del Fideicomiso = ({})".format(MontoPago, arbol_fideicomiso.remaining_commission))
 
             #Validar que aun queda comisión por restar

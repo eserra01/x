@@ -12,6 +12,7 @@ import pymysql
 from pymysql.err import ProgrammingError
 from pymysql.err import OperationalError
 from pymysql.err import InternalError
+from datetime import datetime, date, timedelta
 # sudo apt-get install python3-pymysql
 # pip install PyMySQL
 
@@ -76,9 +77,12 @@ class ResCompany(models.Model):
         start_date = str(company_id.sync_date) + ' 00:00:00'
         end_date = str(company_id.sync_date) + ' 23:59:59'
       else:
-        start_date = str(fields.Date.today()) + ' 00:00:00'
-        end_date = str(fields.Date.today()) + ' 23:59:59'
+        start_date = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')
+        end_date = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d 23:59:59')        
       #
+      print(start_date)
+      print(end_date)
+      return True 
       cursor.execute("SELECT *,COUNT(id) AS qty FROM salidas_de_articulos_de_inventario WHERE fecha BETWEEN '"+start_date+"' AND '"+end_date+"' GROUP BY articulo ORDER BY articulo ASC;")
       rows = cursor.fetchall()
     except OperationalError as e:
