@@ -79,10 +79,7 @@ class ResCompany(models.Model):
       else:
         start_date = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')
         end_date = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d 23:59:59')        
-      #
-      print(start_date)
-      print(end_date)
-      return True 
+      #       
       cursor.execute("SELECT *,COUNT(id) AS qty FROM salidas_de_articulos_de_inventario WHERE fecha BETWEEN '"+start_date+"' AND '"+end_date+"' GROUP BY articulo ORDER BY articulo ASC;")
       rows = cursor.fetchall()
     except OperationalError as e:
