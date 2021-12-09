@@ -52,6 +52,7 @@ $( document ).ready(function() {
       $("#street_name").val('').prop('required',true);
       $("#street_number").val('').prop('required',true);
       $("#between_streets").val('');
+      $("#zip_code").val('').prop('required',true);
       $("#comment").val('');
       $("#employee_id").text('');
       $("#product_id").text('');
@@ -130,6 +131,7 @@ $( document ).ready(function() {
               $("#street_name").val('');
               $("#street_number").val('');
               $("#between_streets").val('');
+              $("#zip_code").val('');             
               $("#comment").val('');
               $("#employee_id").text('');
               $("#product_id").text('');

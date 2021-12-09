@@ -112,6 +112,7 @@ class PABSContracts(models.Model):
   municipality_id = fields.Many2one(tracking=True, comodel_name='res.locality', required=True, string='Municipio')
   neighborhood_id = fields.Many2one(tracking=True, comodel_name='colonias', string='Colonia')
   phone = fields.Char(tracking=True, string='Teléfono', required=True)
+  zip_code = fields.Char(tracking=True, string='C.P.', required=True)
   
 # Domicilio de cobro
   street_name_toll = fields.Char(tracking=True, string = 'Calle')
@@ -120,6 +121,7 @@ class PABSContracts(models.Model):
   toll_municipallity_id = fields.Many2one(tracking=True, comodel_name='res.locality',string='Municipio')
   toll_colony_id = fields.Many2one(tracking=True, comodel_name='colonias',string='Colonia')
   phone_toll = fields.Char(tracking=True, string='Teléfono')
+  zip_code_toll = fields.Char(tracking=True, string='C.P.', required=True)
 
 #Datos contables
   balance = fields.Float(tracking=True, string="Saldo", compute="_calc_balance")
@@ -664,6 +666,7 @@ class PABSContracts(models.Model):
     self.municipality_id = False
     self.neighborhood_id = False
     self.phone = False
+    self.zip_code = False
 
   #Domicilio de cobro
     self.street_name_toll = False
@@ -672,6 +675,7 @@ class PABSContracts(models.Model):
     self.toll_municipallity_id = False
     self.toll_colony_id = False
     self.phone_toll = False
+    self.zip_code_toll = False
 
   #Datos contables
     self.allow_create = False
@@ -738,7 +742,8 @@ class PABSContracts(models.Model):
       self.municipality_id = contract_id.municipality_id.id
       self.neighborhood_id = contract_id.neighborhood_id.id
       self.phone = contract_id.phone
-
+      self.zip_code = contract_id.zip_code
+    
       #Domicilio de cobro
       self.street_name_toll = contract_id.street_name
       self.street_number_toll = contract_id.street_number
@@ -746,6 +751,7 @@ class PABSContracts(models.Model):
       self.toll_municipallity_id = contract_id.municipality_id.id
       self.toll_colony_id = contract_id.neighborhood_id.id
       self.phone_toll = contract_id.phone
+      self.zip_code_toll = contract_id.zip_code
 
       #Datos contables
       self.invoice_date = contract_id.calc_invoice_date()
@@ -779,7 +785,7 @@ class PABSContracts(models.Model):
             rec.payment_amount = pricelist_id.payment_amount * 4
       
   @api.onchange('lot_id')
-  def calc_employee(self):
+  def calc_employee(self):    
     location_obj = self.env['stock.location']
     pricelist_obj = self.env['product.pricelist.item']
     stock_quant_obj = self.env['stock.quant']

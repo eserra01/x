@@ -61,6 +61,7 @@
               <field name="partner_mname" attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
               <field name="birthdate" attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
               <field name="phone" widget="phone" attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
+              <field name="zip_code"  attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
               <field name="vat" readonly="1"/>
             </group>
 
@@ -69,6 +70,7 @@
               <field name="neighborhood_id" domain="[('municipality_id','=',municipality_id)]" attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
               <field name="street_name" attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
               <field name="street_number" attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
+              <field name="zip_code" attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
               <field name="between_streets" attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
               <field name="comments" attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
               <field name="new_entry" attrs="{'readonly':['|',('captured','=',True),('state','!=',False)]}"/>
@@ -208,6 +210,7 @@
                 <field name="neighborhood_id" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}" domain="[('municipality_id','=',municipality_id)]"/>
                 <field name="between_streets" attrs="{'readonly' : [('state','=','contract')]}"/>
                 <field name="phone" widget="phone" attrs="{'readonly' : [('state','=','contract')]}"/>
+                <field name="zip_code" attrs="{'readonly' : [('state','=','contract')]}"/>
               </group>
 
               <group string='Domicilio de cobro'>
@@ -217,6 +220,7 @@
                 <field name="toll_colony_id"  attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}" domain="[('municipality_id','=',toll_municipallity_id)]"/>
                 <field name="between_streets_toll" attrs="{'readonly' : [('state','=','contract')]}" />
                 <field name="phone_toll" attrs="{'readonly' : [('state','=','contract')]}"/>
+                <field name="zip_code_toll" attrs="{'readonly' : [('state','=','contract')]}"/>
               </group>       
           </group>
 
@@ -381,6 +385,7 @@
               <field name="toll_colony_id" />
               <field name="between_streets_toll" />
               <field name="phone_toll" />
+              <field name="zip_code_toll" />
 
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
@@ -389,6 +394,7 @@
               <field name="neighborhood_id" />
               <field name="between_streets" />
               <field name="phone" />
+              <field name="zip_code" />
             </group>
 
             <group string="Datos de activación">
@@ -582,6 +588,7 @@
               <field name="toll_colony_id" options="{'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
+              <field name="zip_code_toll" />
 
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
@@ -590,6 +597,7 @@
               <field name="neighborhood_id" options="{'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
+              <field name="zip_code" />
             </group>
 
             <group string="Datos de activación">
@@ -759,6 +767,7 @@
               <field name="toll_colony_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
+              <field name="zip_code_toll" />
 
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
@@ -767,6 +776,7 @@
               <field name="neighborhood_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
+              <field name="zip_code" />
             </group>
 
             <group string="Datos de activación">
@@ -967,6 +977,7 @@
               <field name="toll_colony_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
+              <field name="zip_code_toll" />
 
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
@@ -975,6 +986,7 @@
               <field name="neighborhood_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
+              <field name="zip_code" />
             </group>
 
             <group string="Datos de activación">
@@ -1166,6 +1178,7 @@
               <field name="toll_colony_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
+              <field name="zip_code_toll" />
 
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
@@ -1174,6 +1187,7 @@
               <field name="neighborhood_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
+              <field name="zip_code" />
             </group>
 
             <group string="Datos de activación">
@@ -1365,6 +1379,7 @@
               <field name="toll_colony_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
+              <field name="zip_code_toll" />
 
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
@@ -1373,6 +1388,7 @@
               <field name="neighborhood_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
+              <field name="zip_code" />
             </group>
 
             <group string="Datos de activación">
@@ -1573,6 +1589,7 @@
               <field name="toll_colony_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
+              <field name="zip_code_toll" />
 
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
@@ -1581,6 +1598,7 @@
               <field name="neighborhood_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
+              <field name="zip_code" />
             </group>
 
             <group string="Datos de activación">
