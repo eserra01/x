@@ -11,7 +11,15 @@
         <field name="analytic_account_required" invisible="1"/>
       </xpath>
 
+      <xpath expr="//field[@name='invoice_line_ids']/tree" position="inside">
+        <field name="analytic_account_required" invisible="1"/>
+      </xpath>
+
       <xpath expr="//field[@name='line_ids']/tree/field[@name='analytic_account_id']" position="attributes">
+        <attribute name="attrs">{'required' : [('analytic_account_required','=',True)]}</attribute>
+      </xpath>
+
+      <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='analytic_account_id']" position="attributes">
         <attribute name="attrs">{'required' : [('analytic_account_required','=',True)]}</attribute>
       </xpath>
 
