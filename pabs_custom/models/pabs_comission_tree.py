@@ -150,8 +150,8 @@ class ComissionTree(models.Model):
             if arbol_fideicomiso.remaining_commission <= 0:
                 raise ValidationError("La comisión restante de Fideicomiso ya se encuentra en cero")
             
-            # Si el monto del pago es mayor que el fideicomiso, se pagan todas las comisiones
-            if arbol_fideicomiso.remaining_commission < MontoPago:
+            # Si el monto del pago es mayor o igual que el saldo del contrato, se pagan todas las comisiones
+            if MontoPago >= contrato.balance:
                 # Obtenemos todas las lineas del arbol de comisiones
                 for line in contrato.commission_tree:
                     line.remaining_commission = 0
