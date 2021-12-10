@@ -176,7 +176,7 @@ class ResCompany(models.Model):
     else:
       # Se crea el log 
         vals = {
-          'description': u'Se solicitó sincronización pero no exiten registros para crear la póliza.',
+          'description': u'Se solicitó sincronización pero no existen registros para crear la póliza.',
           'company_id': company_id.id
         }        
         self.env['sync.ebita.log'].create(vals)   
@@ -185,5 +185,7 @@ class ResCompany(models.Model):
     return True
 
   def delete_log_ebita(self):
-    self.log_ids = False
+    for log in self.log_ids:
+      if log.description == u'Se solicitó sincronización pero no existen registros para crear la póliza.':
+        log.unlink()
     return True
