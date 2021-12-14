@@ -66,7 +66,8 @@ class StockMove(models.Model):
     ('directo', 'Directo'),
     ('sobrantes', 'Sobrantes'),
     ('extravio', 'Extravio'),
-    ('buenfin', 'Buen fin')
+    ('buenfin', 'Buen fin'),
+     ('tipventa','Tip de venta')
   ], string="Origen de solicitud")
 
   asistente_social_bf = fields.Many2one(comodel_name='stock.location',string="AS - Buen fin", domain="[('usage','=','internal'),('name','=ilike','BF%')]")
