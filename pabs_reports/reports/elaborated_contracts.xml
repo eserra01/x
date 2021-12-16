@@ -97,20 +97,20 @@
                                     <th>Valor del plan</th>
                                     <th>Inversión inicial</th>
                                     <th>Excedente inv. Inicial</th>
+                                    <th>Comisión adelantada</th>
                                     <th>Importe inicial</th>
                                     <th>Bono por Inversión</th>
                                     <th>No. Solicitud</th>
                                     <th>Nombre Promotor</th>
                                 </thead>
                                 <tbody style="color:#000000; font-weight:normal; text-align: center;" t-foreach="info[header]" t-as="line">
-                                
-                                    
                                     <tr>
                                         <td><span t-esc="line['contract']"/></td>
                                         <td><span t-esc="line['product_id']"/></td>
                                         <td><span t-esc="line['price']"/></td>
                                         <td><span t-esc="line['papeleria']"/></td>
                                         <td><span t-esc="line['exc_inv']"/></td>
+                                        <td><span t-esc="line['advanced_commission']"/></td>
                                         <td><span t-esc="line['initial_investment']"/></td>
                                         <td><span t-esc="line['bono']"/></td>
                                         <td><span t-esc="line['solicitud']"/></td>

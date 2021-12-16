@@ -52,20 +52,28 @@ class ContractsElaboratedW1zard(models.TransientModel):
         if req.warehouse_id.id == rec.id:
           record_ids.append(req)
 
-        
-
       ### GUARDAR LA LISTA DE CADA ALMACÉN
       info = []
       ### recorremos las solicitudes
       for record in record_ids:
-        contract_id = contract_obj.search([
-          ('lot_id','=',record.id)],limit=1)
+        contract_id = contract_obj.search([('lot_id','=',record.id)],limit=1)
+        advanced_commission = 0
+        # Se buscan todos los stock.movs en los que el lot_id corresponda
+        move_line_ids = self.env['stock.move.line'].search([('lot_id','=',record.id)])
+        # Para cada mov
+        for movl in move_line_ids:
+          # Si se especificó adelantar comisión en el movimiento 
+          if movl.move_id.toma_comision > 0:
+            advanced_commission = movl.move_id.toma_comision
+            break
+
         info.append({
           'product_id' : contract_id.name_service.name,
           'contract': contract_id.name,
           'price': contract_id.product_price,  
           'papeleria':contract_id.stationery,  
           'exc_inv': (contract_id.initial_investment - contract_id.stationery),  
+          'advanced_commission': advanced_commission, 
           'initial_investment':contract_id.initial_investment,
           'bono':contract_id.investment_bond,
           'solicitud':contract_id.lot_id.name,  
