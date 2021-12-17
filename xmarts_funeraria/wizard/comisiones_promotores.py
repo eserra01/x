@@ -95,6 +95,7 @@ class ReportComisionesPromotores(models.AbstractModel):
         cargo_papeleria = self.env['hr.job'].search([('name','=','PAPELERIA')])
         cargo_cobrador = self.env['hr.job'].search([('name','=','COBRADOR')])
         cargo_fideicomiso = self.env['hr.job'].search([('name','=','FIDEICOMISO')])
+        cargo_asistente = self.env['hr.job'].search([('name','=','ASISTENTE SOCIAL')])
 
         # Consultar todas las salidas de comisiones entre las fechas elegidas y que estén validadas o posterior
         # (El modelo de salida de comisiones tiene un campo related con la fecha de oficina del pago)
@@ -164,6 +165,15 @@ class ReportComisionesPromotores(models.AbstractModel):
                         subtotal_cobrador_ninguno = 0
                         lista_pagos_ninguno = []
                         for pago in aux_salidas_sin_cobrador:
+                            advanced_commission = False
+                            # Se buscan todos los stock.movs en los que el lot_id corresponda
+                            move_line_ids = self.env['stock.move.line'].search([('lot_id','=',pago.payment_id.contract.lot_id.id)])
+                            # Para cada mov
+                            for movl in move_line_ids:
+                                # Si se especificó adelantar comisión en el movimiento 
+                                if movl.move_id.toma_comision > 0:
+                                    advanced_commission = True
+                                    break
 
                             lista_pagos_ninguno.append({
                                 # Datos de detalle
@@ -174,10 +184,10 @@ class ReportComisionesPromotores(models.AbstractModel):
                                 'cliente': pago.payment_id.contract.full_name,
                                 'importe': pago.payment_id.amount,
                                 'comision_cobrador': pago.commission_paid - pago.actual_commission_paid,
-                                'comision_asistente': pago.actual_commission_paid
+                                'comision_asistente': 0 if (advanced_commission and pago.job_id == cargo_asistente) else pago.actual_commission_paid
                             })
 
-                            subtotal_asistente_ninguno = subtotal_asistente_ninguno + pago.actual_commission_paid
+                            subtotal_asistente_ninguno = subtotal_asistente_ninguno + (0 if (advanced_commission and pago.job_id == cargo_asistente) else pago.actual_commission_paid)
                             subtotal_cobrador_ninguno = subtotal_cobrador_ninguno + (pago.commission_paid - pago.actual_commission_paid)
                             #Fin de iteración de pagos sin cobrador
 
@@ -206,6 +216,15 @@ class ReportComisionesPromotores(models.AbstractModel):
                             subtotal_cobrador = 0
                             lista_pagos = []
                             for pago in aux_salidas_detalle:
+                                advanced_commission = False
+                                # Se buscan todos los stock.movs en los que el lot_id corresponda
+                                move_line_ids = self.env['stock.move.line'].search([('lot_id','=',pago.payment_id.contract.lot_id.id)])
+                                # Para cada mov
+                                for movl in move_line_ids:
+                                    # Si se especificó adelantar comisión en el movimiento 
+                                    if movl.move_id.toma_comision > 0:
+                                        advanced_commission = True
+                                        break
                                 # 4. Contratos
                                 lista_pagos.append({
                                     # Datos de detalle
@@ -216,10 +235,10 @@ class ReportComisionesPromotores(models.AbstractModel):
                                     'cliente': pago.payment_id.contract.full_name,
                                     'importe': pago.payment_id.amount,
                                     'comision_cobrador': pago.commission_paid - pago.actual_commission_paid,
-                                    'comision_asistente': pago.actual_commission_paid
+                                    'comision_asistente': 0 if (advanced_commission and pago.job_id == cargo_asistente) else pago.actual_commission_paid
                                 })
 
-                                subtotal_asistente = subtotal_asistente + pago.actual_commission_paid
+                                subtotal_asistente = subtotal_asistente + (0 if (advanced_commission and pago.job_id == cargo_asistente) else pago.actual_commission_paid)
                                 subtotal_cobrador = subtotal_cobrador + (pago.commission_paid - pago.actual_commission_paid)
                                 # 4. Fin iteración salida de contratos
 
