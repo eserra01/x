@@ -71,6 +71,7 @@
                             <t t-set="tot_plan_" t-value="0"/>
                             <t t-set="tot_inv_ini_" t-value="0"/>
                             <t t-set="tot_exc_" t-value="0"/>
+                            <t t-set="tot_advanced_commission_" t-value="0"/>
                             <t t-set="tot_importe_ini_" t-value="0"/>
                             <t t-set="tot_bono_" t-value="0"/>
 
@@ -87,6 +88,7 @@
                             <t t-set="tot_plan" t-value="0"/>
                             <t t-set="tot_inv_ini" t-value="0"/>
                             <t t-set="tot_exc" t-value="0"/>
+                            <t t-set="tot_advanced_commission" t-value="0"/>
                             <t t-set="tot_importe_ini" t-value="0"/>
                             <t t-set="tot_bono" t-value="0"/>
 
@@ -121,6 +123,7 @@
                                     <t t-set="tot_plan" t-value="tot_plan + line['price']"/>
                                     <t t-set="tot_inv_ini" t-value="tot_inv_ini + line['papeleria']"/>
                                     <t t-set="tot_exc" t-value="tot_exc + line['exc_inv']"/>
+                                    <t t-set="tot_advanced_commission" t-value="tot_advanced_commission + line['advanced_commission']"/>
                                     <t t-set="tot_importe_ini" t-value="tot_importe_ini + line['initial_investment']"/>
                                     <t t-set="tot_bono" t-value="tot_bono + line['bono']"/>
                                     <t t-set="total" t-value="0"/>
@@ -129,6 +132,7 @@
                                     <t t-set="tot_plan_" t-value="tot_plan_ + line['price']"/>
                                     <t t-set="tot_inv_ini_" t-value="tot_inv_ini_ + line['papeleria']"/>
                                     <t t-set="tot_exc_" t-value="tot_exc_ + line['exc_inv']"/>
+                                    <t t-set="tot_advanced_commission_" t-value="tot_advanced_commission_ + line['advanced_commission']"/>
                                     <t t-set="tot_importe_ini_" t-value="tot_importe_ini_ + line['initial_investment']"/>
                                     <t t-set="tot_bono_" t-value="tot_bono_ + line['bono']"/>
 
@@ -146,6 +150,7 @@
                                         <td>Total valor plan</td>
                                         <td>Total Inversión inicial</td>
                                         <td>Total Excedente</td>
+                                        <td>Total Comisiones adelantadas</td>
                                         <td>Total importe</td>
                                         <td>Total bono</td>
                                     </thead>
@@ -155,6 +160,7 @@
                                             <td> <span t-esc="tot_plan"/> </td>
                                             <td><span t-esc="tot_inv_ini"/></td>
                                             <td><span t-esc="tot_exc"/></td>
+                                            <td><span t-esc="tot_advanced_commission"/></td>
                                             <td><span t-esc="tot_importe_ini"/></td>
                                             <td><span t-esc="tot_bono"/></td>
                                         </tr>
@@ -172,6 +178,7 @@
                                         <td>Total valor plan</td>
                                         <td>Total Inversión inicial</td>
                                         <td>Total Excedente</td>
+                                        <td>Total Comisiones adelantadas</td>
                                         <td>Total importe</td>
                                         <td>Total bono</td>
                                     </thead>
@@ -181,6 +188,7 @@
                                             <td> <span t-esc="tot_plan_"/> </td>
                                             <td><span t-esc="tot_inv_ini_"/></td>
                                             <td><span t-esc="tot_exc_"/></td>
+                                             <td><span t-esc="tot_advanced_commission_"/></td>
                                             <td><span t-esc="tot_importe_ini_"/></td>
                                             <td><span t-esc="tot_bono_"/></td>
                                         </tr>
