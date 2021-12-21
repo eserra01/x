@@ -227,6 +227,5 @@
         report_type="qweb-pdf" 
         name="pabs_reports.elaborated_contracts"
         file="pabs_reports.elaborated_contracts"/>
-
     </data>
 </odoo>

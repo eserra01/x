@@ -293,5 +293,4 @@ class ReportComisionesPromotores(models.AbstractModel):
             "oficinas": lista_oficinas,
             "total_asistentes": total_comisiones_asistentes
         }
-
         # raise ValidationError("{}".format(lista_pagos))
