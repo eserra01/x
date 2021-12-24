@@ -25,7 +25,7 @@ class TransferPortfolioPartners(models.Model):
     if not contract_ids:
       ### Enviamos un mensaje de error
       raise ValidationError((
-        "El Cobrador {} no tiene ningún contrato asignado".format(collector_origin_id.name)))
+        "El Cobrador {} no tiene ningún contrato asignado".format(self.collector_origin_id.name)))
     for contract_id in contract_ids:
       contract_id.debt_collector = self.collector_dest_id.id
     self._cr.commit()
