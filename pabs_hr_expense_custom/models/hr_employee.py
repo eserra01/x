@@ -9,9 +9,7 @@
 from odoo import fields, models, _, api
 from odoo.exceptions import UserError
 
-class ResCompany(models.Model):
-  _inherit = 'res.company'
+class HrEmployee(models.Model):
+  _inherit = 'hr.employee'
 
-  expense_journal_id = fields.Many2one(string='Diario para gastos', comodel_name='account.journal')
-  
- 
+  use_expense = fields.Boolean(string="Puede usar gastos")

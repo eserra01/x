@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_employee_hr_expense_custom" model="ir.ui.view">
+    <field name="name">pabs.employee.hr.expense.custom</field>
+    <field name="model">hr.employee</field>
+    <field name="inherit_id" ref="hr.view_employee_form"/>
+    <field name="arch" type="xml">     
+       <xpath expr="//notebook" position="inside">
+        <page string="Parámetros módulo de gastos">        
+            <group>
+              <field name="use_expense" />        
+            </group>
+            <group></group>
+        </page>
+      </xpath>
+    </field>
+  </record>
+</odoo>
