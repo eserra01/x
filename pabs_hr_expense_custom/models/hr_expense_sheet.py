@@ -24,6 +24,15 @@ class HrExpenseSheet(models.Model):
     if self.env.user.expense_limit == 0:
       raise UserError("No se ha definido un límite de gastos en el usuario.")    
     if self.total_amount > self.env.user.expense_limit:
-      raise UserError("El límite de gastos que tiene autorizado es por $%s"%(self.total_amount))    
+      raise UserError("El límite de gastos que tiene autorizado es por $%s"%(self.env.user.expense_limit))    
     res = super(HrExpenseSheet,self).action_submit_sheet()
+    return res
+
+class HrExpense(models.Model):
+  _inherit = 'hr.expense'    
+
+  def action_view_sheet(self):
+    if self.account_id not in self.env.company.account_ids:
+      raise UserError("La cuenta seleccionada no está permitida, seleccione otra en su lugar.")         
+    res = super(HrExpense,self).action_view_sheet()
     return res
