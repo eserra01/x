@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_hr_expense_custom" model="ir.ui.view">
+    <field name="name">pabs.hr.expense.custom</field>
+    <field name="model">hr.expense</field>
+    <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name=] " position="atributes">
+        
+      </xpath>
+    </field>
+  </record>
+</odoo>
