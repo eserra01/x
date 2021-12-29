@@ -32,5 +32,6 @@ class UpdateAddressLogLine(models.Model):
   log = fields.Char(string="Log")
   log_id = fields.Many2one(comodel_name='update.address.log')
   idRegistro = fields.Char(string="IDRegistro")
+  contract = fields.Char(string="Contrato")
   company_id = fields.Many2one('res.company', 'Compañia', required=True,  default=lambda s: s.env.company.id, index=True)
 

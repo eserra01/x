@@ -814,20 +814,20 @@ class PABSEcobroSync(models.Model):
           if contract_id:        
             contract_id.write(vals)  
             updates += 1  
-            log = "Se actualizó la dirección de cobro del contrato %s con los siguientes valores: %s" % (reg.get('Contrato'),vals) 
+            log = "Se actualizó la dirección de cobro con los siguientes valores: %s" % (vals) 
             update_ids.append(reg.get('IDRegistro'))
         # Logs           
         if not municipallity_id or not colony_id:
           if not municipallity_id and not colony_id:
-            log = "No se encontró el municipio %s en el registro %s recibido de ECOBRO \n"%(reg.get('Localidad'),reg.get('IDRegistro'))
-            log += "No se encontró la colonia %s en el registro %s recibido de ECOBRO"%(reg.get('Colonia'),reg.get('IDRegistro'))
+            log = "No se encontró el municipio %s "%(reg.get('Localidad'))
+            log += "No se encontró la colonia %s "%(reg.get('Colonia'))
           if not municipallity_id:
-            log = "No se encontró el municipio %s en el registro %s recibido de ECOBRO"%(reg.get('Localidad'),reg.get('IDRegistro'))
+            log = "No se encontró el municipio %s "%(reg.get('Localidad'))
           if not colony_id:
-            log = "No se encontró la colonia %s en el registro %s recibido de ECOBRO"%(reg.get('Colonia'),reg.get('IDRegistro'))
+            log = "No se encontró la colonia %s "%(reg.get('Colonia'))
           errors += 1    
         # 
-        log_vals_lines.append({'idRegistro': reg.get('IDRegistro'),'log': log, 'company_id': company.id})                           
+        log_vals_lines.append({'idRegistro': reg.get('IDRegistro'),'contract': reg.get('Contrato'),'log': log, 'company_id': company.id})                           
       # Se crea el registro del log 
       log_vals = {
         'registers': registers,

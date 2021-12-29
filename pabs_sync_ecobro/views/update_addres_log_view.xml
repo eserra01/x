@@ -10,6 +10,7 @@
                         <field name="line_ids" nolabel="1" readonly="1">
                             <tree name="Detalle" editable="bottom" create="false" delete="false">
                                 <field name="idRegistro"/>
+                                <field name="contract"/>
                                 <field name="log"/>                                                              
                             </tree>                           
                         </field>
