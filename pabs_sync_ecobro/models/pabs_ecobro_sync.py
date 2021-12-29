@@ -768,6 +768,84 @@ class PABSEcobroSync(models.Model):
       except Exception as e:
         _logger.warning(e)
 
+  def update_contract_address(self, company_id=False):   
+    if not company_id:
+      _logger.warning("No se ha recibido el parámetro de la compañia.")
+      return True
+    ### DECLARACIÓN DE OBJETOS
+    contract_obj = self.env['pabs.contract'].sudo()   
+    company = self.env['res.company'].browse(company_id)
+    # Get url
+    url = "http://" + company.ecobro_ip + "/" + company.path_update_address
+    headers = {'Content-type': 'application/json'}
+    data = {'sistema': company.id}
+    ### SE ENVIA LA PETICIÓN 
+    try:       
+      response = requests.post(url, data=json.dumps(data), headers=headers)         
+      response_json = response.json()      
+      # Para cada registro 
+      registers = 0
+      updates = 0
+      errors = 0
+      log_vals_lines = []
+      update_ids = []
+      for reg in response_json.get('resultado'):
+        registers += 1
+        # Se busca el municipio
+        localidad = reg.get('Localidad').replace('\u00d1','Ñ').upper()      
+        municipallity_id = self.env['res.locality'].search([('name','ilike',localidad),('company_id','=',company.id)], limit=1)
+        # Se busca la colonia
+        colonia = reg.get('Colonia').replace('\u00d1','Ñ').upper()
+        colony_id = self.env['colonias'].search([('name','ilike',colonia),('company_id','=',company.id)], limit=1)
+        log = False
+        # Si se encontro la colonia y el municipio       
+        if municipallity_id and colony_id:
+          vals = {
+            'street_name_toll': reg.get('Calle'),
+            'street_number_toll': reg.get('Exterior') + " - " + reg.get('Interior'),
+            'between_streets_toll': reg.get('EntreCalles'),
+            'phone_toll': reg.get('Celular'),
+            'toll_municipallity_id': municipallity_id.id,
+            'toll_colony_id': colony_id.id,
+            'zip_code_toll': '000000',
+          }
+          # Se actualiza el contrato
+          contract_id = contract_obj.search([('name','=',reg.get('Contrato')),('company_id','=',company.id)])        
+          if contract_id:        
+            contract_id.write(vals)  
+            updates += 1  
+            log = "Se actualizó la dirección de cobro del contrato %s con los siguientes valores: %s" % (reg.get('Contrato'),vals) 
+            update_ids.append(reg.get('IDRegistro'))
+        # Logs           
+        if not municipallity_id or not colony_id:
+          if not municipallity_id and not colony_id:
+            log = "No se encontró el municipio %s en el registro %s recibido de ECOBRO \n"%(reg.get('Localidad'),reg.get('IDRegistro'))
+            log += "No se encontró la colonia %s en el registro %s recibido de ECOBRO"%(reg.get('Colonia'),reg.get('IDRegistro'))
+          if not municipallity_id:
+            log = "No se encontró el municipio %s en el registro %s recibido de ECOBRO"%(reg.get('Localidad'),reg.get('IDRegistro'))
+          if not colony_id:
+            log = "No se encontró la colonia %s en el registro %s recibido de ECOBRO"%(reg.get('Colonia'),reg.get('IDRegistro'))
+          errors += 1    
+        # 
+        log_vals_lines.append({'idRegistro': reg.get('IDRegistro'),'log': log, 'company_id': company.id})                           
+      # Se crea el registro del log 
+      log_vals = {
+        'registers': registers,
+        'updates': updates,
+        'errors': errors,
+        'company_id': company.id       
+      }           
+      log_id = self.env['update.address.log'].create(log_vals)
+      # Lineas de log
+      for line in log_vals_lines:
+        line.update({'log_id': log_id.id})
+      self.env['update.address.log.line'].create(log_vals_lines)
+     
+    except Exception as e:
+      _logger.warning("Información recibida: {}".format(e))
+
+    return True 
+
   def reactivate_contract(self):
     ### DECLARAMOS LOS OBJECTOS
     contract_obj = self.env['pabs.contract']

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_update_address_log_detail_form" model="ir.ui.view">
+            <field name="name">view.update.address.log.detail.from</field>
+            <field name="model">update.address.log</field>
+            <field name="arch" type="xml">
+                <form string="Detalle de log" create="false" delete="false" >                                       
+                    <group>
+                        <field name="line_ids" nolabel="1" readonly="1">
+                            <tree name="Detalle" editable="bottom" create="false" delete="false">
+                                <field name="idRegistro"/>
+                                <field name="log"/>                                                              
+                            </tree>                           
+                        </field>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</openerp>

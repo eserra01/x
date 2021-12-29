@@ -14,6 +14,9 @@ class ResCompany(models.Model):
 
   extension_path = fields.Char(string = 'Path de Conexión')
 
+  path_update_address = fields.Char(string = 'Path webservice')
+  log_address_ids = fields.One2many(comodel_name="update.address.log", inverse_name="company_id",string="Log de cambio de direcciones", readonly=True)
+
   contract_companies = fields.One2many(comodel_name='contract.companies',
     inverse_name='company_id',
     string='Compañia de Contrato')

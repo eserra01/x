@@ -18,6 +18,7 @@
     'views/res_company_view.xml',
     'views/hr_employee_view.xml',
     'views/account_payment_view.xml',
+    'views/update_addres_log_view.xml',
     'data/ir_cron.xml',
   ],
   'installable': True,
