@@ -64,6 +64,25 @@ class account_Payment(models.Model):
 
     destino_de_pago_funeraria =  fields.Selection(selection = DESTINO_DE_PAGO_FUNERARIA, string = 'Destino de pago funeraria')
 
+    def ripcord_query(self, company_id, date_start, date_end):
+      #
+      cr = self._cr
+      query = """
+      SELECT SUM(A.amount),C.name as cobrador,C.barcode 
+      FROM account_payment A INNER JOIN account_journal B ON A.journal_id = B.id 
+      INNER JOIN hr_employee C ON A.debt_collector_code = C.id 
+      WHERE B.company_id = %s AND 
+      A.payment_type = 'inbound' AND 
+      A.state = 'posted' AND 
+      A.payment_date BETWEEN '%s' AND '%s' 
+      GROUP BY C.barcode,C.name ORDER BY C.barcode ASC;
+      """%(company_id, date_start, date_end)     
+      cr.execute(query)
+      dict = cr.dictfetchall()    
+      return dict
+     
+
+
     def post(self):
       contract_status_obj = self.env['pabs.contract.status']
       contract_status_reason_obj = self.env['pabs.contract.status.reason']
