@@ -35,6 +35,7 @@
             <group string="Actualización de direcciones">      
               <group>
                 <field name="path_update_address"/>
+                <field name="path_update_address_confirm"/>
               </group>             
               <label for="log_address_ids" string="Logs"/>
               <field name="log_address_ids">

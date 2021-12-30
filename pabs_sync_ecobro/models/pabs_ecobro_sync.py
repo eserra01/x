@@ -814,8 +814,9 @@ class PABSEcobroSync(models.Model):
           if contract_id:        
             contract_id.write(vals)  
             updates += 1  
-            log = "Se actualizó la dirección de cobro con los siguientes valores: %s" % (vals) 
-            update_ids.append(reg.get('IDRegistro'))
+            log = "Se actualizó la dirección de cobro con los siguientes valores: %s" % (vals)
+            # Se agrega a la lista de los actualizados 
+            update_ids.append({'IDRegistro': reg.get('IDRegistro'), "Estatus": 1})
         # Logs           
         if not municipallity_id or not colony_id:
           if not municipallity_id and not colony_id:
@@ -840,7 +841,16 @@ class PABSEcobroSync(models.Model):
       for line in log_vals_lines:
         line.update({'log_id': log_id.id})
       self.env['update.address.log.line'].create(log_vals_lines)
-     
+      # Se actualizan los resgitros en ECOBRO
+      if update_ids:
+        # Get url
+        url = "http://" + company.ecobro_ip + "/" + company.path_update_address_confirm
+        headers = {'Content-type': 'application/json'}            
+        data = {"result": update_ids}
+        # Se envía la respuesta
+        response = requests.post(url, data=json.dumps(data), headers=headers)         
+        response_json = response.json() 
+        _logger.warning(response_json)           
     except Exception as e:
       _logger.warning("Información recibida: {}".format(e))
 
