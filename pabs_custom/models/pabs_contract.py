@@ -112,7 +112,7 @@ class PABSContracts(models.Model):
   municipality_id = fields.Many2one(tracking=True, comodel_name='res.locality', required=True, string='Municipio')
   neighborhood_id = fields.Many2one(tracking=True, comodel_name='colonias', string='Colonia')
   phone = fields.Char(tracking=True, string='Teléfono', required=True)
-  zip_code = fields.Char(tracking=True, string='C.P.', required=True)
+  zip_code = fields.Char(tracking=True, string='C.P.', required=True, default='00000')
   
 # Domicilio de cobro
   street_name_toll = fields.Char(tracking=True, string = 'Calle')
@@ -121,7 +121,7 @@ class PABSContracts(models.Model):
   toll_municipallity_id = fields.Many2one(tracking=True, comodel_name='res.locality',string='Municipio')
   toll_colony_id = fields.Many2one(tracking=True, comodel_name='colonias',string='Colonia')
   phone_toll = fields.Char(tracking=True, string='Teléfono')
-  zip_code_toll = fields.Char(tracking=True, string='C.P.', required=True)
+  zip_code_toll = fields.Char(tracking=True, string='C.P.', required=True, default='00000')
 
 #Datos contables
   balance = fields.Float(tracking=True, string="Saldo", compute="_calc_balance")
