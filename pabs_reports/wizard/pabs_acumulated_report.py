@@ -47,7 +47,6 @@ class AccumulatedReport(models.TransientModel):
       'end_date' : self.end_date,
     }
     ### RETORNAMOS EL REPORTE
-
     return self.env.ref('pabs_reports.acumulated_report_xlsx').report_action(self, data=data)
 
 class PabsAcumulatedReportXLSX(models.AbstractModel):
