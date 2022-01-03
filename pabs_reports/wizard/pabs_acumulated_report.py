@@ -86,7 +86,7 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
         ('origin','in',('cancelada','extravio')),
         ('date_done','=',start_date)],order="date_done")
       report_name = "Reporte de Acumulados de {}".format(start_date)
-
+   
     ### SI NO SE ENCONTRARON REGISTROS COINCIDENTES
     if not closing_ids:
       raise ValidationError((
@@ -139,8 +139,7 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
         sheet.write(count, 5, line.product_id.name or "")
         #sheet.write(count, 6, int(line.lot_id.name[6:]) or "")
         sheet.write(count, 6, line.lot_id.name or "")
-        contract_id = contract_obj.search([
-          ('lot_id','=',line.lot_id.id)])
+        contract_id = contract_obj.search([('lot_id','=',line.lot_id.id)], limit=1)
         if contract_id.state == 'precontract':
           status = 'F'
         elif contract_id.state == 'contract':
