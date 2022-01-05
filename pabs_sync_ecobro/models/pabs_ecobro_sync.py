@@ -193,6 +193,9 @@ class PABSEcobroSync(models.Model):
       return
     ### TRAEMOS EL OBJETO DE LA COMPAÑIA
     company = company_obj.browse(company_id)
+    # Se agrega un 2 para elegir el endpoint correcto para la empresa con id 15 (ACAPULCO NE)
+    if company.id == 15:
+      url += "2"   
     ### BUSCAMOS SI SE PUEDE SINCRONIZAR ALGO CON COOPERATIVA O APOYO
     cont_comp = company.contract_companies.filtered(lambda r: r.type_company in ('support','cooperative'))
     _logger.warning("Valor encontrado: {}".format(cont_comp))
