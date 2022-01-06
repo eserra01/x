@@ -8,11 +8,20 @@
       <xpath expr="//field[@name='product_id']" position="attributes">
         <attribute name="options">{'no_create':True,'no_open':True}</attribute>
       </xpath>
+      <xpath expr="//field[@name='account_id']" position="attributes">
+        <attribute name="options">{'no_create':True,'no_open':True}</attribute>
+      </xpath>
       <xpath expr="//field[@name='employee_id']" position="attributes">
         <attribute name="options">{'no_create':True,'no_open':True}</attribute>
       </xpath>
       <xpath expr="//field[@name='employee_id']" position="attributes">
         <attribute name="domain">[('use_expense','=',True)]</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='payment_mode']" position="attributes">
+        <attribute name="invisible">1</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='payment_mode']" position="attributes">
+        <attribute name="groups">pabs_hr_expense_custom.hr_expense_payment_mode</attribute>
       </xpath>      
     </field>
   </record>

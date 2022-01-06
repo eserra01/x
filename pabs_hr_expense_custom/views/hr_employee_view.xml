@@ -6,9 +6,10 @@
     <field name="inherit_id" ref="hr.view_employee_form"/>
     <field name="arch" type="xml">     
        <xpath expr="//notebook" position="inside">
-        <page string="Parámetros módulo de gastos">        
+        <page string="Parámetros módulo de gastos" groups="pabs_hr_expense_custom.hr_expense_tab_employee">        
             <group>
-              <field name="use_expense" />        
+              <field name="use_expense" />   
+              <field name="expense_journal_id" options="{'no_create': True, 'no_open': True}"/>      
             </group>
             <group></group>
         </page>

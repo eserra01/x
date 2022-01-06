@@ -9,7 +9,7 @@
         <page string="Parámetros módulo de gastos">        
             <group>
               <group>
-                <field name="expense_limit" />
+                <field name="expense_limit" />                
               </group>
               <group>
                 

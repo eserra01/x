@@ -17,6 +17,7 @@
     'views/res_users_view.xml',
     'views/hr_expense_view.xml',
     'views/hr_employee_view.xml',
+    'security/security.xml',
   ],
   'installable': True,
   'auto_install': False,

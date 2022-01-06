@@ -13,10 +13,15 @@ class HrExpenseSheet(models.Model):
   _inherit = 'hr.expense.sheet'
 
   def action_sheet_move_create(self):
-    if self.company_id.expense_journal_id:
-      self.journal_id = self.company_id.expense_journal_id.id
+    if self.employee_id.expense_journal_id:
+      self.journal_id = self.employee_id.expense_journal_id.id
     else:
-      raise UserError("No se ha definido un diario de gastos en la configuración de la compañia.")    
+      raise UserError("No se ha definido un diario de gastos para el empleado seleccionado.")    
+    #
+    expense_id = self.env['hr.expense'].search([('sheet_id','=',self.id)])
+    if expense_id:
+      if expense_id.account_id not in self.env.company.account_ids:
+        raise UserError("La cuenta seleccionada no está permitida, seleccione otra en su lugar.")  
     res = super(HrExpenseSheet,self).action_sheet_move_create()
     return res
 
@@ -28,11 +33,10 @@ class HrExpenseSheet(models.Model):
     res = super(HrExpenseSheet,self).action_submit_sheet()
     return res
 
-class HrExpense(models.Model):
-  _inherit = 'hr.expense'    
+# class HrExpense(models.Model):
+#   _inherit = 'hr.expense'    
 
-  def action_view_sheet(self):
-    if self.account_id not in self.env.company.account_ids:
-      raise UserError("La cuenta seleccionada no está permitida, seleccione otra en su lugar.")         
-    res = super(HrExpense,self).action_view_sheet()
-    return res
+#   def action_view_sheet(self):
+          
+#     res = super(HrExpense,self).action_view_sheet()
+#     return res

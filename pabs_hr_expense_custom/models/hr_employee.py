@@ -13,3 +13,4 @@ class HrEmployee(models.Model):
   _inherit = 'hr.employee'
 
   use_expense = fields.Boolean(string="Puede usar gastos")
+  expense_journal_id = fields.Many2one(string='Diario para gastos', comodel_name='account.journal')

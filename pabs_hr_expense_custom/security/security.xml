@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1"> 
+
+    <!-- Categoría Call Center -->
+    <record id="hr_expense_custom_category" model="ir.module.category">
+      <field name="name">Gastos PABS</field>
+    </record>
+
+    <record id="hr_expense_tab_employee" model="res.groups">
+      <field name="name">Pestaña de gastos en empleados</field>
+      <field name="category_id" ref="hr_expense_custom_category"/>
+    </record>
+
+    <record id="hr_expense_payment_mode" model="res.groups">
+      <field name="name">Ver tipo de gasto</field>
+      <field name="category_id" ref="hr_expense_custom_category"/>
+    </record>
+
+</data>
+</odoo>
