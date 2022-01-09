@@ -12,5 +12,6 @@ from odoo.exceptions import UserError
 class ResCompany(models.Model):
   _inherit = 'res.company'
 
-  account_ids = fields.Many2many(comodel_name="account.account", string="Cuentas permitidas")
+  expense_sequence_id = fields.Many2one(comodel_name="ir.sequence", string="Secuencia numérica")
+  expense_payment_journal_id = fields.Many2one(comodel_name="account.journal", string="Diario de pago")
  

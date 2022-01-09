@@ -7,9 +7,13 @@
     <field name="arch" type="xml">
       <xpath expr="//notebook" position="inside">
         <page string="Parámetros módulo de gastos">        
-            <group>
-              <!-- <field name="expense_journal_id" options="{'no_create': True, 'no_open': True}"/>          -->
-              <field name="account_ids" widget="many2many_tags" options="{'no_open':True, 'no_create':True}"/>              
+            <group >    
+              <group>          
+                <field name="expense_sequence_id" options="{'no_create': True, 'no_open': True}"/>                                 
+                <field name="expense_payment_journal_id" options="{'no_create': True, 'no_open': True}"/>         
+              </group>            
+              <group>
+              </group>
             </group>
         </page>
       </xpath>

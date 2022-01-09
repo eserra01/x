@@ -11,8 +11,7 @@
               <group>
                 <field name="expense_limit" />                
               </group>
-              <group>
-                
+              <group>       
               </group>
             </group>
         </page>
