@@ -420,6 +420,9 @@ class PABSEcobroSync(models.Model):
       return
     try:
       company = company_obj.browse(company_id)
+       # Se agrega un 2 para elegir el endpoint correcto para la empresa con id 15 (ACAPULCO NE)
+      if company.id == 15:
+        url_pending += "2"      
       ### SE ENVIA LA PETICIÓN PARA RECIBIR LOS PAGOS
       req = requests.post(url_pending)
       ### CASTEANDO A JSON LA RESPUESTA
