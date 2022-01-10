@@ -16,3 +16,4 @@ class HrEmployee(models.Model):
   expense_journal_id = fields.Many2one(string='Diario para gastos', comodel_name='account.journal')
   analytic_account_id = fields.Many2one(string='Cuenta analítica', comodel_name='account.analytic.account')
   account_analytic_tag_ids = fields.Many2many(string='Etiquetas analíticas', comodel_name='account.analytic.tag')
+  product_expense_ids = fields.Many2many(string='Productos permitidos', comodel_name='product.product', domain="[('can_be_expensed','=',True)]")
