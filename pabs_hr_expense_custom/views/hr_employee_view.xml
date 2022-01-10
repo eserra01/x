@@ -8,10 +8,14 @@
        <xpath expr="//notebook" position="inside">
         <page string="Parámetros módulo de gastos" groups="pabs_hr_expense_custom.hr_expense_tab_employee">        
             <group>
-              <field name="use_expense" />   
-              <field name="expense_journal_id" options="{'no_create': True, 'no_open': True}"/>      
+              <group>
+                <field name="use_expense" />   
+                <field name="expense_journal_id" options="{'no_create': True, 'no_open': True}"/>
+                <field name="analytic_account_id" options="{'no_create': True, 'no_open': True}"/>
+                <field name="account_analytic_tag_ids" widget="many2many_tags"  options="{'no_create': True, 'no_open': True}"/>
+              </group>
+              <group></group>
             </group>
-            <group></group>
         </page>
       </xpath>
     </field>

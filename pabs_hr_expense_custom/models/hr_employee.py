@@ -14,3 +14,5 @@ class HrEmployee(models.Model):
 
   use_expense = fields.Boolean(string="Puede usar gastos")
   expense_journal_id = fields.Many2one(string='Diario para gastos', comodel_name='account.journal')
+  analytic_account_id = fields.Many2one(string='Cuenta analítica', comodel_name='account.analytic.account')
+  account_analytic_tag_ids = fields.Many2many(string='Etiquetas analíticas', comodel_name='account.analytic.tag')
