@@ -18,6 +18,11 @@ class HrExpenseSheet(models.Model):
     else:
       raise UserError("No se ha definido un diario de gastos para el empleado seleccionado.")    
     res = super(HrExpenseSheet,self).action_sheet_move_create()
+    # Se modifican las cuentas de la póliza de provisión
+    account_move_line_ids = self.env['account.move.line'].search([('move_id','=',self.account_move_id.id)])
+    for aml in account_move_line_ids:
+      if aml.debit == 0:
+        aml.account_id = self.employee_id.expense_journal_id.default_debit_account_id.id  
     return res
 
   # def action_submit_sheet(self):
