@@ -12,8 +12,7 @@
                 <field name="use_expense" />   
                 <field name="expense_journal_id" options="{'no_create': True, 'no_open': True}"/>
                 <field name="analytic_account_id" options="{'no_create': True, 'no_open': True}"/>
-                <field name="account_analytic_tag_ids" widget="many2many_tags"  options="{'no_create': True, 'no_open': True}"/>
-                <field name="product_expense_ids" widget="many2many_tags"  options="{'no_create': True, 'no_open': True}"/>
+                <field name="account_analytic_tag_ids" widget="many2many_tags"  options="{'no_create': True, 'no_open': True}"/>               
               </group>
               <group></group>
             </group>

@@ -8,8 +8,8 @@
       <xpath expr="//notebook" position="inside">
         <page string="Parámetros módulo de gastos">        
             <group>
-              <group>
-                <field name="expense_limit" />                
+              <group>                
+                <field name="product_expense_ids" widget="many2many_tags"  options="{'no_create': True, 'no_open': True}"/>              
               </group>
               <group>       
               </group>

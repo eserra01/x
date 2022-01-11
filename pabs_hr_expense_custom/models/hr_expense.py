@@ -38,12 +38,11 @@ class HrExpense(models.Model):
           if rec.employee_id.account_analytic_tag_ids:
             rec.analytic_tag_ids = rec.employee_id.account_analytic_tag_ids.ids
           else:
-            rec.analytic_tag_ids = False
-          # Obtenemos los productos permitidos del empleado
-          rec.product_id = False
-          return {'domain': {'product_id': [('id', 'in', rec.employee_id.product_expense_ids.ids)]}}
+            rec.analytic_tag_ids = False         
         else:
-          return {'domain': {'product_id': [('id', 'in', [])]}}
+           # Obtenemos los productos permitidos por usuario
+          rec.product_id = False
+          return {'domain': {'product_id': [('id', 'in', self.env.user.product_expense_ids.ids)]}}
 
          
   # def action_view_sheet(self):          

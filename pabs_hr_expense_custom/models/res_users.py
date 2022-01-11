@@ -11,6 +11,6 @@ from odoo.exceptions import UserError
 
 class ResUsers(models.Model):
   _inherit = 'res.users'
-
-  expense_limit = fields.Float(string='Límite de gastos', help="Determina el límite que un usuario puede solicitar en gastos.")
+  
+  product_expense_ids = fields.Many2many(string='Productos permitidos', comodel_name='product.product', domain="[('can_be_expensed','=',True)]")
  
