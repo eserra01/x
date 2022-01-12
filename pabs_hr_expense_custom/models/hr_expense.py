@@ -42,9 +42,9 @@ class HrExpense(models.Model):
         else:
            # Obtenemos los productos permitidos por usuario
           rec.product_id = False
-          return {'domain': {'product_id': [('id', 'in', self.env.user.product_expense_ids.ids)]}}
+          domain = []
+          product_user_id = self.env['user.product.expense'].search([('user_id','=',self.env.user.id)])
+          if product_user_id:
+            domain = product_user_id.product_expense_ids.ids
+          return {'domain': {'product_id': [('id', 'in', domain)]}}
 
-         
-  # def action_view_sheet(self):          
-  #   res = super(HrExpense,self).action_view_sheet()
-  #   return res

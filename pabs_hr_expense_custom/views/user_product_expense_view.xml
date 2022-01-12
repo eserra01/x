@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>      
+        <!-- new_object_form_view -->
+        <record  id="user_product_expense_form_view" model="ir.ui.view">
+            <field name="name">user.product.expense.form.view</field>
+            <field name="model">user.product.expense</field>
+            <field name="arch" type="xml">
+                <form string="Productos permitidos por usuario">
+                    <sheet string="Productos por usuario">
+                        <group>
+                            <group>
+                                <field name="user_id" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="company_id" /> 
+                                <field name="product_expense_ids" widget="many2many_tags"  options="{'no_create': True, 'no_open': True}"/>                             
+                            </group>
+                            <group>                                                               
+                            </group>
+                        </group>                        
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- new_object_tree_view -->
+        <record id="user_product_expense_tree_view" model="ir.ui.view">
+            <field name="name">user.product.expense.tree.view</field>
+            <field name="model">user.product.expense</field>
+            <field name="arch" type="xml">
+                <tree string="Productos permitidos por usuario">
+                    <field name="user_id"/>
+                    <field name="company_id" />                               
+                </tree>
+            </field>
+        </record>
+
+        <!-- action_create_new_module -->
+        <record id="action_user_product_expense" model="ir.actions.act_window">
+            <field name="name">Productos de gasto por usuario</field>
+            <field name="res_model">user.product.expense</field>
+            <field name="type">ir.actions.act_window</field>           
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="user_product_expense_tree_view"/>
+        </record>
+
+        <!-- Menues -->
+        <menuitem id="user_product_expense_menu" name="Productos por usuario" parent="hr_expense.menu_hr_expense_configuration" action="action_user_product_expense"/>
+
+    </data>
+</openerp>
