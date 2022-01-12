@@ -10,7 +10,8 @@
             <group >    
               <group>          
                 <field name="expense_sequence_id" options="{'no_create': True, 'no_open': True}"/>                                 
-                <field name="expense_payment_journal_id" options="{'no_create': True, 'no_open': True}"/>         
+                <field name="expense_payment_journal_id" options="{'no_create': True, 'no_open': True}"/>
+                <field name="expense_limit" />         
               </group>            
               <group>
               </group>

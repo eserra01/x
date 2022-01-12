@@ -14,4 +14,4 @@ class ResCompany(models.Model):
 
   expense_sequence_id = fields.Many2one(comodel_name="ir.sequence", string="Secuencia numérica")
   expense_payment_journal_id = fields.Many2one(comodel_name="account.journal", string="Diario de pago")
- 
+  expense_limit = fields.Float(string="Límite de gastos")

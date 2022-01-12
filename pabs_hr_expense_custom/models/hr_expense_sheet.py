@@ -33,6 +33,22 @@ class HrExpenseSheet(models.Model):
   #   res = super(HrExpenseSheet,self).action_submit_sheet()
   #   return res
 
+  def approve_expense_sheets(self):
+    # 
+    if self.company_id.expense_limit == 0:
+      raise UserError("No se ha definido un límite de gastos en la compañía.")
+    # Si se superó el limite de gastos
+    if self.total_amount > self.company_id.expense_limit:
+      #
+      allow = False
+      product_user_id = self.env['user.product.expense'].search([('user_id','=',self.env.user.id)])
+      if product_user_id:
+        if product_user_id.approve_limit_expense:
+          allow = True
+      if not allow:        
+        raise UserError("El límite de gastos que tiene autorizado es por $%s, el gasto solo puede ser aprobado por un usuario autorizado."%(self.company_id.expense_limit))        
+    return super(HrExpenseSheet, self).approve_expense_sheets()
+
 class HrExpenseSheetRegisterPaymentWizard(models.TransientModel):
     _inherit = "hr.expense.sheet.register.payment.wizard"
 

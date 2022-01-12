@@ -15,6 +15,7 @@ class UserProductExpense(models.Model):
 
   user_id = fields.Many2one(string="Usuario", comodel_name='res.users')  
   product_expense_ids = fields.Many2many(string='Productos permitidos', comodel_name='product.product', domain="[('can_be_expensed','=',True)]") 
+  approve_limit_expense = fields.Boolean(string="Aprobar con limite de gastos")
   company_id = fields.Many2one('res.company', u'Compañía', readonly=True, default=lambda self: self.env.company, required=True)
 
   @api.model
