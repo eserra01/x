@@ -15,7 +15,7 @@
         <attribute name="invisible">1</attribute>
       </xpath>
       <xpath expr="//field[@name='analytic_account_id']" position="attributes">
-        <attribute name="invisible">1</attribute>
+        <attribute name="required">1</attribute>
       </xpath>
       <xpath expr="//field[@name='analytic_tag_ids']" position="attributes">
         <attribute name="invisible">1</attribute>
@@ -39,6 +39,26 @@
     <field name="arch" type="xml">
        <xpath expr="//field[@name='date']" position="before">
         <field name="number" />
+      </xpath>
+    </field>
+  </record>
+
+   <record id="pabs_hr_expense_sheet_custom_form_view" model="ir.ui.view">
+    <field name="name">pabs.hr.expense.sheet.custom.form.view</field>
+    <field name="model">hr.expense.sheet</field>
+    <field name="inherit_id" ref="hr_expense.view_hr_expense_sheet_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='company_id']" position="after">
+        <field name="amount_residual" invisible="1" />
+        <field name="show_payment_button" invisible="1" />       
+      </xpath>
+      <xpath expr="//button[@name='%(hr_expense.hr_expense_sheet_register_payment_wizard_action)d']" position="attributes">
+        <attribute name="attrs">{'invisible': ['|',('state', '!=', 'post'),('show_payment_button','=',False)]}</attribute>  
+      </xpath>   
+      <xpath expr="//button[@name='action_get_attachment_view']" position="after">    
+        <button name="action_get_payments_view" class="oe_stat_button" icon="fa-file-text-o" type="object">
+            <field name="payments_number" widget="statinfo" string="Pagos"/>
+        </button>    
       </xpath>
     </field>
   </record>

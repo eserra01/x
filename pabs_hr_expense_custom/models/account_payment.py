@@ -6,9 +6,10 @@
 #
 ###########################################################################################
 
-from . import res_company
-from . import hr_expense
-from . import user_product_expense
-from . import hr_expense_sheet
-from . import hr_employee
-from . import account_payment
+from odoo import fields, models, _, api
+from odoo.exceptions import UserError
+
+class AccountPayment(models.Model):
+  _inherit = 'account.payment'
+
+  expense_sheet_id = fields.Many2one(comodel_name="hr.expense.sheet", string="Gasto")

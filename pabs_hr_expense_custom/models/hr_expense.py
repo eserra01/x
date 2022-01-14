@@ -33,7 +33,7 @@ class HrExpense(models.Model):
           # Se especifica el diario en el gasto según el configurado
           rec.sheet_id.journal_id = rec.employee_id.expense_journal_id.id
           # Se especifica la cuenta analítica          
-          rec.analytic_account_id = rec.employee_id.analytic_account_id.id
+          # rec.analytic_account_id = rec.employee_id.analytic_account_id.id
           #
           if rec.employee_id.account_analytic_tag_ids:
             rec.analytic_tag_ids = rec.employee_id.account_analytic_tag_ids.ids
