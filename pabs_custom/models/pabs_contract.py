@@ -86,6 +86,7 @@ class PABSContracts(models.Model):
   payment_amount = fields.Float(tracking=True, string= 'Monto de pago')
   way_to_payment = fields.Selection(tracking=True, selection=WAY_TO_PAY,string = 'Forma de pago')
   date_first_payment = fields.Date(tracking=True, string='Fecha primer abono')
+  assign_collector_date = fields.Date(tracking=True, string='Fecha asignación cobrador', readonly=True)
   status_of_contract = fields.Char(tracking=True, string="Estatus")
   contract_expires = fields.Date(tracking=True, string="Vencimiento contrato", compute ="calcular_vencimiento_y_atraso")
   days_without_payment = fields.Integer(tracking=True, string="Dias sin abonar", compute="calcular_dias_sin_abonar")
@@ -1133,6 +1134,269 @@ class PABSContracts(models.Model):
           'amount' : abs(line.balance)
         }
         reconcile_model.create(data)
+  
+  #
+  def create_contract2(self, vals=False):
+
+    account_obj = self.env['account.move']
+    account_line_obj = self.env['account.move.line'].with_context(check_move_validity=False)
+    journal_obj = self.env['account.journal']
+    sequence_obj = self.env['ir.sequence']
+    payment_obj = self.env['account.payment']
+    payment_method_obj = self.env['account.payment.method']
+
+    comission_template_obj = self.env['pabs.comission.template']
+    pricelist_obj = self.env['product.pricelist.item']
+
+    contract_status = self.env['pabs.contract.status']
+    contract_status_reason = self.env['pabs.contract.status.reason']
+
+    try:      
+      reconcile = {}
+      ### Pasando el contrato a activo
+      contract_status_id = contract_status.search([
+        ('status','=','ACTIVO')],limit=1)
+      if contract_status_id:
+        self.contract_status_item = contract_status_id.id
+
+      contract_status_reason_id = contract_status_reason.search([
+        ('reason','=','ACTIVO')],limit=1)
+      
+      if contract_status_reason_id:
+        self.contract_status_reason = contract_status_reason_id.id
+
+      if not self.employee_id:
+        if self.lot_id:
+          previous = self.search([('lot_id','=',self.lot_id.id)],limit=1)
+          # 
+          self.lot_id.employee_id = self.sale_employee_id.id
+
+          #### COMIENZA VALIDACIÓN DE COMISIONES Validar que en la plantilla de comisiones el asistente tenga comisión asignada > $0 #####
+          if previous.employee_id and previous.name_service:
+            #Obtener el puesto de asistente social
+            job_id = self.env['hr.job'].search([('name', '=', 'ASISTENTE SOCIAL'),('company_id','=',previous.company_id.id,)]).id
+
+            #Obtener la lista de precios
+            pricelist_id = pricelist_obj.search([('product_id','=',previous.name_service.id)])
+            if not pricelist_id:
+              raise ValidationError(("No se encontró la información del plan {}".format(previous.product_id.name)))
+
+            #Obtener la plantilla de comisiones
+            _logger.warning('empleado: {}\nplan: {}'.format(previous.employee_id.barcode, pricelist_id.product_tmpl_id.name))
+            comission_template = comission_template_obj.search([
+              ('employee_id', '=', previous.employee_id.id),
+              ('plan_id', '=', pricelist_id.id),
+              ('job_id', '=', job_id)])
+
+            if not comission_template:
+              raise ValidationError("No se encontró la plantilla de comisiones del asistente")            
+          ### TERMINA VALIDACION COMISIONES          
+          invoice_id = self.create_invoice(previous)          
+          account_id = invoice_id.partner_id.property_account_receivable_id.id
+          journal_id = account_obj.with_context(
+            default_type='out_invoice')._get_default_journal()
+          currency_id = account_obj.with_context(
+            default_type='out_invoice')._get_default_currency()
+          for line in invoice_id.line_ids:
+            if line.debit > 0:
+              reconcile.update({'debit_move_id' : line.id})     
+
+          #Buscar diario de efectivo
+          cash_journal_id = journal_obj.search([('type','=','cash'), ('name','=','EFECTIVO')],limit=1)
+          if not cash_journal_id:
+            raise ValidationError("No se encontró el diario EFECTIVO")
+
+          #Buscar método de pago
+          payment_method_id = payment_method_obj.search([('payment_type','=','inbound'),('code','=','manual')],limit=1)
+          if not payment_method_id:
+            raise ValidationError("No se encontró el método de pago, favor de comunicarse con sistemas")
+
+          ### CREANDO PAGO POR INVERSIÓN INICIAL
+          if previous.stationery:
+            payment_data = {
+              'payment_reference' : 'Inversión inicial',
+              'reference' : 'stationary',
+              'way_to_pay' : 'cash',
+              'communication' : 'Inversión inicial',
+              'payment_type' : 'inbound',
+              'partner_type' : 'customer',
+              'contract' : previous.id,
+              'partner_id' : previous.partner_id.id,
+              'amount' : previous.stationery,
+              'currency_id' : currency_id.id,
+              'payment_date' : previous.invoice_date,
+              'journal_id' : cash_journal_id.id,
+              'payment_method_id' : payment_method_id.id,
+            }
+            initial_payment_id = payment_obj.create(payment_data)
+            initial_payment_id.with_context(stationery=True).post()
+            
+            if initial_payment_id.move_line_ids:
+              for obj in initial_payment_id.move_line_ids:
+                if obj.credit > 0:
+                  reconcile.update({
+                    'initial_payment' : obj.id})
+
+          ### CREANDO PAGO POR EXCEDENTE
+          if previous.excedent:
+            excedent_data = {
+              'payment_reference' : 'Excedente Inversión Inicial',
+              'reference' : 'surplus',
+              'way_to_pay' : 'cash',
+              'communication' : 'Excedente Inversión Inicial',
+              'payment_type' : 'inbound',
+              'partner_type' : 'customer',
+              'contract' : previous.id,
+              'partner_id' : previous.partner_id.id,
+              'amount' : previous.excedent,
+              'currency_id' : currency_id.id,
+              'payment_date' : previous.invoice_date,
+              'journal_id' : cash_journal_id.id,
+              'payment_method_id' : payment_method_id.id,
+            }
+            excedent_payment_id = payment_obj.create(excedent_data)
+            excedent_payment_id.with_context(excedent=True).post()
+            if excedent_payment_id.move_line_ids:
+              for line2 in excedent_payment_id.move_line_ids:
+                if line2.credit > 0:
+                  reconcile.update({
+                    'excedent' : line2.id})
+
+          ### NOTA DE CREDITO POR BONO PABS
+          _logger.warning("El bono por inversión inicial es: {}".format(previous.investment_bond))
+          if previous.investment_bond > 0:
+
+            # FISCAL
+            if previous.company_id.apply_taxes:
+              #Buscar impuesto a agregar
+              iva_tax = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', previous.company_id.id)])
+              
+              if not iva_tax:
+                raise ValidationError("No se encontró el impuesto con nombre IVA")
+
+              #Buscar linea de repartición de impuesto para facturas
+              iva_repartition_line = iva_tax.refund_repartition_line_ids.filtered_domain([
+                ('repartition_type','=','tax'), 
+                ('refund_tax_id','=', iva_tax.id), 
+                ('company_id','=', previous.company_id.id)
+              ])
+
+              if not iva_repartition_line:
+                raise ValidationError("No se encontró la repartición de facturas rectificativas del impuesto {}".format(iva_tax.name))
+              if len(iva_repartition_line) > 1:
+                raise ValidationError("Se definió mas de una linea (sin incluir la linea base) en la repartición de facturas rectificativas del impuesto {}".format(iva_tax.name))
+
+            #Encabezado
+            refund_data = {
+              'date' : previous.invoice_date,
+              'commercial_partner_id' : previous.partner_id.id,
+              'partner_id' : previous.partner_id.id,
+              'ref' : 'Bono por inversión inicial',
+              'type' : 'out_refund',
+              'journal_id' : journal_id.id,
+              'state' : 'draft',
+              'currency_id' : currency_id.id,
+              'invoice_date' : previous.invoice_date,
+              'auto_post' : False,
+              'contract_id' : previous.id,
+              'invoice_user_id' : self.env.user.id,
+              'reversed_entry_id' : invoice_id.id,
+            }
+            refund_id = account_obj.create(refund_data)
+
+            if refund_id:
+              # Buscar producto Bono por inversión inicial
+              product_id = self.env['product.template'].search([('company_id','=',previous.company_id.id),('name','=','BONO POR INVERSION INICIAL')])
+              if not product_id:
+                raise ValidationError("No se encontró el producto BONO POR INVERSION INICIAL")
+
+              product_product = self.env['product.product'].search([('product_tmpl_id', '=', product_id.id)])
+              if not product_product:
+                raise ValidationError("Problema el producto BONO POR INVERSION INICIAL: No se encontró la relación product_template({}) en la tabla product_product".format(product_id.id))
+
+              account_id = product_id.property_account_income_id or product_id.categ_id.property_account_income_categ_id
+              if not account_id:
+                raise ValidationError("No se encontró la cuenta en los campos product_id.property_account_income_id o product_id.categ_id.property_account_income_categ_id")
+
+              # Llenar datos de Linea principal de débito
+              line_data = {
+                'move_id' : refund_id.id,
+                'account_id' : account_id.id,
+                'quantity' : 1,
+                'price_unit' : previous.investment_bond,
+                'debit' : previous.investment_bond,
+                'product_uom_id' : product_id.uom_id.id,
+                'partner_id' : previous.partner_id.id,
+                'amount_currency' : 0,
+                'product_id' : product_product.id,
+                'is_rounding_line' : False,
+                'exclude_from_invoice_tab' : False,
+                'name' : product_id.description_sale or product_id.name,
+              }
+
+              # FISCAL
+              if previous.company_id.apply_taxes:
+                line_data.update({
+                  'tax_exigible' : True,
+                  'tax_ids' : [(4, iva_tax.id, 0)],
+                  'debit' : round(previous.investment_bond / (1 + iva_tax.amount/100), 2),
+                })
+              line = account_line_obj.create(line_data)
+
+              # FISCAL
+              # Llenar datos para línea de IVA
+              if previous.company_id.apply_taxes:
+                iva_data = {
+                  'move_id' : refund_id.id,
+                  'account_id' : iva_repartition_line.account_id.id,
+                  'quantity' : 1,
+                  'price_unit' : previous.investment_bond,
+                  'debit' : round(previous.investment_bond - round( (previous.investment_bond / (1 + iva_tax.amount/100)), 2), 2),
+                  'tax_base_amount' : round(previous.investment_bond - round( (previous.investment_bond / (1 + iva_tax.amount/100)), 2), 2),
+                  'product_uom_id' : product_id.uom_id.id,
+                  'partner_id' : previous.partner_id.id,
+                  'amount_currency' : 0,
+                  'product_id' : product_product.id,
+                  'is_rounding_line' : False,
+                  'exclude_from_invoice_tab' : True,
+                  'name' : iva_tax.name,
+                  'tax_line_id' : iva_tax.id,
+                  'tax_group_id' : iva_tax.tax_group_id.id,
+                  'tax_repartition_line_id' : iva_repartition_line.id,
+                }
+
+                line = account_line_obj.create(iva_data)
+
+              ### CONTRAPARTIDA DEL DOCUMENTO #Linea de crédito
+              partner_line_data = {
+                'move_id' : refund_id.id,
+                'account_id' : refund_id.partner_id.property_account_receivable_id.id,
+                'quantity' : 1,
+                'date_maturity' : previous.invoice_date,
+                'amount_currency' : 0,
+                'partner_id' : previous.partner_id.id,
+                'tax_exigible' : False,
+                'is_rounding_line' : False,
+                'exclude_from_invoice_tab' : True,
+                'credit' : previous.investment_bond,
+              }
+              line = account_line_obj.create(partner_line_data)
+
+              ### VALIDANDO NOTA DE CRÉDITO
+              reconcile.update({'pabs' : line.id})
+              refund_id.with_context(investment_bond=True).action_post()
+
+        _logger.info("Se creó la factura del contrato")
+        if previous.name == 'Nuevo Contrato':
+          contract_name = pricelist_id.sequence_id._next()
+          previous.name = contract_name
+        else:
+          contract_name = previous.name
+        previous.partner_id.write({'name' : contract_name, 'company_id' : previous.company_id.id})
+        self.reconcile_all(reconcile)
+    except Exception as e:
+      self._cr.rollback()
+      raise ValidationError(e)
 
   #Crear contrato y pagos (Papeleria, Excedente y Bono)
   def create_contract(self, vals=False):
@@ -1454,8 +1718,12 @@ class PABSContracts(models.Model):
       full_name = full_name + ' ' + (vals.get('partner_fname') or self.partner_fname)
     if vals.get('partner_mname') or self.partner_mname:
       full_name = full_name + ' ' + (vals.get('partner_mname') or self.partner_mname)
-    vals['full_name'] = full_name
-    return super(PABSContracts, self).write(vals)
+    vals['full_name'] = full_name    
+    res = super(PABSContracts, self).write(vals)
+    ### Si se modificó el campo del cobrador
+    if vals.get('debt_collector'):
+      self.assign_collector_date = fields.Date.today() 
+    return res 
 
   #Agregar comentario como nota interna
   def save_comment(self):

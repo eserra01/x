@@ -13,7 +13,8 @@ REFERENCE =[('payment','Abono'),
   ('surplus','Excedente'),
   ('transfer','Traspaso'),
   ('payment_mortuary','Cobro Funeraria'),
-  ('setlement_service_done', 'LCP por servicio realizado')]
+  ('setlement_service_done', 'LCP por servicio realizado'),
+  ('payment_expense','Pago de gasto')]
 
 TYPE_CARD =[('tdc','Tarjeta de Crédito'),
   ('tdd','Tarjeta Débito')]
