@@ -314,8 +314,7 @@
           <field name="captured" invisible="1"/>
           <field name="contract_status" invisible="1"/>
           <field name="allow_edit" invisible="1"/>
-          <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
-         
+          <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>           
         </header>
         <sheet>
           <div class="oe_button_box" name="button_box">
@@ -359,6 +358,7 @@
 
             <group string="Datos de cobranza">
               <field name="debt_collector" domain="[('job_id','=','COBRADOR')]"/>
+              <field name="assign_collector_date" />              
               <field name="way_to_payment" />
               <field name="payment_amount" />
               <field name="days_without_payment" readonly="1"/>
@@ -567,6 +567,7 @@
 
             <group string="Datos de cobranza">
               <field name="debt_collector"/>
+              <field name="assign_collector_date" /> 
               <field name="way_to_payment" />
               <field name="payment_amount" />
               <field name="days_without_payment" readonly="1"/>
@@ -740,6 +741,7 @@
 
             <group string="Datos de cobranza">
               <field name="debt_collector" domain="[('job_id','=','COBRADOR')]" readonly="1"/>
+              <field name="assign_collector_date" /> 
               <field name="way_to_payment" readonly="1"/>
               <field name="payment_amount" readonly="1"/>
               <field name="days_without_payment" readonly="1"/>
@@ -950,6 +952,7 @@
 
             <group string="Datos de cobranza">
               <field name="debt_collector" domain="[('job_id','=','COBRADOR')]"/>
+              <field name="assign_collector_date" /> 
               <field name="way_to_payment"/>
               <field name="payment_amount"/>
               <field name="days_without_payment" readonly="1"/>
@@ -1151,6 +1154,7 @@
 
             <group string="Datos de cobranza">
               <field name="debt_collector" domain="[('job_id','=','COBRADOR')]"/>
+              <field name="assign_collector_date" /> 
               <field name="way_to_payment"/>
               <field name="payment_amount"/>
               <field name="days_without_payment" readonly="1"/>
@@ -1352,6 +1356,7 @@
 
             <group string="Datos de cobranza">
               <field name="debt_collector" domain="[('job_id','=','COBRADOR')]"/>
+              <field name="assign_collector_date" /> 
               <field name="way_to_payment" readonly="1"/>
               <field name="payment_amount" readonly="1"/>
               <field name="days_without_payment" readonly="1"/>
@@ -1562,6 +1567,7 @@
 
             <group string="Datos de cobranza">
               <field name="debt_collector" domain="[('job_id','=','COBRADOR')]"/>
+              <field name="assign_collector_date" /> 
               <field name="way_to_payment"/>
               <field name="payment_amount"/>
               <field name="days_without_payment" readonly="1"/>

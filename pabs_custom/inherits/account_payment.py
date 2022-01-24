@@ -279,7 +279,9 @@ class account_Payment(models.Model):
 
         ##### MODIFICACIONES FISCAL 17/09/2021 #####
         es_fiscal = payment.company_id.apply_taxes
-
+        # Si el pago trae una referencia de gasto omitimos el desglose de impuestos 
+        if payment.reference == 'payment_expense':
+          es_fiscal = False
         ### Proceso para empresa fiscal ###
         if es_fiscal:            
           
