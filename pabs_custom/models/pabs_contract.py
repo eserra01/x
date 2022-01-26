@@ -154,6 +154,20 @@ class PABSContracts(models.Model):
     ('unique_activation_lot',
       'UNIQUE(lot_id)',
       'No se puede crear el registro: ya existe un registro referenciado al número de solicitud')]
+  
+  def action_payment_outputs(self):               
+        # Se crea el wizard
+        wizard_id = self.env['output.payment.wizard'].create({})            
+        # Se devuelve el wizard
+        return {
+            'name': u'Salida de comisiones',
+            'type': 'ir.actions.act_window',
+            'res_model': 'output.payment.wizard',
+            'view_type': 'form',
+            'view_mode': 'form',          
+            'res_id': wizard_id.id,
+            'target': 'new',
+        }
 
   # NC de buen fin 
   def update_bf_contracts(self, company_id):

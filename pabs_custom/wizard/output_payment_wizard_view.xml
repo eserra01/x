@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="output_payment_wizard_view" model="ir.ui.view">
+		<field name="name">output.payment.wizard.view</field>
+		<field name="model">output.payment.wizard</field>
+		<field name="arch" type="xml">
+			<form string="Salida de comisiones">
+        <group coslpan="2">
+          <group>            
+            <field name="payment_id" options="{'no_open':True, 'no_create':True}"/>                       
+          </group>          
+        </group>
+        <group>
+         <field name="comission_output_ids" nolabel="1" style="pointer-events:none;"/> 
+        </group>
+        <footer>
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+		</field>
+	</record>
+</odoo>

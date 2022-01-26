@@ -54,6 +54,7 @@
     'wizard/fix_stock_move_wizard_view.xml',
     'wizard/pabs_single_contract_wizard_view.xml',
     'wizard/pabs_arching_view.xml',
+    'wizard/output_payment_wizard_view.xml',
     'security/security.xml',
     'views/menu_views.xml',
     'security/ir.model.access.csv',

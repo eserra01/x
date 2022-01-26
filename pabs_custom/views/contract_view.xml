@@ -314,7 +314,7 @@
           <field name="captured" invisible="1"/>
           <field name="contract_status" invisible="1"/>
           <field name="allow_edit" invisible="1"/>
-          <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>           
+          <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>        
         </header>
         <sheet>
           <div class="oe_button_box" name="button_box">
@@ -535,7 +535,7 @@
           <field name="contract_status" invisible="1"/>
           <field name="allow_edit" invisible="1"/>
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
-         
+          <button name="action_payment_outputs" type="object" string="Salida de comisiones" groups="pabs_custom.secretary_outputs" />
         </header>
         <sheet>
           <div class="oe_button_box" name="button_box">
@@ -614,8 +614,8 @@
             </group>
           </group>
           
-          <group string="Abonos" attrs="{'invisible' : [('lot_id','=',False)]}">
-            <field name="payment_ids" nolabel="1" readonly="1" style="pointer-events:none;">
+          <group string="Abonos" attrs="{'invisible' : [('lot_id','=',False)]}">           
+            <field name="payment_ids" nolabel="1" readonly="1" style="pointer-events:none;">             
               <tree default_order="date_receipt, payment_date" create="0" edit="0" delete="0" duplicate="0">
                 <field name="state" invisible="1"/>
                 <field name="date_receipt" string="Fecha recibo"/>
@@ -624,7 +624,7 @@
                 <field name="ecobro_receipt"/>
                 <field name="debt_collector_code"/>
                 <field name="reference"/>
-                <field name="state"/>
+                <field name="state"/>                
               </tree>
             </field>
           </group>

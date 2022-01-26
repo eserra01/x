@@ -49,6 +49,11 @@
         <field name="name">PABS</field>
     </record>
 
+    <record id="secretary_outputs" model="res.groups">
+      <field name="name">Ver salida de comisiones</field>
+      <field name="category_id" ref="pabs_custom.pabs_category"/>      
+    </record>
+
     <record id="admin_profile" model="res.groups">
       <field name="name">PABS Administrador</field>
       <field name="category_id" ref="pabs_custom.pabs_category"/>
