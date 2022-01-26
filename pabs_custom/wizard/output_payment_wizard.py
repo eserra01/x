@@ -8,7 +8,7 @@ class OutputPaymentWizard(models.TransientModel):
   _description = 'Salidas de comisiones'
   
   def _get_domain(self):
-    payments_ids = self.env['account.payment'].search([('contract','=',self.env.context.get('active_id'))])   
+    payments_ids = self.env['account.payment'].search([('contract','=',self.env.context.get('active_id'))],order= 'create_date desc')   
     payments = []
     for payment in payments_ids:
       payments.append(payment.id)   
