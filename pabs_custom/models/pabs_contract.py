@@ -7,7 +7,7 @@ import logging
 import calendar
 from dateutil import tz
 from odoo.addons.pabs_custom.externals.calcule import CalculeRFC, CalculeCURP
-
+import json
 import math
 
 _logger = logging.getLogger(__name__)
