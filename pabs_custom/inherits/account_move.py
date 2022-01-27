@@ -3,6 +3,7 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 import logging
+import json
 
 _logger = logging.getLogger(__name__)
 
@@ -37,6 +38,21 @@ class AcccountMove(models.Model):
         comission_tree_obj.RevertirSalidas(
           IdPago=False,RefundID=self.id,NumeroContrato=NumeroContrato)
     return res
+
+  def reconcille_pending_movs(self,company_id):      
+    invoice_ids = self.env['account.move'].sudo().search([('type','=','out_invoice'),('state','=','posted'),('company_id','=',company_id)])
+    # invoice_ids = self.env['account.move'].sudo().search([('id','=',1221579)])
+    
+    for invoice in invoice_ids:
+      if invoice.invoice_outstanding_credits_debits_widget != 'false':        
+        outstandings = json.loads(invoice.invoice_outstanding_credits_debits_widget)
+        content = outstandings.get('content')     
+        for o in content:
+          print(o)
+          print(invoice.name)
+          print("---------------------------------")
+          invoice.js_assign_outstanding_line(o.get('id'))          
+    return True
 
 class AccountMoveLine(models.Model):
   _inherit = 'account.move.line'
