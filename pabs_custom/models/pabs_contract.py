@@ -1150,6 +1150,23 @@ class PABSContracts(models.Model):
         reconcile_model.create(data)
   
   #
+  def update_payments(self):   
+    for contract in self:
+      # Para cada pago del contrato
+      for payment in contract.payment_ids:
+        if payment.reference == 'payment' and payment.state != 'cancelled':
+          payment.action_draft()
+          payment.post()
+      # Para cada factura del contrato
+      for invoice in contract.refund_ids:
+        if invoice.type == 'out_invoice':
+          if invoice.invoice_outstanding_credits_debits_widget != 'false':        
+            outstandings = json.loads(invoice.invoice_outstanding_credits_debits_widget)
+            content = outstandings.get('content')     
+            for o in content:
+              invoice.js_assign_outstanding_line(o.get('id'))  
+    return True
+  #
   def create_contract2(self, vals=False):
 
     account_obj = self.env['account.move']
