@@ -5,7 +5,7 @@
     <field name="model">hr.expense</field>
     <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
     <field name="arch" type="xml">
-       <xpath expr="//field[@name='product_id']" position="before">
+      <xpath expr="//field[@name='product_id']" position="before">
         <field name="number" />
       </xpath>
       <xpath expr="//field[@name='product_id']" position="attributes">
@@ -54,6 +54,9 @@
       <xpath expr="//field[@name='company_id']" position="after">
         <field name="amount_residual" invisible="1" />
         <field name="show_payment_button" invisible="1" />       
+      </xpath>
+      <xpath expr="//button[@name='approve_expense_sheets']" position="attributes">
+        <attribute name="groups">pabs_hr_expense_custom.hr_expense_show_approve</attribute>
       </xpath>
       <xpath expr="//button[@name='%(hr_expense.hr_expense_sheet_register_payment_wizard_action)d']" position="attributes">
         <attribute name="attrs">{'invisible': ['|',('state', '!=', 'post'),('show_payment_button','=',False)]}</attribute>  

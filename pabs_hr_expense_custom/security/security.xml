@@ -17,5 +17,10 @@
       <field name="category_id" ref="hr_expense_custom_category"/>
     </record>
 
+    <record id="hr_expense_show_approve" model="res.groups">
+      <field name="name">Aprobar gastos</field>
+      <field name="category_id" ref="hr_expense_custom_category"/>
+    </record>
+
 </data>
 </odoo>

@@ -68,6 +68,7 @@ class HrExpenseSheet(models.Model):
     # 
     if self.company_id.expense_limit == 0:
       raise UserError("No se ha definido un límite de gastos en la compañía.")
+    
     # Si se superó el limite de gastos
     if self.total_amount > self.company_id.expense_limit:
       #
