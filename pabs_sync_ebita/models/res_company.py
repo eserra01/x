@@ -16,6 +16,7 @@ from datetime import datetime, date, timedelta
 # sudo apt-get install python3-pymysql
 # pip install PyMySQL
 
+
 class ResCompany(models.Model):
   _inherit = 'res.company'
 
@@ -106,7 +107,7 @@ class ResCompany(models.Model):
         # Lineas de la póliza
       for row in rows:    
         # Si es un ataúd
-        if 'AT' in row[2]:      
+        if 'ATAUD' in row[2]:      
           lines.append((0,0,{
             'name': _(''),
             'debit': 0.0,
@@ -121,7 +122,7 @@ class ResCompany(models.Model):
             'analytic_account_id': company_id.analytic_cost_account_id.id
           }))
         # Si es una urna
-        if 'UR' in row[2]:
+        if 'URNA' in row[2]:
           lines.append((0,0,{
             'name': _(''),
             'debit': 0.0,
@@ -142,6 +143,7 @@ class ResCompany(models.Model):
             'journal_id': company_id.journal_id_ebita.id,
             'ref': 'Costo de venta',
             'line_ids': lines,
+            'date': start_date[:10]
         })          
         # Se publica la póliza
         move_row.post()                  
