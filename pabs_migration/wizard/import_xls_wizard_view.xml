@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openerp>
+    <data>
+        <record id="import_xls_wizard_form" model="ir.ui.view">
+            <field name="name">import.xls.wizard.form</field>
+            <field name="model">import.xls.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Importar XLS" >
+                    <group string="Archivo">                       
+                        <group>
+                            <field name="file" attrs="{'invisible': [('info','!=','...')]}"/>
+                            <field name="option" />
+                            <field name="company_id" readonly="1" />                                                                    
+                        </group>
+                        <group>
+                        </group>
+                    </group>                                 
+                    <newline/> 
+                    <group string="Resultados">                                                                    
+                        <field name="info" />                                                                                          
+                    </group>         
+                    <footer>                                                
+                        <button string="Importar" class="oe_highlight" icon="fa-check-square" name="import_file" type="object" attrs="{'invisible': [('info','!=','...')]}"/>
+                        <button string="Cancelar" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="import_xls_wizard_action" model="ir.actions.act_window">
+            <field name="name">Importar XLS</field>
+            <field name="res_model">import.xls.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="import_xls_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="import_xls_wizard_menu" name="Importar XLS" parent="base.menu_custom" sequence="1000" action="import_xls_wizard_action"/>
+
+    </data>
+</openerp>
