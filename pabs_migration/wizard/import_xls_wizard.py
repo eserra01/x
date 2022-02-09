@@ -301,8 +301,16 @@ class ImportXLSWizard(models.Model):
             info = ''
             contracts_not_found = []
             agents_not_found = []
+            
             i = 0
-            for record in ws.iter_rows(min_row=2, max_row=None, min_col=None,max_col=None, values_only=True):                                           
+            contract_id = 0
+            job_id = 0
+            pay_order = 0
+            #
+            last_contract_id = 0
+            last_job_id = 0
+            last_pay_order = 0
+            for record in ws.iter_rows(min_row=2, max_row=None, min_col=None,max_col=None, values_only=True):                        
                 # Se busca contrato 
                 contract_id = self.env['pabs.contract'].search([('name','ilike',record[3]),('company_id','=',self.company_id.id)])
                 if contract_id:
@@ -335,11 +343,19 @@ class ImportXLSWizard(models.Model):
                             'remaining_commission': record[7],
                             'commission_paid': record[8],
                             'actual_commission_paid': record[9],
-                        }
-                        print(vals)
+                        }            
+                        #
+                        if last_contract_id == contract_id and last_pay_order == record[1] and last_job_id == jobs.get(record[2]) and i>0:
+                            print("CONTINUE")
+                            continue                            
+                                                                                     
+                        print(vals)                       
                         self.env['pabs.comission.tree'].create(vals)
                         i += 1
-                        print("Creando comisión %s "%(i))                          
+                        last_contract_id = contract_id 
+                        last_pay_order = record[1]
+                        last_job_id = jobs.get(record[2])
+                        print("Creando comisión %s "%(i))                                                                          
                     else:                                 
                         if name not in agents_not_found:                                       
                             agents_not_found.append(name)                           
@@ -347,7 +363,7 @@ class ImportXLSWizard(models.Model):
                     if record[3] not in contracts_not_found:                      
                         contracts_not_found.append(record[3])
             #
-            self.info = str(contracts_not_found) + "\n" + str(agents_not_found)
+            self.info = str(contracts_not_found) + "\n" + str(agents_not_found) 
             #
             return {
                     'name':"Importar XLS",
