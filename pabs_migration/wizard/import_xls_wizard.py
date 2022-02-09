@@ -321,7 +321,7 @@ class ImportXLSWizard(models.Model):
                         name = 'PAPELERIA PABS'
                     if name == 'FIDEICOMISO':
                         name = 'FIDEICOMISO PABS' 
-                    agent_id = self.env['hr.employee'].search([('name','=',name),('company_id','=',self.company_id.id)], limit = 1)                               
+                    agent_id = self.env['hr.employee'].search([('barcode','=',record[4]),('company_id','=',self.company_id.id)], limit = 1)                               
                     #
                     jobs = {
                         'ASISTENTE SOCIAL': 810,
@@ -375,4 +375,5 @@ class ImportXLSWizard(models.Model):
                     'type': 'ir.actions.act_window',
                     'target': 'new',
                     'res_id': self._ids[0],
-            }                       
+            }  
+        #
