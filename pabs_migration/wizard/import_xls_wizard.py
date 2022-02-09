@@ -21,7 +21,7 @@ class ImportXLSWizard(models.Model):
     file_name = fields.Char(string="File Name")     
     info = fields.Text(string="Info", readonly=True, default= '...')   
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
-    option = fields.Selection([('bt','Bitácora'),('ct','Árbol de comisiones')],string="Aplicación")
+    option = fields.Selection([('bt','Bitácora'),('ct','Árbol de comisiones'),('del','Eliminar árbol')],string="Aplicación")
 
     def import_file(self):       
         wb = openpyxl.load_workbook( 
@@ -377,3 +377,21 @@ class ImportXLSWizard(models.Model):
                     'res_id': self._ids[0],
             }  
         #
+        if self.option == 'del':
+            contracts = []
+            for record in ws.iter_rows(min_row=2, max_row=None, min_col=None,max_col=None, values_only=True):    
+                contract_id = self.env['pabs.contract'].search([('name','ilike',record[3]),('company_id','=',self.company_id.id)])
+                if contract_id:
+                    contract_id.commission_tree = False
+            #
+            return {
+                    'name':"Importar XLS",
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'view_id': False,
+                    'res_model': 'import.xls.wizard',
+                    'domain': [],
+                    'type': 'ir.actions.act_window',
+                    'target': 'new',
+                    'res_id': self._ids[0],
+            }  
