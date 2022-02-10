@@ -21,7 +21,7 @@ class ImportXLSWizard(models.Model):
     file_name = fields.Char(string="File Name")     
     info = fields.Text(string="Info", readonly=True, default= '...')   
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
-    option = fields.Selection([('bt','Bitácora'),('ct','Árbol de comisiones'),('del','Eliminar árbol')],string="Aplicación")
+    option = fields.Selection([('bt','Bitácora'),('ct','Árbol de comisiones'),('cm','Comisiones')],string="Aplicación")
 
     def import_file(self):       
         wb = openpyxl.load_workbook( 
@@ -377,12 +377,56 @@ class ImportXLSWizard(models.Model):
                     'res_id': self._ids[0],
             }  
         #
-        if self.option == 'del':
-            contracts = []
-            for record in ws.iter_rows(min_row=2, max_row=None, min_col=None,max_col=None, values_only=True):    
-                contract_id = self.env['pabs.contract'].search([('name','ilike',record[3]),('company_id','=',self.company_id.id)])
-                if contract_id:
-                    contract_id.commission_tree = False
+        if self.option == 'cm':
+            contracts_not_found = []
+            payments_not_found = []
+            i = 0
+            for record in ws.iter_rows(min_row=2, max_row=None, min_col=None,max_col=None, values_only=True):   
+                 # Se busca contrato 
+                contract_id = self.env['pabs.contract'].search([('name','ilike',record[1]),('company_id','=',self.company_id.id)])               
+                if contract_id: 
+                     # Se busca el pago
+                    payment_id = self.env['account.payment'].search([('name','ilike',record[3]),('company_id','=',self.company_id.id)])
+                    #
+                    if payment_id:
+                        name = record[5]
+                        if name == 'PAPELERIA':
+                            name = 'PAPELERIA PABS'
+                        if name == 'FIDEICOMISO':
+                            name = 'FIDEICOMISO PABS' 
+                        agent_id = self.env['hr.employee'].search([('barcode','=',record[6]),('company_id','=',self.company_id.id)], limit = 1)                               
+                        #
+                        jobs = {
+                            'ASISTENTE SOCIAL': 810,
+                            'RECOMENDADO': 811,
+                            'COORDINADOR': 812,
+                            'GERENTE DE OFICINA': 813,
+                            'FIDEICOMISO': 814,
+                            'PAPELERIA': 815,
+                            'COBRADOR': 816,
+                        }
+                        if agent_id:
+                            vals = {
+                                'contract_id': contract_id.id,                              
+                                'job_id': jobs.get(record[2]),
+                                'comission_agent_id': agent_id.id,                                                            
+                                'commission_paid': record[8],
+                                'actual_commission_paid': record[9],
+                            }  
+                            print(vals)                       
+                            # self.env['pabs.comission.output'].create(vals)
+                            i += 1
+                            print("Creando comisión %s "%(i))  
+                    else:
+                        if record[3] not in payments_not_found:
+                            payments_not_found.append(record[3])
+                            print("Pago no Encontrado: %s"%record[3])
+                else:
+                    if record[1] not in contracts_not_found:
+                        contracts_not_found.append(record[1])
+                        print("Contrato no encontrado: %s"%record[1])
+            
+            self.info = str(contracts_not_found) + "\n" + str(payments_not_found) 
             #
             return {
                     'name':"Importar XLS",
