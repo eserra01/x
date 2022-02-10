@@ -61,6 +61,14 @@ class MortuaryReceipt(models.AbstractModel):
             encabezado.append("RFC DEGB8203173T5")
             encabezado.append("CURP. DEGB820317MNTLLT07")
             encabezado.append("TEL. 993 412 2337")
+        if self.env.company.id in [16,17]: #TAMPICO
+            encabezado.append("TAMPICO #199-A ")
+            encabezado.append("COLONIA GUADALUPE")
+            encabezado.append("TAMPICO, TAMAULIPAS")
+            encabezado.append("SERVICIOS FUNERARIOS SALTILLO S.A. DE C.V.")
+            encabezado.append("RFC SFS210721LP4")
+            encabezado.append("")
+            encabezado.append("TEL. 833 569 4148")
 
         cuerpo = {
             'bitacora': mortuary_obj.name,
