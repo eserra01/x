@@ -383,6 +383,7 @@ class ImportXLSWizard(models.Model):
         if self.option == 'cm':
             contracts_not_found = []
             payments_not_found = []
+            valores = []
             i = 0
             for record in ws.iter_rows(min_row=2, max_row=None, min_col=None,max_col=None, values_only=True):                  
                 # Se busca el pago
@@ -413,15 +414,15 @@ class ImportXLSWizard(models.Model):
                             'commission_paid': record[8],
                             'actual_commission_paid': record[9],
                         }  
-                        # print(vals)                       
-                        self.env['pabs.comission.output'].create(vals)
+                        valores.append(vals)                     
+                        # self.env['pabs.comission.output'].create(vals)
                         i += 1
                         _logger.info("Creando comisión %s "%(i))
                 else:
                     if record[3] not in payments_not_found:
                         payments_not_found.append(record[3])
                         _logger.info("Pago no Encontrado: %s"%record[3])      
-            
+            self.env['pabs.comission.output'].create(valores)
             self.info = str(contracts_not_found) + "\n" + str(payments_not_found) 
             #
             return {

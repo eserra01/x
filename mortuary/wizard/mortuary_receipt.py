@@ -53,6 +53,14 @@ class MortuaryReceipt(models.AbstractModel):
             encabezado.append("RFC DEGB8203173T5")
             encabezado.append("CURP. DEGB820317MNTLLT07")
             encabezado.append("TEL. 961 291 1906")
+        if self.env.company.id == 8: #VILLAHERMOSA
+            encabezado.append("MALECON CARLOS A. MADRAZO BECERRA #633 ")
+            encabezado.append("COLONIA CENTRO")
+            encabezado.append("VILLAHERMOSA, TABASCO")
+            encabezado.append("BETZABE DELGADO GALBILLO")
+            encabezado.append("RFC DEGB8203173T5")
+            encabezado.append("CURP. DEGB820317MNTLLT07")
+            encabezado.append("TEL. 993 412 2337")
 
         cuerpo = {
             'bitacora': mortuary_obj.name,
