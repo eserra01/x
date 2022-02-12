@@ -613,15 +613,15 @@ class PABSEcobroSync(models.Model):
         saldo = saldo + float(invoice_id.amount_residual)
 
       ### Validar saldo del contrato
-      if saldo < float(rec['monto']):
-        message = "El Monto del recibo: {} es mayor que el saldo del contrato: {}".format(float(rec['monto']), saldo)
-        fails.append({
-          'afectacionID' : rec['afectacionID'],
-          'estatus' : 2,
-          'detalle' : message
-        })
-        log += 'Estatus: El monto del recibo: {} es mayor que el saldo del contrato: {}'.format(float(rec['monto']), saldo)
-        continue
+      # if saldo < float(rec['monto']):
+      #   message = "El Monto del recibo: {} es mayor que el saldo del contrato: {}".format(float(rec['monto']), saldo)
+      #   fails.append({
+      #     'afectacionID' : rec['afectacionID'],
+      #     'estatus' : 2,
+      #     'detalle' : message
+      #   })
+      #   log += 'Estatus: El monto del recibo: {} es mayor que el saldo del contrato: {}'.format(float(rec['monto']), saldo)
+      #   continue
 
       ##### PENDIENTE trabajar con mas de una factura #####
       ### SI EXISTE MÁS DE UN DOCUMENTO PARA AFECTAR
