@@ -107,41 +107,39 @@ class account_Payment(models.Model):
       comission_tree_obj = self.env['pabs.comission.tree'].with_context(
         force_company=self.contract.company_id.id)
       res = super(account_Payment, self).post()
-      # Si la compañia no es Tampico
-      if self.journal_id.company_id.id != 17:
-        context = self._context
-        IdPago = self.id
-        if self.contract:
-          if self.reference in ('payment','stationary','surplus'):
-            CodigoCobrador = self.debt_collector_code.barcode
-            NumeroContrato = self.contract.id
-            MontoPago = self.amount or 0
-            if context.get('stationery'):
-              comission_tree_obj.CrearSalidasEnganche(
-                IdPago=IdPago, NumeroContrato=NumeroContrato, 
-                MontoPago=MontoPago, TipoPago='Papeleria')
-            elif context.get('excedent'):
-              comission_tree_obj.CrearSalidas(
-                IdPago=IdPago, NumeroContrato=NumeroContrato,
-                CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
-                EsExcedente=True)
-            else:
-              comission_tree_obj.CrearSalidas(
-                IdPago=IdPago, NumeroContrato=NumeroContrato,
-                CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
-                EsExcedente=False)
-            ### VALIDAMOS SI EL CONTRATO ESTA EN ESTATUS DIFERENTE DE ACTIVO
-            if self.contract.contract_status_item.id != status_active_id.id:
-              ### PONEMOS LOS CONTRATOS EN ACTIVO
-              self.contract.contract_status_item = status_active_id.id
-              self.contract.contract_status_reason = status_reason_id.id
-          if self.reference == 'transfer':
-            CodigoCobrador = self.debt_collector_code.barcode
-            NumeroContrato = self.contract.id
-            MontoPago = self.amount or 0
+      context = self._context
+      IdPago = self.id
+      if self.contract:
+        if self.reference in ('payment','stationary','surplus'):
+          CodigoCobrador = self.debt_collector_code.barcode
+          NumeroContrato = self.contract.id
+          MontoPago = self.amount or 0
+          if context.get('stationery'):
             comission_tree_obj.CrearSalidasEnganche(
-              IdPago=self.id, NumeroContrato=NumeroContrato,
-              MontoPago=MontoPago, TipoPago='Transfer')
+              IdPago=IdPago, NumeroContrato=NumeroContrato, 
+              MontoPago=MontoPago, TipoPago='Papeleria')
+          elif context.get('excedent'):
+            comission_tree_obj.CrearSalidas(
+              IdPago=IdPago, NumeroContrato=NumeroContrato,
+              CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
+              EsExcedente=True)
+          else:
+            comission_tree_obj.CrearSalidas(
+              IdPago=IdPago, NumeroContrato=NumeroContrato,
+              CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,
+              EsExcedente=False)
+          ### VALIDAMOS SI EL CONTRATO ESTA EN ESTATUS DIFERENTE DE ACTIVO
+          if self.contract.contract_status_item.id != status_active_id.id:
+            ### PONEMOS LOS CONTRATOS EN ACTIVO
+            self.contract.contract_status_item = status_active_id.id
+            self.contract.contract_status_reason = status_reason_id.id
+        if self.reference == 'transfer':
+          CodigoCobrador = self.debt_collector_code.barcode
+          NumeroContrato = self.contract.id
+          MontoPago = self.amount or 0
+          comission_tree_obj.CrearSalidasEnganche(
+            IdPago=self.id, NumeroContrato=NumeroContrato,
+            MontoPago=MontoPago, TipoPago='Transfer')
       return res
 
     def disassociate_payment(self):
