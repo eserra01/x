@@ -82,6 +82,16 @@ class account_Payment(models.Model):
       dict = cr.dictfetchall()    
       return dict
      
+    def create_outputs(self):
+      comission_tree_obj = self.env['pabs.comission.tree'].with_context(force_company=self.contract.company_id.id)
+      IdPago = self.id
+      if self.contract:
+        if self.reference in ('payment'):
+          CodigoCobrador = self.debt_collector_code.barcode
+          NumeroContrato = self.contract.id
+          MontoPago = self.amount or 0
+          comission_tree_obj.CrearSalidas(IdPago=IdPago, NumeroContrato=NumeroContrato,CodigoCobrador=CodigoCobrador, MontoPago=MontoPago,EsExcedente=False)
+      return True
 
 
     def post(self):
