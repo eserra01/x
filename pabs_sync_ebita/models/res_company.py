@@ -105,9 +105,9 @@ class ResCompany(models.Model):
     if rows:
       lines = []
         # Lineas de la póliza
-      for row in rows:    
+      for row in rows:           
         # Si es un ataúd
-        if 'ATAUD' in row[2]:      
+        if 'ATAUD' in row[1]:      
           lines.append((0,0,{
             'name': _(''),
             'debit': 0.0,
@@ -122,7 +122,7 @@ class ResCompany(models.Model):
             'analytic_account_id': company_id.analytic_cost_account_id.id
           }))
         # Si es una urna
-        if 'URNA' in row[2]:
+        if 'URNA' in row[1]:
           lines.append((0,0,{
             'name': _(''),
             'debit': 0.0,
@@ -136,7 +136,7 @@ class ResCompany(models.Model):
             'account_id': company_id.urn_cost_account_ebita.id,
             'analytic_account_id': company_id.analytic_cost_account_id.id
           }))   
-        #        
+        #         
       try:
         # Se crea la póliza
         move_row = self.env['account.move'].create({
