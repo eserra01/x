@@ -94,7 +94,7 @@
 
       <xpath expr="//field[@name='amount']" position="after">
         <field name="debt_collector_code"/>
-        <field name="user_create_payment" domain="[('employee_status','=',1)]" options="{'no_create':True, 'no_open':True}"/>
+        <field name="user_create_payment" domain="[('employee_status','=','ACTIVO'),('department_id','in',('FUNERARIA')),('job_id','in',('ATN CLIENTES FUNE','RECEPCIONISTA'))]" options="{'no_create':True, 'no_open':True}"/>
         <field name="balance_binnacle"/>
         <field name="date_of_death"/>
         <field name="place_of_death"/>
