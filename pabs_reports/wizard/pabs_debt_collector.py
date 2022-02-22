@@ -99,7 +99,7 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
           'contract' : contract_id.name,
           'partner_name' : contract_id.full_name,
           'address' : address,
-          'neightborhood' : contract_id.toll_colony_id.name or '',
+          'neightborhood' : neightborhood,
           'locality_id' : contract_id.toll_municipallity_id.name or '',
           'payment_way' : payment_way or '',
           'last_payment' : last_payment.date_receipt if last_payment.date_receipt else last_payment.payment_date,
