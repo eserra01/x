@@ -86,10 +86,15 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
         else:
           payment_way = ''
         last_payment = contract_id.payment_ids.filtered(lambda r: r.state in ('posted','reconciled','sent')).sorted(key=lambda r: r.payment_date)[-1]
+        address = ''
+        if contract_id.street_name_toll:
+          address =  "{} #{}".format(contract_id.street_name_toll,contract_id.street_number_toll)
+        else:
+          address =  "{} #{}".format(contract_id.street_name,contract_id.street_number)
         contracts_data.append({
           'contract' : contract_id.name,
           'partner_name' : contract_id.full_name,
-          'address' : "{} #{}".format(contract_id.street_name_toll,contract_id.street_number_toll),
+          'address' : address,
           'neightborhood' : contract_id.toll_colony_id.name or '',
           'locality_id' : contract_id.toll_municipallity_id.name or '',
           'payment_way' : payment_way or '',
