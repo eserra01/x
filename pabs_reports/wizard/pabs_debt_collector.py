@@ -89,9 +89,9 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
         #
         address = ''
         if contract_id.street_name_toll:
-          address =  "{} #{}".format(contract_id.street_name_toll,contract_id.street_number_toll)
+          address =  "{} #{}".format(contract_id.street_name_toll,contract_id.street_number_toll if contract_id.street_number_toll else '')
         else:
-          address =  "{} #{}".format(contract_id.street_name,contract_id.street_number)
+          address =  "{} #{}".format(contract_id.street_name,contract_id.street_number if contract_id.street_number else '')
         contracts_data.append({
           'contract' : contract_id.name,
           'partner_name' : contract_id.full_name,
