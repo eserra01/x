@@ -86,7 +86,7 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
         else:
           payment_way = ''
         last_payment = contract_id.payment_ids.filtered(lambda r: r.state in ('posted','reconciled','sent')).sorted(key=lambda r: r.payment_date)[-1]
-        #
+        # Formato de dirección
         address = ''
         if contract_id.street_name_toll:
           address =  "{} {} {}".format(contract_id.street_name_toll,'#' + str(contract_id.street_number_toll) if contract_id.street_number_toll else '', contract_id.toll_colony_id.name if contract_id.toll_colony_id else '')
