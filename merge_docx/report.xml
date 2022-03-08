@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report 
+            id="action_report_base_tmpl_print_out_vals"
+            model="res.users"
+            string="Print Out Vals"
+            report_type="docx"
+            print_report_name="'USER - %s' % (object.name)"
+            name="PrintOutVals"/>
+        <record id="action_report_base_tmpl_print_out_vals" model="ir.actions.report">
+            <field name="template_id" ref="merge_docx.base_tmpl_docx_print_out_vals"/>
+        </record>
+    </data>
+</odoo>

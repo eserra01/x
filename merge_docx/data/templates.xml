@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="base_tmpl_docx_print_out_vals" model="ir.attachment">
+            <field name="name">base_tmpl_print_out_vals.docx</field>
+            <field name="type">binary</field>
+            <field name="datas" type="base64" file="merge_docx/templates/print_out_vals.docx"/>
+        </record>
+    </data>
+</odoo>

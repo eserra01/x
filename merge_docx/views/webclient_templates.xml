@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="assets_backend" name="Backend Assets (used in backend interface)" inherit_id="web.assets_backend">
+		<xpath expr="." position="inside">
+			<script type="text/javascript" src="/merge_docx/static/src/js/report/action_manager_report.js"/>
+		</xpath>
+		<xpath expr="//link[last()]" position="after">
+            <link href="/merge_docx/static/src/scss/theme_screenshot.scss" rel="stylesheet" type="text/scss"/>
+        </xpath>
+	</template>
+</odoo>

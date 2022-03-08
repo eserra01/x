@@ -1,0 +1,4 @@
+- https://github.com/Bouke/docx-mailmerge
+- https://pbpython.com/python-word-template.html
+- https://github.com/chris1610/pbpython/tree/master/extras
+- 
