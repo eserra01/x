@@ -53,6 +53,7 @@ class PABSContracts(models.Model):
   captured = fields.Boolean(string='Capturado previamente')
   agent_id = fields.Char(string='Agente', required=True, default=lambda self: self.env.user.name,tracking=True,)
   activation_code = fields.Char(string='Número de activación', tracking=True)
+  
   employee_id = fields.Many2one(comodel_name='hr.employee', related="lot_id.employee_id", tracking=True, string='Asistente activación')
   salary_scheme = fields.Boolean(string='Esquema de pago del empleado', related="employee_id.payment_scheme.allow_all",tracking=True)
   payment_scheme_id = fields.Many2one(comodel_name='pabs.payment.scheme', tracking=True, default=lambda self : self.env['pabs.payment.scheme'].search([],limit=1).id, string='Esquema de pago')
@@ -63,6 +64,7 @@ class PABSContracts(models.Model):
 
   #Datos del contrato
   name = fields.Char(string='Número de Contrato', default='Nuevo Contrato', tracking=True)
+  ecobro_format_link = fields.Char(string='Formato ECOBRO', compute='get_link')  
   product_price = fields.Float(tracking=True, string='Costo', compute="calc_price")
   sale_employee_id = fields.Many2one(tracking=True, comodel_name='hr.employee', string='Asistente venta')
 
@@ -155,6 +157,13 @@ class PABSContracts(models.Model):
       'UNIQUE(lot_id)',
       'No se puede crear el registro: ya existe un registro referenciado al número de solicitud')]
   
+  def get_link(self):    
+    for rec in self:
+      if rec.activation_code:        
+        rec.ecobro_format_link = 'http://35.167.149.196/ecobroSAP/application/contratos/%s.pdf'%(rec.activation_code)
+      else:
+        rec.ecobro_format_link = False
+
   def action_payment_outputs(self):               
         # Se crea el wizard
         wizard_id = self.env['output.payment.wizard'].create({})            
