@@ -54,6 +54,11 @@
       <field name="category_id" ref="pabs_custom.pabs_category"/>      
     </record>
 
+    <record id="ecobro_link" model="res.groups">
+      <field name="name">Ver link ECOBRO</field>
+      <field name="category_id" ref="pabs_custom.pabs_category"/>      
+    </record>
+
     <record id="admin_profile" model="res.groups">
       <field name="name">PABS Administrador</field>
       <field name="category_id" ref="pabs_custom.pabs_category"/>

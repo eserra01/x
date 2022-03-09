@@ -327,7 +327,7 @@
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
-              <field name="ecobro_format_link" widget='url'/>
+              <field name="ecobro_format_link" widget='url' groups="pabs_custom.ecobro_link"/>
               <!-- attrs="{'readonly': [('allow_edit','=',False)]}" -->
 
               <!-- Estatus -->
@@ -549,7 +549,7 @@
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
-              <field name="ecobro_format_link" widget='url'/>
+              <field name="ecobro_format_link" widget='url' groups="pabs_custom.ecobro_link"/>
               <!-- attrs="{'readonly': [('allow_edit','=',False)]}" -->
 
               <!-- Estatus -->
@@ -721,7 +721,7 @@
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
-              <field name="ecobro_format_link" widget='url'/>
+              <field name="ecobro_format_link" widget='url' groups="pabs_custom.ecobro_link"/>
               <!-- attrs="{'readonly': [('allow_edit','=',False)]}" -->
 
               <!-- Estatus -->
@@ -924,7 +924,7 @@
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
             <group string="Datos del contrato" >
               <field name="name" class="oe_inline" readonly="1"/>
-              <field name="ecobro_format_link" widget='url'/>
+              <field name="ecobro_format_link" widget='url' groups="pabs_custom.ecobro_link"/>
               <!-- attrs="{'readonly': [('allow_edit','=',False)]}" -->
 
               <!-- Estatus -->
