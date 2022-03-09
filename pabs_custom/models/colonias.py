@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
 
-
+#
 class Colonias(models.Model):
     _name = 'colonias'
     _description = 'colonias'
