@@ -7,18 +7,7 @@ class Colonias(models.Model):
     _description = 'colonias'
 
     # comentario
-
-    name = fields.Char(
-        string="Nombre",
-        required=True
-    )
-
-    municipality_id = fields.Many2one(
-        'res.locality',
-        string="Municipio",
-        required=True
-    )
-
-    company_id = fields.Many2one(
-        'res.company', 'Compañia', required=True,
-        default=lambda s: s.env.company.id, index=True)
+    name = fields.Char(string="Nombre",required=True)
+    municipality_id = fields.Many2one('res.locality',string="Municipio",required=True)
+    zip_code = fields.Char(string='CP')
+    company_id = fields.Many2one('res.company', 'Compañia', required=True,default=lambda s: s.env.company.id, index=True)

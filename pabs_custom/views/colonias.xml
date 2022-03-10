@@ -12,6 +12,7 @@
               <group>
                 <field name="name" />
                 <field name="municipality_id" />
+                <field name="zip_code" />
               </group>
 
             </group>
@@ -27,6 +28,7 @@
         <tree>
           <field name="name" />
           <field name="municipality_id" />
+          <field name="zip_code" />
         </tree>
       </field>
     </record>
