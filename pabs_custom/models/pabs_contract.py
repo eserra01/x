@@ -1242,7 +1242,7 @@ class PABSContracts(models.Model):
               reconcile.update({'debit_move_id' : line.id})     
 
           #Buscar diario de efectivo
-          cash_journal_id = journal_obj.search([('type','=','cash'), ('name','=','EFECTIVO')],limit=1)
+          cash_journal_id = journal_obj.search([('company_id','=', previous.company_id.id), ('type','=','cash'), ('name','=','EFECTIVO')],limit=1)
           if not cash_journal_id:
             raise ValidationError("No se encontró el diario EFECTIVO")
 

@@ -59,7 +59,7 @@ class ComissionTree(models.Model):
     ######################## PAPELERIA ##########################
         if TipoPago == "Papeleria":
             #Obtener id del cargo
-            cargo_papeleria = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "PAPELERIA")])
+            cargo_papeleria = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('company_id', '=', contrato.company_id.id),('name', '=', "PAPELERIA")])
 
             #Obtener registro de papeleria en el árbol de comisiones
             arbol_papeleria = contrato.commission_tree.filtered(lambda x: x.job_id.id == cargo_papeleria.id)
@@ -117,7 +117,7 @@ class ComissionTree(models.Model):
                 arbol_iva.write({"commission_paid": monto_iva, "actual_commission_paid": monto_iva, "remaining_commission": comision_restante_iva})
 
                 # Aumentar a fideicomiso el monto disminuido a papeleria
-                cargo_fideicomiso = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "FIDEICOMISO")])
+                cargo_fideicomiso = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('company_id', '=', contrato.company_id.id),('name', '=', "FIDEICOMISO")])
                 arbol_fideicomiso = contrato.commission_tree.filtered(lambda x: x.job_id.id == cargo_fideicomiso.id)
                 correspondiente_fideicomiso = arbol_fideicomiso.corresponding_commission + monto_iva
                 arbol_fideicomiso.write({"corresponding_commission": correspondiente_fideicomiso, "remaining_commission": correspondiente_fideicomiso})
@@ -134,7 +134,7 @@ class ComissionTree(models.Model):
         elif TipoPago in ("Bono", "Transfer"):
 
             #Obtener id del cargo
-            cargo_fideicomiso = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('name', '=', "FIDEICOMISO")])
+            cargo_fideicomiso = self.env['hr.job'].with_context(force_company=contrato.company_id.id).search([('company_id', '=', contrato.company_id.id),('name', '=', "FIDEICOMISO")])
 
             #Obtener registro de fideicomiso en el árbol de comisiones
             arbol_fideicomiso = contrato.commission_tree.filtered(lambda x: x.job_id.id == cargo_fideicomiso.id)

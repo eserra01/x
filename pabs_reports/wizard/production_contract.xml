@@ -5,6 +5,9 @@
 		<field name="model">pabs.elaborated.contract.wizard</field>
 		<field name="arch" type="xml">
 			<form string="Corte de contratos elaborados">
+        <group>
+          <field name="contract_type" required="1"/>
+        </group>
         <group coslpan="2">
           <group>
             <field name="date_contract"/>
@@ -12,7 +15,6 @@
           <group>
             <field name="date_end"/>
           </group>
-          <center><h3>Corte de Contratos elaborados</h3></center><br/>
         </group>
         <footer>
           <button name="get_contracts_per_day" string="Imprimir" type="object" class="btn-primary"/>

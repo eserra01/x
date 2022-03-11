@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    <template id="pabs_custom.pabs_econtract_closing_transfer_template">
+      <t t-call="web.basic_layout">
+         <div class="page">
+          <style>
+            table, td, th{
+              border: 1px solid black;
+              padding: 1px;
+              font-size: 9pt;
+            }
+
+            thead.encabezado{
+              text-align: center;
+              font-weight: bold;
+              border: 1px solid black;
+            }
+
+            table {
+              border-collapse: collapse;
+            }
+
+            * {
+              font-family: Arial, Helvetica, sans-serif;
+              font-size: 10pt;
+            }
+          </style>
+
+          <div>
+            <div>
+              <!-- LOGO -->
+              <div style="float: left; width: 15%; text-align: center;">
+                <img t-if="logo" t-att-src="'data:image/png;base64,%s' %logo" alt="logoPABS" height="100px"/>
+              </div>
+
+              <!-- ENCABEZADO -->
+              <div style="float: right; width: 85%;  text-align: left;">
+
+                <!-- TITULO DEL REPORTE -->
+                <div style="font-size:15pt; color:#000000;  font-weight:bold; text-align: center;">
+                  <br/>
+                    REPORTE DE AFILIACIONES ELECTRÓNICAS
+                  <br/>
+                </div>
+
+                <!-- NOMBRE OFICINA DE VENTAS Y FECHAS-->
+                <div style="font-size:13pt; color:#000000;  font-weight:bold; text-align: center;">
+                  OFICINA DE VENTAS: <span><span t-esc="nombre_almacen"/></span>
+                  DE: <span><span t-esc="fecha"/></span>
+                  <br/><br/>
+                </div>
+              </div>
+            </div>
+
+              
+            <!-- TABLA DE SOLICITUDES -->
+            <div>
+              <table style="border: 1px solid black; border-collapse: collapse; width: 100%;">
+                <thead class="encabezado">
+                    <td>#</td>
+                    <td>Código</td>
+                    <td>Promotor</td>
+                    <td>Plan</td>
+                    <td>Contrato</td>
+                    <td>Inversión inicial</td>
+                </thead>
+                <tbody style="color:#000000; font-weight:normal; text-align: center;">
+                  <tr t-foreach="detalle_contratos" t-as="det">
+                    <td><span t-esc="det['indice']"/></td>
+                    <td><span t-esc="det['codigo']"/></td>
+                    <td><span t-esc="det['asistente']"/></td>
+                    <td><span t-esc="det['plan']"/></td>
+                    <td><span t-esc="det['contrato']"/></td>
+                    <td><span t-esc="det['inversion_inicial']"/></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <br/>
+              
+            <div>
+              <!-- TABLA DE RESUMEN DE CORTE-->
+              <!-- <div style="width: 35%; float:left">
+                <table style="font-weight:bold; font-size:10pt;color:#000000; width: 90%;">
+                  <thead class="encabezado">
+                      <td></td>
+                      <td>IMPORTE</td>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding: 8px;">TOTAL GENERAL:</td>
+                      <td style="font-size:15pt; color:#000000;  font-weight:bold; text-align: center;"><span t-esc="total"/></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div> -->
+
+              <!-- <div style=" float:right; width: 65%;"> -->
+              <div>
+                <!-- TABLA DE TOTALES DE SOLICITUDES -->
+                <div >
+                  <table style="font-weight: bold; text-align: center; width: 30%;">
+                    <thead class="encabezado">
+                      <td>No. de Contratos</td>
+                      <td>Importe</td>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td style="font-size:15pt; color:#000000;  font-weight:bold; text-align: center;"><span t-esc="cantidad_contratos"/></td>
+                        <td style="font-size:15pt; color:#000000;  font-weight:bold; text-align: center;"><span t-esc="total_inversiones"/></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <br/>
+                  <br/>
+                  <br/>
+
+                  <!-- FIRMAS -->
+                  <div style="font-size:12pt; color:#000000;  font-weight:bold; text-align: center;">
+                    <!-- FIRMA DE SECRETARIA -->
+                    <div style="width: 50%; float:left">
+                      ELABORADO POR: <br/>
+                      <br/><br/><br/>
+                      _____________________________ <br/>
+                      OFICINA DE VENTAS: <span> <span t-esc="warehouse_id"/> </span> <br/>
+                      <span> <span t-esc="create_uname"/> </span>
+                    </div>
+                    <!-- FIRMA DE CONTRATOS -->
+                    <div style="width: 50%; float:right">
+                      RECIBI DE CONFORMIDAD: <br/>
+                      <br/><br/><br/>
+                      _____________________________ <br/>
+                      ENCARGADA DE CONTRATOS:
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+         </div>
+      </t>
+    </template>
+
+    <record id="letter_landscape_sheet" model="report.paperformat">
+      <field name="name">Carta Horizontal</field>
+      <field name="format">Letter</field>
+      <field name="orientation">Landscape</field>
+      <field name="margin_top">5</field>
+      <field name="margin_bottom">5</field>
+      <field name="margin_left">15</field>
+      <field name="margin_right">5</field>
+      <field name="dpi">100</field>
+    </record>
+
+    <report 
+      id="pabs_econtract_closing_transfer_action" 
+      string="Corte de afiliaciones electrónicas" 
+      model="pabs.econtract.closing.transfer"
+      name="pabs_custom.pabs_econtract_closing_transfer_template"
+      report_type="qweb-pdf" 
+      paperformat="letter_landscape_sheet"
+    />
+
+  </data>
+</odoo>

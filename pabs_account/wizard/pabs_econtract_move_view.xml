@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- Definición de las vistas  -->
+
+  <!-- ARBOL -->
+  <record id="pabs_econtract_tree_view" model="ir.ui.view">
+    <field name="name">pabs.econtract.tree.view</field>
+    <field name="type">tree</field>
+    <field name="model">pabs.econtract.move</field>
+    <field name="arch" type="xml">
+      <tree editable="top">
+        <field name="fecha_hora_cierre"/>
+        <field name="estatus"/>
+        <field name="id_oficina"/>
+        <field name="id_asistente"/>
+        <field name="periodo"/>
+        <field name="id_contrato"/>
+        <field name="id_poliza_caja_transito"/>
+        <field name="id_poliza_caja_electronicos"/>
+        <field name="company_id" invisible="1"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- BUSQUEDA  -->
+  <record id="pabs_econtract_search_view" model="ir.ui.view" >
+      <field name="name">pabs.econtract.search.view</field>
+      <field name="model">pabs.econtract.move</field>
+      <field name="arch" type="xml">
+        <search>
+          <!-- Filtros -->
+          <field name="id_oficina"/>
+          <field name="id_asistente"/>
+          <field name="id_contrato"/>
+          <field name="id_poliza_caja_transito"/>
+          <field name="id_poliza_caja_electronicos"/>
+        </search>
+      </field>
+  </record>
+
+<!-- Fin de vistas -->
+
+<!-- Definición del action  -->
+  <record id="pabs_econtract_move_action" model="ir.actions.act_window">
+    <field name="name">Pólizas de afiliaciones generadas</field>
+    <field name="res_model">pabs.econtract.move</field>
+    <field name="view_mode">tree</field>
+  </record>
+
+<!-- Definición del menú -->
+  <menuitem
+    id="menu_pabs_econtract_move"
+    name="Pólizas generadas de afiliaciones electrónicas"
+    groups="pabs_custom.admin_profile,pabs_custom.collection_profile"
+    action="pabs_econtract_move_action"
+    parent="menu_generator_account_move"
+    sequence="4"
+  />
+
+</odoo>

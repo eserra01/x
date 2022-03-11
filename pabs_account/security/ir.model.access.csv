@@ -4,3 +4,4 @@ access_pabs_investment_surplus_manager,pabs.investment.surplus,pabs_account.mode
 access_pabs_bank_account,pabs.bank.account,pabs_account.model_pabs_bank_account,base.group_user,1,1,1,1
 access_pabs_balance_transfer_contract,pabs_balance_transfer_contract,pabs_account.model_pabs_balance_transfer,pabs_custom.contract_profile,1,1,1,1
 access_pabs_balance_transfer_admin,pabs_balance_transfer_admin,pabs_account.model_pabs_balance_transfer,pabs_custom.admin_profile,1,1,1,1
+access_pabs_econtract_move_admin,pabs.econtract.move,pabs_account.model_pabs_econtract_move,pabs_custom.admin_profile,1,1,1,1

@@ -16,6 +16,8 @@
   'wizard/pabs_investment_surplus_wizard.xml',
   'wizard/pabs_bank_deposits_wizard.xml',
   'wizard/pabs_balanace_transfer_wizard.xml',
+  'wizard/pabs_econtract_move_wizard.xml',
+  'wizard/pabs_econtract_move_view.xml',
   'security/ir.model.access.csv',
   'views/res_company_view.xml',
   'views/stock_warehouse_view.xml',

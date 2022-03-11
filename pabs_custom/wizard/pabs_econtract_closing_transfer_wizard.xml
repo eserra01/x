@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Vista  -->
+	<record id="pabs_econtract_closing_transfer_wizard" model="ir.ui.view">
+		<field name="name">pabs.econtract.closing.transfer.wizard</field>
+		<field name="model">pabs.econtract.closing.transfer</field>
+		<field name="arch" type="xml">
+			<form string="Corte de afiliaciones electrónicas">
+        <group>
+            <field name="warehouse_id" widget="selection"/>
+            <field name="date_closing"/>
+        </group>
+        <footer>
+          <button name="ImprimirCierre" string="Imprimir" type="object" class="btn-primary"/>
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+		</field>
+	</record>
+
+  <!-- Action -->
+  <record id="action_pabs_econtract_closing_transfer_wizard" model="ir.actions.act_window">
+    <field name="name">Corte de afiliaciones electrónicas</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.econtract.closing.transfer</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_econtract_closing_transfer_wizard"/>
+    <field name="target">new</field>
+  </record>
+
+  <!-- Menu -->
+  <menuitem id="menu_econtract_closing" name="Corte de afiliaciones electrónicas" action="action_pabs_econtract_closing_transfer_wizard" parent="menu_action_request" sequence="5" groups="pabs_custom.admin_profile,pabs_custom.secretary_profile"/>
+</odoo>

@@ -59,7 +59,7 @@
                                         <br/>
                                         PROGRAMA DE APOYO DE BENEFICIO SOCIAL
                                         <br/>
-                                        CORTE DE CONTRATOS ELABORADOS
+                                        <span t-esc="data['titulo']"/>
                                         <br/>
                                         FECHA:<span> <span t-esc="data['params']['start_date']" t-options="{&quot;widget&quot;: &quot;date&quot;}"/> - <span t-esc="data['params']['end_date']" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></span>
                                         <br/>
