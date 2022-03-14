@@ -116,6 +116,7 @@ class PABSContracts(models.Model):
   neighborhood_id = fields.Many2one(tracking=True, comodel_name='colonias', string='Colonia')
   phone = fields.Char(tracking=True, string='Teléfono', required=True)
   zip_code = fields.Char(tracking=True, string='C.P.', required=True, default='00000')
+  client_email = fields.Char(tracking=True, string='Correo')
   
 # Domicilio de cobro
   street_name_toll = fields.Char(tracking=True, string = 'Calle')
@@ -125,6 +126,9 @@ class PABSContracts(models.Model):
   toll_colony_id = fields.Many2one(tracking=True, comodel_name='colonias',string='Colonia')
   phone_toll = fields.Char(tracking=True, string='Teléfono')
   zip_code_toll = fields.Char(tracking=True, string='C.P.', required=True, default='00000')
+
+  latitude = fields.Char(tracking=False, string = 'Latitud')
+  longitude = fields.Char(tracking=False, string = 'Longitud')
 
 #Datos contables
   balance = fields.Float(tracking=True, string="Saldo", compute="_calc_balance")

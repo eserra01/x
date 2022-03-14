@@ -115,12 +115,12 @@ class PABSElectronicContracts(models.TransientModel):
         cantidad_afiliaciones = len(array_solicitudes)
         _logger.info("Afiliaciones obtenidas: {}".format(cantidad_afiliaciones))
 
-        # TEST
+        # # TEST
         for i in range(1, cantidad_afiliaciones): # Tomar solo X elementos de la lista
             array_solicitudes.pop(1)
         cantidad_afiliaciones = len(array_solicitudes)
         _logger.info("PRUEBA -> Se recorta a {} afilaciones".format(cantidad_afiliaciones))
-        # FIN TEST
+        # # FIN TEST
 
         ###################################
         ### Sincronizar cada afiliación ###
@@ -199,17 +199,17 @@ class PABSElectronicContracts(models.TransientModel):
                 ### Crear registros de los que depende el contrato ###
                 # 1. Crear solicitud. Primero se busca la oficina del empleado
                 
-                #TEST. Se realiza consulta de empleado por código. En producción el id de empleado es parte de la respuesta
-                employee = self.env['hr.employee'].search([
-                    ('company_id', '=', company_id),
-                    ('barcode', '=', sol['promotor_codigo'])
-                ])
-                #FIN TEST
+                # #TEST. Se realiza consulta de empleado por código. En producción el id de empleado es parte de la respuesta
+                # employee = self.env['hr.employee'].search([
+                #     ('company_id', '=', company_id),
+                #     ('barcode', '=', sol['promotor_codigo'])
+                # ])
+                # #FIN TEST
+                employee = self.env['hr.employee'].browse(sol['promotor_id']) #PROD
                 
                 if not employee:
                     raise ValidationError("No se encontró al asistente")
 
-                #employee = self.env['hr.employee'].browse(sol['promotor_id']) #PROD
 
                 id_oficina = employee.warehouse_id.id
                 if not id_oficina:
@@ -277,7 +277,11 @@ class PABSElectronicContracts(models.TransientModel):
                     'toll_municipallity_id': sol['domCobro_LocalidadID'],
                     'toll_colony_id': sol['domCobro_ColoniaID'],
                     'zip_code_toll': sol['domCobro_codigoPostal'],
-                    'phone_toll': sol['afiliado_telefono']
+                    'phone_toll': sol['afiliado_telefono'],
+
+                    'latitude': sol['solicitud_latitud'],
+                    'longitude': sol['solicitud_longitud'],
+                    'client_email': sol['afiliado_email']
                 }
 
                 ### Crear contrato con información básica ###
