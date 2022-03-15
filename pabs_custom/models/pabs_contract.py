@@ -10,6 +10,8 @@ from odoo.addons.pabs_custom.externals.calcule import CalculeRFC, CalculeCURP
 import json
 import math
 
+from num2words import num2words
+
 _logger = logging.getLogger(__name__)
 
 STATES = [
@@ -86,6 +88,7 @@ class PABSContracts(models.Model):
 
   debt_collector = fields.Many2one(tracking=True, comodel_name="hr.employee", string='Nombre del cobrador')
   payment_amount = fields.Float(tracking=True, string= 'Monto de pago')
+  payment_amount_in_words = fields.Char(string="Monto de pago letras", compute="_calc_payment_amount_in_words")
   way_to_payment = fields.Selection(tracking=True, selection=WAY_TO_PAY,string = 'Forma de pago')
   date_first_payment = fields.Date(tracking=True, string='Fecha primer abono')
   assign_collector_date = fields.Date(tracking=True, string='Fecha asignación cobrador', readonly=True)
@@ -107,6 +110,7 @@ class PABSContracts(models.Model):
   birthdate = fields.Date(tracking=True, string='Fecha de nacimiento', default=fields.Date.today(), required=True)
   partner_id = fields.Many2one(tracking=True, comodel_name='res.partner', string='Cliente')
   vat = fields.Char(tracking=True, string='RFC',compute='_calc_rfc')
+  client_email = fields.Char(tracking=True, string='Correo')
 
 # Domicilio de casa
   street_name = fields.Char(tracking=True, string='Calle', required=True)
@@ -116,7 +120,6 @@ class PABSContracts(models.Model):
   neighborhood_id = fields.Many2one(tracking=True, comodel_name='colonias', string='Colonia')
   phone = fields.Char(tracking=True, string='Teléfono', required=True)
   zip_code = fields.Char(tracking=True, string='C.P.', required=True, default='00000')
-  client_email = fields.Char(tracking=True, string='Correo')
   
 # Domicilio de cobro
   street_name_toll = fields.Char(tracking=True, string = 'Calle')
@@ -134,6 +137,7 @@ class PABSContracts(models.Model):
   balance = fields.Float(tracking=True, string="Saldo", compute="_calc_balance")
   paid_balance = fields.Float(tracking=True, string="Abonado", compute="_calc_paid_balance")
   invoice_date = fields.Date(tracking=True, string='Fecha de creación', default=lambda r: r.calc_invoice_date())
+  invoice_date_month_name = fields.Char(string="Nombre del mes", compute="_calc_month_name")
 
   allow_create = fields.Boolean(tracking=True, string='¿Permitir Crear Factura?')
   allow_edit = fields.Boolean(tracking=True, string='¿Permitir Modificar?')
@@ -372,6 +376,16 @@ class PABSContracts(models.Model):
     #Retorna los contratos encontrados
     return [('name', 'in', tuple(contratos))]
 
+  @api.depends('invoice_date')
+  def _calc_month_name(self):
+    for rec in self:
+      meses = ['x', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+      rec.invoice_date_month_name = meses[rec.invoice_date.month]
+
+  @api.depends('payment_amount')
+  def _calc_payment_amount_in_words(self):
+    for rec in self:
+      rec.payment_amount_in_words = num2words(self.payment_amount, lang ='es')
 
   def _calc_comments(self):
     contract_comments_obj = self.env['pabs.contract.comments']
@@ -1543,7 +1557,7 @@ class PABSContracts(models.Model):
               reconcile.update({'debit_move_id' : line.id})     
 
           #Buscar diario de efectivo
-          cash_journal_id = journal_obj.search([('type','=','cash'), ('name','=','EFECTIVO')],limit=1)
+          cash_journal_id = journal_obj.search([('company_id','=', previous.company_id.id), ('type','=','cash'), ('name','=','EFECTIVO')],limit=1)
           if not cash_journal_id:
             raise ValidationError("No se encontró el diario EFECTIVO")
 

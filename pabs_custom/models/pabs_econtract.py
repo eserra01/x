@@ -4,20 +4,13 @@ from asyncio.log import logger
 from operator import truediv
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
-
 from datetime import datetime, timedelta, date
+
 import requests
 import logging
 import json
 
 _logger = logging.getLogger(__name__)
-
-CUENTA_TRANSITO = "101.01.005"
-NOMBRE_CUENTA = "Caja transito"
-
-class PABSElectronicContracts(models.TransientModel):
-    _name = 'pabs.electronic.contract'
-    _description = 'Afiliaciones electrónicas'
 
 ### MODIFICACIONES A OTROS MODULOS
 # pabs_contract -> sección Buscar diario de efectivo -> Añadir compañia en búsqueda -> cash_journal_id = journal_obj.search([('company_id','=', previous.company_id.id), ('type','=','cash'), ('name','=','EFECTIVO')],limit=1)
@@ -31,7 +24,17 @@ class PABSElectronicContracts(models.TransientModel):
 # Cuenta contable: 101.01.004 Caja contratos electrónicos
 # Cuenta contable: 101.01.005 Caja tránsito
 
-#  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+### Sincronizadores a crear
+# 1. Sincronizador de afiliaciones
+# 2. Sincronizador de cortes
+# 3. Sincronizador de cobradores asignados
+
+CUENTA_TRANSITO = "101.01.005"
+NOMBRE_CUENTA = "Caja transito"
+
+class PABSElectronicContracts(models.TransientModel):
+    _name = 'pabs.electronic.contract'
+    _description = 'Afiliaciones electrónicas'
 
     ### Obtener web service de afiliaciones electrónicas ###
     # tipo 1 = consultar solicitudes
@@ -47,22 +50,32 @@ class PABSElectronicContracts(models.TransientModel):
             #Asignar plaza #Actualizar al agregar otra plaza
             plaza_ecobro = ""
             if company_id == 12:
-                plaza_ecobro = "asistencia_social_SLW"
+                if tipo in (5,6):
+                    plaza_ecobro = "ecobroSAP_SALT"
+                else:
+                    plaza_ecobro = "asistencia_social_SLW"
 
             if not plaza_ecobro:
                 ValidationError("No se ha definido la plaza de ecobro")
                 return ""
 
-            # Asignar función
+            ### Asignar función ###
             metodo = ""
+            # Sincronizar contratos
             if tipo == 1:
                 metodo = "controlsolicitudes/getContratos"
             elif tipo == 2:
                 metodo = "controlsolicitudes/setPendingContratosAsSync"
+            #Sincronizar cortes
             elif tipo == 3:
                 metodo = "controlsolicitudes/getContractsNotSynced"
             elif tipo == 4:
                 metodo = "controlsolicitudes/updateContractsNotSynced"
+            #Sincronizar cobradores asignados
+            elif tipo == 5:
+                metodo = "controlmapa/getContractsAssigned"
+            elif tipo == 6:
+                metodo = "controlmapa/updateContractsAssignedasSync"
 
             if not metodo:
                 _logger.error("No se ha definido la plaza de ecobro")
@@ -115,21 +128,19 @@ class PABSElectronicContracts(models.TransientModel):
         cantidad_afiliaciones = len(array_solicitudes)
         _logger.info("Afiliaciones obtenidas: {}".format(cantidad_afiliaciones))
 
-        # # TEST
+        # TEST
         # for i in range(1, cantidad_afiliaciones): # Tomar solo X elementos de la lista
         #     array_solicitudes.pop(1)
         # cantidad_afiliaciones = len(array_solicitudes)
         # _logger.info("PRUEBA -> Se recorta a {} afilaciones".format(cantidad_afiliaciones))
-        # # FIN TEST
+        # FIN TEST
 
         ###################################
-        ### Sincronizar cada afiliación ###
+        ### Sincronizar cada afiliación ### Si ocurre error al crear una afiliación pasar a la siguiente
         for index, sol in enumerate(array_solicitudes):
-            
-            # Si ocurre error al crear una afiliación pasar a la siguiente
             try:
                 indice = index + 1
-                _logger.info("{} de {} -> {}{}".format(indice, cantidad_afiliaciones, sol['serie'], sol['contrato']))
+                _logger.info("{} de {}. {}{}".format(indice, cantidad_afiliaciones, sol['serie'], sol['contrato']))
 
                 ### Verificar si ya existe el contrato ###
                 contrato = "{}{}".format(sol['serie'], sol['contrato'])
@@ -199,13 +210,13 @@ class PABSElectronicContracts(models.TransientModel):
                 ### Crear registros de los que depende el contrato ###
                 # 1. Crear solicitud. Primero se busca la oficina del empleado
                 
-                # #TEST. Se realiza consulta de empleado por código. En producción el id de empleado es parte de la respuesta
+                #TEST. Se realiza consulta de empleado por código. En producción el id de empleado es parte de la respuesta
                 employee = self.env['hr.employee'].search([
                     ('company_id', '=', company_id),
                     ('barcode', '=', sol['promotor_codigo'])
                 ])
-                # #FIN TEST
-                # employee = self.env['hr.employee'].browse(sol['promotor_id']) #PROD
+                #FIN TEST
+                #employee = self.env['hr.employee'].browse(sol['promotor_id']) #PROD
                 
                 if not employee:
                     raise ValidationError("No se encontró al asistente")
@@ -450,8 +461,6 @@ class PABSElectronicContracts(models.TransientModel):
             _logger.error(mensaje)
             raise ValidationError(mensaje)
 
-
-
 #################################################################################################################################################
 ######################################                  GENERACIÓN DE POLIZAS             #######################################################
 #################################################################################################################################################
@@ -637,8 +646,6 @@ class PABSElectronicContracts(models.TransientModel):
 
         _logger.info("Se crea registro de precierre")
 
-
-
 #################################################################################################################################################
 ######################################                SINCRONIZADOR DE CORTES             #######################################################
 #################################################################################################################################################
@@ -732,3 +739,117 @@ class PABSElectronicContracts(models.TransientModel):
             _logger.info("Actualizada en eCobro")
         else:
             _logger.warning("No actualizada")
+
+#################################################################################################################################################
+######################################           SINCRONIZACION DE COBRADORES ASIGNADOS        ##################################################
+#################################################################################################################################################
+
+    def SincronizarCobradoresAsignados(self, company_id):
+
+        _logger.info("Comienza sincronización de cobradores asignados a contratos")
+
+        contract_obj = self.env['pabs.contract']
+
+        ### Validar parámetros ###
+        if not company_id:
+            _logger.error("No se ha definido la compañia")
+            return
+
+        ### Validar web service de consulta y respuesta ###
+        url_obtener_contratos = self.get_url(company_id, 5)
+        if not url_obtener_contratos:
+            _logger.error("No se ha definido la dirección del web service: obtener cobradores asignados")
+            return
+
+        url_actualizar_contratos = self.get_url(company_id, 6)
+        if not url_actualizar_contratos:
+            _logger.error("No se ha definido la dirección del web service: actualizar contratos con cobrador asignado")
+            return
+
+        ### Llamar web service de consulta ###
+        try:
+            _logger.info("Comienza consulta de cobradores")
+            respuesta = requests.post(url_obtener_contratos)
+            json_contratos = json.loads(respuesta.text)
+            array_contratos = json_contratos.get('result')
+        except Exception as ex:
+            _logger.error("Error al consultar cobradores {}".format(ex))
+            return
+
+        cantidad_contratos = len(array_contratos)
+        _logger.info("Contratos obtenidos: {}".format(cantidad_contratos))
+
+        ### Llenar lista de cobradores ###
+        lista_cobradores = []
+        cobradores = self.env['hr.employee'].search([
+            ('company_id', '=', company_id),
+            ('job_id.name', 'ilike', 'COBRA')
+        ])
+
+        for cob in cobradores:
+            lista_cobradores.append({
+                'id_cobrador': cob.id,
+                'codigo': cob.barcode
+            })
+
+        if not lista_cobradores:
+            raise ValidationError("No hay empleados con el cargo COBRADOR")
+
+        # TEST
+        # for i in range(1, cantidad_contratos): # Tomar solo X elementos de la lista
+        #     array_contratos.pop(1)
+        # cantidad_contratos = len(array_contratos)
+        # _logger.info("PRUEBA -> Se recorta a {} contratos".format(cantidad_contratos))
+        # FIN TEST
+
+        ###################################
+        ### Sincronizar cada contrato ### Si ocurre error al actualizar un contrato pasar al siguiente
+        for index, con in enumerate(array_contratos):
+            try:
+                indice = index + 1
+                
+                #con['contrato'] = "2DJ000026"#TEST
+                #con['no_cobrador'] = 50835 #TEST
+                
+                _logger.info("{} de {}. {} -> {}".format(indice, cantidad_contratos, con['contrato'], con['codigo']))
+
+                ### Buscar cobrador en lista de cobradores
+                cobrador = list(filter(lambda x: x['codigo'] == con['codigo'], lista_cobradores))
+
+                if not cobrador:
+                    raise ValidationError("No se encontró al cobrador")
+
+                ### Actualizar contrato ###
+                contrato = contract_obj.search([
+                    ('company_id', '=', company_id),
+                    ('name', '=', con['contrato'])
+                ])
+
+                if not contrato:
+                    raise ValidationError("No se encontró el contrato")
+
+                contrato.write({
+                    'debt_collector': con['no_cobrador'],
+                    'assign_collector_date': fields.Date.today()
+                })
+
+                _logger.info("Actualizado en Odoo")
+     
+                self.ActualizarAsignacionEnEcobro(url_actualizar_contratos, con['ContratosAsignados_ContratoAsignadoID'])  
+
+            except Exception as ex:
+                _logger.error("Error al actualizar contrato: {}".format(ex))
+
+#  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+    
+    def ActualizarAsignacionEnEcobro(self, url_actualizar_asignacion, id_asignacion):
+        data_response = {"id": id_asignacion}
+
+        llamada = requests.post(url_actualizar_asignacion, json=data_response)
+        
+        respuesta = json.loads(llamada.text)
+
+        if respuesta['result'] == "Contrato actualizado":
+            _logger.info("Actualizado en eCobro")
+        else:
+            raise ValidationError("No actualizada en eCobro")
