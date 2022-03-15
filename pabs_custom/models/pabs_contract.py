@@ -39,6 +39,16 @@ SERVICE = [
   ('realized','Realizado'),
   ('made_receivable','Realizado por cobrar')]
 
+MARITAL_STATUS = [
+  ('Casado(a)', 'Casado(a)'),
+  ('Soltero(a)', 'Soltero(a)'),
+  ('Viudo(a)', 'Viudo(a)'),
+  ('Union Libre', 'Union Libre'),
+  ('Divorciado(a)', 'Divorciado(a)'),
+  ('Otros', 'Otros'),
+  ('sin_definir', 'Sin definir')
+]
+
 #limit-time-real=2000
 class PABSContracts(models.Model):
   _name = 'pabs.contract'
@@ -111,6 +121,7 @@ class PABSContracts(models.Model):
   partner_id = fields.Many2one(tracking=True, comodel_name='res.partner', string='Cliente')
   vat = fields.Char(tracking=True, string='RFC',compute='_calc_rfc')
   client_email = fields.Char(tracking=True, string='Correo')
+  marital_status = fields.Selection(tracking=True, selection=MARITAL_STATUS, string='Estado civil', default="sin_definir")
 
 # Domicilio de casa
   street_name = fields.Char(tracking=True, string='Calle', required=True)

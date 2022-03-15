@@ -243,6 +243,10 @@ class PABSElectronicContracts(models.TransientModel):
                 datos_afiliacion = {}
                 
                 ### Llenar datos de la afiliación. Solo debe llevar datos del modelo pabs.contract ###
+                estado_civil = "sin_definir"
+                if sol['afiliado_estadoCivil']:
+                    estado_civil = sol['afiliado_estadoCivil']
+
                 datos_afiliacion = {
                     'company_id': company_id,
                     'partner_id': partner_id,
@@ -271,6 +275,7 @@ class PABSElectronicContracts(models.TransientModel):
                     'partner_mname': sol['afiliado_apellidoMaterno'],
                     'birthdate': sol['afiliado_fechaNacimiento'],
                     'service_detail': 'unrealized',
+                    'marital_status': estado_civil,
                     
                     # Domicilio de casa
                     'street_name': sol['domCasa_Calle'],
