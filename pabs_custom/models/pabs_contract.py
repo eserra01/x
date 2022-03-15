@@ -88,7 +88,7 @@ class PABSContracts(models.Model):
 
   debt_collector = fields.Many2one(tracking=True, comodel_name="hr.employee", string='Nombre del cobrador')
   payment_amount = fields.Float(tracking=True, string= 'Monto de pago')
-  payment_amount_in_words = fields.Char(string="Monto de pago letras", compute="_calc_payment_amount_in_words")
+  initial_investment_in_words = fields.Char(string="Inversion inicial en letras", compute="_amount_to_words")
   way_to_payment = fields.Selection(tracking=True, selection=WAY_TO_PAY,string = 'Forma de pago')
   date_first_payment = fields.Date(tracking=True, string='Fecha primer abono')
   assign_collector_date = fields.Date(tracking=True, string='Fecha asignación cobrador', readonly=True)
@@ -382,10 +382,10 @@ class PABSContracts(models.Model):
       meses = ['x', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
       rec.invoice_date_month_name = meses[rec.invoice_date.month]
 
-  @api.depends('payment_amount')
-  def _calc_payment_amount_in_words(self):
+  @api.depends('initial_investment')
+  def _amount_to_words(self):
     for rec in self:
-      rec.payment_amount_in_words = num2words(self.payment_amount, lang ='es')
+      rec.initial_investment_in_words = num2words(self.initial_investment, lang ='es')
 
   def _calc_comments(self):
     contract_comments_obj = self.env['pabs.contract.comments']
