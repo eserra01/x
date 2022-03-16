@@ -52,6 +52,8 @@ class PABSElectronicContracts(models.TransientModel):
             if company_id == 12:
                 if tipo in (5,6):
                     plaza_ecobro = "ecobroSAP_SALT"
+                elif tipo in (7,8):
+                    plaza_ecobro = "ecobrosalt"
                 else:
                     plaza_ecobro = "asistencia_social_SLW"
 
@@ -66,16 +68,21 @@ class PABSElectronicContracts(models.TransientModel):
                 metodo = "controlsolicitudes/getContratos"
             elif tipo == 2:
                 metodo = "controlsolicitudes/setPendingContratosAsSync"
-            #Sincronizar cortes
+            # Sincronizar cortes
             elif tipo == 3:
                 metodo = "controlsolicitudes/getContractsNotSynced"
             elif tipo == 4:
                 metodo = "controlsolicitudes/updateContractsNotSynced"
-            #Sincronizar cobradores asignados
+            # Sincronizar cobradores asignados
             elif tipo == 5:
                 metodo = "controlmapa/getContractsAssigned"
             elif tipo == 6:
                 metodo = "controlmapa/updateContractsAssignedasSync"
+            # Sincronizar direcciones actualizadas
+            elif tipo == 7:
+                metodo = "controlcartera/getNewClientInfoRegistered"
+            elif tipo == 8:
+                metodo = "controlcartera/updateClienteDetalleAsUpdated"
 
             if not metodo:
                 _logger.error("No se ha definido la plaza de ecobro")
@@ -814,9 +821,6 @@ class PABSElectronicContracts(models.TransientModel):
             try:
                 indice = index + 1
                 
-                #con['contrato'] = "2DJ000026"#TEST
-                #con['no_cobrador'] = 50835 #TEST
-                
                 _logger.info("{} de {}. {} -> {}".format(indice, cantidad_contratos, con['contrato'], con['codigo']))
 
                 ### Buscar cobrador en lista de cobradores
@@ -856,6 +860,142 @@ class PABSElectronicContracts(models.TransientModel):
         respuesta = json.loads(llamada.text)
 
         if respuesta['result'] == "Contrato actualizado":
+            _logger.info("Actualizado en eCobro")
+        else:
+            raise ValidationError("No actualizada en eCobro")
+
+#################################################################################################################################################
+######################################       SINCRONIZACION DE DIRECCIONES ACTUALIZADAS        ##################################################
+#################################################################################################################################################
+
+    def ActualizarDirecciones(self, company_id):
+        _logger.info("Comienza sincronización de direcciones actualizadas")
+
+        contract_obj = self.env['pabs.contract']
+
+        ### Validar parámetros ###
+        if not company_id:
+            _logger.error("No se ha definido la compañia")
+            return
+
+        ### Validar web service de consulta y respuesta ###
+        url_obtener_contratos = self.get_url(company_id, 7)
+        if not url_obtener_contratos:
+            _logger.error("No se ha definido la dirección del web service: obtener direcciones actualizadas")
+            return
+
+        url_actualizar_contratos = self.get_url(company_id, 8)
+        if not url_actualizar_contratos:
+            _logger.error("No se ha definido la dirección del web service: marcar dirección como actualizada")
+            return
+
+        ### Llamar web service de consulta ###
+        try:
+            _logger.info("Comienza consulta de direcciones")
+            data = {"sistema": 1}
+            respuesta = requests.post(url_obtener_contratos, json=data)
+            json_contratos = json.loads(respuesta.text)
+            array_contratos = json_contratos.get('resultado')
+        except Exception as ex:
+            _logger.error("Error al consultar cobradores {}".format(ex))
+            return
+
+        cantidad_contratos = len(array_contratos)
+        _logger.info("Contratos obtenidos: {}".format(cantidad_contratos))
+
+        # TEST
+        # for i in range(1, cantidad_contratos): # Tomar solo X elementos de la lista
+        #     array_contratos.pop(1)
+        # cantidad_contratos = len(array_contratos)
+        # _logger.info("PRUEBA -> Se recorta a {} contratos".format(cantidad_contratos))
+        # FIN TEST
+
+        ###################################
+        ### Sincronizar cada contrato ### Si ocurre error al actualizar un contrato pasar al siguiente
+        for index, con in enumerate(array_contratos):
+            try:
+                indice = index + 1
+                
+                _logger.info("{} de {}. {}".format(indice, cantidad_contratos, con['Contrato']))
+
+                ### Buscar contrato ###
+                contrato = contract_obj.search([
+                    ('company_id', '=', company_id),
+                    ('name', '=', con['Contrato'])
+                ])
+
+                if not contrato:
+                    raise ValidationError("No se encontró el contrato")
+
+                if len(contrato) > 1:
+                    raise ValidationError("Se encontró más de un contrato")
+
+                ### Crear diccionario de actualización
+                datos_por_actualizar = {}
+
+                if con['Calle'] and con['Calle'] != contrato.street_name_toll:
+                    datos_por_actualizar.update({'street_name_toll': con['Calle']})
+
+                if con['Exterior']:
+                    if con['Interior']:
+                        if "{}-{}".format(con['Exterior'], con['Interior']) != contrato.street_number_toll:
+                            datos_por_actualizar.update({'street_number_toll': "{}-{}".format(con['Exterior'], con['Interior'])})
+                    elif con['Exterior'] != contrato.street_number_toll:
+                        datos_por_actualizar.update({'street_number_toll': con['Exterior']})
+
+                if con['EntreCalles'] and con['EntreCalles'] != contrato.between_streets_toll:
+                    datos_por_actualizar.update({'between_streets_toll': con['EntreCalles']})
+
+                if con['LocCol_LocalidadID'] and con['LocCol_LocalidadID'] != contrato.toll_municipallity_id.id:
+                    datos_por_actualizar.update({'toll_municipallity_id': con['LocCol_LocalidadID']})
+
+                if con['LocCol_ColoniaID'] and con['LocCol_ColoniaID'] != contrato.toll_colony_id.id:
+                    datos_por_actualizar.update({'toll_colony_id': con['LocCol_ColoniaID']})
+
+                if con['Celular'] and con['Celular'] != "Sin teléfono" and con['Celular'] != contrato.phone_toll:
+                    datos_por_actualizar.update({'phone_toll': con['Celular']})
+                
+                if con['Correo'] and con['Correo'] != contrato.client_email:
+                    datos_por_actualizar.update({'client_email': con['Correo']})
+
+                ### Actualizar contrato ###
+                if datos_por_actualizar:
+                    contrato.write(datos_por_actualizar)
+
+                    _logger.info("Actualizado en Odoo")
+                else:
+                    _logger.info("No hay datos por actualizar")
+
+                estatus = 1
+     
+                self.ActualizarDireccionEnEcobro(url_actualizar_contratos, con['IDRegistro'], estatus)
+
+            except Exception as ex:
+                estatus = 2
+                _logger.error("Error al actualizar dirección: {}".format(ex))
+                self.ActualizarDireccionEnEcobro(url_actualizar_contratos, con['IDRegistro'], estatus)  
+
+#  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+    
+    # estatus 0: no actualizado
+    # estatus 1: actualizado
+    # estatus 2: error al actualizar
+    # estatus 3: error al utilizar web service de actualización    
+    def ActualizarDireccionEnEcobro(self, url_actualizar_contratos, id_registro, estatus):
+        data_response = {
+            "result": [
+                {
+                    "IDRegistro": id_registro, 
+			        "Estatus": estatus
+                }
+            ]
+        }
+
+        llamada = requests.post(url_actualizar_contratos, json=data_response)
+        
+        respuesta = json.loads(llamada.text)
+
+        if len(respuesta['success']) > 0:
             _logger.info("Actualizado en eCobro")
         else:
             raise ValidationError("No actualizada en eCobro")
