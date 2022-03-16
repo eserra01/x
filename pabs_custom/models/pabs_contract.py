@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from sqlite3 import Timestamp
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, date
@@ -40,13 +41,13 @@ SERVICE = [
   ('made_receivable','Realizado por cobrar')]
 
 MARITAL_STATUS = [
-  ('Casado(a)', 'Casado(a)'),
-  ('Soltero(a)', 'Soltero(a)'),
-  ('Viudo(a)', 'Viudo(a)'),
-  ('Union Libre', 'Union Libre'),
-  ('Divorciado(a)', 'Divorciado(a)'),
-  ('Otros', 'Otros'),
-  ('sin_definir', 'Sin definir')
+  ('CASADO(A)', 'CASADO(A)'),
+  ('SOLTERO(A)', 'SOLTERO(A)'),
+  ('VIUDO(A)', 'VIUDO(A)'),
+  ('UNION LIBRE', 'UNION LIBRE'),
+  ('DIVORCIADO(A)', 'DIVORCIADO(A)'),
+  ('OTROS', 'OTROS'),
+  ('SIN DEFINIR', 'SIN DEFINIR')
 ]
 
 #limit-time-real=2000
@@ -148,6 +149,7 @@ class PABSContracts(models.Model):
   balance = fields.Float(tracking=True, string="Saldo", compute="_calc_balance")
   paid_balance = fields.Float(tracking=True, string="Abonado", compute="_calc_paid_balance")
   invoice_date = fields.Date(tracking=True, string='Fecha de creación', default=lambda r: r.calc_invoice_date())
+  timestamp = fields.Char(string='Timestamp')
   invoice_date_month_name = fields.Char(string="Nombre del mes", compute="_calc_month_name")
 
   allow_create = fields.Boolean(tracking=True, string='¿Permitir Crear Factura?')
@@ -390,13 +392,13 @@ class PABSContracts(models.Model):
   @api.depends('invoice_date')
   def _calc_month_name(self):
     for rec in self:
-      meses = ['x', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+      meses = ['x', 'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE']
       rec.invoice_date_month_name = meses[rec.invoice_date.month]
 
   @api.depends('initial_investment')
   def _amount_to_words(self):
     for rec in self:
-      rec.initial_investment_in_words = num2words(self.initial_investment, lang ='es')
+      rec.initial_investment_in_words = str(num2words(self.initial_investment, lang ='es')).upper()
 
   def _calc_comments(self):
     contract_comments_obj = self.env['pabs.contract.comments']
