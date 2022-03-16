@@ -261,7 +261,7 @@ class PABSElectronicContracts(models.TransientModel):
                     'lot_id': lot_id,
 
                     'invoice_date': fecha_contrato,
-                    'timestamp': sol['timestamp'],
+                    'qr_string': sol['qr_string'],
                     'state': 'contract',
                     'type_view': 'precontract',
                     'captured': True,

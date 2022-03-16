@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from sqlite3 import Timestamp
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, date
@@ -149,7 +148,7 @@ class PABSContracts(models.Model):
   balance = fields.Float(tracking=True, string="Saldo", compute="_calc_balance")
   paid_balance = fields.Float(tracking=True, string="Abonado", compute="_calc_paid_balance")
   invoice_date = fields.Date(tracking=True, string='Fecha de creación', default=lambda r: r.calc_invoice_date())
-  timestamp = fields.Char(string='Timestamp')
+  qr_string = fields.Char(string='QR')
   invoice_date_month_name = fields.Char(string="Nombre del mes", compute="_calc_month_name")
 
   allow_create = fields.Boolean(tracking=True, string='¿Permitir Crear Factura?')
