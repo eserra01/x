@@ -28,6 +28,7 @@ _logger = logging.getLogger(__name__)
 # 1. Sincronizador de afiliaciones
 # 2. Sincronizador de cortes
 # 3. Sincronizador de cobradores asignados
+# 4. Sincronizador de direcciones
 
 CUENTA_TRANSITO = "101.01.005"
 NOMBRE_CUENTA = "Caja transito"
