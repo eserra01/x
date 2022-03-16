@@ -24,7 +24,7 @@ _logger = logging.getLogger(__name__)
 # Cuenta contable: 101.01.004 Caja contratos electrónicos
 # Cuenta contable: 101.01.005 Caja tránsito
 
-### Sincronizadores a crear
+### Sincronizadores a crear ###
 # 1. Sincronizador de afiliaciones
 # 2. Sincronizador de cortes
 # 3. Sincronizador de cobradores asignados
