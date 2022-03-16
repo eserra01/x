@@ -41,13 +41,13 @@ SERVICE = [
   ('made_receivable','Realizado por cobrar')]
 
 MARITAL_STATUS = [
-  ('CASADO(A)', 'CASADO(A)'),
-  ('SOLTERO(A)', 'SOLTERO(A)'),
-  ('VIUDO(A)', 'VIUDO(A)'),
-  ('UNION LIBRE', 'UNION LIBRE'),
-  ('DIVORCIADO(A)', 'DIVORCIADO(A)'),
-  ('OTROS', 'OTROS'),
-  ('SIN DEFINIR', 'SIN DEFINIR')
+  ('Casado(a)', 'CASADO(A)'),
+  ('Soltero(o)', 'SOLTERO(A)'),
+  ('Viudo(a)', 'VIUDO(A)'),
+  ('Union libre', 'UNION LIBRE'),
+  ('Divorciado(a)', 'DIVORCIADO(A)'),
+  ('Otros', 'OTROS'),
+  ('sin_definir', 'SIN DEFINIR')
 ]
 
 #limit-time-real=2000
