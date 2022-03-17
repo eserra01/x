@@ -12,11 +12,11 @@ class PabsEcontractWizard(models.TransientModel):
         ### Validar que existe reporte ###
         reporte = self.env['ir.actions.report'].sudo().search([
             ('template_id.company_id.id', '=', self.env.company.id),
-            ('name', '=', 'contrato_premium')
+            ('name', '=', 'Contrato Premium')
         ])
 
         if not reporte:
-            raise ValidationError("No existe el reporte {}".format('contrato_premium'))
+            raise ValidationError("No existe el reporte {}".format('Contrato Premium'))
 
         ### Obtener ids de contratos ###
         id_contratos = self.env['pabs.contract'].search([
