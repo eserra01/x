@@ -10,7 +10,7 @@ class PabsEcontractWizard(models.TransientModel):
 
     def Imprimir(self):
         ### Validar que existe reporte ###
-        reporte = self.env['ir.actions.report'].sudo().search([
+        reporte = self.env['ir.actions.report'].search([
             ('template_id.company_id.id', '=', self.env.company.id),
             ('name', '=', 'Contrato Premium')
         ])
