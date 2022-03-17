@@ -1073,8 +1073,8 @@ class APIREST(http.Controller):
       LEFT JOIN account_analytic_account as ana on mov.analytic_account_id = ana.id
         WHERE enc.state = 'posted'
         AND enc.company_id = {}
-        AND DATE_PART('year', Fecha) = 2021 
-        AND DATE_PART('month', Fecha) < 6
+        AND DATE_PART('year', enc.date) = 2021 
+        AND DATE_PART('month', enc.date) < 6
     ) as financieros""".format(company.name, company_id)
     try:
       cr.execute(query)
@@ -1292,8 +1292,8 @@ class APIREST(http.Controller):
       LEFT JOIN account_analytic_account as ana on mov.analytic_account_id = ana.id
         WHERE enc.state = 'posted'
         AND enc.company_id = {}
-        AND DATE_PART('year', Fecha) = 2021 
-        AND DATE_PART('month', Fecha) > 6
+        AND DATE_PART('year', enc.date) = 2021 
+        AND DATE_PART('month', enc.date) > 6
     ) as financieros""".format(company.name, company_id)
     try:
       cr.execute(query)
