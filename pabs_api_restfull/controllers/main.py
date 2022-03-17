@@ -883,7 +883,7 @@ class APIREST(http.Controller):
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
   @http.route('/api/get/financieros_1/<int:company_id>', type='http', auth='none', csrf=False)
-  def get_financial(self, **kargs):
+  def get_financial_1(self, **kargs):
     if not kargs.get('company_id'):
       return Response("Necesitas enviar un parametro de busqueda", status=400)
     else:
@@ -1102,7 +1102,7 @@ class APIREST(http.Controller):
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
   @http.route('/api/get/financieros_2/<int:company_id>', type='http', auth='none', csrf=False)
-  def get_financial(self, **kargs):
+  def get_financial_2(self, **kargs):
     if not kargs.get('company_id'):
       return Response("Necesitas enviar un parametro de busqueda", status=400)
     else:
