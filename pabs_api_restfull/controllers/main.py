@@ -1293,7 +1293,7 @@ class APIREST(http.Controller):
         WHERE enc.state = 'posted'
         AND enc.company_id = {}
         AND DATE_PART('year', enc.date) = 2021 
-        AND DATE_PART('month', enc.date) > 6
+        AND DATE_PART('month', enc.date) >= 6
     ) as financieros""".format(company.name, company_id)
     try:
       cr.execute(query)
