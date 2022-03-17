@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_econtract_print_by_range_wizard" model="ir.ui.view">
+    <field name="name">Impresión de afiliaciones electrónicas por rango</field>
+    <field name="model">pabs.econtract.wizard.by.range</field>
+    <field name="arch" type="xml">
+      <form>
+        <group>
+          <field name="initial_contract" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+          <field name="final_contract" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+        </group>
+
+        <footer>
+          <button name="Imprimir" string="Aceptar" type="object" class="oe_highlight" />
+          or
+          <button string="Cancelar" class="oe_link" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="pabs_econtract_print_by_range_action" model="ir.actions.act_window">
+    <field name="name">Impresión de afiliaciones electrónicas por rango</field>
+    <field name="res_model">pabs.econtract.wizard.by.range</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_econtract_print_by_range_wizard"/>
+    <field name="target">new</field>
+  </record>
+
+  <menuitem
+    id="menu_root_carnet_pago"
+    name="Impresión de afiliaciones electrónicas por rango"
+    parent="xmarts_funeraria.report_root_menu" 
+    sequence="1"
+    action="pabs_econtract_print_by_range_action" 
+  />
+
+</odoo>

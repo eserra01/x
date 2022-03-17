@@ -397,7 +397,7 @@ class PABSContracts(models.Model):
   @api.depends('initial_investment')
   def _amount_to_words(self):
     for rec in self:
-      rec.initial_investment_in_words = str(num2words(self.initial_investment, lang ='es')).upper()
+      rec.initial_investment_in_words = str(num2words(rec.initial_investment, lang ='es')).upper()
 
   def _calc_comments(self):
     contract_comments_obj = self.env['pabs.contract.comments']

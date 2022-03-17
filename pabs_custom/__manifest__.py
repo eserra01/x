@@ -57,6 +57,7 @@
     'wizard/pabs_arching_view.xml',
     'wizard/output_payment_wizard_view.xml',
     'wizard/pabs_econtract_closing_transfer_wizard.xml',
+    'wizard/pabs_econtract_wizard_view.xml',
     'security/security.xml',
     'views/menu_views.xml',
     'security/ir.model.access.csv',
