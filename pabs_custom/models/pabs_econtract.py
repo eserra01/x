@@ -840,7 +840,7 @@ class PABSElectronicContracts(models.TransientModel):
                     raise ValidationError("No se encontró el contrato")
 
                 contrato.write({
-                    'debt_collector': con['no_cobrador'],
+                    'debt_collector': cobrador[0]['id_cobrador'],
                     'assign_collector_date': fields.Date.today()
                 })
 
