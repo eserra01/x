@@ -1169,7 +1169,7 @@
               <field name="payment_amount"/>
               <field name="days_without_payment" readonly="1"/>
               <field name="late_amount"  readonly="1"/>
-              <field name="date_first_payment" readonly="1"/>
+              <field name="date_first_payment" />
               <field name="contract_expires" readonly="1"/>
               <field name="product_price" readonly="1"/> 
               <field name="balance" readonly="1"/>
