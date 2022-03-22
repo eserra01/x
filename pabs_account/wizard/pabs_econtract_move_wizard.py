@@ -26,7 +26,9 @@ class PabsAccountMove(models.TransientModel):
     _name = 'pabs.econtract.move.wizard'
     _descripcion = "Generador de pólizas de Inversiones y Excedentes de afiliaciones electrónicas"
 
-    id_almacen = fields.Many2one(comodel_name='stock.warehouse', required=True, string='Oficina')
+    fecha_inicio = fields.Date(string = 'Fecha inicial de Corte')
+    fecha_fin = fields.Date(string = 'Fecha final de Corte')
+
     json_contratos = fields.Text(string="json_contratos")
 
     texto_cierres = fields.Text(string="Afiliaciones")
@@ -36,12 +38,20 @@ class PabsAccountMove(models.TransientModel):
 
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
-    @api.onchange('id_almacen')
+    @api.onchange('fecha_fin')
     def ConsultarAfiliaciones(self):
-        if not self.id_almacen:
+
+        if not self.fecha_inicio or not self.fecha_fin:
+            self.cantidad_contratos = 0
+            self.total_inversiones = 0
             return
+
+        if self.fecha_inicio > self.fecha_fin:
+            self.cantidad_contratos = 0
+            self.total_inversiones = 0
+            return {'warning': {'title': ('Atención'), 'message': "La fecha inicial no puede ser mayor que la fecha final"}}
         
-        id_compania = self.id_almacen.company_id.id
+        id_compania = self.env.company.id
 
         if not id_compania:
             raise ValidationError("No está asignada una compañia")
@@ -49,14 +59,17 @@ class PabsAccountMove(models.TransientModel):
         ### Buscar contratos de la oficina en el cierre que no tenga la póliza generada ###
         lista_contratos = self.env['pabs.econtract.move'].search([
             ('company_id', '=', id_compania),
-            ('id_oficina', '=', self.id_almacen.id),
+            ('fecha_hora_cierre', '>=', '{} 00:00:00'.format(self.fecha_inicio) ),
+            ('fecha_hora_cierre', '<=', '{} 23:59:59'.format(self.fecha_fin) ),
             ('estatus', '=', 'cerrado'),
             ('id_poliza_caja_transito', '!=', False),
             ('id_poliza_caja_electronicos', '=', False)
         ])
 
         if not lista_contratos:
-            raise ValidationError("No hay contratos")
+            self.cantidad_contratos = 0
+            self.total_inversiones = 0
+            return {'warning': {'title': ('Atención'), 'message': "No hay contratos"}}
 
         contratos = []
         texto_cierres = ""
@@ -84,7 +97,7 @@ class PabsAccountMove(models.TransientModel):
 
         json_contratos = json.loads(self.json_contratos)
 
-        company = self.env['res.company'].browse(self.id_almacen.company_id.id)
+        company = self.env['res.company'].browse(self.env.company.id)
 
         if not company:
             raise ValidationError("No se definió una compañía")

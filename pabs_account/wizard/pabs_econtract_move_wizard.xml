@@ -10,22 +10,19 @@
       <form>
         <sheet>
           <group>
-            <field name="id_almacen" widget="selection" required="1"/>
+            <field name="fecha_inicio" required="1"/>
+            <field name="fecha_fin" required="1"/>
           </group>
           <group>
-            <field name="cantidad_contratos"/>
-            <field name="total_inversiones"/>
+            <field name="cantidad_contratos" readonly="1"/>
+            <field name="total_inversiones" readonly="1"/>
           </group>
-
-          <!-- <group string="Contrato - Inversión inicial">
-            <field name="texto_cierres" nolabel="1" readonly="1"/>
-          </group> -->
           
           <field name="json_contratos" invisible="1"/>
 
           <footer>
             <button name="btnCrearPolizas" string="Crear pólizas" type="object" class="btn btn-primary" 
-              attrs="{'invisible' : ['|',('id_almacen','=',False), ('total_inversiones', '=', 0)]}"/>
+              attrs="{'invisible' : [('total_inversiones', '=', 0)]}"/>
             <button string="Cancelar" class="btn-secondary" special="cancel" />
           </footer>
 

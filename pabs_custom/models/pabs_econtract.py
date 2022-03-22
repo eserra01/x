@@ -695,8 +695,8 @@ class PABSElectronicContracts(models.TransientModel):
         _logger.info("Cortes obtenidos: {}".format(cantidad_cortes))
 
         corte_obj = self.env['pabs.econtract.move']
+        
         ### Actualizar registros de corte ###
-        cantidad_cortes
         for index, cor in enumerate(array_cortes):
             try:
                 _logger.info("{} de {}. {}".format(index + 1, cantidad_cortes, cor['contrato']))
