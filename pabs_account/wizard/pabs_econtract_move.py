@@ -27,11 +27,3 @@ class PabsAccountMove(models.Model):
     id_poliza_caja_electronicos  = fields.Many2one(string="Poliza caja electrónicos", comodel_name = "account.move")
     
     estatus = fields.Selection(selection=ESTATUS, string='Estado', default='sin_cierre')
-
-    @api.depends('fecha_hora_cierre')
-    def CalcularFechaCierre(self):
-        for rec in self:
-            if rec.fecha_hora_cierre:
-                rec.fecha_cierre = fields.Date.to_date(rec.fecha_hora_cierre)
-            else:
-                rec.fecha_cierre = date(1900, 1, 1)
