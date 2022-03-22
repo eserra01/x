@@ -57,7 +57,7 @@ class ContractsElaboratedW1zard(models.TransientModel):
         ('company_id', '=', self.env.company.id),
         ('fecha_hora_cierre', '>=', start_date),
         ('fecha_hora_cierre', '<=', end_date),
-        ('estatus', '=', 'confirmado')
+        ('estatus', 'in', ('cerrado','confirmado') )
       ])
       
       ids = closing_ids.mapped('id_contrato').mapped('id')
