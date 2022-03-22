@@ -27,3 +27,4 @@ class PabsAccountMove(models.Model):
     id_poliza_caja_electronicos  = fields.Many2one(string="Poliza caja electrónicos", comodel_name = "account.move")
     
     estatus = fields.Selection(selection=ESTATUS, string='Estado', default='sin_cierre')
+    
