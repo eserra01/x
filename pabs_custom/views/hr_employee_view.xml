@@ -93,6 +93,7 @@
               <field name="municipality_id"/>
               <field name="neighborhood_id" domain="[('municipality_id','=',municipality_id)]"/>
               <field name="country_id"/>
+              <field name="address_home_id"/>
             </group>
             <group string='Información Personal'>
               <field name="gender" widget="radio"/>
