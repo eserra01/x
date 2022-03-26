@@ -129,6 +129,10 @@ class PabsAccountMove(models.TransientModel):
     contract_ids = contract_obj.search([
       ('state','=','contract'),
       ('invoice_date','=',date)])
+
+    ### Quitar los contratos de tipo Afiliación electrónica
+    contract_ids = contract_ids.filtered(lambda x: x.name != x.lot_id.name)
+    
     warehouse_ids = contract_ids.mapped('warehouse_id')
     for warehouse_id in warehouse_ids:
       if not warehouse_id.analytic_account_id:
