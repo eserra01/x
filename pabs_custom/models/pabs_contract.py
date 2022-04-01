@@ -423,17 +423,17 @@ class PABSContracts(models.Model):
     if actually_day:
       if last_day:
          return last_day
-    return fields.Date.today()
+    return fields.Date.context_today(self)
 
   def validate_date(self, date):
     params = self.env['ir.config_parameter'].sudo()
     allow_last_days = int(params.get_param('pabs_custom.allowed_days'))
     date_format = datetime.strptime(date, '%Y-%m-%d').date()
-    today = fields.Date.today()
+    today = fields.Date.context_today(self)
     if allow_last_days > 0:
-      allowed_date = fields.Date.today() - timedelta(days=allow_last_days)
+      allowed_date = fields.Date.context_today(self) - timedelta(days=allow_last_days)
     elif allow_last_days == 0:
-      allowed_date = fields.Date.today()
+      allowed_date = fields.Date.context_today(self)
     else:
       raise ValidationError("No tienes permitido crear contratos a futuro")
     ### Validación de creación
