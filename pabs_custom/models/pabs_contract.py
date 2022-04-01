@@ -1987,6 +1987,10 @@ class PABSContracts(models.Model):
         fecha_hoy = date.today()
         fecha_primer_abono = rec.date_first_payment
 
+        if fecha_hoy < fecha_primer_abono:
+          rec.late_amount = 0
+          return
+          
         ### Forma de pago: SEMANAL
         if rec.way_to_payment == 'weekly':
           dias_transcurridos = fecha_hoy - fecha_primer_abono

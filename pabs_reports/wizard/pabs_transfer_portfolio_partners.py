@@ -20,7 +20,9 @@ class TransferPortfolioPartners(models.Model):
     contract_obj = self.env['pabs.contract']
     ### Buscamos todos los contratos que tenga asignado el cobrador origen
     contract_ids = contract_obj.search([
-      ('debt_collector','=',self.collector_origin_id.id)])
+      ('debt_collector','=',self.collector_origin_id.id),
+      ('contract_status_item', 'in', (15,17,21) ) #Solo activos, suspendidos temporales y realizados por cobrar
+    ])
     ### SI no se encuentran contratos
     if not contract_ids:
       ### Enviamos un mensaje de error
