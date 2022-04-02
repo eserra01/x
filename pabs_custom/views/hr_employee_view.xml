@@ -160,7 +160,7 @@
       </xpath>
 
       <xpath expr="//field[@name='work_email']" position="after">
-        <field name="employee_status"/>
+        <field name="employee_status" options="{'no_open': True, 'no_create':True}"/>
       </xpath>
 
     </field>
