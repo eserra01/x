@@ -76,6 +76,7 @@ class account_Payment(models.Model):
       A.payment_type = 'inbound' AND 
       A.state = 'posted' AND 
       A.payment_date BETWEEN '%s' AND '%s' 
+      AND A.contract IS NOT NULL 
       GROUP BY C.barcode,C.name ORDER BY C.barcode ASC;
       """%(company_id, date_start, date_end)     
       cr.execute(query)
