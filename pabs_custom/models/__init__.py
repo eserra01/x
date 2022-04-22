@@ -24,7 +24,6 @@ from . import pabs_comission_output
 from . import pabs_contract_status
 from . import pabs_contract_status_reason
 from . import pabs_econtract
-
 ### Adaptaciones por xmarts
 from . import transf_operaciones
 from . import det_operaciones
