@@ -181,7 +181,7 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
         status = 'V'
       sheet.write(count, 7, status or "")
 
-      sheet.write(count, 8, afi.id_contrato.stationery or 0, money_format)
+      sheet.write(count, 8, afi.id_contrato.initial_investment or 0, money_format)
       sheet.write(count, 9, 0, money_format)
       sheet.write(count, 10, afi.id_contrato.initial_investment or 0, money_format)
       sheet.write(count, 11, afi.id_contrato.product_price or 0, money_format)
