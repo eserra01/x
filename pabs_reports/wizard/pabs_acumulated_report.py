@@ -85,11 +85,6 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
         ('origin','in',('cancelada','extravio')),
         ('date_done','=',start_date)],order="date_done")
       report_name = "Reporte de Acumulados de {}".format(start_date)
-   
-    ### SI NO SE ENCONTRARON REGISTROS COINCIDENTES
-    if not closing_ids:
-      raise ValidationError((
-        "No se encontraron registros para procesar"))
 
     ### GENERAMOS LA HOJA
     sheet = workbook.add_worksheet(report_name[:31])
@@ -162,3 +157,42 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
         sheet.write(count, 20, contract_id.phone or "")
         sheet.write(count, 21, contract_id.full_name or "")
         count+=1
+        
+    ### AFILIACIONES ELECTRÓNICAS ###
+    afiliaciones = self.env['pabs.econtract.move'].sudo().search([
+      ('company_id', '=', self.env.company.id),
+      ('fecha_hora_cierre', '>=', '{} 00:00:00'.format(start_date) ),
+      ('fecha_hora_cierre', '<=', '{} 23:59:59'.format(end_date) ),
+      ('estatus', 'in', ('cerrado','confirmado'))
+    ])
+
+    for afi in afiliaciones:
+      sheet.write(count, 0, afi.fecha_hora_cierre or "", date_format)
+      sheet.write(count, 1, afi.id_asistente.barcode or "")
+      sheet.write(count, 2, afi.id_asistente.name or "")
+      sheet.write(count, 3, afi.id_contrato.lot_id.warehouse_id.name or "")
+      sheet.write(count, 4, "AFILIACIONES ELECTRONICAS")
+      sheet.write(count, 5, afi.id_contrato.name_service.name or "")
+      sheet.write(count, 6, afi.id_contrato.lot_id.name or "")
+
+      if afi.estatus == 'cerrado':
+        status = 'F'
+      elif afi.estatus == 'confirmado':
+        status = 'V'
+      sheet.write(count, 7, status or "")
+
+      sheet.write(count, 8, afi.id_contrato.stationery or 0, money_format)
+      sheet.write(count, 9, 0, money_format)
+      sheet.write(count, 10, afi.id_contrato.initial_investment or 0, money_format)
+      sheet.write(count, 11, afi.id_contrato.product_price or 0, money_format)
+      sheet.write(count, 12, "")
+      sheet.write(count, 13, "")
+      sheet.write(count, 14, "")
+      sheet.write(count, 15, "")
+      sheet.write(count, 16, afi.id_contrato.street_name or "")
+      sheet.write(count, 17, afi.id_contrato.street_number or "")
+      sheet.write(count, 18, afi.id_contrato.neighborhood_id.name or "")
+      sheet.write(count, 19, afi.id_contrato.municipality_id.name or "")
+      sheet.write(count, 20, afi.id_contrato.phone or "")
+      sheet.write(count, 21, afi.id_contrato.full_name or "")
+      count+=1
