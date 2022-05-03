@@ -21,7 +21,7 @@ class UserProductExpense(models.Model):
   @api.model
   def create(self, vals):
     user_id = vals.get('user_id')
-    product_expense_ids = self.search([('user_id','=',user_id)])
+    product_expense_ids = self.search([('user_id','=',user_id),('company_id','=',self.env.company.id)])
     if product_expense_ids:
       raise UserError("Ya existe un registro con el usuario especificado.")
     rec = super(UserProductExpense, self).create(vals)
