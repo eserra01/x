@@ -27,6 +27,8 @@ HEADERS = [
   'Servicio',
   'Costo',
   'Saldo',
+  'Inversión inicial',
+  'Excedente',
   'PAPE',
   'Comisión PAPE',
   'Comisión Restante PAPE',
@@ -167,6 +169,10 @@ class PabsReportXLSX(models.AbstractModel):
       sheet.write(rec_index,count,contract_id.product_price,money or "")
       count+=1
       sheet.write(rec_index,count,contract_id.balance,money or "")
+      count+=1
+      sheet.write(rec_index,count,contract_id.initial_investment,money or "")
+      count+=1
+      sheet.write(rec_index,count,contract_id.excedent,money or "")
       count+=1
       stationery = contract_id.commission_tree.filtered(lambda t: t.job_id.name == "PAPELERIA")
       if stationery:
