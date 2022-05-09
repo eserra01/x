@@ -62,7 +62,7 @@ class ContractsElaboratedW1zard(models.TransientModel):
       
       ids = closing_ids.mapped('id_contrato').mapped('id')
       contract_ids = contract_obj.browse(ids).sorted(key=lambda r: r.name)
-      contract_ids = contract_ids.filtered(lambda x: x.contract_status_item.status != "CANCELADO")
+      #contract_ids = contract_ids.filtered(lambda x: x.contract_status_item.status != "CANCELADO")
 
     if not contract_ids:
       raise ValidationError("No hay contratos")
