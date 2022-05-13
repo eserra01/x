@@ -265,7 +265,10 @@ class PABSEcobroSync(models.Model):
       empresa = cont_comp.serie
       # Si es SALTILLO
       if company_id == 12: 
-        empresa = '04' if '3DJ' in contract_id.name else '03'
+        if '3DJ' in contract_id.name or '4NJ' in contract_id.name:
+          empresa = '03'
+        else: 
+          empresa = '04'
 
       contract_info.append({
         'contratoID' : int(contract_id.ecobro_id) or contract_id.id,
