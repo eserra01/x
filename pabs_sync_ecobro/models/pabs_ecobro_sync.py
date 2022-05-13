@@ -261,6 +261,11 @@ class PABSEcobroSync(models.Model):
         between = ''
       ### AGREGANDO INFORMACIÓN DE CONTRATO A LA LISTA
       log += 'Contrato {} de {} \n'.format((index + 1), len_contract)
+      # TEMPORAL:  Manda el tipo de compañia 03 en SALTILLO 
+      empresa = cont_comp.serie
+      # Si es SALTILLO
+      if company_id == 12: 
+        empresa = '04' if '3DJ' in contract_id.name else '03'
 
       contract_info.append({
         'contratoID' : int(contract_id.ecobro_id) or contract_id.id,
@@ -269,7 +274,7 @@ class PABSEcobroSync(models.Model):
         'nombre' : contract_id.partner_name or '',
         'apellido_paterno' : contract_id.partner_fname or '',
         'apellido_materno' : contract_id.partner_mname or '',
-        'empresa' : cont_comp.serie,
+        'empresa' :empresa,
         'calle' : street,
         'numero_exterior' : number_address,
         'colonia' : colony_name,
