@@ -547,7 +547,12 @@ class PABSEcobroSync(models.Model):
           continue
 
       ### VERIFICAMOS EL TIPO DE COMPAÑIA
-      company_sync = company.companies.filtered(lambda r: r.serie == rec['empresa'])
+      # TEMPORAL PARA SALTILLO CON EMPRESA 03
+      empresa = rec['empresa']
+      if company_id == 12 and rec['empresa'] == '03':
+        empresa = '04'
+      # company_sync = company.companies.filtered(lambda r: r.serie == rec['empresa'])
+      company_sync = company.companies.filtered(lambda r: r.serie == empresa)
       if not company_sync:
         _logger.warning("No se encontró el tipo de compañia: {} para la empresa {}".format(rec['empresa'],company.name))
         fails.append({
