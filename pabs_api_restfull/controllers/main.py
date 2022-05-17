@@ -850,7 +850,7 @@ class APIREST(http.Controller):
       INNER JOIN account_move_line as mov on enc.id = mov.move_id
       INNER JOIN res_users AS usr ON enc.create_uid = usr.id
       INNER JOIN res_partner AS part ON usr.partner_id = part.id
-      INNER JOIN account_analytic_account AS aaa ON mov.analytic_account_id = aaa.id
+      LEFT JOIN account_analytic_account AS aaa ON mov.analytic_account_id = aaa.id
       LEFT JOIN account_journal AS jou ON enc.journal_id = jou.id
       LEFT JOIN account_account as acc on mov.account_id = acc.id
       LEFT JOIN account_analytic_account as ana on mov.analytic_account_id = ana.id
