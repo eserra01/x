@@ -107,7 +107,7 @@ class ResCompany(models.Model):
         # Lineas de la póliza
       for row in rows:           
         # Si es un ataúd
-        if 'AT-' in row[2]:      
+        if 'ATAUD' in row[2]:      
           lines.append((0,0,{
             'name': _(''),
             'debit': 0.0,
@@ -122,7 +122,7 @@ class ResCompany(models.Model):
             'analytic_account_id': company_id.analytic_cost_account_id.id
           }))
         # Si es una urna
-        if 'UR-' in row[2]:
+        if 'URNA' in row[2]:
           lines.append((0,0,{
             'name': _(''),
             'debit': 0.0,
