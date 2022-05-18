@@ -1072,7 +1072,7 @@ class APIREST(http.Controller):
       LEFT JOIN account_account as acc on mov.account_id = acc.id
       LEFT JOIN account_analytic_account as ana on mov.analytic_account_id = ana.id
         WHERE enc.state = 'posted'
-        AND enc.ref NOT IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
+        AND COALESCE(enc.ref, '') NOT IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND NOT (enc.type = 'out_invoice' AND enc.contract_id IS NOT NULL)
         AND enc.company_id = {}
     UNION
@@ -1220,7 +1220,7 @@ class APIREST(http.Controller):
       LEFT JOIN account_account as acc on mov.account_id = acc.id
       LEFT JOIN account_analytic_account as ana on mov.analytic_account_id = ana.id
         WHERE enc.state = 'posted'
-        AND enc.ref IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
+        AND COALESCE(enc.ref, '') IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND enc.company_id = {}
           GROUP BY enc.date, jou.name, enc.type, enc.ref, ana.name, acc.code, acc.name, aaa.name
     UNION
@@ -1365,7 +1365,7 @@ class APIREST(http.Controller):
       LEFT JOIN account_account as acc on mov.account_id = acc.id
       LEFT JOIN account_analytic_account as ana on mov.analytic_account_id = ana.id
         WHERE enc.state = 'posted'
-        AND enc.ref NOT IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
+        AND COALESCE(enc.ref, '') NOT IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND enc.type = 'out_invoice'
         AND enc.contract_id IS NOT NULL
         AND enc.company_id = {}
