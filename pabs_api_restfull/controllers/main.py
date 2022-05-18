@@ -1076,7 +1076,6 @@ class APIREST(http.Controller):
         AND NOT (enc.type = 'out_invoice' AND enc.contract_id IS NOT NULL)
         AND enc.company_id = {}
     UNION
-
     /*PAGOS AGRUPADOS*/
     SELECT 
         'Occidente' as Grupo,     
@@ -1224,7 +1223,7 @@ class APIREST(http.Controller):
         AND enc.ref IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND enc.company_id = {}
           GROUP BY enc.date, jou.name, enc.type, enc.ref, ana.name, acc.code, acc.name, aaa.name
-
+    UNION
     /*FACTURAS AGRUPADAS*/
     SELECT 
         'Occidente' as Grupo,     
