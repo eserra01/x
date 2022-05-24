@@ -108,6 +108,8 @@ class PABSElectronicContracts(models.TransientModel):
         _logger.info("Comienza sincronización de afiliaciones electrónicas")
 
         contract_obj = self.env['pabs.contract']
+        municipality_obj = self.env['res.locality']
+        colonia_obj = self.env['colonias']
 
         ### Validar parámetros ###
         if not company_id:
@@ -223,6 +225,126 @@ class PABSElectronicContracts(models.TransientModel):
                 else:
                     cobro_num = sol['domCobro_numExt']
 
+                # 5. Obtener id de municipio y colonia
+                id_municipio = 0
+                id_colonia = 0
+                id_municipio_cobro = 0
+                id_colonia_cobro = 0
+                
+                # 5.1 Municipio casa
+                if sol['domCasa_Municipio']:
+                    nombre = sol['domCasa_Municipio']
+                    municipio = municipality_obj.search([
+                        ('company_id', '=', company_id),
+                        ('name', '=', nombre)
+                    ], limit = 1)
+
+                    # Si no existe el municipio, crearlo. Tomar los otros datos del primer registro
+                    if not municipio:
+                        mun = municipality_obj.search([('company_id', '=', company_id)], limit = 1)
+
+                        if not mun:
+                            raise ValidationError("No existen municipios")
+
+                        id_municipio = municipality_obj.create({
+                            'name': nombre,
+                            'country_id': mun.country_id,
+                            'state_id': mun.state_id,
+                            'company_id': company_id
+                        })
+
+                        _logger.info("Se crea municipio de casa {}".format(nombre))
+                    else:
+                        id_municipio = municipio.id
+
+                if id_municipio == 0:
+                    raise ValidationError("No se pudo obtener el municipio de casa")
+
+                # 5.2 Municipio casa
+                if sol['domCobro_Municipio']:
+                    nombre = sol['domCobro_Municipio']
+                    municipio = municipality_obj.search([
+                        ('company_id', '=', company_id),
+                        ('name', '=', nombre)
+                    ], limit = 1)
+
+                    # Si no existe el municipio, crearlo. Tomar los otros datos del primer registro
+                    if not municipio:
+                        mun = municipality_obj.search([('company_id', '=', company_id)], limit = 1)
+
+                        if not mun:
+                            raise ValidationError("No existen municipios")
+
+                        id_municipio_cobro = municipality_obj.create({
+                            'name': nombre,
+                            'country_id': mun.country_id,
+                            'state_id': mun.state_id,
+                            'company_id': company_id
+                        })
+
+                        _logger.info("Se crea municipio de cobro {}".format(nombre))
+                    else:
+                        id_municipio_cobro = municipio.id
+                
+                if id_municipio_cobro == 0:
+                    raise ValidationError("No se pudo obtener el municipio de cobro")
+
+                # 5.3 Colonia casa
+                if sol['domCasa_Colonia']:
+                    nombre = sol['domCasa_Colonia']
+                    colonia = colonia_obj.search([
+                        ('company_id', '=', company_id),
+                        ('name', '=', nombre),
+                        ('municipality_id', '=', id_municipio)
+                    ], limit = 1)
+
+                    # Si no existe la colonia, crearla
+                    if not sol['domCasa_codigoPostal']:
+                        raise ValidationError("No se encontró el codigo postal de la colonia de casa")
+
+                    if not colonia:
+                        id_colonia = colonia_obj.create({
+                            'name': nombre,
+                            'municipality_id': id_municipio,
+                            'company_id': company_id,
+                            'zip_code': sol['domCasa_codigoPostal']
+                        })
+
+                        _logger.info("Se crea colonia de casa {}".format(nombre))
+                    else:
+                        id_colonia = colonia.id
+
+                if id_colonia == 0:
+                    raise ValidationError("No se pudo obtener la colonia de casa")
+                
+                # 5.4 Colonia cobro
+                if sol['domCobro_Colonia']:
+                    nombre = sol['domCobro_Colonia']
+                    colonia = colonia_obj.search([
+                        ('company_id', '=', company_id),
+                        ('name', '=', nombre),
+                        ('municipality_id', '=', id_municipio_cobro)
+                    ], limit = 1)
+
+                    # Si no existe la colonia, crearla
+                    if not sol['domCobro_codigoPostal']:
+                        raise ValidationError("No se encontró el codigo postal de la colonia de cobro")
+
+                    if not colonia:
+                        id_colonia_cobro = colonia_obj.create({
+                            'name': nombre,
+                            'municipality_id': id_municipio,
+                            'company_id': company_id,
+                            'zip_code': sol['domCobro_codigoPostal']
+                        })
+                        
+                        _logger.info("Se crea colonia de cobro {}".format(nombre))
+                    else:
+                        id_colonia_cobro = colonia.id
+
+                if id_colonia_cobro == 0:
+                    raise ValidationError("No se pudo obtener la colonia de cobro")
+
                 ### Crear registros de los que depende el contrato ###
                 # 1. Crear solicitud. Primero se busca la oficina del empleado
                 
@@ -298,8 +420,8 @@ class PABSElectronicContracts(models.TransientModel):
                     'street_name': sol['domCasa_Calle'],
                     'street_number': casa_num,
                     'between_streets': sol['domCasa_EntreCalles'],
-                    'municipality_id': sol['domCasa_LocalidadID'],
-                    'neighborhood_id': sol['domCasa_ColoniaID'],
+                    'municipality_id': id_municipio,
+                    'neighborhood_id': id_colonia,
                     'zip_code': sol['domCasa_codigoPostal'],
                     'phone': sol['afiliado_telefono'],
                     
@@ -307,8 +429,8 @@ class PABSElectronicContracts(models.TransientModel):
                     'street_name_toll': sol['domCobro_Calle'],
                     'street_number_toll': cobro_num,
                     'between_streets_toll': sol['domCobro_entreClles'],
-                    'toll_municipallity_id': sol['domCobro_LocalidadID'],
-                    'toll_colony_id': sol['domCobro_ColoniaID'],
+                    'toll_municipallity_id': id_municipio_cobro,
+                    'toll_colony_id': id_colonia_cobro,
                     'zip_code_toll': sol['domCobro_codigoPostal'],
                     'phone_toll': sol['afiliado_telefono'],
 
