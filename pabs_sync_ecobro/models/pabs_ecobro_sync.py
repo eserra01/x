@@ -875,54 +875,66 @@ class PABSEcobroSync(models.Model):
 
     return True 
 
-  def reactivate_contract(self):
-    ### DECLARAMOS LOS OBJECTOS
+  def reactivate_contract(self, company_id = False):
+    ### DECLARAMOS LOS OBJETOS
     contract_obj = self.env['pabs.contract']
     contract_status_obj = self.env['pabs.contract.status']
     contract_status_reason_obj = self.env['pabs.contract.status.reason']
 
-    ### TRAEMOS LA FECHA ACTUAL
-    today = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
+    if company_id: 
+      company = self.env['res.company'].browse(company_id)
+      if company:      
+        ### TRAEMOS LA FECHA ACTUAL
+        today = fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General'))
 
-    ### BUSCAMOS EL ESTATUS SUPENSIÓN TEMPORAL
-    status_id = contract_status_obj.search([
-      ('ecobro_code','=',5)],limit=1)
+        ### BUSCAMOS EL ESTATUS SUPENSIÓN TEMPORAL
+        status_id = contract_status_obj.search([
+          ('ecobro_code','=',5)],limit=1)
 
-    ### VALIDAMOS QUE HAYA TRAÍDO UN REGISTRO
-    if not status_id:
-      raise ValidationError((
-        "No se encontró el estatus '5' - suspensión temporal, favor de verificar los estatus"))
+        ### VALIDAMOS QUE HAYA TRAÍDO UN REGISTRO
+        if not status_id:
+          raise ValidationError((
+            "No se encontró el estatus '5' - suspensión temporal, favor de verificar los estatus"))
 
-    ### BUSCAMOS EL ESTATUS ACTIVO
-    status_active_id = contract_status_obj.search([
-      ('ecobro_code','=',1)],limit=1)
+        ### BUSCAMOS EL ESTATUS ACTIVO
+        status_active_id = contract_status_obj.search([
+          ('ecobro_code','=',1)],limit=1)
 
-    ### BUSCAMOS LA RAZÓN DE ACTIVO
-    status_reason_id = contract_status_reason_obj.search([
-      ('reason','=','ACTIVO'),
-      ('status_id','=',status_active_id.id)])
+        ### BUSCAMOS LA RAZÓN DE ACTIVO
+        status_reason_id = contract_status_reason_obj.search([
+          ('reason','=','ACTIVO'),
+          ('status_id','=',status_active_id.id)])
 
-    ### VALIDAMOS QUE HAYA TRAÍDO UN REGISTRO
-    if not status_active_id:
-      raise ValidationError((
-        "No se encontró el estatus '1' - Activo, favor de verificar los estatus"))
+        ### VALIDAMOS QUE HAYA TRAÍDO UN REGISTRO
+        if not status_active_id:
+          raise ValidationError((
+            "No se encontró el estatus '1' - Activo, favor de verificar los estatus"))
 
-    ### BUSCAMOS LOS CONTRATOS QUE SE TENGAN QUE REACTIVAR HOY, O ANTERIOR A HOY
-    contract_ids = contract_obj.search([
-      ('contract_status_item','=',status_id.id),
-      ('state','=','contract'),
-      ('reactivation_date','<=',today)])
+        ### BUSCAMOS LOS CONTRATOS QUE SE TENGAN QUE REACTIVAR HOY, O ANTERIOR A HOY
+        contract_ids = contract_obj.search([
+          ('company_id','=',company.id),
+          ('contract_status_item','=',status_id.id),
+          ('state','=','contract'),
+          ('reactivation_date','<=',today)])
 
-    ### ESCRIBIMOS EL ESTATUS ACTIVO EN TODOS LOS REGISTROS QUE SE ENCONTRARON
-    contract_ids.write({
-      'contract_status_item' : status_active_id.id,
-      'contract_status_reason' : status_reason_id.id,
-      'reactivation_date' : False,
-    })
+        ### ESCRIBIMOS EL ESTATUS ACTIVO EN TODOS LOS REGISTROS QUE SE ENCONTRARON
+        for contract_id in contract_ids:
+          vals = {
+          'contract_status_item' : status_active_id.id,
+          'contract_status_reason' : status_reason_id.id,
+          'reactivation_date' : False,
+          }    
+          contract_id.write(vals)
+          _logger.info("Se reactivó el contrato: {}".format(contract_id.name))
+        # contract_ids.write({
+        #   'contract_status_item' : status_active_id.id,
+        #   'contract_status_reason' : status_reason_id.id,
+        #   'reactivation_date' : False,
+        # })
 
-    _logger.info("Se reactivaron {} contratos el día de hoy: {}".format(len(contract_ids), today))
-    contract_names = contract_ids.mapped('name')
-    _logger.info("Los contratos que se procesaron son: {}".format(contract_names))
+        _logger.info("Se reactivaron {} contratos el día de hoy: {}".format(len(contract_ids), today))
+        contract_names = contract_ids.mapped('name')
+        _logger.info("Los contratos que se procesaron son: {}".format(contract_names))
 
   def empty_tree_comission(self, contracts):
     ### DECLARACIÓN DE OBJETOS
