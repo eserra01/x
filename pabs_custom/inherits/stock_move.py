@@ -57,12 +57,15 @@ class StockMove(models.Model):
   ], string="Forma de pago")
 
   origen_solicitud = fields.Selection([
-    ('cambaceo', 'Cambaceo'),  
+    ('cambaceo', 'Cambaceo'),
+    ('cancelada', 'Cancelada'),
     ('servicio', 'Servicio'),
     ('referido', 'Referido'),
     ('reafiliacion', 'Reafiliacion'),
     ('medios_electronicos', 'Medios electronicos'),
-    ('directo', 'Directo'),   
+    ('directo', 'Directo'),
+    ('sobrantes', 'Sobrantes'),
+    ('extravio', 'Extravio'),
     ('buenfin', 'Buen fin'),
      ('tipventa','Tip de venta')
   ], string="Origen de solicitud")
