@@ -49,7 +49,8 @@ class PabsTaxes(models.Model):
             mot.id as id_motivo,
             con.name as contrato,
             con.id as id_contrato,
-            CAST(fac.costo - COALESCE(nota.total, 0) - COALESCE(tras.total, 0) / 1.16 AS DECIMAL(10,2)) as costo,
+            CAST( (fac.costo - COALESCE(nota.total, 0) - COALESCE(tras.total, 0))
+                / 1.16 AS DECIMAL(10,2)) as costo,
             CAST(abo.total / 1.16 AS DECIMAL(10,2)) as abonado,
             fac.saldo as saldo,
             CAST(arb.commission_paid AS DECIMAL(10,2)) as iva,
@@ -201,8 +202,10 @@ class PabsTaxes(models.Model):
             mot.id as id_motivo,
             con.name as contrato,
             con.id as id_contrato,
-            CAST(fac.costo - COALESCE(nota.total, 0) - COALESCE(tras.total, 0) / 1.16 AS DECIMAL(10,2)) as costo,
-            CAST( (fac.abonado - COALESCE(nota.total, 0) - COALESCE(tras.total, 0) ) / 1.16 AS DECIMAL(10,2)) as abonado,
+            CAST( (fac.costo - COALESCE(nota.total, 0) - COALESCE(tras.total, 0))
+                / 1.16 AS DECIMAL(10,2)) as costo,
+            CAST( (fac.abonado - COALESCE(nota.total, 0) - COALESCE(tras.total, 0)) 
+                / 1.16 AS DECIMAL(10,2)) as abonado,
             fac.saldo as saldo,
             CAST( arb.commission_paid AS DECIMAL(10,2)) as iva,
             CAST( 
@@ -339,7 +342,8 @@ class PabsTaxes(models.Model):
             mot.id as id_motivo,
             con.name as contrato,
             con.id as id_contrato,
-            CAST(fac.costo - COALESCE(nota.total, 0) - COALESCE(tras.total, 0) / 1.16 AS DECIMAL(10,2)) as costo,
+            CAST( (fac.costo - COALESCE(nota.total, 0) - COALESCE(tras.total, 0))
+                / 1.16 AS DECIMAL(10,2)) as costo,
             CAST( abo.total / 1.16 AS DECIMAL(10,2)) as abonado,
             fac.saldo as saldo,
             CAST(arb.commission_paid AS DECIMAL(10,2)) as iva,
