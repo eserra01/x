@@ -103,8 +103,7 @@ class PabsVerificationReportXLSX(models.AbstractModel):
     count = 1
     for closing_id in closing_ids:
       for line in closing_id.picking_id.move_line_ids_without_package:
-        contract_id = contract_obj.search([
-          ('lot_id','=',line.lot_id.id)])
+        contract_id = contract_obj.search([('lot_id','=',line.lot_id.id)], limit=1)
         move_id = stock_move_obj.search([
           ('series','=',line.lot_id.name),
           ('codigo_de_activacion_valid','!=',False)],order="create_date desc",limit=1)
