@@ -129,7 +129,7 @@ class PabsTaxes(models.Model):
             WHERE est.status NOT IN ('REALIZADO', 'CANCELADO') AND mot.reason != 'REALIZADO POR COBRAR'
             AND con.invoice_date >= '{}' /*Fecha de contratos de la nueva empresa*/
             AND con.company_id = {} /*Compañia*/
-        """.format(company_id, company_id, company_id, company_id, company_id, fecha_minima_creacion, fecha_inicial, fecha_final, company_id)
+        """.format(fecha_final, company_id, company_id, company_id, company_id, fecha_inicial, fecha_final, company_id, fecha_minima_creacion, company_id)
         self.env.cr.execute(consulta)
 
         #Construye lista de contratos
@@ -419,7 +419,7 @@ class PabsTaxes(models.Model):
             AND con.invoice_date >= '{}' /*Fecha de contratos de la nueva empresa*/
             AND CAST(con.date_of_last_status AS DATE) BETWEEN '{}' AND '{}' /*Fechas de estatus*/
             AND con.company_id = {} /*Compañia*/
-        """.format(company_id, company_id, company_id, fecha_minima_creacion, fecha_inicial, fecha_final, company_id)
+        """.format(company_id, company_id, company_id, company_id, company_id, fecha_minima_creacion, fecha_inicial, fecha_final, company_id)
         self.env.cr.execute(consulta)
 
         #Construye lista de contratos
