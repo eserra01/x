@@ -5,10 +5,9 @@
         <div class="page">
           <style>
             table, td, th{
-              width : 100%;
               border: 1px solid black;
               padding: 1px;
-              font-size: 9pt;
+              font-size: 12pt;
             }
             .contenedor{
               width:49.5%;
@@ -29,15 +28,20 @@
 
             * {
               font-family: Arial, Helvetica, sans-serif;
-              font-size: 10pt;
+              font-size: 12pt;
             }
             .right_side {
               padding-left : 3px;
               padding-right: 7px;
               text-align: right;
             }
+            .center {
+              text-align: center;
+            }
             .no-border {
-              border: 0
+              border: 0;
+              font-weight: bold;
+              font-size: 15pt;
             }
           </style>
           <div>
@@ -55,35 +59,42 @@
                   <br/>
                   PROGRAMA DE APOYO DE BENEFICIO SOCIAL
                   <br/>
-                  Detalle de Ingresos promotores en Concentrado
+                  Resumen de cobranza por cobrador
                   <br/>
-                  FECHA:<span> <span t-esc="data['params']['start_date']" t-options='{"widget": "date"}'/> - <span t-esc="data['params']['end_date']" t-options='{"widget": "date"}'/></span>
+                  FECHA: <span style="font-size: 15pt;" t-esc="data['params']['start_date']" t-options='{"widget": "date"}'/> - <span style="font-size: 15pt;" t-esc="data['params']['end_date']" t-options='{"widget": "date"}'/>
                   <br/>
                 </div>
               </div>
               <br/>
               <br/>
-              <table>
-                <thead class="encabezado">
-                  <th>Cobrador</th>
-                  <th>Recibos</th>
-                  <th>Importe</th>
-                </thead>
+              
+              <div >
+                <table style="width:60%">
+                  <thead class="encabezado">
+                    <th>Codigo</th>
+                    <th>Cobrador</th>
+                    <th>Recibos</th>
+                    <th>Importe</th>
+                  </thead>
 
-                <tbody t-foreach="data['info'].keys()" t-as="line">
-                  <td><span t-esc="line"/></td>
-                  <td><span t-esc="data['info'][line]['counting']"/></td>
-                  <td><span t-esc="data['info'][line]['total']"/></td>
-                </tbody>
-              </table>
+                  <tbody t-foreach="data['info'].keys()" t-as="line">
+                    <td style="text-align: center;"><span t-esc="data['info'][line]['code']"/></td>
+                    <td ><span t-esc="line"/></td>
+                    <td style="text-align: center;"><span t-esc="data['info'][line]['counting']"/></td>
+                    <td style="text-align: center;"><span t-esc="data['info'][line]['total']"/></td>
+                  </tbody>
 
-              <table class="no-border">
-                <thead class="no-border">
-                  <td class="right_side no-border">Total General: </td>
-                  <td class="no-border right_side"><span t-esc="data['counting']"/></td>
-                  <td class="no-border right_side"><span t-esc="data['total']"/></td>
-                </thead>
-              </table>
+                  <tfoot class="no-border">
+                    <tr>
+                      <td class="right_side no-border"> </td>
+                      <td class="right_side no-border">Total General: </td>
+                      <td class="center no-border"><span t-esc="data['counting']"/></td>
+                      <td class="center no-border"><span t-esc="data['total']"/></td>
+                    </tr>
+                  </tfoot>
+                </table>
+
+              </div>
             </div>
           </div>
         </div>
@@ -91,7 +102,7 @@
     </template>
 
     <report id="collector_concentrated_report" 
-    string="Detalle de Ingresos promotores en Concentrado" 
+    string="Resumen de cobranza por cobrador" 
     model="pabs.collector.report.wizard" 
     report_type="qweb-pdf" 
     name="pabs_reports.collector_concentrated_report_template"

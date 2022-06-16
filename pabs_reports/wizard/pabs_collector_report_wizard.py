@@ -44,7 +44,8 @@ class PABSCollectorReport(models.TransientModel):
       payments = payment_ids.filtered(lambda x: x.debt_collector_code.id == collector_id.id)
       data_detail = {
         'counting' : len(payments),
-        'total' : "${:,.2f}".format(int(sum(payments.mapped('amount'))))
+        'total' : "${:,.2f}".format(int(sum(payments.mapped('amount')))),
+        'code': collector_id.barcode
       }
       data_info.update({
         collector_id.name : data_detail
