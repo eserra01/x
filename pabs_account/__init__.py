@@ -2,3 +2,4 @@
 
 from . import inherits
 from . import wizard
+from . import models

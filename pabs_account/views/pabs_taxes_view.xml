@@ -1,0 +1,50 @@
+<odoo>
+  <data>
+
+    <record id="pabs_taxes_tree_view" model="ir.ui.view">
+      <field name="name">pabs.taxes.view</field>
+      <field name="model">pabs.taxes</field>
+      <field name="arch" type="xml">
+        <tree editable="top">
+            <field name='create_date' string="Fecha de registro" />
+            <field name='id_contrato' />
+            <field name='fecha_estatus' />
+            <field name='id_estatus' />
+            <field name='id_motivo' />
+            <field name='costo' />
+            <field name='abonado' />
+            <field name='iva' />
+            <field name='isr' />
+            <field name="company_id" invisible="1"/>
+        </tree>
+      </field>
+    </record>
+
+    <!-- Barra de búsqueda -->
+    <record id="pabs_taxes_search_view" model="ir.ui.view" >
+        <field name="name">pabs.taxes.search.view</field>
+        <field name="model">pabs.taxes</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="contract_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pabs_taxes" model="ir.actions.act_window">
+      <field name="name">Impuestos de contratos</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">pabs.taxes</field>
+      <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem
+      id="pabs_taxes_menu"
+      name="Impuestos de contratos"
+      action="action_pabs_taxes"
+      parent="menu_generator_account_move"
+      sequence="5"
+    />
+
+  </data>
+</odoo>
