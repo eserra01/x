@@ -15,30 +15,37 @@ class PabsContract(models.Model):
                 if payment_id.reference == 'stationary':
                     description = 'INVERSION INICIAL'
                     collector = self.employee_id.name
+                    order = 1
                 elif payment_id.reference == 'surplus':
                     description = 'EXCEDENTE INVERSIÓN INICIAL'
                     collector = self.employee_id.name
+                    order = 2
                 elif payment_id.reference == 'payment':
                     description = 'ABONO'
                     collector = payment_id.debt_collector_code.name
+                    order = 1000
                 elif payment_id.reference == 'mortuary':
                     description = 'COBRO FUNERARIA'
                     if payment_id.debt_collector_code:
                         collector = payment_id.debt_collector_code.name
                     else:
                         collector = False
+                    order = 2000
                 elif payment_id.reference == 'transfer':
                     description = 'TRASPASO'
                     collector = 'TRASPASO'
+                    order = 3000
                 else:
                     description = ''
                     collector = False
+                    order = 4000
                 credits.append({
                     'date' : payment_id.payment_date,
                     'name' : payment_id.ecobro_receipt,
                     'amount' : payment_id.amount,
                     'collector' : collector,
-                    'description' : description
+                    'description' : description,
+                    'order': order,
                 })
         for refund_id in self.refund_ids:
             if refund_id.type == 'out_refund' and refund_id.state == "posted":
@@ -47,7 +54,8 @@ class PabsContract(models.Model):
                     'name' : "",
                     'amount' : refund_id.amount_total,
                     'collector' : self.employee_id.name,
-                    'description' : refund_id.ref.upper()
+                    'description' : refund_id.ref.upper(),
+                    'order': 3
                 })
         for transfers_id in self.transfer_balance_ids:
             if transfers_id.parent_state == "posted":
@@ -56,9 +64,10 @@ class PabsContract(models.Model):
                     'name' : "",
                     'amount' : transfers_id.balance_signed,
                     'collector' : "",
-                    'description' : 'TRASPASO'
+                    'description' : 'TRASPASO',
+                    'order': 5000
                 })
-        credit = sorted(credits, key=lambda r: r['date'])
+        credit = sorted(credits, key=lambda r: r['order'])
         return credit
 
     def payments(self, ids):
