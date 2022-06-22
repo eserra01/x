@@ -40,7 +40,7 @@ class PabsContract(models.Model):
                     collector = False
                     order = 4000
                 credits.append({
-                    'date' : payment_id.payment_date,
+                    'date' : payment_id.date_receipt if payment_id.date_receipt else payment_id.payment_date,
                     'name' : payment_id.ecobro_receipt,
                     'amount' : payment_id.amount,
                     'collector' : collector,
@@ -67,6 +67,7 @@ class PabsContract(models.Model):
                     'description' : 'TRASPASO',
                     'order': 5000
                 })
+        credit = sorted(credits, key=lambda r: r['date'])
         credit = sorted(credits, key=lambda r: r['order'])
         return credit
 
