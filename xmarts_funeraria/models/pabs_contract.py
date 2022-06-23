@@ -67,9 +67,9 @@ class PabsContract(models.Model):
                     'description' : 'TRASPASO',
                     'order': 5000
                 })
-        credit = sorted(credits, key=lambda r: r['date'])
-        credit = sorted(credits, key=lambda r: r['order'])
-        return credit
+        credits = sorted(credits, key=lambda r: r['date'])
+        credits = sorted(credits, key=lambda r: r['order'])
+        return credits
 
     def payments(self, ids):
         for rec in self:
