@@ -43,7 +43,7 @@ class PabsInvoicingXLSX(models.AbstractModel):
     #HARCODED !!!
     fecha_minima_creacion = '1900-01-01'
     if company_id == 12: #SALTILLO
-      fecha_minima_creacion = '2022-04-01' #PROD
+      fecha_minima_creacion = '2022-05-01' #PROD
       #fecha_minima_creacion = '2022-01-01' #TEST
 
     ############################################################################################################
