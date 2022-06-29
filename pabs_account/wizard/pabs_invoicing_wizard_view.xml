@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pabs_invoicing_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.invoicing.wizard.view</field>
+		<field name="model">pabs.invoicing.wizard</field>
+		<field name="arch" type="xml">
+			<form string="Reporte de impuestos">
+
+        <h3>Elige el tipo de reporte y las fechas</h3>
+
+        <group>
+          <field name="report_type" required="1"/>
+        </group>
+
+        <group colspan="2">
+          <group>
+            <field name="start_date" string="Fecha inicial"/>
+          </group>
+          <group>
+            <field name="end_date" string="Fecha final"/>
+          </group>
+        </group>
+
+        <footer>
+          <button name="print_xls_report" string="Generar XLS" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+        
+			</form>
+		</field>
+	</record>
+
+  <record id="pabs_invoicing_wizard_action" model="ir.actions.act_window">
+    <field name="name">Reporte de impuestos</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.invoicing.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref=""/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    id="pabs_invoicing_report_menu"
+    action="pabs_invoicing_wizard_action" 
+    name="Reporte de facturacion" 
+    parent="menu_generator_account_move"
+    sequence="7"/>
+
+  <report
+    id="pabs_invoicing_xlsx"
+    model="pabs.invoicing.wizard"
+    string="Reporte de facturacion"
+    report_type="xlsx"
+    name="pabs_account.pabs_invoicing_xlsx"
+    file="pabs_account.pabs_invoicing_xlsx"
+    attachment_use="False"
+    />
+    
+</odoo>
