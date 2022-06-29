@@ -4,7 +4,7 @@
 		<field name="name">pabs.invoicing.wizard.view</field>
 		<field name="model">pabs.invoicing.wizard</field>
 		<field name="arch" type="xml">
-			<form string="Reporte de impuestos">
+			<form string="Reporte de facturacion">
 
         <h3>Elige el tipo de reporte y las fechas</h3>
 
@@ -32,7 +32,7 @@
 	</record>
 
   <record id="pabs_invoicing_wizard_action" model="ir.actions.act_window">
-    <field name="name">Reporte de impuestos</field>
+    <field name="name">Reporte de facturacion</field>
     <field name="type">ir.actions.act_window</field>
     <field name="res_model">pabs.invoicing.wizard</field>
     <field name="view_mode">form</field>
