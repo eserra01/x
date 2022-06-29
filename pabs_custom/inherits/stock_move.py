@@ -212,8 +212,14 @@ class StockMove(models.Model):
       if line:
         raise ValidationError((
           "La solicitud {} no puede ser ingresada por que está {}".format(rec.series,dict(rec._fields['origen_solicitud'].selection).get(rec.origen_solicitud))))
-      mode_prod = self.env['stock.production.lot'].search(
-        [('name', '=', str(rec.series)),('company_id','=',self.company_id.id)], limit=1)
+      mode_prod = self.env['stock.production.lot'].search([('name', '=', str(rec.series)),('company_id','=',self.company_id.id)], limit=1)
+      # Validar que no exista un contrato asociado      
+      if mode_prod:
+        contract_id = self.env['pabs.contract'].search([('lot_id','=',mode_prod.id)], limit=1)
+        if contract_id:
+          if contract_id.state in ['contract','cancel']:
+            raise ValidationError("El número de solicitud {} ya tiene un contrato asociado no puede realizar este movimiento.".format(rec.series))
+      
       if rec.series and rec.picking_id.type_transfer in ('ov-as','cont-ov'):
         if not mode_prod:
             raise ValidationError("el número de solicitud {} no fue encontrado en el sistema, favor de verificarlo".format(rec.series))
