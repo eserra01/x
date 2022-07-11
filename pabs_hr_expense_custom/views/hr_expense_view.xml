@@ -58,6 +58,12 @@
       <xpath expr="//button[@name='approve_expense_sheets']" position="attributes">
         <attribute name="groups">pabs_hr_expense_custom.hr_expense_show_approve</attribute>
       </xpath>
+      <xpath expr="//button[@name='action_sheet_move_create']" position="attributes">
+        <attribute name="groups">pabs_hr_expense_custom.hr_expense_show_move</attribute>
+      </xpath>      
+      <xpath expr="//button[@name='%(hr_expense.hr_expense_sheet_register_payment_wizard_action)d']" position="attributes">
+        <attribute name="groups">pabs_hr_expense_custom.hr_expense_show_payments</attribute>
+      </xpath> 
       <xpath expr="//button[@name='%(hr_expense.hr_expense_sheet_register_payment_wizard_action)d']" position="attributes">
         <attribute name="attrs">{'invisible': ['|',('state', '!=', 'post'),('show_payment_button','=',False)]}</attribute>  
       </xpath>   

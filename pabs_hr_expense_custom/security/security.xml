@@ -22,5 +22,15 @@
       <field name="category_id" ref="hr_expense_custom_category"/>
     </record>
 
+    <record id="hr_expense_show_move" model="res.groups">
+      <field name="name">Validar asientos</field>
+      <field name="category_id" ref="hr_expense_custom_category"/>
+    </record>
+
+    <record id="hr_expense_show_payments" model="res.groups">
+      <field name="name">Registrar pagos</field>
+      <field name="category_id" ref="hr_expense_custom_category"/>
+    </record>
+
 </data>
 </odoo>
