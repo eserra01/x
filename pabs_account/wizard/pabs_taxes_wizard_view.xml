@@ -39,7 +39,7 @@
     id="pabs_taxes_report_menu"
     action="pabs_taxes_wizard_action" 
     name="Reporte de impuestos" 
-    parent="menu_generator_account_move"
+    parent="root_menu_pabs_taxes"
     sequence="6"/>
 
   <report

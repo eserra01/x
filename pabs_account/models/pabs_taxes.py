@@ -153,7 +153,7 @@ class PabsTaxes(models.Model):
 
         if not contratos:
             logger.info("No hay contratos")
-            return
+            raise ValidationError("No se encontraron contratos")
 
         imp_obj = self.env['pabs.taxes'].sudo()
 
@@ -168,11 +168,11 @@ class PabsTaxes(models.Model):
 
             if con['isr_reportado_realizado'] != 0:
                 logger.info("Ya existe registro con estatus realizado por {}".format(con['isr_reportado_realizado']))
-                continue
+                raise ValidationError("{} -> Ya existe registro con estatus realizado por {}".format(con['contrato'], con['isr_reportado_realizado']))
 
             if con['isr_reportado_cancelado'] != 0:
                 logger.info("Ya existe registro con estatus cancelado por {}".format(con['isr_reportado_cancelado']))
-                continue
+                raise ValidationError("{} -> Ya existe registro con estatus cancelado por {}".format(con['contrato'], con['isr_reportado_cancelado']))
 
             isr = (con['abonado'] / total_cobranza) * factor
 
@@ -300,7 +300,7 @@ class PabsTaxes(models.Model):
 
         if not contratos:
             logger.info("No hay contratos")
-            return
+            raise ValidationError("No hay contratos")
 
         imp_obj = self.env['pabs.taxes'].sudo()
 
@@ -310,11 +310,11 @@ class PabsTaxes(models.Model):
 
             if con['isr_reportado_realizado'] != 0:
                 logger.info("Ya existe registro con estatus realizado por {}".format(con['isr_reportado_realizado']))
-                continue
+                raise ValidationError("{} -> Ya existe registro con estatus realizado por {}".format(con['contrato'], con['isr_reportado_realizado']))
 
             if con['isr_reportado_cancelado'] != 0:
                 logger.info("Ya existe registro con estatus cancelado por {}".format(con['isr_reportado_cancelado']))
-                continue
+                raise ValidationError("{} -> Ya existe registro con estatus cancelado por {}".format(con['contrato'], con['isr_reportado_cancelado']))
             
             imp_obj.create({
                 'id_contrato': con['id_contrato'],
@@ -446,7 +446,7 @@ class PabsTaxes(models.Model):
 
         if not contratos:
             logger.info("No hay contratos")
-            return
+            raise ValidationError("No hay contratos")
 
         imp_obj = self.env['pabs.taxes'].sudo()
 
@@ -456,11 +456,11 @@ class PabsTaxes(models.Model):
 
             if con['isr_reportado_realizado'] != 0:
                 logger.info("Ya existe registro con estatus realizado por {}".format(con['isr_reportado_realizado']))
-                continue
+                raise ValidationError("{} -> Ya existe registro con estatus realizado por {}".format(con['contrato'], con['isr_reportado_realizado']))
 
             if con['isr_reportado_cancelado'] != 0:
                 logger.info("Ya existe registro con estatus cancelado por {}".format(con['isr_reportado_cancelado']))
-                continue
+                raise ValidationError("{} -> Ya existe registro con estatus cancelado por {}".format(con['contrato'], con['isr_reportado_cancelado']))
 
             imp_obj.create({
                 'id_contrato': con['id_contrato'],
