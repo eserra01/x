@@ -24,7 +24,8 @@ HEADERS = [
   'Fecha de Captura',
   'Clave de Activación',
   'Agente',
-  'Comentarios']
+  'Comentarios',
+  'Referencia']
 
 class CallCenterVerificationReport(models.TransientModel):
   _name = 'pabs.call.center.verification.report'
@@ -147,4 +148,6 @@ class PabsVerificationReportXLSX(models.AbstractModel):
         sheet.write(count, 18, contract_id.agent_id or "")
         ### Comentarios
         sheet.write(count, 19, contract_id.comments or "")
+        ### Reference
+        sheet.write(count, 20, move_id.referencia or "")
         count+=1
