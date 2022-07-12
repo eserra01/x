@@ -7,6 +7,7 @@ from dateutil import tz
 TIPO_DE_REPORTE = [
   ('mensual', 'Mensual: Contratos realizados (fechas en que los contratos fueron realizados)'),
   ('anual', 'Anual: Contratos no realizados (fechas de oficina de cobranza)'),
+  ('cancelados', 'Cancelados: Contratos cancelados (fechas en que los contratos fueron cancelados)'),
   ('cobranza', 'Cobranza de contratos nueva empresa sin realizados')
 ]
 
@@ -48,7 +49,6 @@ class PabsTaxesWizard(models.TransientModel):
       fecha_minima_creacion = '1900-01-01'
       if company_id == 12: #SALTILLO
         fecha_minima_creacion = '2021-11-01' #PROD
-        # fecha_minima_creacion = '2022-01-01' #TEST
       elif company_id  == 13: #MONCLOVA
         fecha_minima_creacion = '2021-12-01'
       elif company_id  == 15: #ACAPULCO
@@ -100,9 +100,21 @@ class PabsTaxesXLSX(models.AbstractModel):
         '|', ('id_estatus.status', '=', 'REALIZADO'),
         ('id_motivo.reason', '=', 'REALIZADO POR COBRAR')
       ])
-    else:
-      ### PENDIENTE >>> REPORTE DE CONTRATOS ACTIVOS
-      raise ValidationError("No hay una consulta para contratos anuales")
+    elif data['report_type'] == 'anual':
+      id_registros = self.env['pabs.taxes'].search([
+        ('company_id', '=', self.env.company.id),
+        ('fecha_estatus', '>=', data['start_date']),
+        ('fecha_estatus', '<=', data['end_date']),
+        ('id_estatus.status', 'not in', ('REALIZADO','CANCELADO')),
+        ('id_motivo.reason', '!=', 'REALIZADO POR COBRAR')
+      ])
+    elif data['report_type'] == 'cancelados':
+      id_registros = self.env['pabs.taxes'].search([
+        ('company_id', '=', self.env.company.id),
+        ('fecha_estatus', '>=', data['start_date']),
+        ('fecha_estatus', '<=', data['end_date']),
+        ('id_estatus.status', '=', 'CANCELADO')
+      ])
     
     ### GENERAMOS LA HOJA
     sheet = workbook.add_worksheet('Contratos')

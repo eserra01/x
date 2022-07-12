@@ -44,7 +44,7 @@
     id="pabs_invoicing_report_menu"
     action="pabs_invoicing_wizard_action" 
     name="Reporte de facturacion" 
-    parent="menu_generator_account_move"
+    parent="root_menu_pabs_taxes"
     sequence="7"/>
 
   <report

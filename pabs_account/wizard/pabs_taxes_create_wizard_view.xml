@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pabs_taxes_create_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.taxes.create.wizard.view</field>
+		<field name="model">pabs.taxes.create.wizard</field>
+		<field name="arch" type="xml">
+			<form string="Generar registros de impuestos">
+        <h3>Elige el tipo de registros a crear y las fechas</h3>
+        <group>
+          <field name="report_type" required="1"/>
+        </group>
+        <group colspan="2">
+          <group>
+            <field name="start_date" string="Fecha inicial"/>
+          </group>
+          <group>
+            <field name="end_date" string="Fecha final"/>
+          </group>
+          <group>
+            <field name="factor" attrs="{'invisible' : [('report_type','!=','no_realizados')]}"/>
+          </group>
+        </group>
+        <footer>
+          <button name="CrearRegistros" string="Crear registros" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+			</form>
+		</field>
+	</record>
+
+  <record id="pabs_taxes_create_wizard_action" model="ir.actions.act_window">
+    <field name="name">Crear registros de impuestos</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.taxes.create.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref=""/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    id="pabs_taxes_create_menu"
+    action="pabs_taxes_create_wizard_action" 
+    name="Crear registros de impuestos" 
+    parent="root_menu_pabs_taxes"
+    sequence="2"/>
+</odoo>
