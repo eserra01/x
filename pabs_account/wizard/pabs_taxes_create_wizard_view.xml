@@ -38,10 +38,18 @@
     <field name="target">new</field>
   </record>
   
+  <!-- Menu principal -->
+  <menuitem
+  id="root_menu_pabs_taxes"
+  name="Impuestos"
+  groups="pabs_custom.admin_profile,pabs_custom.collection_profile"
+  sequence="3"
+  parent="account_accountant.menu_accounting"/>
+  
   <menuitem 
     id="pabs_taxes_create_menu"
     action="pabs_taxes_create_wizard_action" 
     name="Crear registros de impuestos" 
     parent="root_menu_pabs_taxes"
-    sequence="2"/>
+    sequence="1"/>
 </odoo>

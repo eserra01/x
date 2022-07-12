@@ -42,8 +42,8 @@
       id="pabs_taxes_menu"
       name="Impuestos de contratos"
       action="action_pabs_taxes"
-      parent="menu_generator_account_move"
-      sequence="5"
+      parent="root_menu_pabs_taxes"
+      sequence="2"
     />
 
   </data>
