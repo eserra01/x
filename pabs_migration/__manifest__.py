@@ -2,19 +2,18 @@
 ###########################################################################################
 #
 #   Author: PABS (pabsmr.org)
-#   Coded by: Mauricio Ruiz (mauricio.ruiz@pabsmr.org)
+#   Coded by: Jaime Rodriguez (jaime.rodriguez@pabsmr.org)
 #
 ###########################################################################################
 {
-  'name' : 'Migraciones PABS',
-  'summary': 'Coded By: Mauricio Ruiz (mauricio.ruiz@pabsmr.org)',
+  'name' : 'Migracion PABS SLW MON NLD',
+  'summary': 'Coded By: Jaime Rodriguez (jaime.rodriguez@pabsmr.org)',
   'author' : 'PABS',
   'category': 'Custom',
   'website': 'https://www.pabsmr.org',
   'depends' : ['base'],
   'data': [
-    'security/ir.model.access.csv',
-    'wizard/import_xls_wizard_view.xml'],
+  ],
   'installable': True,
   'auto_install': False,
 }
