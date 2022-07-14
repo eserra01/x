@@ -648,15 +648,12 @@ class PabsMigration(models.Model):
     if automatico:
       consulta = """
         SELECT 
-          /*COALESCE(MIN(abo.payment_date), '2022-06-30') as fecha_minima*/
-          COALESCE(MIN(abo.payment_date), '2020-10-15') as fecha_minima /*TEST*/
+          COALESCE(MIN(abo.payment_date), '2022-06-30') as fecha_minima /*PROD*/
         FROM account_payment AS abo
         INNER JOIN pabs_contract AS con ON abo.contract = con.id
           WHERE abo.reference = '{}'
           AND abo.state IN ('posted', 'sent', 'reconciled')
           AND con.company_id = '{}'
-
-          AND con.name LIKE '1CJ%' /*TEST*/
       """.format(tipo_pago, company_id)
 
       self.env.cr.execute(consulta)
