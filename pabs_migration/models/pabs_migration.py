@@ -367,21 +367,22 @@ class PabsMigration(models.Model):
       # Se busca la colonia de cobro
       toll_neighborhood_id = self.env['colonias'].search([('name','=',str(d.get('colonia_cobro')).strip().upper()), ('company_id','=', company_id)],limit=1)
 
-      # Se crea el cobrador si no existe
-      debt_collector_id = employee_obj.search([('barcode','=',d.get('cod_cobrador')), ('company_id','=', company_id)])       
-      if not debt_collector_id:        
-        resource_id = resource_obj.create({'name': d.get('cobrador')})
-        vals_collector = {
-          'first_name': d.get('cobrador'),
-          'last_name': '',
-          'date_of_admission':fields.Date.today(), 
-          'barcode': d.get('cod_cobrador'), 
-          'resource_id': resource_id.id,
-          'payment_scheme': comision_id.id if d.get('tipo_contrato') == 'C' else sueldo_id.id,
-          'job_id': collector_job_id.id,
-          # 'department_id': collector_dept_id.id,
-        }
-        debt_collector_id = employee_obj.create(vals_collector)     
+      # # Se crea el cobrador si no existe
+      # debt_collector_id = employee_obj.search([('barcode','=',d.get('cod_cobrador')), ('company_id','=', company_id)])       
+      # if not debt_collector_id:        
+      #   resource_id = resource_obj.create({'name': d.get('cobrador')})
+      #   vals_collector = {
+      #     'first_name': d.get('cobrador'),
+      #     'last_name': '',
+      #     'date_of_admission':fields.Date.today(), 
+      #     'barcode': d.get('cod_cobrador'), 
+      #     'resource_id': resource_id.id,
+      #     'payment_scheme': comision_id.id if d.get('tipo_contrato') == 'C' else sueldo_id.id,
+      #     'job_id': collector_job_id.id,
+      #     'company_id': company_id
+      #     # 'department_id': collector_dept_id.id,
+      #   }
+      #   debt_collector_id = employee_obj.create(vals_collector)     
         # errors.append({'contrato': d.get('contrato'),'Motivo': 'No se encontró el cobrador: %s'%(d.get('cod_cobrador'))})
         # continue     
       # # Se busca el estatus
@@ -417,7 +418,7 @@ class PabsMigration(models.Model):
         'vat': d.get('rfc'),        
         'initial_investment': d.get('inversion_inicial'),
         'payment_amount': d.get('monto_pago'),
-        'debt_collector': debt_collector_id.id,
+        # 'debt_collector': debt_collector_id.id,
         'sale_employee_id': sale_employee_id.id,
         'way_to_payment': way_to_payment[int(d.get('forma_pago'))-1].get(d.get('forma_pago')),
         'payment_scheme_id': comision_id.id if d.get('tipo_contrato') == 'C' else sueldo_id.id,
