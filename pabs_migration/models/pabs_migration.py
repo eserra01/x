@@ -16,6 +16,7 @@ from odoo import fields, models, _, api
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from requests import status_codes
+from datetime import datetime, date, timedelta
 import requests
 import json
 import logging
@@ -447,7 +448,7 @@ class PabsMigration(models.Model):
 
     _logger.info("Comienza creación de facturas de contratos. Compañia: {},  Limite: {}".format(company_id, limite))
 
-    #Obtener contratos de ODOO sin factura
+    ## Obtener contratos de ODOO sin factura ##
     consulta = """
       SELECT 
         con.id,
@@ -457,7 +458,7 @@ class PabsMigration(models.Model):
         WHERE mov.id IS NULL
         AND con.company_id = {}
 
-        AND con.name LIKE '1CJ%'
+        AND con.name LIKE '1CJ%' /*TEST*/
 
           ORDER BY con.name
       LIMIT {}
@@ -481,7 +482,7 @@ class PabsMigration(models.Model):
       _logger.info("No hay contratos")
       return
 
-    #Obtener costo de contratos de PABS
+    ## Obtener costo de contratos de PABS ##
     consulta = """
       SELECT 
         CONCAT(serie, no_contrato) as contrato,
@@ -508,7 +509,7 @@ class PabsMigration(models.Model):
 
       _logger.info("{} de {}. {}".format(index, cantidad_contratos, previous.name))
 
-      #Buscar costo en lista de contratos de PABS. Al encontrarlo quitarlo de la lista.
+      ## Buscar costo en lista de contratos de PABS. Al encontrarlo quitarlo de la lista ##
       costo = 0 
       for index, pabs in enumerate(contratos_pabs):
         if pabs['contrato'] == previous.name:
@@ -633,42 +634,85 @@ class PabsMigration(models.Model):
         _logger.info("Factura creada")
 
 ###################################################################################################################
-  def CrearPagos(self, tipo_pago, company_id, publicar):
+  def CrearPagos(self, tipo_pago, company_id, desde, hasta, automatico, dias_hacia_atras, limite):
+    _logger.info("Comienza consulta de pagos: {}. Compañia: {}".format(tipo_pago, company_id))
+
     if tipo_pago not in ('stationary', 'surplus', 'payment', 'transfer'):
       raise ValidationError("No se envio un tipo de pago")
 
-    _logger.info("Comienza consulta de pagos: {}".format(tipo_pago))
+    #--- Asignar fechas de pago a buscar ---#
 
-    ### Consulta a ECO ODOO de pagos a crear
-    plaza = ""
-    if company_id == 18:
-      plaza = "SALTILLO"
-    elif company_id == 19:
-      plaza = "MONCLOVA"
+    # a) Por fecha mas antigua de pago
+    consulta = ""
+    limite_fechas_pabs = ""
+    if automatico:
+      consulta = """
+        SELECT 
+          /*COALESCE(MIN(abo.payment_date), '2022-06-30') as fecha_minima*/
+          COALESCE(MIN(abo.payment_date), '2020-10-15') as fecha_minima /*TEST*/
+        FROM account_payment AS abo
+        INNER JOIN pabs_contract AS con ON abo.contract = con.id
+          WHERE abo.reference = '{}'
+          AND abo.state IN ('posted', 'sent', 'reconciled')
+          AND con.company_id = '{}'
 
-    url = "http://nomina.dyndns.biz:8098/index.php"
+          AND con.name LIKE '1CJ%' /*TEST*/
+      """.format(tipo_pago, company_id)
 
-    querystring = {"pwd":"4dm1n","plaza": plaza}
+      self.env.cr.execute(consulta)
 
-    payload = "consulta=EXEC%20%5Bdig%5D.%5BPagosPorCrear%5D%20%40tipo_pago_odoo%20%3D%20'zztipozz'"
-    payload = payload.replace("zztipozz", tipo_pago)
+      fecha_final = "1900-01-01"
+      for res in self.env.cr.fetchall():
+        fecha_final = res[0]
 
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+      fecha_inicial = fecha_final - timedelta(days = dias_hacia_atras)
 
-    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
-    respuesta = json.loads(response.text)
+      limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
+
+    # b) Entre fechas elegidas
+    else:
+      limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '{}' AND '{}'".format(desde, hasta)
+
+    #--- Consultar pagos de pabs basandose en las fechas del punto anterior ---#
+    no_movimiento = 0
+    series_notas = ""
+    cobrador_notas = 0
 
     pagos = []
+
     if tipo_pago in ("stationary", "surplus"):
+
+      if tipo_pago == "stationary":
+        no_movimiento = 2
+      else:
+        no_movimiento = 11
+
+      consulta = """
+        SELECT
+					CONCAT(con.serie, con.no_contrato) as contrato,
+					no_abono as no_abono,
+					abo.importe as importe,
+					abo.fecha_oficina as fecha_oficina,
+					abo.fecha_recibo as fecha_recibo,
+					no_abono as recibo,
+					"" as codigo_cobrador
+				FROM abonos AS abo
+				INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
+					WHERE abo.no_movimiento = {}
+					{}
+            ORDER BY fecha_oficina DESC, no_abono DESC
+              LIMIT {}
+      """.format(no_movimiento, limite_fechas_pabs, limite)
+
+      respuesta = self._get_data(company_id, consulta)
+
       for res in respuesta:
         pagos.append({
           'fecha_oficina': res['fecha_oficina'],
           'contrato': res['contrato'],
           'importe': float(res['importe']),
           'no_abono': res['no_abono'],
-          'id_contrato': res['id_contrato'],
-          'partner_id': res['partner_id'],
-          'recibo': ''
+          'recibo': res['recibo']
         })
     elif tipo_pago in ("payment", "transfer"):
       for res in respuesta:
@@ -678,18 +722,19 @@ class PabsMigration(models.Model):
           'contrato': res['contrato'],
           'importe': float(res['importe']),
           'no_abono': res['no_abono'],
-          'id_contrato': res['id_contrato'],
-          'partner_id': res['partner_id'],
-          'recibo': res['recibo'],
-          'id_cobrador': res['id_cobrador']
+          'recibo': res['recibo']
         })
 
     if not pagos:
       _logger.info("No hay pagos")
       return
 
-    ### Datos constantes ###
+    #raise ValidationError("{}".format(pagos))
+
+    #--- Datos constantes ---#
     payment_obj = self.env['account.payment']
+    account_move_line_obj = self.env['account.move.line']
+    reconcile_obj = self.env['account.partial.reconcile']
 
     account_id = self.env['account.account'].search([('company_id', '=', company_id), ('code', '=', '110.01.001')])
     if not account_id:
@@ -709,17 +754,29 @@ class PabsMigration(models.Model):
 
     cantidad_pagos = len(pagos)
     for index, pago in enumerate(pagos, 1):
-      _logger.info("{} de {}. {} {}".format(index, cantidad_pagos, pago['contrato'], pago['recibo']))
+      _logger.info("{} de {}. {} {} {}".format(index, cantidad_pagos, pago['contrato'], pago['recibo'], pago['fecha_oficina']))
 
+      #--- Validar que no exista el pago ---#
       existe_pago = self.env['account.payment'].search([
         ('company_id', '=', company_id),
-        ('x_no_abono_pabs', '=', pago['no_abono'])
+        ('ecobro_receipt', '=', pago['recibo'])
       ])
 
       if existe_pago:
         _logger.info("El pago ya existe")
         continue
+
+      #--- Buscar contrato en ODOO ---#
+      con_obj = self.env['pabs.contract'].search([
+        ('company_id', '=', company_id),
+        ('name', '=', pago['contrato'])
+      ])
+
+      if not con_obj:
+        _logger.info("No se encontró el contrato")
+        continue
       
+      #--- Construir datos para creación de pago ---#
       payment_data = {}
 
       if tipo_pago == "stationary":
@@ -727,41 +784,38 @@ class PabsMigration(models.Model):
           'payment_reference' : 'Inversión inicial',
           'reference' : 'stationary',
           'way_to_pay' : 'cash',
-          'ref' : 'Inversión inicial',
           'payment_type' : 'inbound',
           'partner_type' : 'customer',
-          'contract' : pago['id_contrato'],
-          'partner_id' : pago['partner_id'],
+          'contract' : con_obj.id,
+          'partner_id' : con_obj.partner_id.id,
           'amount' : pago['importe'],
           'currency_id' : currency_id.id,
           'payment_date' : pago['fecha_oficina'],
           'journal_id' : cash_journal_id.id,
           'payment_method_id' : payment_method_id.id,
-          'x_no_abono_pabs': pago['no_abono']
+          'ecobro_receipt': pago['recibo']
         }
       elif tipo_pago == "surplus":
         payment_data = {
           'payment_reference' : 'Excedente Inversión Inicial',
           'reference' : 'surplus',
           'way_to_pay' : 'cash',
-          'ref' : 'Excedente Inversión Inicial',
           'payment_type' : 'inbound',
           'partner_type' : 'customer',
-          'contract' : pago['id_contrato'],
-          'partner_id' : pago['partner_id'],
+          'contract' : con_obj.id,
+          'partner_id' : con_obj.partner_id.id,
           'amount' : pago['importe'],
           'currency_id' : currency_id.id,
           'payment_date' : pago['fecha_oficina'],
           'journal_id' : cash_journal_id.id,
           'payment_method_id' : payment_method_id.id,
-          'x_no_abono_pabs': pago['no_abono']
+          'ecobro_receipt': pago['recibo']
         }
       elif tipo_pago == "payment":
         payment_data = {
           'payment_reference' : 'Migracion PABS',
           'reference' : 'payment',
           'way_to_pay' : 'cash',
-          'ref' : 'Abono',
           'payment_type' : 'inbound',
           'partner_type' : 'customer',
           'debt_collector_code' : pago['id_cobrador'],
@@ -773,15 +827,13 @@ class PabsMigration(models.Model):
           'payment_date' : pago['fecha_oficina'],
           'ecobro_receipt' : pago['recibo'],
           'journal_id' : cash_journal_id.id,
-          'payment_method_id' : payment_method_id.id,
-          'x_no_abono_pabs': pago['no_abono']
+          'payment_method_id' : payment_method_id.id
         }
       elif tipo_pago == "transfer":
         payment_data = {
           'payment_reference' : 'Traspaso PABS',
           'reference' : 'transfer',
           'way_to_pay' : 'cash',
-          'ref' : 'Traspaso',
           'payment_type' : 'inbound',
           'partner_type' : 'customer',
           'debt_collector_code' : pago['id_cobrador'],
@@ -793,16 +845,47 @@ class PabsMigration(models.Model):
           'payment_date' : pago['fecha_oficina'],
           'ecobro_receipt' : pago['recibo'],
           'journal_id' : cash_journal_id.id,
-          'payment_method_id' : payment_method_id.id,
-          'x_no_abono_pabs': pago['no_abono']
+          'payment_method_id' : payment_method_id.id
         }
 
       payment = payment_obj.create(payment_data)
       _logger.info("Pago creado")
 
-      if publicar:
-        payment.with_context(migration=True).action_post()
-        _logger.info("Pago publicado")
+      payment.with_context(migration=True).post()
+      _logger.info("Pago publicado")
+
+      #--- Conciliar pago con su factura---#
+      reconcile = {}  
+
+      # Obtenemos linea de débito
+      inv_credit_line = False
+      for refund in con_obj.refund_ids:
+        if refund.type == 'out_invoice':
+          for line in refund.line_ids:
+            if line.debit > 0:
+              inv_credit_line = line 
+              reconcile.update({'debit_move_id' : inv_credit_line.id})
+
+      # Obtenemos linea de crédito
+      if payment.move_line_ids:            
+          for obj in payment.move_line_ids:
+            if obj.credit > 0:
+              reconcile.update({'initial_payment' : obj.id})
+
+      # Construir objeto de conciliacion
+      line = account_move_line_obj.browse(reconcile.get('initial_payment'))
+      data = {
+        'debit_move_id' : reconcile.get('debit_move_id'),
+        'credit_move_id' : reconcile.get('initial_payment'),
+        'amount' : abs(line.balance),
+      }
+
+      conciliacion = reconcile_obj.create(data)    
+
+      if conciliacion:
+        _logger.info("Pago conciliado")
+      else:
+        _logger.info("ERROR: Pago no conciliado")
 
 ###################################################################################################################
 
