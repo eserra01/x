@@ -293,7 +293,7 @@ class PabsMigration(models.Model):
           wh_id = warehouse_id.id
       
       # Se crea el asistente si no existe
-      sale_employee_id = employee_obj.search([('barcode','=',d.get('cod_asistente'), ('company_id','=', company_id))])       
+      sale_employee_id = employee_obj.search([('barcode','=',d.get('cod_asistente')), ('company_id','=', company_id)])       
       if not sale_employee_id:
         resource_id = resource_obj.create({'name': d.get('asistente')})
         employee_vals = {
@@ -346,7 +346,7 @@ class PabsMigration(models.Model):
         raise ValidationError("Error al crear la solicitud, es posible que el lote ya exista - {}".format(str(val)))
 
       # Se busca el municipio
-      municipality_id = locality_obj.search([('name','=',str(d.get('municipio'), ('company_id','=', company_id)).strip().upper())])  
+      municipality_id = locality_obj.search([('name','=',str(d.get('municipio')).strip().upper()), ('company_id','=', company_id)])  
       if not municipality_id:
         if company_id == COMPANY_SAL:
           municipality_id = locality_obj.search([('name','=','SALTILLO'), ('company_id','=', company_id)])
@@ -354,7 +354,7 @@ class PabsMigration(models.Model):
           municipality_id = locality_obj.search([('name','=','MONCLOVA'), ('company_id','=', company_id)])
 
       # Buscar municipio de cobro
-      toll_municipality_id = locality_obj.search([('name','=',str(d.get('municipio_cobro')).strip().upper())])  
+      toll_municipality_id = locality_obj.search([('name','=', str(d.get('municipio_cobro')).strip().upper()), ('company_id','=', company_id)])  
       if not municipality_id:
         if company_id == COMPANY_SAL:
           municipality_id = locality_obj.search([('name','=','SALTILLO'), ('company_id','=', company_id)])
@@ -362,12 +362,12 @@ class PabsMigration(models.Model):
           municipality_id = locality_obj.search([('name','=','MONCLOVA'), ('company_id','=', company_id)])
 
       # Se busca la colonia
-      neighborhood_id = self.env['colonias'].search([('name','=',str(d.get('colonia'), ('company_id','=', company_id)).strip().upper())],limit=1) 
+      neighborhood_id = self.env['colonias'].search([('name','=',str(d.get('colonia')).strip().upper()), ('company_id','=', company_id)],limit=1) 
       # Se busca la colonia de cobro
-      toll_neighborhood_id = self.env['colonias'].search([('name','=',str(d.get('colonia_cobro'), ('company_id','=', company_id)).strip().upper())],limit=1)
+      toll_neighborhood_id = self.env['colonias'].search([('name','=',str(d.get('colonia_cobro')).strip().upper()), ('company_id','=', company_id)],limit=1)
 
       # Se crea el cobrador si no existe
-      debt_collector_id = employee_obj.search([('barcode','=',d.get('cod_cobrador'), ('company_id','=', company_id))])       
+      debt_collector_id = employee_obj.search([('barcode','=',d.get('cod_cobrador')), ('company_id','=', company_id)])       
       if not debt_collector_id:        
         resource_id = resource_obj.create({'name': d.get('cobrador')})
         vals_collector = {
