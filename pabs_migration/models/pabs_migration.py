@@ -427,6 +427,7 @@ class PabsMigration(models.Model):
         'date_first_payment': d.get('fecha_primer_abono'),
         'invoice_date': d.get('fecha_contrato'),
         'stationery': stationery,
+        'company_id': company_id
         # 'x_costo_pabs': d.get('costo'),
         # 'x_id_contrato_pabs': d.get('id_contrato'),  
         # 'x_status_pabs': d.get('no_estatus'),     
