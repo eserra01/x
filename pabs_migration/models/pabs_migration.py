@@ -749,7 +749,6 @@ class PabsMigration(models.Model):
           'fecha_oficina': res['fecha_oficina'],
           'contrato': res['contrato'],
           'importe': float(res['importe']),
-          'no_abono': res['no_abono'],
           'recibo': res['recibo']
         })
 
@@ -772,12 +771,6 @@ class PabsMigration(models.Model):
       for res in self.env.cr.fetchall():
         recibos_odoo.append(res[0])
 
-      #--- Quitar pagos que ya existen ---#
-      for index, abo in enumerate(pagos):
-        if abo['recibo'] in recibos_odoo:
-          #pagos.pop(index)
-          _logger.info('recibo quitado: {}'.format(abo['recibo']))
-
     elif tipo_pago in ("payment", "transfer"):
       for res in respuesta:
         pagos.append({
@@ -788,6 +781,11 @@ class PabsMigration(models.Model):
           'no_abono': res['no_abono'],
           'recibo': res['recibo']
         })
+
+    #--- Quitar pagos que ya existen ---#
+    for index, abo in enumerate(pagos):
+      if abo['recibo'] in recibos_odoo:
+        pagos.remove(abo)
 
     if not pagos:
       _logger.info("No hay pagos")
