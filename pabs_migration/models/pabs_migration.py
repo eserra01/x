@@ -913,13 +913,14 @@ class PabsMigration(models.Model):
         continue
 
       #--- Asignar el cobrador de odoo a cada pago (solo para abonos)---#
+      id_cobrador = 0
       if tipo_pago in ('payment', 'transfer'):
         for cob in cobradores_odoo:
           if cob['codigo'] == pago['codigo_cobrador']:
-            pago.update({'id_cobrador': cob['id']})
+            id_cobrador = cob['id']
             break
 
-        if not pago['id_cobrador']:
+        if not id_cobrador:
           raise ValidationError("No se encontró el cobrador {} para el recibo {}".format(pago['codigo_cobrador'], pago['recibo']))
       
       #--- Construir datos para creación de pago ---#
@@ -964,7 +965,7 @@ class PabsMigration(models.Model):
           'way_to_pay' : 'cash',
           'payment_type' : 'inbound',
           'partner_type' : 'customer',
-          'debt_collector_code' : pago['id_cobrador'],
+          'debt_collector_code' : id_cobrador,
           'contract' : con_obj.id,
           'partner_id' : con_obj.partner_id.id,
           'amount' : pago['importe'],
@@ -982,7 +983,7 @@ class PabsMigration(models.Model):
           'way_to_pay' : 'cash',
           'payment_type' : 'inbound',
           'partner_type' : 'customer',
-          'debt_collector_code' : pago['id_cobrador'],
+          'debt_collector_code' : id_cobrador,
           'contract' : con_obj.id,
           'partner_id' : con_obj.partner_id.id,
           'amount' : pago['importe'],
