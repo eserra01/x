@@ -704,7 +704,7 @@ class PabsMigration(models.Model):
 
       fecha_inicial = fecha_final - timedelta(days = dias_hacia_atras)
 
-      limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
+      limite_fechas_pabs = " AND abo.fecha_oficina BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
       limite_fechas_odoo = " AND abo.payment_date BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
 
     # b) Entre fechas elegidas
@@ -763,6 +763,7 @@ class PabsMigration(models.Model):
           AND abo.state IN ('posted', 'sent', 'reconciled')
 					AND con.company_id = {}
 					{} /*Limitar fechas odoo*/
+            ORDER BY abo.payment_date DESC, abo.ecobro_receipt DESC
       """.format(tipo_pago, company_id, limite_fechas_odoo)
 
       self.env.cr.execute(consulta)
@@ -774,7 +775,7 @@ class PabsMigration(models.Model):
       #--- Quitar pagos que ya existen ---#
       for index, abo in enumerate(pagos):
         if abo['recibo'] in recibos_odoo:
-          pagos.pop(index)
+          #pagos.pop(index)
           _logger.info('recibo quitado: {}'.format(abo['recibo']))
 
     elif tipo_pago in ("payment", "transfer"):
