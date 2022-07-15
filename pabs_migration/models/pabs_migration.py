@@ -6,6 +6,7 @@
 #
 ###########################################################################################
 
+from asyncio.windows_events import NULL
 from cmath import cos
 from email import header
 from os import stat
@@ -440,6 +441,40 @@ class PabsMigration(models.Model):
         _logger.info('Contrato creado')
       else:
         _logger.info('XXX ERROR XXX')
+
+###################################################################################################################
+  ### ASIGNAR CUENTAS A CONTACTOS ###
+  def AsignarCuentasAContactos(self, company_id, limite):
+    _logger.info("Comienza asignación de cuentas a contactos: Compañia: {}. Limite: {}".format(company_id, limite))
+
+    #--- Consultar contactos sin cuenta ---#
+    partner_obj = self.env['res.partner']
+
+    ids_contactos = partner_obj.search([
+      ('company_id', '=', company_id), '|' 
+      ('property_account_receivable_id', '=', NULL),
+      ('property_account_payable_id', '=', NULL)
+    ])
+
+    if not ids_contactos:
+      raise ValidationError("No hay contactos")
+
+    #--- Consultar cuentas ---#
+    account_obj = self.env['account.account']
+    cuenta_a_cobrar = account_obj.search([('company_id', '=', company_id), ('code', '=', '110.01.001')])
+    cuenta_a_pagar = account_obj.search([('company_id', '=', company_id), ('code', '=', '201.01.001')])
+
+    if not cuenta_a_cobrar or not cuenta_a_pagar:
+      raise ValidationError("No se encontraron las cuentas a cobrar (110.01.001) y a pagar (201.01.001) en el plan contable")
+
+    #--- Actualizar cuentas ---#
+    cantidad_contactos = len(ids_contactos)
+    for index, cont in enumerate(ids_contactos, 1):
+      _logger.info("{} de {}. {}".format(index, cantidad_contactos, cont.name))
+      cont.write({
+        'property_account_receivable_id': cuenta_a_cobrar.id,
+        'property_account_payable_id': cuenta_a_pagar.id
+      })
 
 ###################################################################################################################
   ### CREAR FACTURAS (Similar a create_invoice de pabs.contract)###
