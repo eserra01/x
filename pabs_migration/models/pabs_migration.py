@@ -768,7 +768,7 @@ class PabsMigration(models.Model):
 
       recibos_odoo = []
       for res in self.env.cr.fetchall():
-        recibos_odoo = res[0]
+        recibos_odoo = "'{}'".format(res[0])
 
       #--- Quitar pagos que ya existen ---#
       for index, abo in enumerate(pagos):
