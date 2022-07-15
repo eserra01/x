@@ -96,6 +96,10 @@ class account_Payment(models.Model):
 
 
     def post(self):
+      # Para que se valide el pago sin crear salidas (campo no_abono_pab establecido o migration en el contexto)      
+      if self.env.context.get('migration'):
+        return super(account_Payment, self).post()
+        
       contract_status_obj = self.env['pabs.contract.status']
       contract_status_reason_obj = self.env['pabs.contract.status.reason']
       ### Estatus Activo

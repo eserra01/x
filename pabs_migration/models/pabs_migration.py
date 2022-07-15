@@ -441,7 +441,7 @@ class PabsMigration(models.Model):
         _logger.info('XXX ERROR XXX')
 
 ###################################################################################################################
-  ### ASIGNAR CUENTAS A CONTACTOS ###
+  ### ASIGNAR CUENTAS A CONTACTOS QUE NO TIENEN ###
   def AsignarCuentasAContactos(self, company_id, limite):
     _logger.info("Comienza asignación de cuentas a contactos: Compañia: {}. Limite: {}".format(company_id, limite))
 
@@ -457,10 +457,13 @@ class PabsMigration(models.Model):
     partner_obj = self.env['res.partner']
 
     ids_contactos = partner_obj.search([
-      ('company_id', '=', company_id), '|',
+      ('company_id', '=', company_id), 
+      ('name', 'not ilike', 'MON'),
+      ('name', 'not ilike', 'SLW'),
+      '|',
       ('property_account_receivable_id', '=', False),
       ('property_account_payable_id', '=', False)
-    ])
+    ], limit = limite)
 
     if not ids_contactos:
       raise ValidationError("No hay contactos")
@@ -473,6 +476,8 @@ class PabsMigration(models.Model):
         'property_account_receivable_id': cuenta_a_cobrar.id,
         'property_account_payable_id': cuenta_a_pagar.id
       })
+
+      _logger.info("Cuentas asignadas")
 
 ###################################################################################################################
   ### CREAR FACTURAS (Similar a create_invoice de pabs.contract)###
