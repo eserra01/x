@@ -837,11 +837,12 @@ class PabsMigration(models.Model):
       #--- Consultar cobradores de odoo ---#
       consulta = """
         SELECT 
-					barcode as codigo, 
-          id as id_cobrador
-				FROM hr_employee
-					WHERE job_title NOT LIKE '%ASIS%'
-					AND company_id = {}
+					emp.barcode as codigo, 
+          emp.id as id_cobrador
+				FROM hr_employee AS emp
+        INNER JOIN hr_job AS car ON emp.job_id = car.id
+					WHERE car.name NOT LIKE '%ASIS%'
+					AND emp.company_id = {}
       """.format(company_id)
 
       self.env.cr.execute(consulta)
