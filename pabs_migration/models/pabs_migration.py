@@ -6,8 +6,6 @@
 #
 ###########################################################################################
 
-from asyncio.windows_events import NULL
-from cmath import cos
 from email import header
 from os import stat
 from random import vonmisesvariate
@@ -452,8 +450,8 @@ class PabsMigration(models.Model):
 
     ids_contactos = partner_obj.search([
       ('company_id', '=', company_id), '|' 
-      ('property_account_receivable_id', '=', NULL),
-      ('property_account_payable_id', '=', NULL)
+      ('property_account_receivable_id', '=', 'NULL'),
+      ('property_account_payable_id', '=', 'NULL')
     ])
 
     if not ids_contactos:
