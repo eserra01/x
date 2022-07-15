@@ -749,7 +749,8 @@ class PabsMigration(models.Model):
           'fecha_oficina': res['fecha_oficina'],
           'contrato': res['contrato'],
           'importe': float(res['importe']),
-          'recibo': res['recibo']
+          'recibo': res['recibo'],
+          'ya_existe': False
         })
 
       #--- Consultar pagos de odoo basandose en las fechas del punto anterior ---#
@@ -779,13 +780,17 @@ class PabsMigration(models.Model):
           'contrato': res['contrato'],
           'importe': float(res['importe']),
           'no_abono': res['no_abono'],
-          'recibo': res['recibo']
+          'recibo': res['recibo'],
+          'ya_existe': False
         })
 
-    #--- Quitar pagos que ya existen ---#
+    #--- Marcar pagos que ya existen ---#
     for index, abo in enumerate(pagos):
       if abo['recibo'] in recibos_odoo:
-        pagos.remove(abo)
+        abo['ya_existe'] = True
+
+    #--- Quitar pagos que ya existen ---#
+    pagos = [elem for elem in pagos if elem['ya_existe'] == False]
 
     if not pagos:
       _logger.info("No hay pagos")
