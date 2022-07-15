@@ -760,6 +760,7 @@ class PabsMigration(models.Model):
 				FROM account_payment AS abo
 				INNER JOIN pabs_contract AS con ON abo.contract = con.id
 					WHERE abo.reference = '{}'
+          AND abo.state IN ('posted', 'sent', 'reconciled')
 					AND con.company_id = {}
 					{} /*Limitar fechas odoo*/
       """.format(tipo_pago, company_id, limite_fechas_odoo)
@@ -770,10 +771,14 @@ class PabsMigration(models.Model):
       for res in self.env.cr.fetchall():
         recibos_odoo.append(res[0])
 
+      _logger.info('{}'.format(recibos_odoo))
+
       #--- Quitar pagos que ya existen ---#
       for index, abo in enumerate(pagos):
         if abo['recibo'] in recibos_odoo:
           pagos.pop(index)
+
+      _logger.info('{}'.format(pagos))
 
     elif tipo_pago in ("payment", "transfer"):
       for res in respuesta:
