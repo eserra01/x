@@ -457,7 +457,7 @@ class PabsMigration(models.Model):
     partner_obj = self.env['res.partner']
 
     ids_contactos = partner_obj.search([
-      ('company_id', '=', company_id), '|' 
+      ('company_id', '=', company_id), '|',
       ('property_account_receivable_id.id', '!=', cuenta_a_cobrar.id),
       ('property_account_payable_id.id', '!=', cuenta_a_pagar.id)
     ])
