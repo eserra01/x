@@ -771,14 +771,11 @@ class PabsMigration(models.Model):
       for res in self.env.cr.fetchall():
         recibos_odoo.append(res[0])
 
-      _logger.info('{}'.format(recibos_odoo))
-
       #--- Quitar pagos que ya existen ---#
       for index, abo in enumerate(pagos):
         if abo['recibo'] in recibos_odoo:
           pagos.pop(index)
-
-      _logger.info('{}'.format(pagos))
+          _logger.info('recibo quitado: {}'.format(abo['recibo']))
 
     elif tipo_pago in ("payment", "transfer"):
       for res in respuesta:
