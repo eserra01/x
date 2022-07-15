@@ -725,6 +725,8 @@ class PabsMigration(models.Model):
       cobrador_notas = 50
 
     pagos = []
+    recibos_odoo = []
+    cobradores_odoo = []
 
     if tipo_pago in ("stationary", "surplus"):
 
@@ -775,7 +777,6 @@ class PabsMigration(models.Model):
 
       self.env.cr.execute(consulta)
 
-      recibos_odoo = []
       for res in self.env.cr.fetchall():
         recibos_odoo.append(res[0])
 
@@ -830,7 +831,6 @@ class PabsMigration(models.Model):
 
       self.env.cr.execute(consulta)
 
-      recibos_odoo = []
       for res in self.env.cr.fetchall():
         recibos_odoo.append(res[0])
 
@@ -846,7 +846,6 @@ class PabsMigration(models.Model):
 
       self.env.cr.execute(consulta)
 
-      cobradores_odoo = []
       for res in self.env.cr.fetchall():
         cobradores_odoo.append({
           'codigo': res[0],
@@ -920,7 +919,7 @@ class PabsMigration(models.Model):
             id_cobrador = cob['id']
             break
 
-        if not id_cobrador:
+        if id_cobrador == 0:
           raise ValidationError("No se encontró el cobrador {} para el recibo {}".format(pago['codigo_cobrador'], pago['recibo']))
       
       #--- Construir datos para creación de pago ---#
