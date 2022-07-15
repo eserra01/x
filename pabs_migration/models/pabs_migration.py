@@ -705,10 +705,12 @@ class PabsMigration(models.Model):
       fecha_inicial = fecha_final - timedelta(days = dias_hacia_atras)
 
       limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
+      limite_fechas_odoo = " AND abo.payment_date BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
 
     # b) Entre fechas elegidas
     else:
       limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '{}' AND '{}'".format(desde, hasta)
+      limite_fechas_odoo = " AND abo.payment_date BETWEEN '{}' AND '{}'".format(desde, hasta)
 
     #--- Consultar pagos de pabs basandose en las fechas del punto anterior ---#
     no_movimiento = 0
@@ -721,7 +723,7 @@ class PabsMigration(models.Model):
 
       if tipo_pago == "stationary":
         no_movimiento = 2
-      else:
+      elif tipo_pago == "surplus":
         no_movimiento = 11
 
       consulta = """
@@ -736,9 +738,8 @@ class PabsMigration(models.Model):
 				FROM abonos AS abo
 				INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
 					WHERE abo.no_movimiento = {}
-					{}
+					{} /*Limitar fechas pabs*/
             ORDER BY fecha_oficina DESC, no_abono DESC
-              LIMIT {}
       """.format(no_movimiento, limite_fechas_pabs, limite)
 
       respuesta = self._get_data(company_id, consulta)
@@ -751,6 +752,29 @@ class PabsMigration(models.Model):
           'no_abono': res['no_abono'],
           'recibo': res['recibo']
         })
+
+      #--- Consultar pagos de odoo basandose en las fechas del punto anterior ---#
+      consulta = """
+        SELECT 
+					abo.ecobro_receipt as recibo
+				FROM account_payment AS abo
+				INNER JOIN pabs_contract AS con ON abo.contract = con.id
+					WHERE abo.reference = '{}'
+					AND con.company_id = {}
+					{} /*Limitar fechas odoo*/
+      """.format(tipo_pago, company_id, limite_fechas_odoo)
+
+      self.env.cr.execute(consulta)
+
+      recibos_odoo = []
+      for res in self.env.cr.fetchall():
+        recibos_odoo = res[0]
+
+      #--- Quitar pagos que ya existen ---#
+      for index, abo in enumerate(pagos):
+        if abo['recibo'] in recibos_odoo:
+          pagos.pop(index)
+
     elif tipo_pago in ("payment", "transfer"):
       for res in respuesta:
         pagos.append({
@@ -765,6 +789,8 @@ class PabsMigration(models.Model):
     if not pagos:
       _logger.info("No hay pagos")
       return
+
+    pagos = pagos[0 : limite]
 
     #raise ValidationError("{}".format(pagos))
 
@@ -793,7 +819,7 @@ class PabsMigration(models.Model):
     for index, pago in enumerate(pagos, 1):
       _logger.info("{} de {}. {} {} {}".format(index, cantidad_pagos, pago['contrato'], pago['recibo'], pago['fecha_oficina']))
 
-      #--- Validar que no exista el pago ---#
+      #--- Segunda validación de que no existe el pago ---#
       existe_pago = self.env['account.payment'].search([
         ('company_id', '=', company_id),
         ('ecobro_receipt', '=', pago['recibo'])
