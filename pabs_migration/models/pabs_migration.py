@@ -717,6 +717,13 @@ class PabsMigration(models.Model):
     series_notas = ""
     cobrador_notas = 0
 
+    if company_id == COMPANY_SAL:
+      series_notas = ""
+      cobrador_notas = 0
+    elif company_id == COMPANY_MON:
+      series_notas = "CNC"
+      cobrador_notas = 50
+
     pagos = []
 
     if tipo_pago in ("stationary", "surplus"):
@@ -740,7 +747,7 @@ class PabsMigration(models.Model):
 					WHERE abo.no_movimiento = {}
 					{} /*Limitar fechas pabs*/
             ORDER BY fecha_oficina DESC, no_abono DESC
-      """.format(no_movimiento, limite_fechas_pabs, limite)
+      """.format(no_movimiento, limite_fechas_pabs)
 
       respuesta = self._get_data(company_id, consulta)
 
@@ -773,15 +780,77 @@ class PabsMigration(models.Model):
         recibos_odoo.append(res[0])
 
     elif tipo_pago in ("payment", "transfer"):
+      no_movimiento = 1
+
+      #--- Consultar pagos de pabs basandose en las fechas del punto anterior ---#
+      consulta = """
+        SELECT
+					abo.fecha_oficina as fecha_oficina,
+					abo.fecha_recibo as fecha_recibo,
+					CONCAT(con.serie, con.no_contrato) as contrato,
+					abo.importe as importe,
+					CONCAT(rec.serie, rec.no_recibo) as recibo,
+					per.no_empleado_ext as codigo_cobrador
+				FROM abonos AS abo
+				INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
+				INNER JOIN recibos AS rec ON abo.id_recibo = rec.id_recibo
+				INNER JOIN personal AS per ON abo.no_cobrador = per.no_personal
+					WHERE abo.no_movimiento = {}
+					AND rec.serie NOT IN ('{}')
+					AND abo.no_cobrador NOT IN ({})
+					{} /*Limitar fechas pabs*/
+            ORDER BY abo.fecha_oficina DESC, no_abono DESC
+      """.format(no_movimiento, series_notas, cobrador_notas, limite_fechas_pabs)
+
+      respuesta = self._get_data(company_id, consulta)
+
       for res in respuesta:
         pagos.append({
           'fecha_oficina': res['fecha_oficina'],
           'fecha_recibo': res['fecha_recibo'],
           'contrato': res['contrato'],
           'importe': float(res['importe']),
-          'no_abono': res['no_abono'],
           'recibo': res['recibo'],
+          'codigo_cobrador': res['codigo_cobrador'],
           'ya_existe': False
+        })
+
+      #--- Consultar pagos de odoo basandose en las fechas del punto anterior ---#
+      consulta = """
+        SELECT 
+					abo.ecobro_receipt as recibo
+				FROM account_payment AS abo
+				INNER JOIN pabs_contract AS con ON abo.contract = con.id
+					WHERE abo.reference = '{}'
+          AND abo.state IN ('posted', 'sent', 'reconciled')
+					AND con.company_id = {}
+					{} /*Limitar fechas odoo*/
+            ORDER BY abo.payment_date DESC, abo.ecobro_receipt DESC
+      """.format(tipo_pago, company_id, limite_fechas_odoo)
+
+      self.env.cr.execute(consulta)
+
+      recibos_odoo = []
+      for res in self.env.cr.fetchall():
+        recibos_odoo.append(res[0])
+
+      #--- Consultar cobradores de odoo ---#
+      consulta = """
+        SELECT 
+					barcode as codigo, 
+          id as id_cobrador
+				FROM hr_employee
+					WHERE job_title NOT LIKE '%ASIS%'
+					AND company_id = {}
+      """.format(company_id)
+
+      self.env.cr.execute(consulta)
+
+      cobradores_odoo = []
+      for res in self.env.cr.fetchall():
+        cobradores_odoo.append({
+          'codigo': res[0],
+          'id': int(res[1])
         })
 
     #--- Marcar pagos que ya existen ---#
@@ -797,8 +866,6 @@ class PabsMigration(models.Model):
       return
 
     pagos = pagos[0 : limite]
-
-    #raise ValidationError("{}".format(pagos))
 
     #--- Datos constantes ---#
     payment_obj = self.env['account.payment']
@@ -844,6 +911,16 @@ class PabsMigration(models.Model):
       if not con_obj:
         _logger.info("No se encontró el contrato")
         continue
+
+      #--- Asignar el cobrador de odoo a cada pago (solo para abonos)---#
+      if tipo_pago in ('payment', 'transfer'):
+        for cob in cobradores_odoo:
+          if cob['codigo'] == pago['codigo_cobrador']:
+            pago.update({'id_cobrador': cob['id']})
+            break
+
+        if not pago['id_cobrador']:
+          raise ValidationError("No se encontró el cobrador {} para el recibo {}".format(pago['codigo_cobrador'], pago['recibo']))
       
       #--- Construir datos para creación de pago ---#
       payment_data = {}
@@ -860,9 +937,9 @@ class PabsMigration(models.Model):
           'amount' : pago['importe'],
           'currency_id' : currency_id.id,
           'payment_date' : pago['fecha_oficina'],
+          'ecobro_receipt': pago['recibo'],
           'journal_id' : cash_journal_id.id,
-          'payment_method_id' : payment_method_id.id,
-          'ecobro_receipt': pago['recibo']
+          'payment_method_id' : payment_method_id.id
         }
       elif tipo_pago == "surplus":
         payment_data = {
@@ -876,9 +953,9 @@ class PabsMigration(models.Model):
           'amount' : pago['importe'],
           'currency_id' : currency_id.id,
           'payment_date' : pago['fecha_oficina'],
+          'ecobro_receipt': pago['recibo'],
           'journal_id' : cash_journal_id.id,
-          'payment_method_id' : payment_method_id.id,
-          'ecobro_receipt': pago['recibo']
+          'payment_method_id' : payment_method_id.id
         }
       elif tipo_pago == "payment":
         payment_data = {
@@ -888,8 +965,8 @@ class PabsMigration(models.Model):
           'payment_type' : 'inbound',
           'partner_type' : 'customer',
           'debt_collector_code' : pago['id_cobrador'],
-          'contract' : pago['id_contrato'],
-          'partner_id' : pago['partner_id'],
+          'contract' : con_obj.id,
+          'partner_id' : con_obj.partner_id.id,
           'amount' : pago['importe'],
           'currency_id' : currency_id.id,
           'date_receipt' : pago['fecha_recibo'],
@@ -906,8 +983,8 @@ class PabsMigration(models.Model):
           'payment_type' : 'inbound',
           'partner_type' : 'customer',
           'debt_collector_code' : pago['id_cobrador'],
-          'contract' : pago['id_contrato'],
-          'partner_id' : pago['partner_id'],
+          'contract' : con_obj.id,
+          'partner_id' : con_obj.partner_id.id,
           'amount' : pago['importe'],
           'currency_id' : currency_id.id,
           'date_receipt' : pago['fecha_recibo'],
