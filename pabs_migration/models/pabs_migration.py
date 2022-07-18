@@ -1663,7 +1663,7 @@ class PabsMigration(models.Model):
       if cargo == 'COBRADOR':
         orden_de_pago = orden_de_pago + 1
       else:
-        orden_de_pago = res['orden_de_pago']
+        orden_de_pago = int(res['orden_de_pago'])
 
       arboles.append({
         'id_contrato': res['id_contrato'],
