@@ -1525,60 +1525,229 @@ class PabsMigration(models.Model):
 
 ###################################################################################################################
 
-  def CrearArboles(self, company_id):
+  def CrearArboles(self, company_id, limite):
     _logger.info("Comienza creacion de árboles")
 
-    ### Consulta a ECO ODOO
-    plaza = ""
-    if company_id == 18:
-      plaza = "SALTILLO"
-    elif company_id == 19:
-      plaza = "MONCLOVA"
+    #--- Consulta de contratos de ODOO sin árbol ---#
 
-    url = "http://nomina.dyndns.biz:8098/index.php"
+    consulta = """
+      SELECT 
+        con.id, 
+        con.name as contrato
+      FROM pabs_contract AS con
+      LEFT JOIN pabs_comission_tree AS arb ON con.id = arb.contract_id
+        WHERE con.company_id =  {}
+        AND con.contract_status_item IS NOT NULL
+          GROUP BY con.id, con.name	HAVING COUNT(arb.id) = 0
+            ORDER BY con.invoice_date DESC, name DESC
+              LIMIT {}
+    """.format(company_id, limite)
 
-    querystring = {"pwd":"4dm1n","plaza": plaza}
+    self.env.cr.execute(consulta)
 
-    payload = "consulta=EXEC%20%5Bdig%5D.%5BArbolesPorCrear%5D%20%40default%20%3D%200"
+    contratos = []
+    numeros_contrato = []
+    for res in self.env.cr.fetchall():
+      contrato = res[1]
+      
+      contratos.append({
+        'id': res[0],
+        'contrato': contrato
+      })
 
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+      numeros_contrato.append("'{}'".format(contrato))
 
-    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
-    respuesta = json.loads(response.text)
+    if not contratos:
+      _logger.info("No hay contratos de odoo sin arbol")
+      return
+
+    #--- Consulta ids de contratos de Pabs ---#
+    consulta = "SELECT id_contrato FROM contratos WHERE CONCAT(serie, no_contrato) IN ({})".format(",".join(numeros_contrato))
+
+    respuesta = self._get_data(company_id, consulta)
+
+    ids_contratos_pabs = []
+    for res in respuesta:
+      ids_contratos_pabs.append(res[0])
+
+    #--- Consulta árboles de contratos de Pabs ---#
+
+    consulta = """
+      /* Registros de empleados de ventas */
+      SELECT 
+        con.id_contrato,
+        con.fecha_contrato,
+        CASE
+          WHEN com.no_cargo = 4 THEN 1
+          WHEN com.no_cargo = 5 THEN 2
+          WHEN com.no_cargo = 6 THEN 3
+          WHEN com.no_cargo = 10 THEN 4
+          WHEN com.no_cargo = 12 THEN 5
+          WHEN com.no_cargo = 14 THEN 6
+          WHEN com.no_cargo = 15 THEN 7
+          WHEN com.no_cargo = 16 THEN 8
+          WHEN com.no_cargo = 18 THEN 9
+        END as orden_de_pago,
+        car.cargo_general AS cargo,
+        CONCAT(con.serie, con.no_contrato) as contrato,
+        CASE
+          WHEN per.nombre = "Papeleria" THEN "PAPE"
+          WHEN per.nombre = "Fideicomiso" THEN "FIDE"
+          ELSE per.no_empleado_ext
+        END as codigo_comisionista,
+        com.comision AS comision_correspondiente,
+        com.comision_resta AS comision_restante,
+        (com.comision - com.comision_resta) as comision_pagada,
+        IFNULL(
+          (SELECT SUM(pago.comision - pago.com_cobrador) 
+            FROM pago_abonos AS pago 
+            INNER JOIN abonos AS abo ON pago.no_abono = abo.no_abono
+              WHERE abo.id_contrato = con.id_contrato
+              AND pago.no_personal = per.no_personal
+              AND pago.no_cargo = car.no_cargo
+        ),0) as comision_real_pagada
+      FROM comxcontrato AS com
+      INNER JOIN contratos AS con ON com.id_contrato = con.id_contrato
+      INNER JOIN personal AS per ON com.no_personal = per.no_personal
+      INNER JOIN cargos AS car ON com.no_cargo = car.no_cargo
+      INNER JOIN servicios AS ser ON con.no_servicio = ser.no_servicio
+        WHERE com.comision > 0
+        AND con.id_contrato IN ({})
+    UNION
+    /* Registros de cobradores */
+      SELECT 
+				con.id_contrato,
+				con.fecha_contrato,
+				10 as orden_de_pago,
+				"COBRADOR" as cargo,
+				CONCAT(con.serie, con.no_contrato) as contrato,
+				per.no_empleado_ext as codigo_comisionista,
+				0 as comision_correspondiente,
+				0 as comision_restante,
+				0 as comision_pagada,
+				SUM(pago.comision - pago.com_cobrador) as comision_real_pagada
+			FROM pago_abonos AS pago
+			INNER JOIN abonos AS abo ON pago.no_abono = abo.no_abono
+			INNER JOIN personal AS per ON pago.no_personal = per.no_personal
+			INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
+				WHERE pago.no_cargo = 2
+				AND con.id_contrato IN ({})
+					GROUP BY con.id_contrato, per.no_personal HAVING SUM(pago.comision - pago.com_cobrador) > 0
+						ORDER BY id_contrato, orden_de_pago
+    """.format(",".join(ids_contratos_pabs), ",".join(ids_contratos_pabs))
+
+    respuesta = self._get_data(company_id, consulta)
 
     arboles = []
-    for res in respuesta:
+    orden_de_pago = 0
+
+    for res in respuesta:  
+      cargo = res['cargo']
+
+      if cargo == 'COBRADOR':
+        orden_de_pago = orden_de_pago + 1
+      else:
+        orden_de_pago = res['orden_de_pago']
+
       arboles.append({
-        'contract_id': res['contract_id'],
-        'pay_order': res['pay_order'],
-        'job_id': res['job_id'],
-        'comission_agent_id': res['comission_agent_id'],
-        'corresponding_commission': float(res['corresponding_commission']),
-        'remaining_commission': float(res['remaining_commission']),
-        'commission_paid': float(res['commission_paid']),
-        'actual_commission_paid': float(res['actual_commission_paid']),
+        'id_contrato': res['id_contrato'],
+        'fecha_contrato': res['fecha_contrato'],
+        'orden_de_pago': orden_de_pago,
+        'cargo': cargo,
         'contrato': res['contrato'],
-        'cargo': res['cargo']
+        'codigo_comisionista': res['codigo_comisionista'],
+        'comision_correspondiente': float(res['comision_correspondiente']),
+        'comision_restante': float(res['comision_restante']),
+        'comision_pagada': float(res['comision_pagada']),
+        'comision_real_pagada': float(res['comision_real_pagada'])
       })
 
     if not arboles:
-      _logger.info("No hay árboles")
+      _logger.info("No hay árboles de PABS")
+      return
 
+    #--- Consultar cargos de odoo ---#
+    cargos = []
+    consulta = "SELECT id, name FROM hr_job WHERE company_id = {}".format(company_id)
+
+    self.env.cr.execute(consulta)
+
+    cargos = []
+    for res in self.env.cr.fetchall():
+      cargos.append({
+        'id': res[0],
+        'cargo': res[1]
+      })
+
+    #--- Consultar empleados de odoo ---#
+    empleados = []
+    consulta = """
+      SELECT 
+        emp.id as id,
+        emp.barcode as codigo
+      FROM hr_employee AS emp
+      INNER JOIN hr_job AS job ON emp.job_id = job.id
+        WHERE emp.company_id = {}
+    """.format(company_id)
+
+    self.env.cr.execute(consulta)
+
+    empleados = []
+    for res in self.env.cr.fetchall():
+      empleados.append({
+        'id': res[0],
+        'codigo': res[1]
+      })
+
+    #--- Crear árboles de contratos ---#
     tree_obj = self.env['pabs.comission.tree']
 
     cantidad_registros = len(arboles)
     for index, arb in enumerate(arboles, 1):
-      _logger.info("{} de {}. {} -> {}".format(index, cantidad_registros, arb['contrato'], arb['cargo']))
+      _logger.info("{} de {}: {}. {} -> {}".format(index, cantidad_registros, arb['contrato'], arb['orden_de_pago'], arb['cargo']))
+
+      # Buscar id de contrato de odoo
+      id_contrato_odoo = 0
+      for con in contratos:
+        if con['contrato'] == arb['contrato']:
+          id_contrato_odoo = con['id']
+          break
+
+      if id_contrato_odoo == 0:
+        _logger.info("No se encontró el contrato {} en odoo".format(arb['contrato']))
+        continue
+
+      # Buscar cargo
+      id_cargo = 0
+      for car in cargos:
+        if car['cargo'] == arb['cargo']:
+          id_cargo = car['id']
+          break
+
+      if id_cargo == 0:
+        _logger.info("No existe el cargo {}".format(arb['cargo']))
+        continue
+
+      # Buscar empleado
+      id_empleado = 0
+      for emp in empleados:
+        if emp['codigo'] == arb['codigo']:
+          id_empleado = emp['id']
+          break
+
+      if id_empleado == 0:
+        _logger.info("No existe el empleado {}".format(arb['cargo']))
+        continue
 
       data = {
-        'contract_id': arb['contract_id'],
-        'pay_order': arb['pay_order'],
-        'job_id': arb['job_id'],
-        'comission_agent_id': arb['comission_agent_id'],
-        'corresponding_commission': arb['corresponding_commission'],
-        'remaining_commission': arb['remaining_commission'],
-        'commission_paid': arb['commission_paid'],
-        'actual_commission_paid': arb['actual_commission_paid'],
+        'contract_id': id_contrato_odoo,
+        'pay_order': arb['orden_de_pago'],
+        'job_id': id_cargo,
+        'comission_agent_id': id_empleado,
+        'corresponding_commission': arb['comision_correspondiente'],
+        'remaining_commission': arb['comision_restante'],
+        'commission_paid': arb['comision_pagada'],
+        'actual_commission_paid': arb['comision_real_pagada'],
         'company_id': company_id
       }
 
