@@ -1580,8 +1580,8 @@ class PabsMigration(models.Model):
     #--- Consulta ids de contratos de Pabs ---#
     consulta = "SELECT id_contrato FROM contratos WHERE CONCAT(serie, no_contrato) IN ({})".format(",".join(numeros_contrato))
 
-    _logger.info(consulta)
     respuesta = self._get_data(company_id, consulta)
+    _logger.info(respuesta)
 
     ids_contratos_pabs = []
     for res in respuesta:
