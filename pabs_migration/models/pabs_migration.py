@@ -1525,11 +1525,12 @@ class PabsMigration(models.Model):
 
 ###################################################################################################################
 
-  def CrearArboles(self, company_id, limite):
+  def CrearArboles(self, company_id, limite, contrato_individual = ""):
     _logger.info("Comienza creacion de árboles")
 
     #--- Consulta de contratos de ODOO sin árbol ---#
 
+    # Por contratos sin árbol
     consulta = """
       SELECT 
         con.id, 
@@ -1542,6 +1543,21 @@ class PabsMigration(models.Model):
             ORDER BY con.invoice_date DESC, name DESC
               LIMIT {}
     """.format(company_id, limite)
+
+    if contrato_individual != "":
+      # Por contratos individual sin árbol
+      consulta = """
+        SELECT 
+          con.id, 
+          con.name as contrato
+        FROM pabs_contract AS con
+        LEFT JOIN pabs_comission_tree AS arb ON con.id = arb.contract_id
+          WHERE con.company_id =  {}
+          AND con.contract_status_item IS NOT NULL
+          AND con.name = {}
+            GROUP BY con.id, con.name	HAVING COUNT(arb.id) = 0
+              ORDER BY con.invoice_date DESC, name DESC
+      """.format(company_id, contrato_individual)
 
     self.env.cr.execute(consulta)
 
