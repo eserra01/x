@@ -1410,7 +1410,7 @@ class PabsMigration(models.Model):
     salidas = []
     for res in respuesta:
       salidas.append({
-        'x_no_salida_pabs': res['x_no_salida_pabs'],
+        'x_no_salida_pabs': int(res['x_no_salida_pabs']),
         'recibo': res['recibo'],
         'codigo': res['codigo'],
         'cargo': res['cargo'],
