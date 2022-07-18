@@ -1064,8 +1064,8 @@ class PabsMigration(models.Model):
 
     # b) Entre fechas elegidas
     elif tipo_nota == 'notas':
-      limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '1900-01-01' AND '2999-01-01'"
-      limite_fechas_odoo = " AND nota.invoice_date BETWEEN '1900-01-01' AND '2999-01-01'"
+      limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '1900-01-01' AND '2999-12-31'"
+      limite_fechas_odoo = " AND nota.invoice_date BETWEEN '1900-01-01' AND '2999-12-31'"
     else:
       limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '{}' AND '{}'".format(desde, hasta)
       limite_fechas_odoo = " AND nota.invoice_date BETWEEN '{}' AND '{}'".format(desde, hasta)
@@ -1102,7 +1102,8 @@ class PabsMigration(models.Model):
 				FROM abonos AS abo
         INNER JOIN recibos AS rec ON abo.id_recibo = rec.id_recibo
 				INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
-					WHERE abo.importe > 0
+					WHERE con.tipo_bd != 20
+          AND abo.importe > 0
           AND rec.serie NOT IN ('{}')
           AND (abo.no_cobrador IN ({}) OR (abo.no_movimiento = {} AND abo.no_cobrador NOT IN ({})) ) 
           {}
@@ -1111,6 +1112,21 @@ class PabsMigration(models.Model):
 
     elif tipo_nota == 'notas':
       referencia = 'Migracion de nota de crédito'
+
+      consulta = """
+        SELECT
+					CONCAT(con.serie, con.no_contrato) as contrato,
+					abo.importe as importe,
+					abo.fecha_oficina as fecha_oficina,
+					CONCAT(rec.serie, rec.no_recibo) as recibo
+				FROM abonos AS abo
+        INNER JOIN recibos AS rec ON abo.id_recibo = rec.id_recibo
+				INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
+					WHERE con.tipo_bd != 20
+          AND abo.importe > 0
+          AND (rec.serie IN ('{}') OR abo.no_cobrador IN ('{}'))
+						ORDER BY fecha_oficina DESC, no_abono DESC
+      """.format(series_notas, cobrador_notas)
 
     respuesta = self._get_data(company_id, consulta)
 
@@ -1129,9 +1145,10 @@ class PabsMigration(models.Model):
         recibo as recibo
       FROM account_move AS nota
         WHERE type = 'out_refund'
+        AND ref = '{}'
         AND company_id = {}
         {}
-    """.format(company_id, limite_fechas_odoo)
+    """.format(referencia, company_id, limite_fechas_odoo)
 
     self.env.cr.execute(consulta)
 
