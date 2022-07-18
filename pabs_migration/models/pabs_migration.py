@@ -1649,7 +1649,8 @@ class PabsMigration(models.Model):
 				WHERE pago.no_cargo = 2
 				AND con.id_contrato IN ({})
 					GROUP BY con.id_contrato, per.no_personal HAVING SUM(pago.comision - pago.com_cobrador) > 0
-						ORDER BY id_contrato, orden_de_pago
+          						
+      ORDER BY id_contrato DESC, orden_de_pago
     """.format(",".join(ids_contratos_pabs), ",".join(ids_contratos_pabs))
 
     respuesta = self._get_data(company_id, consulta)
