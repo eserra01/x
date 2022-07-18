@@ -1405,6 +1405,8 @@ class PabsMigration(models.Model):
 				AND CONCAT(rec.serie, rec.no_recibo) IN ({})
     """.format(', '.join(solo_recibos))
 
+    _logger.info(consulta)
+
     respuesta = self._get_data(company_id, consulta)
 
     salidas = []
