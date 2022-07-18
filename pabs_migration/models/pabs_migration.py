@@ -1338,11 +1338,12 @@ class PabsMigration(models.Model):
 					abo.id as id,
           abo.ecobro_receipt as recibo
 				FROM account_payment as abo
+        INNER JOIN pabs_contract as con on abo.contract = con.id
 				LEFT JOIN pabs_comission_output as sal on abo.id = sal.payment_id
 					WHERE abo.state IN ('posted', 'sent', 'reconciled')
 					AND sal.id IS NULL
           AND abo.ecobro_receipt IS NOT NULL
-					AND mov.company_id = {}
+					AND con.company_id = {}
 						ORDER BY abo.payment_date DESC, abo.id DESC
               LIMIT {}
       """.format(company_id, limite)
