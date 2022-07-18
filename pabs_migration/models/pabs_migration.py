@@ -1230,7 +1230,9 @@ class PabsMigration(models.Model):
         _logger.info("No se encontró la factura del contrato {}".format(nota['contrato']))
         continue
 
-      #--- Encabezado ---#
+      #--- Crear nota de crédito---#
+
+      # Encabezado
       refund_data = {
         'type' : 'out_refund',
         'ref' : referencia,
@@ -1251,7 +1253,7 @@ class PabsMigration(models.Model):
       refund_id = account_obj.create(refund_data)
       _logger.info("Encabezado")
       
-      #--- Linea principal de débito ---#
+      # Linea principal de débito
       debit_line_vals = {
         'move_id' : refund_id.id,
         'account_id' : account_id.id,
@@ -1271,7 +1273,7 @@ class PabsMigration(models.Model):
       debit_line = account_line_obj.create(debit_line_vals)
       _logger.info("Linea debito")
 
-      #--- Linea principal de crédito ---#
+      # Linea principal de crédito
       credit_line_vals = {
         'move_id' : refund_id.id,
         'account_id' : refund_id.partner_id.property_account_receivable_id.id,
@@ -1292,7 +1294,7 @@ class PabsMigration(models.Model):
       refund_id.with_context(migration=True).action_post()
       _logger.info("Nota publicada")
 
-      #--- Conciliar nota con su factura---#  
+      #--- Conciliar nota con su factura ---#  
 
       # Obtenemos linea de débito
       debit_line = 0
@@ -1315,6 +1317,263 @@ class PabsMigration(models.Model):
         _logger.info("Nota conciliada")
       else:
         _logger.info("ERROR: Nota no conciliada")
+
+###################################################################################################################
+
+  # Nota: Se toma el campo cargo_general de la tabla cargos de PABS. Estos puestos deben existir en odoo.
+  def CrearSalidas(self, company_id, tipo, limite):
+    _logger.info("Comienza creacion de salidas: {}".format(tipo))
+    
+    if tipo not in ('pagos', 'notas'):
+      raise ValidationError("No se envio el parámetro tipo: pagos o notas")
+
+    tipo_salida = ""
+
+    #--- Consultar abonos de odoo sin salida ---#
+    if tipo == 'pagos':
+      tipo_salida = "payment_id"
+
+      consulta = """
+        SELECT 
+					abo.id as id,
+          abo.ecobro_receipt as recibo
+				FROM account_payment as abo
+				LEFT JOIN pabs_comission_output as sal on abo.id = sal.payment_id
+					WHERE abo.state IN ('posted', 'sent', 'reconciled')
+					AND sal.id IS NULL
+          abo.ecobro_receipt IS NOT NULL
+					AND mov.company_id = {}
+						ORDER BY abo.payment_date DESC, abo.id DESC
+              LIMIT {}
+      """.format(company_id, limite)
+    elif tipo == 'notas':
+      tipo_salida = "refund_id"
+
+      consulta = """
+        SELECT 
+					mov.id as id,
+					mov.recibo as recibo
+				FROM account_move AS mov
+				LEFT JOIN pabs_comission_output AS sal ON mov.id = sal.refund_id
+					WHERE mov.state = 'posted'
+					AND mov.type = 'out_refund'
+					AND sal.id IS NULL
+          AND mov.recibo IS NOT NULL
+					AND mov.company_id = '{}'
+						ORDER BY mov.invoice_date DESC, mov.id DESC
+              LIMIT {}
+      """.format(company_id, limite)
+
+    self.env.cr.execute(consulta)
+
+    recibos_odoo = []
+    for res in self.env.cr.fetchall():
+      recibos_odoo.append({
+        'id': res[0],
+        'recibo': res[1]
+      })
+
+    if not recibos_odoo:
+      _logger.info("No hay recibos")
+      return
+
+    #--- Consultar salidas de pabs ---#
+    consulta = """
+      SELECT 
+				pago.no_pago_abono as x_no_salida_pabs,
+        CASE 
+          WHEN abo.no_movimiento IN (2,11) THEN abo.no_abono
+          ELSE CONCAT(rec.serie, rec.no_recibo) 
+        END as recibo,
+				per.no_empleado_ext as codigo,
+				UPPER(car.cargo_general) as cargo,
+				CASE
+					WHEN pago.no_cargo = 2 THEN 0     /*COBRADOR comision_pagada = 0*/
+					ELSE pago.comision 
+				END as commission_paid,
+				pago.comision - pago.com_cobrador as actual_commission_paid
+			FROM pago_abonos AS pago
+			INNER JOIN abonos AS abo ON pago.no_abono = abo.no_abono
+      INNER JOIN recibos AS rec ON abo.id_recibo = rec.id_recibo
+			INNER JOIN personal AS per ON pago.no_personal = per.no_personal
+			INNER JOIN cargos AS car ON pago.no_cargo = car.no_cargo
+				WHERE pago.comision > 0
+				AND CONCAT(rec.serie, rec.no_recibo) IN ({})
+    """.format(', '.join(recibos_odoo['recibo']))
+
+    respuesta = self._get_data(company_id, consulta)
+
+    salidas = []
+    for res in respuesta:
+      salidas.append({
+        'x_no_salida_pabs': res['x_no_salida_pabs'],
+        'recibo': res['recibo'],
+        'codigo': res['codigo'],
+        'cargo': res['cargo'],
+        'commission_paid': float(res['commission_paid']),
+        'actual_commission_paid': float(res['actual_commission_paid'])
+      })
+
+    if not salidas:
+      _logger.info("No hay salidas de {} en PABS".format(tipo))
+
+    #--- Consultar cargos de odoo ---#
+    cargos = []
+    consulta = "SELECT id, name FROM hr_job WHERE company_id = {}".format(company_id)
+
+    self.env.cr.execute(consulta)
+
+    cargos = []
+    for res in self.env.cr.fetchall():
+      cargos.append({
+        'id': res[0],
+        'cargo': res[1]
+      })
+
+    #--- Consultar empleados de odoo ---#
+    empleados = []
+    consulta = """
+      SELECT 
+        emp.id as id,
+        emp.barcode as codigo
+      FROM hr_employee AS emp
+      INNER JOIN hr_job AS job ON emp.job_id = job.id
+        WHERE emp.company_id = {}
+    """.format(company_id)
+
+    self.env.cr.execute(consulta)
+
+    empleados = []
+    for res in self.env.cr.fetchall():
+      empleados.append({
+        'id': res[0],
+        'codigo': res[1]
+      })
+
+    #--- Crear salidas ---#
+    output_obj = self.env['pabs.comission.output']
+
+    cantidad_salidas = len(salidas)
+    for index, sal in enumerate(salidas, 1):
+      _logger.info("{} de {}. no_pago_abono: {}".format(index, cantidad_salidas, sal['x_no_salida_pabs']))
+
+      # Validar que no exista salida
+      ya_existe = self.env['pabs.comission_output'].search([
+        ('company_id', '=', company_id),
+        ('x_no_salida_pabs', '=', sal['x_no_salida_pabs'])
+      ])
+
+      if ya_existe:
+        _logger.info("Ya existe la salida {}".format(sal['x_no_salida_pabs']))
+        continue
+
+      # Buscar id de recibo de odoo
+      id_recibo_odoo = 0
+      for rec in recibos_odoo:
+        if rec['recibo'] == sal['recibo']:
+          id_recibo_odoo = rec['id']
+          break
+
+      if id_recibo_odoo == 0:
+        _logger.info("No se encontró el recibo {} en odoo".format(sal['recibo']))
+        continue
+
+      # Buscar cargo
+      id_cargo = 0
+      for car in cargos:
+        if car['cargo'] == sal['cargo']:
+          id_cargo = car['id']
+          break
+
+      if id_cargo == 0:
+        _logger.info("No existe el cargo {}".format(sal['cargo']))
+        continue
+
+      # Buscar empleado
+      id_empleado = 0
+      for emp in empleados:
+        if emp['codigo'] == sal['codigo']:
+          id_empleado = emp['id']
+          break
+
+      if id_empleado == 0:
+        _logger.info("No existe el empleado {}".format(sal['cargo']))
+        continue
+
+      data = {
+        tipo_salida: id_recibo_odoo,
+        'job_id': id_cargo,
+        'comission_agent_id': id_empleado,
+        'commission_paid': sal['commission_paid'],
+        'actual_commission_paid': sal['actual_commission_paid'],
+        'x_no_salida_pabs': sal['x_no_salida_pabs'],
+        'company_id': company_id
+      }
+
+      output_obj.create(data)
+      _logger.info("Salida de {} creada".format(tipo))
+
+###################################################################################################################
+
+  def CrearArboles(self, company_id):
+    _logger.info("Comienza creacion de árboles")
+
+    ### Consulta a ECO ODOO
+    plaza = ""
+    if company_id == 18:
+      plaza = "SALTILLO"
+    elif company_id == 19:
+      plaza = "MONCLOVA"
+
+    url = "http://nomina.dyndns.biz:8098/index.php"
+
+    querystring = {"pwd":"4dm1n","plaza": plaza}
+
+    payload = "consulta=EXEC%20%5Bdig%5D.%5BArbolesPorCrear%5D%20%40default%20%3D%200"
+
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
+    respuesta = json.loads(response.text)
+
+    arboles = []
+    for res in respuesta:
+      arboles.append({
+        'contract_id': res['contract_id'],
+        'pay_order': res['pay_order'],
+        'job_id': res['job_id'],
+        'comission_agent_id': res['comission_agent_id'],
+        'corresponding_commission': float(res['corresponding_commission']),
+        'remaining_commission': float(res['remaining_commission']),
+        'commission_paid': float(res['commission_paid']),
+        'actual_commission_paid': float(res['actual_commission_paid']),
+        'contrato': res['contrato'],
+        'cargo': res['cargo']
+      })
+
+    if not arboles:
+      _logger.info("No hay árboles")
+
+    tree_obj = self.env['pabs.comission.tree']
+
+    cantidad_registros = len(arboles)
+    for index, arb in enumerate(arboles, 1):
+      _logger.info("{} de {}. {} -> {}".format(index, cantidad_registros, arb['contrato'], arb['cargo']))
+
+      data = {
+        'contract_id': arb['contract_id'],
+        'pay_order': arb['pay_order'],
+        'job_id': arb['job_id'],
+        'comission_agent_id': arb['comission_agent_id'],
+        'corresponding_commission': arb['corresponding_commission'],
+        'remaining_commission': arb['remaining_commission'],
+        'commission_paid': arb['commission_paid'],
+        'actual_commission_paid': arb['actual_commission_paid'],
+        'company_id': company_id
+      }
+
+      tree_obj.create(data)
+      _logger.info("Registro de arbol creado")
 
 ###################################################################################################################
 
@@ -1403,135 +1662,6 @@ class PabsMigration(models.Model):
         _logger.info("Empleado creado {}".format(emp['codigo']))
       else:
         _logger.info("XXXXXXXXXXXXXX NO CREADO XXXXXXXXXXXXXX")
-
-###################################################################################################################
-
-  def CrearSalidas(self, company_id, tipo):
-    _logger.info("Comienza creacion de salidas: {}".format(tipo))
-    
-    if tipo not in ('pagos', 'notas'):
-      raise ValidationError("No se envio el parámetro tipo: pagos o notas")
-
-    ### Consulta a ECO ODOO
-    plaza = ""
-    if company_id == 18:
-      plaza = "SALTILLO"
-    elif company_id == 19:
-      plaza = "MONCLOVA"
-
-    url = "http://nomina.dyndns.biz:8098/index.php"
-
-    querystring = {"pwd":"4dm1n","plaza": plaza}
-
-    payload = "consulta=EXEC%20%5Bdig%5D.%5BSalidasPorCrear%5D%20%40tipo_pago_odoo%20%3D%20N'zztipozz'"
-    payload = payload.replace("zztipozz", tipo)
-
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
-    respuesta = json.loads(response.text)
-
-    salidas = []
-    for res in respuesta:
-      salidas.append({
-        'id_abo_nota': res['id_abo_nota'],
-        'job_id': res['job_id'],
-        'emp_id': res['emp_id'],
-        'commission_paid': float(res['commission_paid']),
-        'actual_commission_paid': float(res['actual_commission_paid']),
-        'x_no_salida_pabs': res['x_no_salida_pabs'],
-        'no_abono': res['no_abono']
-      })
-
-    if not salidas:
-      _logger.info("No hay salidas de {}".format(tipo))
-
-    tipo_salida = ""
-    if tipo == "pagos":
-      tipo_salida = "payment_id"
-    else :
-      tipo_salida = "refund_id"
-
-    output_obj = self.env['pabs.comission.output']
-
-    cantidad_salidas = len(salidas)
-    for index, sal in enumerate(salidas, 1):
-      _logger.info("{} de {}. no_pago_abono: {}".format(index, cantidad_salidas, sal['x_no_salida_pabs']))
-
-      data = {
-        tipo_salida: sal['id_abo_nota'],
-        'job_id': sal['job_id'],
-        'comission_agent_id': sal['emp_id'],
-        'commission_paid': sal['commission_paid'],
-        'actual_commission_paid': sal['actual_commission_paid'],
-        'company_id': company_id,
-        'x_no_salida_pabs': sal['x_no_salida_pabs']
-      }
-
-      output_obj.create(data)
-      _logger.info("Salida de {} creada".format(tipo))
-
-###################################################################################################################
-
-  def CrearArboles(self, company_id):
-    _logger.info("Comienza creacion de árboles")
-
-    ### Consulta a ECO ODOO
-    plaza = ""
-    if company_id == 18:
-      plaza = "SALTILLO"
-    elif company_id == 19:
-      plaza = "MONCLOVA"
-
-    url = "http://nomina.dyndns.biz:8098/index.php"
-
-    querystring = {"pwd":"4dm1n","plaza": plaza}
-
-    payload = "consulta=EXEC%20%5Bdig%5D.%5BArbolesPorCrear%5D%20%40default%20%3D%200"
-
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
-    respuesta = json.loads(response.text)
-
-    arboles = []
-    for res in respuesta:
-      arboles.append({
-        'contract_id': res['contract_id'],
-        'pay_order': res['pay_order'],
-        'job_id': res['job_id'],
-        'comission_agent_id': res['comission_agent_id'],
-        'corresponding_commission': float(res['corresponding_commission']),
-        'remaining_commission': float(res['remaining_commission']),
-        'commission_paid': float(res['commission_paid']),
-        'actual_commission_paid': float(res['actual_commission_paid']),
-        'contrato': res['contrato'],
-        'cargo': res['cargo']
-      })
-
-    if not arboles:
-      _logger.info("No hay árboles")
-
-    tree_obj = self.env['pabs.comission.tree']
-
-    cantidad_registros = len(arboles)
-    for index, arb in enumerate(arboles, 1):
-      _logger.info("{} de {}. {} -> {}".format(index, cantidad_registros, arb['contrato'], arb['cargo']))
-
-      data = {
-        'contract_id': arb['contract_id'],
-        'pay_order': arb['pay_order'],
-        'job_id': arb['job_id'],
-        'comission_agent_id': arb['comission_agent_id'],
-        'corresponding_commission': arb['corresponding_commission'],
-        'remaining_commission': arb['remaining_commission'],
-        'commission_paid': arb['commission_paid'],
-        'actual_commission_paid': arb['actual_commission_paid'],
-        'company_id': company_id
-      }
-
-      tree_obj.create(data)
-      _logger.info("Registro de arbol creado")
 
 ###################################################################################################################
   def CancelarPagos(self, ids):
