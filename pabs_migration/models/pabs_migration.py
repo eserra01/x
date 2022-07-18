@@ -1747,7 +1747,7 @@ class PabsMigration(models.Model):
       # Buscar empleado
       id_empleado = 0
       for emp in empleados:
-        if emp['codigo'] == arb['codigo']:
+        if emp['codigo'] == arb['codigo_comisionista']:
           id_empleado = emp['id']
           break
 
