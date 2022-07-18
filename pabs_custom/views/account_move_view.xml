@@ -20,6 +20,22 @@
         <attribute name="attrs">{'required' : [('type','=','out_refund')]}</attribute>
       </xpath>
 
+      <xpath expr="//button[@name='button_draft']" position="attributes">
+        <attribute name="groups">pabs_custom.group_cancel_account_move</attribute>
+      </xpath>
+
+      <xpath expr="//button[@name='button_cancel']" position="attributes">
+        <attribute name="groups">pabs_custom.group_cancel_account_move</attribute>
+      </xpath>
+      
+      <xpath expr="//button[@name='action_reverse']" position="attributes">
+        <attribute name="groups">pabs_custom.group_reverse_account_move</attribute>
+      </xpath>
+      
+      <xpath expr="//field[@name='partner_id']" position="after">
+        <field name="contract_id" />
+      </xpath>
+
     </field>
    </record>
 </odoo>
