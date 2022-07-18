@@ -1370,12 +1370,14 @@ class PabsMigration(models.Model):
     recibos_odoo = []
     solo_recibos = []
     for res in self.env.cr.fetchall():
-      solo_recibos = "'{}'".format(res[1])
+      recibo = "'{}'".format(res[1])
       
       recibos_odoo.append({
         'id': res[0],
-        'recibo': res[1]
+        'recibo': recibo
       })
+
+      solo_recibos.append(recibo)
 
     if not recibos_odoo:
       _logger.info("No hay recibos")
@@ -1403,7 +1405,7 @@ class PabsMigration(models.Model):
 			INNER JOIN cargos AS car ON pago.no_cargo = car.no_cargo
 				WHERE pago.comision > 0
 				AND CONCAT(rec.serie, rec.no_recibo) IN ({})
-    """.format(', '.join(solo_recibos))
+    """.format(",".join(solo_recibos))
 
     _logger.info(consulta)
 
