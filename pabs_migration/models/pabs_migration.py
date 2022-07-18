@@ -1283,7 +1283,7 @@ class PabsMigration(models.Model):
       for line in factura.line_ids:
         if line.debit > 0:
           inv_credit_line = line 
-          debit_line = inv_credit_line.id
+          debit_line = inv_credit_line
 
       # Construir objeto de conciliacion
       data = {
