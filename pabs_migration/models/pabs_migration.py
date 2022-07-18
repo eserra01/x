@@ -1554,7 +1554,7 @@ class PabsMigration(models.Model):
         LEFT JOIN pabs_comission_tree AS arb ON con.id = arb.contract_id
           WHERE con.company_id =  {}
           AND con.contract_status_item IS NOT NULL
-          AND con.name = {}
+          AND con.name = '{}'
             GROUP BY con.id, con.name	HAVING COUNT(arb.id) = 0
               ORDER BY con.invoice_date DESC, name DESC
       """.format(company_id, contrato_individual)
