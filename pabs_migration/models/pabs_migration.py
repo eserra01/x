@@ -6,15 +6,9 @@
 #
 ###########################################################################################
 
-from email import header
-from os import stat
-from random import vonmisesvariate
-from termios import VLNEXT
-from xml.dom import VALIDATION_ERR
 from odoo import fields, models, _, api
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
-from requests import status_codes
 from datetime import datetime, date, timedelta
 import requests
 import json
@@ -858,7 +852,7 @@ class PabsMigration(models.Model):
       if abo['recibo'] in recibos_odoo:
         abo['ya_existe'] = True
 
-    #--- Quitar pagos que ya existen ---#
+    #--- Dejar en la lista pagos que no existen ---#
     pagos = [elem for elem in pagos if elem['ya_existe'] == False]
 
     if not pagos:
@@ -1036,55 +1030,133 @@ class PabsMigration(models.Model):
 
 ###################################################################################################################
 
-  def CrearNotas(self, tipo_nota, company_id, publicar):
+  def CrearNotas(self, tipo_nota, company_id, desde, hasta, automatico, dias_hacia_atras, limite):
     if tipo_nota not in ('bonos', 'notas'):
-      raise ValidationError("No se envio un tipo de pago")
+      raise ValidationError("No se envio un tipo de nota")
 
     _logger.info("Comienza consulta de notas: {}".format(tipo_nota))
 
-    ### Consulta a ECO ODOO
-    plaza = ""
-    if company_id == 18:
-      plaza = "SALTILLO"
-    elif company_id == 19:
-      plaza = "MONCLOVA"
+    #--- Asignar fechas de nota a buscar ---#
 
-    url = "http://nomina.dyndns.biz:8098/index.php"
+    # a) Por fecha mas antigua de nota
+    consulta = ""
+    limite_fechas_pabs = ""
+    if automatico and tipo_nota == 'bonos':
+      consulta = """
+        SELECT 
+          COALESCE(MIN(invoice_date), '2021-12-01') as fecha_minima /*PROD*/
+        FROM account_move
+          WHERE type = 'out_refund'
+          AND state IN ('posted', 'sent', 'reconciled')
+          AND company_id = '{}'
+      """.format(company_id)
 
-    querystring = {"pwd":"4dm1n","plaza": plaza}
+      self.env.cr.execute(consulta)
 
-    payload = "consulta=EXEC%20%5Bdig%5D.%5BNotasPorCrear%5D%20%40tipo_nota_odoo%20%3D%20'zztipozz'"
-    payload = payload.replace("zztipozz", tipo_nota)
+      fecha_final = "1900-01-01"
+      for res in self.env.cr.fetchall():
+        fecha_final = res[0]
 
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+      fecha_inicial = fecha_final - timedelta(days = dias_hacia_atras)
 
-    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
-    respuesta = json.loads(response.text)
+      limite_fechas_pabs = " AND nota.fecha_oficina BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
+      limite_fechas_odoo = " AND nota.invoice_date BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
+
+    # b) Entre fechas elegidas
+    elif tipo_nota == 'notas':
+      limite_fechas_pabs = " AND nota.fecha_Oficina BETWEEN '1900-01-01' AND '2999-01-01'"
+      limite_fechas_odoo = " AND nota.invoice_date BETWEEN '1900-01-01' AND '2999-01-01'"
+    else:
+      limite_fechas_pabs = " AND nota.fecha_Oficina BETWEEN '{}' AND '{}'".format(desde, hasta)
+      limite_fechas_odoo = " AND nota.invoice_date BETWEEN '{}' AND '{}'".format(desde, hasta)
+
+    #--- Consultar notas de pabs basandose en las fechas del punto anterior ---#
+
+    no_movimiento = 0
+    series_notas = ""
+    cobrador_bonos = 0
+    cobrador_notas = 0
+    referencia = ""
+
+    if company_id == COMPANY_SAL:
+      series_notas = ""
+      cobrador_notas = 0
+    elif company_id == COMPANY_MON:
+      cobrador_bonos = 9
+      series_notas = "CNC"
+      cobrador_notas = 50
 
     notas = []
+    recibos_odoo = []
+
+    if tipo_nota == 'bonos':
+      no_movimiento = 3
+      referencia = 'Bono por inversión inicial'
+
+      consulta = """
+        SELECT
+					CONCAT(con.serie, con.no_contrato) as contrato,
+					abo.importe as importe,
+					abo.fecha_oficina as fecha_oficina,
+					CONCAT(rec.serie, rec.no_recibo) as recibo
+				FROM abonos AS abo
+        INNER JOIN recibos AS rec ON abo.id_recibo = rec.id_recibo
+				INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
+					WHERE abo.importe > 0
+          AND rec.serie NOT IN ('{}')
+          AND (abo.no_cobrador IN ({}) OR (abo.no_movimiento = {} AND abo.no_cobrador NOT IN ({})) ) 
+          {}
+						ORDER BY fecha_oficina DESC, no_abono DESC
+      """.format(series_notas, cobrador_bonos, no_movimiento, cobrador_notas, limite_fechas_pabs)
+
+    elif tipo_nota == 'notas':
+      referencia = 'Migracion de nota de crédito'
+
+    respuesta = self._get_data(company_id, consulta)
+
     for res in respuesta:
       notas.append({
-        'fecha_oficina': res['fecha_oficina'],
         'contrato': res['contrato'],
         'importe': float(res['importe']),
-        'no_abono': res['no_abono'],
-        'id_contrato': res['id_contrato'],
-        'partner_id': res['partner_id'],
+        'fecha_oficina': res['fecha_oficina'],
         'recibo': res['recibo'],
-        'id_factura': res['id_factura'],
-        'id_linea_debito': res['id_linea_debito']
+        'ya_existe': False
       })
+
+    #--- Consultar notas de odoo basandose en las fechas del punto anterior ---#
+    consulta = """
+      SELECT 
+        recibo as recibo
+      FROM account_move
+        WHERE type = 'out_refund'
+        AND company_id = {}
+        {}
+    """.format(company_id, limite_fechas_odoo)
+
+    self.env.cr.execute(consulta)
+
+    for res in self.env.cr.fetchall():
+      recibos_odoo.append(res[0])
+
+    #--- Marcar notas que ya existen ---#
+    for index, nota in enumerate(notas):
+      if nota['recibo'] in recibos_odoo:
+        nota['ya_existe'] = True
+
+    #--- Dejar en la lista pagos que no existen ---#
+    notas = [elem for elem in notas if elem['ya_existe'] == False]
 
     if len(notas) == 0:
       _logger.info("No hay notas")
       return
 
-    # DATOS CONSTANTES
-    
+    notas = notas[0 : limite]
+
+    #--- Datos constantes ---#
     account_obj = self.env['account.move']
     account_line_obj = self.env['account.move.line'].with_context(check_move_validity=False)
     journal_obj = self.env['account.journal']
-    #reconcile_obj = self.env['account.partial.reconcile']
+    reconcile_obj = self.env['account.partial.reconcile']
     
     journal_id = journal_obj.search([('company_id', '=', company_id),('type','=','sale'), ('name','=','VENTAS')],limit=1)
     if not journal_id:
@@ -1108,41 +1180,61 @@ class PabsMigration(models.Model):
     cantidad_notas = len(notas)
     for index, nota in enumerate(notas, 1):
 
-      _logger.info("{} de {}. {} - {}".format(index, cantidad_notas, nota['contrato'], nota['recibo']))
+      _logger.info("{} de {}. {} {} {}".format(index, cantidad_notas, nota['contrato'], nota['recibo'], nota['fecha_oficina']))
 
       existe_nota = self.env['account.move'].search([
         ('company_id', '=', company_id),
-        ('move_type', '=', 'out_refund'),
-        ('x_no_abono_pabs', '=', nota['no_abono'])
+        ('type', '=', 'out_refund'),
+        ('recibo', '=', nota['recibo'])
       ])
 
       if existe_nota:
         _logger.info("La nota ya existe")
         continue
 
-      # Encabezado
+      #--- Buscar contrato en ODOO ---#
+      con_obj = self.env['pabs.contract'].search([
+        ('company_id', '=', company_id),
+        ('name', '=', nota['contrato'])
+      ])
+
+      if not con_obj:
+        _logger.info("No se encontró el contrato {}".format(nota['contrato']))
+        continue
+
+      #--- Buscar factura del contrato ---#
+      factura = account_obj.search([
+        ('company_id', '=', company_id),
+        ('type', '=', 'out_invoice'),
+        ('contract', '=', con_obj.id)
+      ], limit = 1)
+
+      if not factura:
+        _logger.info("No se encontró la factura del contrato {}".format(nota['contrato']))
+        continue
+
+      #--- Encabezado ---#
       refund_data = {
-        'date' : nota['fecha_oficina'],
-        'commercial_partner_id' : nota['partner_id'],
-        'partner_id' : nota['partner_id'],
-        'ref' : nota['recibo'],
-        'move_type' : 'out_refund',
+        'type' : 'out_refund',
+        'ref' : referencia,
+        'invoice_date' : nota['fecha_oficina'],
+        'recibo': nota['recibo'],
+        'contract_id' : con_obj.id,
+        'commercial_partner_id' : con_obj.partner_id.id,
+        'partner_id' : con_obj.partner_id.id,
         'journal_id' : journal_id.id,
         'state' : 'draft',
         # 'currency_id' : currency_id.id,
-        'invoice_date' : nota['fecha_oficina'],
         'auto_post' : False,
-        'contract_id' : nota['id_contrato'],
         'invoice_user_id' : self.env.user.id,
-        'reversed_entry_id' : nota['id_factura'],
-        'x_no_abono_pabs': nota['no_abono'],
+        'reversed_entry_id' : factura.id,
         'company_id': company_id
       }        
       
       refund_id = account_obj.create(refund_data)
       _logger.info("Encabezado")
       
-      # Llenar datos de Linea principal de débito
+      #--- Linea principal de débito ---#
       debit_line_vals = {
         'move_id' : refund_id.id,
         'account_id' : account_id.id,
@@ -1150,7 +1242,7 @@ class PabsMigration(models.Model):
         'price_unit' : nota['importe'],
         'debit' : nota['importe'],
         'product_uom_id' : product_id.uom_id.id,
-        'partner_id' : nota['partner_id'],
+        'partner_id' : con_obj.partner_id.id,
         'amount_currency' : 0,
         'product_id' : prod_id,
         'is_rounding_line' : False,
@@ -1162,14 +1254,14 @@ class PabsMigration(models.Model):
       debit_line = account_line_obj.create(debit_line_vals)
       _logger.info("Linea debito")
 
-      # Llenar datos de Linea principal de débito
+      #--- Linea principal de crédito ---#
       credit_line_vals = {
         'move_id' : refund_id.id,
         'account_id' : refund_id.partner_id.property_account_receivable_id.id,
         'quantity' : 1,
         'date_maturity' : nota['fecha_oficina'],
         'amount_currency' : 0,
-        'partner_id' : nota['partner_id'],
+        'partner_id' : con_obj.partner_id.id,
         'tax_exigible' : False,
         'is_rounding_line' : False,
         'exclude_from_invoice_tab' : True,
@@ -1180,24 +1272,32 @@ class PabsMigration(models.Model):
       credit_line = account_line_obj.create(credit_line_vals)
       _logger.info("Linea credito")
 
-      if publicar:
-        refund_id.with_context(migration=True).action_post()
-        _logger.info("Nota creada")
+      refund_id.with_context(migration=True).action_post()
+      _logger.info("Nota publicada")
 
-      # Conciliar    
-      # dats = {
-      #   'debit_move_id' : nota['id_linea_debito'],
-      #   'credit_move_id' : credit_line.id,
-      #   'debit_amount_currency': abs(credit_line.balance),
-      #   'credit_amount_currency': abs(credit_line.balance),
-      #   'amount' : abs(line.balance),
-      # }
+      #--- Conciliar nota con su factura---#  
 
-      # reconcile_id = reconcile_obj.create(dats)
-      # if reconcile_id:
-      #   _logger.info("Conciliada")
-      # else:
-      #   _logger.info("X X X X X     NO CONCILADA     X X X X X")
+      # Obtenemos linea de débito
+      debit_line = 0
+      inv_credit_line = False
+      for line in factura.line_ids:
+        if line.debit > 0:
+          inv_credit_line = line 
+          debit_line = inv_credit_line.id
+
+      # Construir objeto de conciliacion
+      data = {
+        'debit_move_id' : debit_line.id,
+        'credit_move_id' : credit_line.id,
+        'amount' : abs(credit_line.balance),
+      }
+
+      conciliacion = reconcile_obj.create(data)    
+
+      if conciliacion:
+        _logger.info("Nota conciliada")
+      else:
+        _logger.info("ERROR: Nota no conciliada")
 
 ###################################################################################################################
 

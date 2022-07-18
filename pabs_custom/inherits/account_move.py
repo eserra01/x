@@ -15,6 +15,10 @@ class AcccountMove(models.Model):
   comission_output_ids = fields.One2many(comodel_name="pabs.comission.output", inverse_name="refund_id", string="Salidas de comisiones")
 
   def action_post(self):
+    # Para que se valide la nota sin crear salidas (migration en el contexto)      
+    if self.env.context.get('migration'):
+      return super(AcccountMove, self).action_post()
+
     comission_tree_obj = self.env['pabs.comission.tree']
     context = self._context
     res = super(AcccountMove, self).action_post()
