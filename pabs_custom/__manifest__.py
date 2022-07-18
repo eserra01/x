@@ -59,6 +59,7 @@
     'wizard/pabs_econtract_closing_transfer_wizard.xml',
     'wizard/pabs_econtract_wizard_view.xml',
     'security/security.xml',
+    'security/groups.xml',
     'views/menu_views.xml',
     'security/ir.model.access.csv',
     ],
