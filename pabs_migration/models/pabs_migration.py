@@ -1581,11 +1581,10 @@ class PabsMigration(models.Model):
     consulta = "SELECT id_contrato FROM contratos WHERE CONCAT(serie, no_contrato) IN ({})".format(",".join(numeros_contrato))
 
     respuesta = self._get_data(company_id, consulta)
-    _logger.info(respuesta)
 
     ids_contratos_pabs = []
     for res in respuesta:
-      ids_contratos_pabs.append(res[0])
+      ids_contratos_pabs.append(res['id_contrato'])
 
     #--- Consulta árboles de contratos de Pabs ---#
 
