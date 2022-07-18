@@ -1407,8 +1407,6 @@ class PabsMigration(models.Model):
 				AND CONCAT(rec.serie, rec.no_recibo) IN ({})
     """.format(",".join(solo_recibos))
 
-    _logger.info(consulta)
-
     respuesta = self._get_data(company_id, consulta)
 
     salidas = []
@@ -1466,7 +1464,7 @@ class PabsMigration(models.Model):
       _logger.info("{} de {}. no_pago_abono: {}".format(index, cantidad_salidas, sal['x_no_salida_pabs']))
 
       # Validar que no exista salida
-      ya_existe = self.env['pabs.comission_output'].search([
+      ya_existe = output_obj.search([
         ('company_id', '=', company_id),
         ('x_no_salida_pabs', '=', sal['x_no_salida_pabs'])
       ])
@@ -1518,8 +1516,12 @@ class PabsMigration(models.Model):
         'company_id': company_id
       }
 
-      output_obj.create(data)
-      _logger.info("Salida de {} creada".format(tipo))
+      nuevo_id = output_obj.create(data)
+
+      if nuevo_id:
+        _logger.info("Salida de {} creada".format(tipo))
+      else:
+        _logger.info("ERROR: Salida no creada")
 
 ###################################################################################################################
 
