@@ -1461,7 +1461,7 @@ class PabsMigration(models.Model):
 
     cantidad_salidas = len(salidas)
     for index, sal in enumerate(salidas, 1):
-      _logger.info("{} de {}. no_pago_abono: {}".format(index, cantidad_salidas, sal['x_no_salida_pabs']))
+      _logger.info("{} de {}. {}".format(index, cantidad_salidas, sal['recibo']))
 
       # Validar que no exista salida
       ya_existe = output_obj.search([
