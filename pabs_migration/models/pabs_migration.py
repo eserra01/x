@@ -1370,12 +1370,12 @@ class PabsMigration(models.Model):
     recibos_odoo = []
     solo_recibos = []
     for res in self.env.cr.fetchall():
+      solo_recibos = "'{}'".format(res[1])
+      
       recibos_odoo.append({
         'id': res[0],
         'recibo': res[1]
       })
-
-      solo_recibos.append(res[1])
 
     if not recibos_odoo:
       _logger.info("No hay recibos")
@@ -1404,8 +1404,6 @@ class PabsMigration(models.Model):
 				WHERE pago.comision > 0
 				AND CONCAT(rec.serie, rec.no_recibo) IN ({})
     """.format(', '.join(solo_recibos))
-
-    _logger.info(consulta)
 
     respuesta = self._get_data(company_id, consulta)
 
