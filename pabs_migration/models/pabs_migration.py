@@ -1370,14 +1370,14 @@ class PabsMigration(models.Model):
     recibos_odoo = []
     solo_recibos = []
     for res in self.env.cr.fetchall():
-      recibo = "'{}'".format(res[1])
+      recibo = res[1]
       
       recibos_odoo.append({
         'id': res[0],
         'recibo': recibo
       })
 
-      solo_recibos.append(recibo)
+      solo_recibos.append("'{}'".format(recibo))
 
     if not recibos_odoo:
       _logger.info("No hay recibos")
