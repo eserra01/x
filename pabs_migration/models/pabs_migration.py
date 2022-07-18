@@ -1059,15 +1059,15 @@ class PabsMigration(models.Model):
 
       fecha_inicial = fecha_final - timedelta(days = dias_hacia_atras)
 
-      limite_fechas_pabs = " AND nota.fecha_oficina BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
+      limite_fechas_pabs = " AND abo.fecha_oficina BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
       limite_fechas_odoo = " AND nota.invoice_date BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
 
     # b) Entre fechas elegidas
     elif tipo_nota == 'notas':
-      limite_fechas_pabs = " AND nota.fecha_Oficina BETWEEN '1900-01-01' AND '2999-01-01'"
+      limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '1900-01-01' AND '2999-01-01'"
       limite_fechas_odoo = " AND nota.invoice_date BETWEEN '1900-01-01' AND '2999-01-01'"
     else:
-      limite_fechas_pabs = " AND nota.fecha_Oficina BETWEEN '{}' AND '{}'".format(desde, hasta)
+      limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '{}' AND '{}'".format(desde, hasta)
       limite_fechas_odoo = " AND nota.invoice_date BETWEEN '{}' AND '{}'".format(desde, hasta)
 
     #--- Consultar notas de pabs basandose en las fechas del punto anterior ---#
