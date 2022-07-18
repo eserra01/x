@@ -1127,7 +1127,7 @@ class PabsMigration(models.Model):
     consulta = """
       SELECT 
         recibo as recibo
-      FROM account_move
+      FROM account_move AS nota
         WHERE type = 'out_refund'
         AND company_id = {}
         {}
