@@ -1206,7 +1206,7 @@ class PabsMigration(models.Model):
       factura = account_obj.search([
         ('company_id', '=', company_id),
         ('type', '=', 'out_invoice'),
-        ('contract', '=', con_obj.id)
+        ('contract_id', '=', con_obj.id)
       ], limit = 1)
 
       if not factura:
