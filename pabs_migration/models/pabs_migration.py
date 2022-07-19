@@ -1921,7 +1921,7 @@ class PabsMigration(models.Model):
       employee_vals = {}
 
       # Cobradores
-      if emp['cargo'] == 'COBRANZA':
+      if emp['cargo'] == 'COBRADOR':
         employee_vals = {
           'first_name': emp['nombre'],
           'last_name': emp['apellidos'],
