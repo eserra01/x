@@ -1861,13 +1861,13 @@ class PabsMigration(models.Model):
         'cargo': dato['cargo'], 
         'oficina': dato['oficina'], 
         'estatus': dato['estatus'],
-        'ya_existe': True
+        'existe': False
       })
 
     #--- Marcar empleados que no existen ---#
     for emp in empleados_pabs:
       if emp['codigo'] in empleados_odoo:
-        emp.update({'ya_existe': False})
+        emp.update({'existe': True})
 
     #--- Dejar en la lista empleados que no existen ---#
     empleados_pabs = [elem for elem in empleados_pabs if elem['ya_existe'] == False]
