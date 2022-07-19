@@ -1959,10 +1959,10 @@ class PabsMigration(models.Model):
           'date_of_admission': emp['fecha_ingreso'], 
           'barcode': emp['codigo'], 
           'resource_id': resource_id.id, 
+          'department_id': id_depto_ventas,
           'payment_scheme': esquema.id,
           'job_id': cargo.id,
           'warehouse_id': oficina.id,
-          'department_id': id_depto_ventas,
           'employee_status': estatus.id,
           'company_id' : company_id
         }
