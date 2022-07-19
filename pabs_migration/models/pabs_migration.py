@@ -1945,7 +1945,7 @@ class PabsMigration(models.Model):
 
         #--- Consultar oficinas ---#
         oficina = self.env['stock.warehouse'].search([
-          ('company_id', '=', company_id)
+          ('company_id', '=', company_id),
           ('name', '=', emp['oficina'])
         ])
 
