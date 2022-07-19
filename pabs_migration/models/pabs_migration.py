@@ -1937,7 +1937,7 @@ class PabsMigration(models.Model):
       else:
       # Empleados de ventas
         #--- Consultar esquema de pago ---#
-        esquema = self.env['pabs.payment_scheme'].search([('name', '=', emp['esquema'])])
+        esquema = self.env['pabs.payment.scheme'].search([('name', '=', emp['esquema'])])
 
         if not esquema:
           _logger.info("No existe el esquema {}".format(emp['esquema']))
