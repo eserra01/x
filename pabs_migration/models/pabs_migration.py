@@ -1851,7 +1851,7 @@ class PabsMigration(models.Model):
 
     empleados_pabs = []
     for dato in datos:
-      empleados_pabs.update({
+      empleados_pabs.append({
         'no_personal': int(dato['no_personal']),
         'codigo': dato['codigo'], 
         'nombre': dato['nombre'], 
