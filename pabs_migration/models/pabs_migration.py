@@ -1869,7 +1869,7 @@ class PabsMigration(models.Model):
         emp.update({'existe': True})
 
     #--- Dejar en la lista empleados que no existen ---#
-    empleados_pabs = [elem for elem in empleados_pabs if elem['ya_existe'] == False]
+    empleados_pabs = [elem for elem in empleados_pabs if elem['existe'] == False]
 
     if not empleados_pabs:
       _logger.info("No hay empleados")
