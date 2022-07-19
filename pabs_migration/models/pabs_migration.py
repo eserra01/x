@@ -1782,8 +1782,7 @@ class PabsMigration(models.Model):
 
     #--- Consultar empleados de Odoo ---#
     consulta = """
-      SELECT 
-        emp.id as id,
+      SELECT
         emp.barcode as codigo
       FROM hr_employee AS emp
       INNER JOIN hr_job AS job ON emp.job_id = job.id
@@ -1892,12 +1891,10 @@ class PabsMigration(models.Model):
 
     if not id_depto_cobranza:
       raise ValidationError("No se encontró el departamento de COBRANZA")    
-    
 
     #--- Crear empleados ---#
     cantidad_empleados = len(empleados_pabs)
 
-    raise ValidationError("{} empleados: {}".format(cantidad_empleados, empleados_pabs[0]))
     for index, emp in enumerate(empleados_pabs, 1):
       _logger.info("{} de {}. {} - {}".format(index, cantidad_empleados, emp['codigo'], emp['cargo']))
 
