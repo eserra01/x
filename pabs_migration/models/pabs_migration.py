@@ -6,6 +6,7 @@
 #
 ###########################################################################################
 
+from tkinter import BROWSE
 from odoo import fields, models, _, api
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
@@ -848,7 +849,7 @@ class PabsMigration(models.Model):
         })
 
     #--- Marcar pagos que ya existen ---#
-    for index, abo in enumerate(pagos):
+    for abo in pagos:
       if abo['recibo'] in recibos_odoo:
         abo['ya_existe'] = True
 
@@ -1156,7 +1157,7 @@ class PabsMigration(models.Model):
       recibos_odoo.append(res[0])
 
     #--- Marcar notas que ya existen ---#
-    for index, nota in enumerate(notas):
+    for nota in notas:
       if nota['recibo'] in recibos_odoo:
         nota['ya_existe'] = True
 
@@ -1773,91 +1774,208 @@ class PabsMigration(models.Model):
 
 ###################################################################################################################
 
-  def CrearEmpleadosVentas(self, company_id):
+  def CrearEmpleados(self, company_id):
     resource_obj = self.env['resource.resource']
     employee_obj = self.env['hr.employee']
 
     _logger.info("Comienza consulta de empleados")
 
-    ### Consulta a ECO ODOO
-    plaza = ""
-    if company_id == 18:
-      plaza = "SALTILLO"
-    elif company_id == 19:
-      plaza = "MONCLOVA"
+    #--- Consultar empleados de Odoo ---#
+    consulta = """
+      SELECT 
+        emp.id as id,
+        emp.barcode as codigo
+      FROM hr_employee AS emp
+      INNER JOIN hr_job AS job ON emp.job_id = job.id
+        WHERE emp.company_id = {}
+    """.format(company_id)
 
-    url = "http://nomina.dyndns.biz:8098/index.php"
+    self.env.cr.execute(consulta)
+    
+    empleados_odoo = []
+    for res in self.env.cr.fetchall():
+      empleados_odoo.append(res[0])
 
-    querystring = {"pwd":"4dm1n","plaza": plaza}
+    #--- Consultar empleados de Pabs ---#
+    consulta = """
+      /* Empleados de ventas */
+        SELECT 
+          0 as no_personal,
+          asi.no_nomina_asociado as codigo,
+          asi.nombre as nombre,
+          CONCAT(asi.apellido_pat, " ", asi.apellido_mat) as apellidos,
+          asi.fecha_ingreso as fecha_ingreso,
+          CASE 
+            WHEN tipo_contrato = 'C' THEN 'COMISION'
+            WHEN tipo_contrato = 'S' THEN 'SUELDO'
+            ELSE tipo_contrato
+          END as esquema,
+          CASE
+            WHEN UPPER(cargo_general) = "LIBRE" THEN "ASISTENTE SOCIAL"
+            ELSE UPPER(cargo_general)
+          END as cargo,
+          ofi.nombre_oficina as oficina,
+          CASE 
+            WHEN estatus = "A" THEN "ACTIVO"
+            WHEN estatus = "BP" THEN "BAJA PENDIENTE"
+            WHEN estatus = "BC" THEN "BAJA COMPLETA"
+            WHEN estatus = "P" THEN "PERMISO"
+            ELSE "ACTIVO"
+          END as estatus
+        FROM asociados AS asi
+        INNER JOIN cargos AS car ON asi.no_categoria = car.no_cargo
+        INNER JOIN oficina AS ofi ON asi.no_oficina = ofi.no_oficina
+          WHERE asi.no_nomina_asociado != ""
+      UNION
+      /* Cobradores */
+      SELECT 
+        no_personal as no_personal,
+        no_empleado_ext as codigo,
+        nombre as nombre,
+          '' as apellidos,
+          '2000-01-01' as fecha_ingreso,
+          '' as esquema,
+          'COBRADOR' as cargo,
+          '' as oficina,
+          CASE 
+          WHEN vigente = 1 THEN 'ACTIVO'
+              ELSE 'BAJA COMPLETA'
+        END as estatus
+      FROM personal
+        WHERE no_empleado_ext != ''
+          AND tipo = 2
+      ORDER BY codigo
+    """
 
-    payload = "consulta=EXEC%20%5Bdig%5D.%5BEmpleadosPorCrear%5D%20%40default%20%3D%200"
+    datos = self._get_data(company_id, consulta)
 
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-
-    response = requests.request("POST", url, data=payload, headers=headers, params=querystring)
-    respuesta = json.loads(response.text)
-
-    empleados = []
-    for res in respuesta:
-      empleados.append({
-        'nombre': res['nombre'],
-        'apellidos': res['apellidos'],
-        'fecha_ingreso': res['fecha_ingreso'],
-        'codigo': res['codigo'],
-        'id_esquema': res['id_esquema'],
-        'id_cargo': res['id_cargo'],
-        'id_oficina': res['id_oficina'],
-        'oficina': res['oficina'],
-        'id_estatus': res['id_estatus'],
-        'existe_oficina': res['existe_oficina'],
-        'existe_cargo': res['existe_cargo']
+    empleados_pabs = []
+    for dato in datos:
+      empleados_pabs.update({
+        'no_personal': int(dato['no_personal']),
+        'codigo': dato['codigo'], 
+        'nombre': dato['nombre'], 
+        'apellidos': dato['apellidos'], 
+        'fecha_ingreso': dato['fecha_ingreso'], 
+        'esquema': dato['esquema'], 
+        'cargo': dato['cargo'], 
+        'oficina': dato['oficina'], 
+        'estatus': dato['estatus'],
+        'ya_existe': True
       })
 
-    if not empleados:
+    #--- Marcar empleados que no existen ---#
+    for emp in empleados_pabs:
+      if emp['codigo'] in empleados_odoo:
+        emp.update({'ya_existe': False})
+
+    #--- Dejar en la lista empleados que no existen ---#
+    empleados_pabs = [elem for elem in empleados_pabs if elem['ya_existe'] == False]
+
+    if not empleados_pabs:
       _logger.info("No hay empleados")
+      return
     
-    ### DATOS CONSTANTES ###
+    #--- Consultar departamentos ---#
     id_depto_ventas = self.env['hr.department'].search([
       ('company_id', '=', company_id),
       ('name', '=', 'VENTAS')
     ]).id
 
     if not id_depto_ventas:
-      raise ValidationError("No se encontró el departamento de ventas")
+      raise ValidationError("No se encontró el departamento de VENTAS")
 
-    ### Crear empleados ###
-    for emp in empleados:
+    id_depto_cobranza = self.env['hr.department'].search([
+      ('company_id', '=', company_id),
+      ('name', '=', 'COBRANZA')
+    ]).id
 
-      if emp['existe_oficina'] == 0:
-        _logger.info("No existe oficina")
+    if not id_depto_cobranza:
+      raise ValidationError("No se encontró el departamento de COBRANZA")    
+    
+
+    #--- Crear empleados ---#
+    cantidad_empleados = len(empleados_pabs)
+
+    raise ValidationError("{} empleados: {}".format(cantidad_empleados, empleados_pabs[0]))
+    for index, emp in enumerate(empleados_pabs, 1):
+      _logger.info("{} de {}. {} - {}".format(index, cantidad_empleados, emp['codigo'], emp['cargo']))
+
+      #--- Consultar estatus ---#
+      estatus = self.env['hr.employee.status'].search([
+        ('name', '=', emp['estatus'])
+      ])
+
+      if not estatus:
+        _logger.info("No existe el estatus {}".format(emp['estatus']))
         continue
-      
-      if emp['existe_cargo'] == 0:
-        _logger.info("No existe cargo")
+
+      #--- Consultar cargo ---#
+      cargo = self.env['hr.job'].search([
+        ('company_id', '=', company_id),
+        ('name', '=', emp['cargo'])
+      ])
+
+      if not cargo:
+        _logger.info("No existe el cargo {}".format(emp['cargo']))
         continue
 
       resource_id = resource_obj.create({'name': "{} {}".format(emp['nombre'], emp['apellidos'])})
+      employee_vals = {}
 
-      employee_vals = {
-        'first_name': emp['nombre'],
-        'last_name': emp['apellidos'],
-        'date_of_admission': emp['fecha_ingreso'], 
-        'barcode': emp['codigo'], 
-        'resource_id': resource_id.id, 
-        'payment_scheme': emp['id_esquema'],
-        'job_id': emp['id_cargo'],
-        'warehouse_id': emp['id_oficina'],
-        #'department_id': id_depto_ventas, #PENDIENTE ASIGNAR DEPTO DE VENTAS AL FINAL
-        'employee_status': emp['id_estatus'],
-        'company_id' : company_id
-      }
-      
-      sale_employee_id = employee_obj.create(employee_vals)
-
-      if sale_employee_id:
-        _logger.info("Empleado creado {}".format(emp['codigo']))
+      # Cobradores
+      if emp['cargo'] == 'COBRANZA':
+        employee_vals = {
+          'first_name': emp['nombre'],
+          'last_name': emp['apellidos'],
+          'date_of_admission': emp['fecha_ingreso'], 
+          'barcode': emp['codigo'], 
+          'resource_id': resource_id.id, 
+          'job_id': cargo.id,
+          'department_id': id_depto_cobranza,
+          'employee_status': estatus.id,
+          'ecobro_id': emp['no_personal'],
+          'company_id' : company_id
+        }
       else:
-        _logger.info("XXXXXXXXXXXXXX NO CREADO XXXXXXXXXXXXXX")
+      # Empleados de ventas
+        #--- Consultar esquema de pago ---#
+        esquema = self.env['pabs.payment_scheme'].search([('name', '=', emp['esquema'])])
+
+        if not esquema:
+          _logger.info("No existe el esquema {}".format(emp['esquema']))
+          continue
+
+        #--- Consultar oficinas ---#
+        oficina = self.env['stock.warehouse'].search([
+          ('company_id', '=', company_id)
+          ('name', '=', emp['oficina'])
+        ])
+
+        if not oficina:
+          _logger.info("No existe la oficina {}".format(emp['oficina']))
+          continue
+
+        employee_vals = {
+          'first_name': emp['nombre'],
+          'last_name': emp['apellidos'],
+          'date_of_admission': emp['fecha_ingreso'], 
+          'barcode': emp['codigo'], 
+          'resource_id': resource_id.id, 
+          'payment_scheme': esquema.id,
+          'job_id': cargo.id,
+          'warehouse_id': oficina.id,
+          'department_id': id_depto_ventas,
+          'employee_status': estatus.id,
+          'company_id' : company_id
+        }
+      
+      employee_id = employee_obj.create(employee_vals)
+
+      if employee_id:
+        _logger.info("Empleado creado")
+      else:
+        _logger.info("ERROR: Empleado no creado")
 
 ###################################################################################################################
   def CancelarPagos(self, ids):
