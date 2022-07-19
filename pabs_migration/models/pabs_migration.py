@@ -17,19 +17,12 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-
-
-
-
-### TEST: ASIGNAR COMPAÑIAS DE PRODUCCION ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #COMPANY_SAL = 12 #TEST
 #COMPANY_MON = 13 #TEST
+#COMPANY_NUE = 14 #TEST
 COMPANY_SAL = 18 #PROD
 COMPANY_MON = 19 #PROD
-
-
-
-
+COMPANY_NUE = 20 #PROD
 
 class PabsMigration(models.Model):
   """Modelo para migrar datos desde PABS"""
@@ -62,6 +55,8 @@ class PabsMigration(models.Model):
       plaza = "SALTILLO"
     elif company_id == COMPANY_MON:
       plaza = "MONCLOVA"
+    elif company_id == COMPANY_NUE:
+      plaza = "LAREDO"
 
     url = "http://nomina.dyndns.biz:8099/index.php"
 
@@ -84,6 +79,8 @@ class PabsMigration(models.Model):
       plaza = "SALTILLO"
     elif company_id == COMPANY_MON:
       plaza = "MONCLOVA"
+    elif company_id == COMPANY_NUE:
+      plaza = "LAREDO"
 
     url = "http://nomina.dyndns.biz:8099/index.php"
 
@@ -231,9 +228,16 @@ class PabsMigration(models.Model):
     series_producto = []
     if company_id == COMPANY_SAL:
       series_producto = [    
+        {'serie': '1CJ', 'product': 'PL-00005'},
+        {'serie': '1AJ', 'product': 'PL-00005'},
+        {'serie': '2CJ', 'product': 'PL-00005'}
       ]
     elif company_id == COMPANY_MON:
-      series_producto = [    
+      series_producto = [
+        {'serie': '1CJ', 'product': 'PL-00005'}
+      ]
+    elif company_id == COMPANY_NUE:
+      series_producto = [
         {'serie': '1CJ', 'product': 'PL-00005'}
       ]
     
@@ -282,27 +286,13 @@ class PabsMigration(models.Model):
         warehouse_id = stock_obj.search([('name','=','CONTRATOS'),('company_id','=', company_id)], limit=1)      
         
         #Si no encuentra la oficina asignar la de contratos
-        if not warehouse_id.id: 
-          wh_id = 248
-        else:
-          wh_id = warehouse_id.id
+        raise ValidationError("No existe el almacen de CONTRATOS")
       
       # Se crea el asistente si no existe
       sale_employee_id = employee_obj.search([('barcode','=',d.get('cod_asistente')), ('company_id','=', company_id)])       
       if not sale_employee_id:
-        resource_id = resource_obj.create({'name': d.get('asistente')})
-        employee_vals = {
-          'first_name': d.get('cobrador'),
-          'last_name': '',
-          'date_of_admission':fields.Date.today(), 
-          'barcode': d.get('cod_asistente'), 
-          'resource_id': resource_id.id, 
-          'payment_scheme': comision_id.id if d.get('tipo_contrato') == 'C' or d.get('tipo_contrato') == '' else sueldo_id.id,
-          'job_id': job_id.id,
-          # 'department_id': sales_dept_id.id,
-          'warehouse_id': warehouse_id.id if warehouse_id else wh_id
-        }
-        sale_employee_id = employee_obj.create(employee_vals)
+        raise ValidationError("No existe el empleado {}".format(d.get('cod_asistente')))
+        
       # Se busca el producto según la serie
       default_code = False
       for s in series_producto:       
@@ -311,9 +301,11 @@ class PabsMigration(models.Model):
           break
       if not default_code:
         raise ValidationError('No se encuentra un producto para la serie: ' + str(d.get('serie')))
+
       product_id = product_obj.search([('default_code','=',default_code), ('company_id','=', company_id)], limit=1)
       if not product_id:
         raise ValidationError('No se encuentra el producto : ' + str(default_code))
+
       # Se busca la linea de tarifa para encontrar la inversión de papelería
       price_list_item_id = self.env['product.pricelist.item'].search([('product_id','=',product_id.id), ('company_id','=', company_id)], limit=1)
       if not price_list_item_id:
@@ -330,7 +322,7 @@ class PabsMigration(models.Model):
       val = {
         'name': d.get('contrato'),
         'product_id': product_id.id,
-        'warehouse_id': warehouse_id.id if warehouse_id else wh_id,
+        'warehouse_id': warehouse_id.id,
         'employee_id': sale_employee_id.id,
         'company_id': company_id
       }
@@ -347,6 +339,8 @@ class PabsMigration(models.Model):
           municipality_id = locality_obj.search([('name','=','SALTILLO'), ('company_id','=', company_id)])
         elif company_id == COMPANY_MON:
           municipality_id = locality_obj.search([('name','=','MONCLOVA'), ('company_id','=', company_id)])
+        elif company_id == COMPANY_NUE:
+          municipality_id = locality_obj.search([('name','=','NUEVO LAREDO'), ('company_id','=', company_id)])
 
       # Buscar municipio de cobro
       toll_municipality_id = locality_obj.search([('name','=', str(d.get('municipio_cobro')).strip().upper()), ('company_id','=', company_id)])  
@@ -355,6 +349,8 @@ class PabsMigration(models.Model):
           municipality_id = locality_obj.search([('name','=','SALTILLO'), ('company_id','=', company_id)])
         elif company_id == COMPANY_MON:
           municipality_id = locality_obj.search([('name','=','MONCLOVA'), ('company_id','=', company_id)])
+        elif company_id == COMPANY_NUE:
+          municipality_id = locality_obj.search([('name','=','NUEVO LAREDO'), ('company_id','=', company_id)])
 
       # Se busca la colonia
       neighborhood_id = self.env['colonias'].search([('name','=',str(d.get('colonia')).strip().upper()), ('company_id','=', company_id)],limit=1) 
@@ -723,6 +719,7 @@ class PabsMigration(models.Model):
     recibos_odoo = []
     cobradores_odoo = []
 
+    # Para Inversiones y excedentes
     if tipo_pago in ("stationary", "surplus"):
 
       if tipo_pago == "stationary":
@@ -741,7 +738,9 @@ class PabsMigration(models.Model):
 					"" as codigo_cobrador
 				FROM abonos AS abo
 				INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
-					WHERE abo.no_movimiento = {}
+					WHERE con.tipo_bd != 20
+          AND abo.importe > 0
+          AND abo.no_movimiento = {}
 					{} /*Limitar fechas pabs*/
             ORDER BY fecha_oficina DESC, no_abono DESC
       """.format(no_movimiento, limite_fechas_pabs)
@@ -776,6 +775,7 @@ class PabsMigration(models.Model):
         recibos_odoo.append(res[0])
 
     elif tipo_pago in ("payment", "transfer"):
+    # Para Pagos
       no_movimiento = 1
 
       #--- Consultar pagos de pabs basandose en las fechas del punto anterior ---#
@@ -791,7 +791,9 @@ class PabsMigration(models.Model):
 				INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
 				INNER JOIN recibos AS rec ON abo.id_recibo = rec.id_recibo
 				INNER JOIN personal AS per ON abo.no_cobrador = per.no_personal
-					WHERE abo.no_movimiento = {}
+					WHERE con.tipo_bd != 20
+          AND abo.importe > 0
+          AND abo.no_movimiento = {}
 					AND rec.serie NOT IN ('{}')
 					AND abo.no_cobrador NOT IN ({})
 					{} /*Limitar fechas pabs*/
