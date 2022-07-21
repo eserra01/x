@@ -451,6 +451,7 @@ class PabsMigration(models.Model):
       ('company_id', '=', company_id), 
       ('name', 'not ilike', 'MON'),
       ('name', 'not ilike', 'SLW'),
+      ('name', 'not ilike', 'NLD'),
       '|',
       ('property_account_receivable_id', '=', False),
       ('property_account_payable_id', '=', False)
@@ -488,9 +489,6 @@ class PabsMigration(models.Model):
       LEFT JOIN account_move AS mov ON mov.contract_id = con.id AND mov.type = 'out_invoice'
         WHERE mov.id IS NULL
         AND con.company_id = {}
-
-        AND con.name LIKE '1CJ%' /*TEST*/
-
           ORDER BY con.name
       LIMIT {}
     """.format(company_id, limite)
@@ -714,6 +712,9 @@ class PabsMigration(models.Model):
     elif company_id == COMPANY_MON:
       series_notas = "CNC"
       cobrador_notas = 50
+    elif company_id == COMPANY_NUE:
+      series_notas = "CNC"
+      cobrador_notas = 45
 
     pagos = []
     recibos_odoo = []
@@ -1088,6 +1089,10 @@ class PabsMigration(models.Model):
       cobrador_bonos = 9
       series_notas = "CNC"
       cobrador_notas = 50
+    elif company_id == COMPANY_NUE:
+      cobrador_bonos = 9
+      series_notas = "CNC"
+      cobrador_notas = 45
 
     notas = []
     recibos_odoo = []
