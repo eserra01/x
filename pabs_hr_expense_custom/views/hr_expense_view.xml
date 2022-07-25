@@ -79,10 +79,7 @@
     <field name="name">pabs.hr.expense.custom.form.payment.view</field>
     <field name="model">hr.expense.sheet.register.payment.wizard</field>
     <field name="inherit_id" ref="hr_expense.hr_expense_sheet_register_payment_view_form"/>
-    <field name="arch" type="xml">
-       <xpath expr="//field[@name='journal_id']" position="attributes">
-        <attribute name="invisible">1</attribute>
-      </xpath>     
+    <field name="arch" type="xml">          
       <xpath expr="//field[@name='partner_id']" position="attributes">
         <attribute name="invisible">1</attribute>
       </xpath>     
