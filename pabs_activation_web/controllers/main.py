@@ -147,7 +147,10 @@ class ActivationWeb(http.Controller):
         'lot_id' : lot_id.id,
         'municipality_id' : int(kargs.get('municipality_id')),
         'neighborhood_id' : int(kargs.get('neighborhood_id')),
-        'company_id' : company_id
+        'company_id' : company_id,
+        'partner_name': str(kargs.get('partner_name')).strip(),
+        'partner_fname': str(kargs.get('partner_fname')).strip(),
+        'partner_mname': str(kargs.get('partner_mname')).strip(),
       })
     contract_id = contract_obj.with_user(request.env.context['uid']).with_context({'company_id' : company_id}).create(kargs)
     if contract_id:
