@@ -59,7 +59,8 @@
                 <td><t t-esc="doc.payment_amount"/></td>
               </tr>
               <tr>
-                <td colspan="2"/>
+                <td><ins><strong>Fecha de impresión:</strong></ins></td>
+                <td><span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/></td>
                 <td colspan="2"><ins><strong>Código Activación:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
                 <td><t t-esc="doc.activation_code"/></td>
               </tr>
