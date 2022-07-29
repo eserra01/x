@@ -51,6 +51,7 @@ class StockMove(models.Model):
     ('efectivo', 'Efectivo'),
     ('deposito', 'Deposito'),
     ('tarjeta_bancaria', 'Tarjeta bancaria'),
+    ('transferencia', 'Transferencia'),
     ('pagare','Pagaré'),
     ('cheque', 'Cheque'),
     ('bono_pabs', 'Bono PABS'),
