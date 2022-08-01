@@ -98,8 +98,8 @@
                     <td><span t-esc="line['scheme']"/></td>
                     <t t-if="line['method_payment'] == 'efectivo'" t-set="efectivo" t-value="efectivo + line['total']"/>
                     <t t-if="line['method_payment'] == 'deposito'" t-set="deposito" t-value="deposito + line['total']"/>
-                    <t t-if="line['method_payment'] == 'cheque'" t-set="cheque" t-value="cheque + line['total']"/>
-                    <t t-if="line['method_payment'] == 'tarjeta_bancaria'" t-set="transferencia" t-value="transferencia + line['total']"/>
+                    <t t-if="line['method_payment'] == 'cheque'" t-set="cheque" t-value="cheque + line['total']"/>                    
+                    <t t-if="line['method_payment'] == 'tarjeta_bancaria' or line['method_payment'] == 'transferencia'" t-set="transferencia" t-value="transferencia + line['total']"/>
                     <t t-if="line['method_payment'] == 'pagare'" t-set="pagare" t-value="pagare + line['total']"/>
                     <t t-if="line['method_payment'] == 'bono_pabs'" t-set="pabs" t-value="pabs + line['total']"/>
                     <t t-set="total" t-value="total + line['total']"/>
