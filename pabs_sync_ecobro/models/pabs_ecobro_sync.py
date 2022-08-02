@@ -582,9 +582,7 @@ class PABSEcobroSync(models.Model):
           ### CONTINUA CON EL SIGUIENTE REGISTRO
           continue
         ### BUSCANDO LA/LAS FACTURA QUE VA A AFECTAR
-        invoice_ids = contract_id.refund_ids.filtered(
-          lambda x: x.type == 'out_invoice').sorted(
-          key=lambda p: p.invoice_date)
+        invoice_ids = contract_id.refund_ids.filtered(lambda x: x.type == 'out_invoice' and x.state == 'posted').sorted(key=lambda p: p.invoice_date)
       ### SI EL COBRO HACE REFERENCIA A FUNERARIA
       elif company_sync.type_company == 'mortuary':
         ###  BUSCAMOS EN BICATACORAS
@@ -642,8 +640,7 @@ class PABSEcobroSync(models.Model):
         ### CICLAMOS LAS FACTURAS
         for invoice_id in invoice_ids:
           ### BUSCAMOS LA LINEA DONDE EL DEBITO SEA MAYOR QUE 0
-          line = invoice_id.line_ids.filtered(
-            lambda l: l.debit > 0)[0]
+          line = invoice_id.line_ids.filtered(lambda l: l.debit > 0)[0]
           ### AGREGAMOS LA LINEA A RECONCILIAR
           reconcile.update({'debit_move_id' : line.id})
 
