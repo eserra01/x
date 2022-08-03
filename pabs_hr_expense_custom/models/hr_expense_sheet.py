@@ -85,29 +85,29 @@ class HrExpenseSheet(models.Model):
 class HrExpenseSheetRegisterPaymentWizard(models.TransientModel):
   _inherit = "hr.expense.sheet.register.payment.wizard"
 
-  # # Se sobreescribe el le método para tomar el diario especificado en la compañía y asignar gasto al pago
-  # def _get_payment_vals(self):        
-  #     """ Hook for extension """
-  #     if not self.company_id.expense_payment_journal_id:
-  #         raise UserError("No se ha definido un diario de gastos en la compañia.")  
-  #     # 
-  #     hr_expense_sheet_id = self.env['hr.expense.sheet'].browse(self.env.context.get('active_id'))
-  #     if self.amount > hr_expense_sheet_id.amount_residual:
-  #       raise UserError("El monto del pago no puede ser mayor a %s"%(str(hr_expense_sheet_id.amount_residual)))
-  #     return {
-  #         'partner_type': 'supplier',
-  #         'payment_type': 'outbound',
-  #         'partner_id': self.partner_id.id,
-  #         'partner_bank_account_id': self.partner_bank_account_id.id,
-  #         'journal_id': self.company_id.expense_payment_journal_id.id,            
-  #         'company_id': self.company_id.id,
-  #         'payment_method_id': self.payment_method_id.id,
-  #         'expense_sheet_id':  self.env.context.get('active_id'),
-  #         'amount': self.amount,
-  #         'currency_id': self.currency_id.id,
-  #         'payment_date': self.payment_date,
-  #         'communication': self.communication
-  #     }
+  # Se sobreescribe el le método para tomar el diario especificado en la compañía y asignar gasto al pago
+  def _get_payment_vals(self):        
+      """ Hook for extension """
+      # if not self.company_id.expense_payment_journal_id:
+      #     raise UserError("No se ha definido un diario de gastos en la compañia.")  
+      # 
+      hr_expense_sheet_id = self.env['hr.expense.sheet'].browse(self.env.context.get('active_id'))
+      if self.amount > hr_expense_sheet_id.amount_residual:
+        raise UserError("El monto del pago no puede ser mayor a %s"%(str(hr_expense_sheet_id.amount_residual)))
+      return {
+          'partner_type': 'supplier',
+          'payment_type': 'outbound',
+          'partner_id': self.partner_id.id,
+          'partner_bank_account_id': self.partner_bank_account_id.id,
+          'journal_id': self.journal_id.id,            
+          'company_id': self.company_id.id,
+          'payment_method_id': self.payment_method_id.id,
+          'expense_sheet_id':  self.env.context.get('active_id'),
+          'amount': self.amount,
+          'currency_id': self.currency_id.id,
+          'payment_date': self.payment_date,
+          'communication': self.communication
+      }
     
   def expense_post_payment(self):
     res = super(HrExpenseSheetRegisterPaymentWizard, self).expense_post_payment()
