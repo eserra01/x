@@ -1688,4 +1688,44 @@ class APIREST(http.Controller):
       return Response(json.dumps(response),headers=response_header)
     except Exception as e:
       return str(e)
+  
+  # Gastos
+  @http.route('/api/get/expenses/<int:company_id>', type='http', auth='none', csrf=False)
+  def get_expenses(self, **kargs):
+    if not kargs.get('company_id'):
+      return Response("Necesitas enviar un parametro de búsqueda", status=400)
+    else:
+      company_id = kargs.get('company_id')
+      company = request.env['res.company'].browse(company_id)
+    #
+    response_header = {'Content-Type': 'application/json'}
+    cr = request.cr
+    query = """
+    SELECT A.name,B.name AS employee,A.create_date,A.accounting_date,A.total_amount,state 
+    FROM hr_expense_sheet A 
+    INNER JOIN hr_employee B ON A.employee_id = B.id 
+    WHERE A.company_id = {}
+    """.format(company_id)
+    #
+    try:
+      cr.execute(query)
+      records = []
+      headers = [d[0] for d in cr.description]
+      for res in cr.fetchall():
+        data = {}
+        for ind, rec in enumerate(headers):
+          if isinstance(res[ind], datetime.date):
+            value = res[ind].strftime("%d/%m/%Y")
+          else:
+            value = res[ind]
+          data.update({
+            headers[ind] : value
+          })
+        records.append(data)
+      response = {
+        'result' : records
+      }
+      return Response(json.dumps(response),headers=response_header)
+    except Exception as e:
+      return str(e)
  
