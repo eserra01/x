@@ -3,102 +3,99 @@
   <template id="report_expense_sheet_custom_pabs" inherit_id="hr_expense.report_expense_sheet">    
     <xpath expr="//div[@class='page']" position="replace">
       <div class="page">
-                        <h2>Expenses Report</h2>
+        <div>
+            <img t-att-src="'data:image/png;base64,%s' % to_text(o.company_id.logo)" height="100px;"/>
+            <h2>Reporte de gastos</h2>
+        </div>
+        <div class="row mt32 mb32">
+            <div class="col-2">
+                <strong>Empleado:</strong>
+                <p t-field="o.employee_id.name"/>
+            </div>
+            <div class="col-2">
+                <strong>Fecha:</strong>
+                <p t-field="o.accounting_date"/>
+            </div>
+            <div class="col-3">
+                <strong>Descripción:</strong>
+                <p t-field="o.name"/>
+            </div>
+            <div class="col-2">
+                <strong>Validado por:</strong>
+                <p t-field="o.user_id"/>
+            </div>
+            <div class="col-3">
+                <strong>Pagado por:</strong>
+                <p t-field="o.payment_mode"/>
+            </div>
+        </div>
 
-                        <div class="row mt32 mb32">
-                            <div class="col-2">
-                                <strong>Employee:</strong>
-                                <p t-field="o.employee_id.name"/>
-                            </div>
-                            <div class="col-2">
-                                <strong>Date:</strong>
-                                <p t-field="o.accounting_date"/>
-                            </div>
-                            <div class="col-3">
-                                <strong>Description:</strong>
-                                <p t-field="o.name"/>
-                            </div>
-                            <div class="col-2">
-                                <strong>Validated By:</strong>
-                                <p t-field="o.user_id"/>
-                            </div>
-                            <div class="col-3">
-                                <strong>Payment By:</strong>
-                                <p t-field="o.payment_mode"/>
-                            </div>
-                        </div>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Fecha</th>
+                    <th>Gasto</th>
+                    <th>Cuenta</th>                   
+                    <th>Precio U.</th>
+                    <th>Impuestos</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-right">Precio</th>
+                    <th t-if="o.is_multiple_currency" class="text-right">Price in Company Currency</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr t-foreach="o.expense_line_ids" t-as="line">
+                    <td><span t-field="line.number"/></td>
+                    <td><span t-field="line.date"/></td>
+                    <td>
+                        <span t-field="line.name"/>
+                        <span t-field="line.description"/><br/>
+                        <span t-field="line.analytic_account_id.name"/>
+                    </td>
+                    <td>
+                        <span t-field="line.account_id.name"/><br/>
+                        <span t-field="line.account_id.code"/>
+                    </td>                   
+                    <td>
+                        <span t-field="line.unit_amount"/>
+                    </td>
+                    <td>
+                        <t t-foreach="line.tax_ids" t-as="tax">
+                            <t t-if="tax.description">
+                            <span t-field="tax.description"/>
+                            </t>
+                            <t t-if="not tax.description">
+                            <span t-field="tax.name"/>
+                            </t>
+                        </t>
+                    </td>
+                    <td class="text-center">
+                        <span t-field="line.quantity"/>
+                    </td>
+                    <td class="text-right">
+                        <span t-field="line.total_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: line.currency_id}"/>
+                    </td>
+                    <td t-if="o.is_multiple_currency" class="text-right">
+                        <span t-field="line.total_amount_company"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
 
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Número</th>
-                                    <th>Date</th>
-                                    <th>Name</th>
-                                    <th>Cuenta</th>
-                                    <th class="text-center">Ref.</th>
-                                    <th>Unit Price</th>
-                                    <th>Taxes</th>
-                                    <th class="text-center">Qty</th>
-                                    <th class="text-right">Price</th>
-                                    <th t-if="o.is_multiple_currency" class="text-right">Price in Company Currency</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-foreach="o.expense_line_ids" t-as="line">
-                                    <td><span t-field="line.number"/></td>
-                                    <td><span t-field="line.date"/></td>
-                                    <td>
-                                        <span t-field="line.name"/>
-                                        <span t-field="line.description"/><br/>
-                                        <span t-field="line.analytic_account_id.name"/>
-                                    </td>
-                                    <td>
-                                      <span t-field="line.account_id.name"/><br/>
-                                      <span t-field="line.account_id.code"/>
-                                    </td>
-                                    <td style="text-center">
-                                        <span t-field="line.reference"/>
-                                    </td>
-                                    <td>
-                                        <span t-field="line.unit_amount"/>
-                                    </td>
-                                    <td>
-                                        <t t-foreach="line.tax_ids" t-as="tax">
-                                          <t t-if="tax.description">
-                                            <span t-field="tax.description"/>
-                                          </t>
-                                          <t t-if="not tax.description">
-                                            <span t-field="tax.name"/>
-                                          </t>
-                                        </t>
-                                    </td>
-                                    <td class="text-center">
-                                        <span t-field="line.quantity"/>
-                                    </td>
-                                    <td class="text-right">
-                                        <span t-field="line.total_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: line.currency_id}"/>
-                                    </td>
-                                    <td t-if="o.is_multiple_currency" class="text-right">
-                                        <span t-field="line.total_amount_company"/>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <div class="row justify-content-end">
-                            <div class="col-4">
-                                <table class="table table-sm">
-                                    <tr class="border-black">
-                                        <td><strong>Total</strong></td>
-                                        <td class="text-right">
-                                            <span t-field="o.total_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                        <p>Certified honest and conform,<br/>(Date and signature).<br/><br/></p>
-                    </div>
+        <div class="row justify-content-end">
+            <div class="col-4">
+                <table class="table table-sm">
+                    <tr class="border-black">
+                        <td><strong>Total</strong></td>
+                        <td class="text-right">
+                            <span t-field="o.total_amount" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>        
+    </div>
     </xpath>
   </template>
 </odoo>
