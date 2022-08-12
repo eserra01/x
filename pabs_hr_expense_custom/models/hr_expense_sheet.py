@@ -9,6 +9,7 @@
 from sre_parse import expand_template
 from odoo import fields, models, _, api
 from odoo.exceptions import UserError
+from datetime import date
 
 class HrExpenseSheet(models.Model):
   _inherit = 'hr.expense.sheet'
@@ -16,6 +17,7 @@ class HrExpenseSheet(models.Model):
   amount_residual = fields.Float(string="Monto restante", compute='_compute_amount_resiudal')
   show_payment_button = fields.Boolean(string="Mostrar botón de pago", readonly=True)
   payments_number = fields.Integer(string="Pagos", compute='_compute_payments') 
+  state_log = fields.Char(string='Log de estatus', readonly=True)
 
   def action_get_payments_view(self):
     payment_ids = self.env['account.payment'].search([('expense_sheet_id','=',self.id),('state','in',['posted','reconciled'])])
@@ -81,6 +83,24 @@ class HrExpenseSheet(models.Model):
       if not allow:        
         raise UserError("El límite de gastos que tiene autorizado es por $%s, el gasto solo puede ser aprobado por un usuario autorizado."%(self.company_id.expense_limit))        
     return super(HrExpenseSheet, self).approve_expense_sheets()
+  
+  def write(self, vals):
+    # Obtenmos el status previo si el registró cambio de status
+    previous_state = self.state   
+    rec = super(HrExpenseSheet, self).write(vals)
+    # Si el registro cambia de estatus actualizamos el campo del log
+    for k in vals.keys():     
+      if k == 'state':        
+        states_dic = {'draft':'Borrador','submit':'Enviado','approve':'Aprobado','post':'Publicado','done':'Pagado','cancel':'Rechazado'}        
+        today = date.today()    
+        if previous_state:          
+          if self.state_log:          
+            log = str(self.state_log) + ', ' + str(states_dic[previous_state]) + '->' + str(states_dic[vals.get('state')]) + ' (' + str(today.strftime("%d/%m/%Y")) + ')'
+          else:          
+            log = str(states_dic[previous_state]) + '->' + str(states_dic[vals.get('state')]) + ' (' + str(today.strftime("%d/%m/%Y")) + ')'
+          self.state_log = log
+          break        
+    return rec
 
 class HrExpenseSheetRegisterPaymentWizard(models.TransientModel):
   _inherit = "hr.expense.sheet.register.payment.wizard"

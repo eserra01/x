@@ -1701,7 +1701,7 @@ class APIREST(http.Controller):
     response_header = {'Content-Type': 'application/json'}
     cr = request.cr
     query = """
-    SELECT A.name,B.name AS employee,A.create_date,A.accounting_date,A.total_amount,state 
+    SELECT A.name,B.name AS employee,A.create_date,A.accounting_date,A.total_amount,state, A.state_log 
     FROM hr_expense_sheet A 
     INNER JOIN hr_employee B ON A.employee_id = B.id 
     WHERE A.company_id = {}
