@@ -8,7 +8,7 @@
     <field name="arch" type="xml">
 
       <xpath expr="//field[@name='state']" position="before">
-        <button name="%(mortuary_receipt_action)d" string="Imprimir recibo" type="action" class="btn btn-primary" attrs="{'invisible' : [('reference', '!=', 'payment_mortuary')]}"/>
+        <button name="%(mortuary_receipt_action)d" string="Imprimir recibo" type="action" class="btn btn-primary" attrs="{'invisible' : ['|',('state','in',['draft','cancelled']),('reference', '!=', 'payment_mortuary')]}"/>
       </xpath>
 
     </field>
