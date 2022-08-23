@@ -39,6 +39,12 @@ SERVICE = [
   ('realized','Realizado'),
   ('made_receivable','Realizado por cobrar')]
 
+TRANSFERS = [
+  ('without','SIN TRASPASO'),  
+  ('commission_200','TRASPASO CON COMISIÓN $200'),
+  ('commission_rest','TRASPASO CON COMISIÓN RESTANTE'),
+  ('without_commission','TRASPASO SIN COMISIÓN')]
+
 MARITAL_STATUS = [
   ('Casado(a)', 'CASADO(A)'),
   ('Soltero(o)', 'SOLTERO(A)'),
@@ -69,6 +75,8 @@ class PABSContracts(models.Model):
   employee_id = fields.Many2one(comodel_name='hr.employee', related="lot_id.employee_id", tracking=True, string='Asistente activación')
   salary_scheme = fields.Boolean(string='Esquema de pago del empleado', related="employee_id.payment_scheme.allow_all",tracking=True)
   payment_scheme_id = fields.Many2one(comodel_name='pabs.payment.scheme', tracking=True, default=lambda self : self.env['pabs.payment.scheme'].search([],limit=1).id, string='Esquema de pago')
+  trasnsfer_type = fields.Selection(string="Tipo de traspaso", selection=TRANSFERS, default='without')
+  commission_rest_amount = fields.Float(string="Monto de comisión")
   full_name = fields.Char(string="Nombre completo", tracking=True, compute="calc_full_name", search="_search_full_name")
   street = fields.Char(tracking=True, string='Calle / Número')
   street_toll = fields.Char(tracking=True, string = 'Calle')
@@ -1155,7 +1163,55 @@ class PABSContracts(models.Model):
           partner_id = previous.partner_id
           partner_id.write({'name' : previous.name})
         previous.state = 'contract'
+        # Se crea el árbol de comisiones
         previous.create_commision_tree(invoice_id=invoice_id)
+
+        # ************* MODIFICACIÖN PARA REAFILIIACIONES *************************
+        # lines_prev = []
+        # for line in previous.commission_tree:
+        #   lines_prev.append(line.job_id.name + ' -> ' + str(line.corresponding_commission)  + ' / ' + str(line.remaining_commission) + ' / ' + str(line.commission_paid) + ' / ' + str(line.actual_commission_paid))
+        
+        # Para modificar el árbol de contratos dependiendo de las opciones del tipo de traspaso            
+        amount_fide = sum(previous.commission_tree.filtered(lambda x: x.job_id.name in ['FIDEICOMISO']).mapped('corresponding_commission'))
+        amount_as = sum(previous.commission_tree.filtered(lambda x: x.job_id.name in ['ASISTENTE SOCIAL']).mapped('corresponding_commission'))
+        plus_amount_fide = sum(previous.commission_tree.filtered(lambda x: x.job_id.name not in ['PAPELERIA','FIDEICOMISO','ASISTENTE SOCIAL']).mapped('corresponding_commission'))
+        fide_line_id = previous.commission_tree.filtered(lambda x: x.job_id.name in ['FIDEICOMISO'])
+        as_line_id = previous.commission_tree.filtered(lambda x: x.job_id.name in ['ASISTENTE SOCIAL'])
+        line_ids = previous.commission_tree.filtered(lambda x: x.job_id.name not in ['PAPELERIA','FIDEICOMISO'])       
+        # Traspaso sin comisión
+        if previous.trasnsfer_type == 'without_commission':        
+          # 
+          line_ids.corresponding_commission = 0
+          line_ids.remaining_commission = 0
+          # Comisiones correspondientes
+          fide_line_id.corresponding_commission = fide_line_id.remaining_commission = amount_fide + plus_amount_fide + amount_as       
+        # Traspaso con comisión de 200
+        if previous.trasnsfer_type == 'commission_200':
+          transfer_amount = 200
+          #
+          line_ids.corresponding_commission = 0
+          line_ids.remaining_commission = 0
+          # Comisión correspondientes
+          as_line_id.corresponding_commission = as_line_id.remaining_commission = transfer_amount
+          fide_line_id.corresponding_commission = fide_line_id.remaining_commission = amount_fide + plus_amount_fide + amount_as - transfer_amount          
+        # Traspaso con comisión especificada
+        if previous.trasnsfer_type == 'commission_rest':
+          #
+          if previous.commission_rest_amount < 0:
+            raise ValidationError("Especifique un monto mayor a cero en el monto de comisión.")
+                    
+          transfer_amount = previous.commission_rest_amount                             
+          # Comisión correspondientes
+          as_line_id.corresponding_commission = as_line_id.remaining_commission = transfer_amount
+          fide_line_id.corresponding_commission = fide_line_id.remaining_commission = amount_fide + amount_as - transfer_amount          
+
+        # lines = []
+        # for line in previous.commission_tree:
+        #   lines.append(line.job_id.name + ' -> ' + str(line.corresponding_commission)  + ' / ' + str(line.remaining_commission) + ' / ' + str(line.commission_paid) + ' / ' + str(line.actual_commission_paid))
+        # if previous.trasnsfer_type != 'without':
+        #   raise ValidationError(str(previous.excedent) + "\n" + str(lines_prev) + "\n" + str(lines))
+        
+        # **************************************************************************
         return invoice_id
 
   def reconcile_all(self, reconcile={}):

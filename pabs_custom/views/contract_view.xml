@@ -171,6 +171,9 @@
               <field name="invoice_date" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" required="True"/>
               <field name="employee_id" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" readonly="True"/>
               <field name="payment_scheme_id" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" required="True"/>
+
+              <field name="trasnsfer_type" required="True" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" invisible="1"/>
+              <field name="commission_rest_amount" attrs="{'invisible' : ['|',('lot_id','=',False),('trasnsfer_type','!=','commission_rest')], 'readonly' : [('state','=','contract')]}" />
             </group>
 
             <group string="Datos de inversión inicial" attrs="{'invisible' : [('lot_id','=',False)]}"  col="4">
