@@ -775,7 +775,7 @@ class PABSEcobroSync(models.Model):
       else:
         _logger.info("Todos los recibos fueron afectados correctamente, esta totalmente actualizado!!")
     except Exception as e:
-      self._cr.rollback()
+      # self._cr.rollback()
       _logger.warning("Hubo un problema con la petición al webservice, mensaje: {}".format(e))
     if log:
       try:
