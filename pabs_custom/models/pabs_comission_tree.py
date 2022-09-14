@@ -307,6 +307,21 @@ class ComissionTree(models.Model):
                 
                 # Demas cargos
                 if com.remaining_commission > 0 and MontoPago > 0:
+
+                    ### 2022-09-08: El cargo de PRESIDENTE solo puede comisionar si el contrató tiene al menos $2,000 en abonos ###
+                    if com.job_id.name == "PRESIDENTE":
+                        minimo_abonado = 2000
+                        abonos = self.env['account.payment'].search([
+                            ('contract', '=', contrato.id),
+                            ('state', 'not in', ['draft', 'cancel', 'cancelled']),
+                            ('reference', 'in', ['stationary', 'surplus', 'payment'])
+                        ])
+
+                        total_abonos = sum(abonos.mapped('amount'))
+                        
+                        if total_abonos <= minimo_abonado:
+                            continue
+                        
                     comisionRestante = com.remaining_commission
                     comisionPagada = com.commission_paid
                     comisionRealPagada = com.actual_commission_paid
@@ -353,6 +368,21 @@ class ComissionTree(models.Model):
             for com in arbol:
                 
                 if com.remaining_commission > 0 and MontoPago > 0:
+                    
+                    ### 2022-09-08: El cargo de PRESIDENTE solo puede comisionar si el contrató tiene al menos $2,000 en abonos ###
+                    if com.job_id.name == "PRESIDENTE":
+                        minimo_abonado = 2000
+                        abonos = self.env['account.payment'].search([
+                            ('contract', '=', contrato.id),
+                            ('state', 'not in', ['draft', 'cancel', 'cancelled']),
+                            ('reference', 'in', ['stationary', 'surplus', 'payment'])
+                        ])
+
+                        total_abonos = sum(abonos.mapped('amount'))
+                        
+                        if total_abonos <= minimo_abonado:
+                            continue
+                        
                     comisionRestante = com.remaining_commission
                     comisionPagada = com.commission_paid
                     comisionRealPagada = com.actual_commission_paid
@@ -442,3 +472,5 @@ class ComissionTree(models.Model):
                 com.write({"actual_commission_paid":comisionRealPagada})
             else:
                 com.write({"commission_paid":comisionPagada, "actual_commission_paid":comisionRealPagada, "remaining_commission":comisionRestante})
+        # Se borran las salidas
+        salida_comisiones.unlink()
