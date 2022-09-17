@@ -6,7 +6,6 @@
 #
 ###########################################################################################
 
-from tkinter import BROWSE
 from odoo import fields, models, _, api
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
@@ -2134,3 +2133,307 @@ class PabsMigration(models.Model):
     # Se crean los alamcenes
     stock_obj.create(vals)
     return True
+
+    ###################################################################################################################
+  ### Actualizar datos ###
+  def ActualizarDatos(self, company_id, tipo):
+    contract_obj = self.env['pabs.contract']
+
+    _logger.info("Comienza actualizacion de {}".format(tipo))
+
+    ##########################################
+    ############### COBRADORES ###############
+    if tipo == 'cobradores':
+
+      ### Obtener contratos de PABS ###
+      consulta = """
+        SELECT 
+          CONCAT(con.serie, con.no_contrato) as contrato,
+          cob.no_empleado_ext AS cobrador
+        FROM contratos AS con
+        INNER JOIN personal AS cob ON con.no_cobrador = cob.no_personal
+          WHERE con.tipo_bd != 20
+          AND con.no_cobrador != 1 AND con.no_cobrador IS NOT NULL
+            ORDER BY CONCAT(con.serie, con.no_contrato) DESC
+      """
+      respuesta = self._get_data(company_id, consulta)
+
+      contratos_pabs = []
+      for res in respuesta:
+        contratos_pabs.append({
+          'contrato': res['contrato'],
+          'cobrador': res['cobrador']
+        })
+
+      ### Obtener contratos de ODOO ###
+      consulta = """
+        SELECT 
+          con.id as id,
+          con.name as contrato,
+          cob.barcode as cobrador
+        FROM pabs_contract AS con
+        INNER JOIN hr_employee AS cob ON con.debt_collector = cob.id
+          WHERE con.company_id = {}            
+            ORDER BY con.name DESC
+
+      """.format(company_id)
+
+      self.env.cr.execute(consulta)
+
+      contratos_odoo = []
+      for res in self.env.cr.fetchall():
+        contratos_odoo.append({
+          'id': res[0], 
+          'contrato': res[1], 
+          'cobrador': res[2]
+        })
+
+      if len(contratos_odoo) == 0:
+        _logger.info("No hay contratos")
+        return
+
+      ### Obtener cobradores de ODOO ###
+      consulta = """
+        SELECT 
+          emp.id,
+          emp.barcode as codigo
+        FROM hr_employee AS emp
+        INNER JOIN hr_job AS job ON emp.job_id = job.id
+          WHERE job.name NOT LIKE '%ASIS%'
+          AND emp.company_id = {}
+      """.format(company_id)
+
+      self.env.cr.execute(consulta)
+
+      cobradores = []
+      for res in self.env.cr.fetchall():
+        cobradores.append({
+          'id': res[0],
+          'codigo': res[1]
+        })
+
+      ### Comparar y actualizar contratos de odoo ###
+      cantidad_contratos_odoo = len(contratos_odoo)
+      for index, con in enumerate(contratos_odoo, 1):
+
+        #Buscar contrato de pabs
+        con_pabs = next( (x for x in contratos_pabs if x['contrato'] == con['contrato']), 0)
+        if con_pabs == 0:
+          _logger.info("{} de {}. {} No se encontró contrato en pabs".format(index, cantidad_contratos_odoo, con['contrato']))
+          continue
+        
+        if con['cobrador'] != con_pabs['cobrador']:
+          #Buscar cobrador de PABS en lista de cobradores de ODOO
+          cob = next( (x for x in cobradores if x['codigo'] == con_pabs['cobrador']), 0)
+          if cob == 0:
+            _logger.info("{} de {}. {} No se encontró cobrador en odoo {}".format(index, cantidad_contratos_odoo, con['contrato'], con_pabs['cobrador']))
+            continue
+
+          #Actualizar contrato
+          contract_obj.browse(con['id']).write({'debt_collector': cob['id']})
+          _logger.info("{} de {}. {} Cobrador asignado -> {}".format(index, cantidad_contratos_odoo, con['contrato'], con_pabs['cobrador']))
+
+    ##########################################
+    ############### ESTATUS ##################
+    elif tipo == 'estatus':
+      
+      ### Obtener contratos de PABS ###
+      consulta = """
+        SELECT 
+          CONCAT(con.serie, con.no_contrato) as contrato,
+          UPPER(est.estatus) as estatus,
+          UPPER(mot.motivo) as motivo
+        FROM contratos AS con
+        INNER JOIN motivos AS mot ON con.no_motivo = mot.no_motivo
+        INNER JOIN estatus AS est ON mot.no_estatus = est.no_estatus
+          WHERE con.tipo_bd != 20
+          AND con.serie != '1CZ'
+            ORDER BY CONCAT(con.serie, con.no_contrato) DESC
+      """
+      respuesta = self._get_data(company_id, consulta)
+
+      contratos_pabs = []
+      for res in respuesta:
+        contratos_pabs.append({
+          'contrato': res['contrato'],
+          'estatus': res['estatus'],
+          'motivo': res['motivo']
+        })
+
+      ### Obtener contratos de ODOO ###
+      consulta = """
+        SELECT 
+          con.id as id,
+          con.name as contrato,
+          COALESCE(status.status, '') as estatus,
+	        COALESCE(motivo.reason, '') as motivo
+        FROM pabs_contract AS con
+        LEFT JOIN pabs_contract_status as status on con.contract_status_item = status.id
+        LEFT JOIN pabs_contract_status_reason as motivo on con.contract_status_reason = motivo.id
+          WHERE con.company_id = {}
+            ORDER BY con.name DESC
+      """.format(company_id)
+
+      self.env.cr.execute(consulta)
+
+      contratos_odoo = []
+      for res in self.env.cr.fetchall():
+        contratos_odoo.append({
+          'id': res[0], 
+          'contrato': res[1], 
+          'estatus': res[2],
+          'motivo': res[3],
+        })
+
+      if len(contratos_odoo) == 0:
+        _logger.info("No hay contratos")
+        return
+
+      ### Obtener estatus y motivos de ODOO ###
+      consulta = "SELECT id, status FROM pabs_contract_status"
+      self.env.cr.execute(consulta)
+
+      estatus = []
+      for res in self.env.cr.fetchall():
+        estatus.append({
+          'id': res[0],
+          'estatus': res[1]
+        })
+
+      consulta = "SELECT id, status_id, reason FROM pabs_contract_status_reason"
+      self.env.cr.execute(consulta)
+
+      motivos = []
+      for res in self.env.cr.fetchall():
+        motivos.append({
+          'id': res[0],
+          'id_estatus': res[1],
+          'motivo': res[2],
+        })
+
+      ### Comparar y actualizar contratos de odoo ###
+      cantidad_contratos_odoo = len(contratos_odoo)
+      for index, con in enumerate(contratos_odoo, 1):
+
+        #Buscar contrato de pabs
+        con_pabs = next( (x for x in contratos_pabs if x['contrato'] == con['contrato']), 0)
+        if con_pabs == 0:
+          _logger.info("{} de {}. {} No se encontró contrato en pabs".format(index, cantidad_contratos_odoo, con['contrato']))
+          continue
+
+        if con['estatus'] != con_pabs['estatus'] or con['motivo'] != con_pabs['motivo']:
+          #Buscar estatus de PABS en lista de estatus de ODOO
+          est = next( (x for x in estatus if x['estatus'] == con_pabs['estatus']), 0)
+
+          if est == 0:
+            _logger.info("{} de {}. {} No se encontró el estatus en odoo -> {}".format(index, cantidad_contratos_odoo, con['contrato'], con_pabs['estatus']))
+            continue
+
+          if con['motivo'] != con_pabs['motivo']:
+            #Buscar motivos de PABS en lista de motivos de ODOO
+            mot = next( (x for x in motivos if x['id_estatus'] == est['id'] and x['motivo'] == con_pabs['motivo']), 0)
+
+            if mot == 0:
+              _logger.info("{} de {}. {} No se encontró el motivo -> {} - {}".format(index, cantidad_contratos_odoo, con['contrato'], est['estatus'], con_pabs['motivo']))
+              continue
+              
+              #Buscar motivo igual al nombre del estatus
+              #mot = next( (x for x in motivos if x['id_estatus'] == est['id'] and x['motivo'] == est['estatus']), 0)
+
+              # if mot == 0:
+              #   _logger.info("{} de {}. {} No se encontró el motivo por defecto en odoo para el estatus -> {}".format(index, cantidad_contratos_odoo, con['contrato'], est['estatus']))
+              #   continue
+
+            if con['estatus'] == con_pabs['estatus']:
+                #Actualizar solo el motivo del contrato
+              contract_obj.browse(con['id']).write({'contract_status_reason': mot['id']})
+              _logger.info("{} de {}. {} Motivo asignado -> {} - {}".format(index, cantidad_contratos_odoo, con['contrato'], est['estatus'], mot['motivo']))
+            else:
+              #Actualizar estatus y motivo del contrato
+              contract_obj.browse(con['id']).write({'contract_status_item': est['id'], 'contract_status_reason': mot['id']})
+              _logger.info("{} de {}. {} Estatus y motivo asignado -> {} - {}".format(index, cantidad_contratos_odoo, con['contrato'], est['estatus'], mot['motivo']))
+          else:
+            #Actualizar solo el estatus del contrato
+            contract_obj.browse(con['id']).write({'contract_status_item': est['id']})
+            _logger.info("{} de {}. {} Estatus asignado -> {}".format(index, cantidad_contratos_odoo, con['contrato'], est['estatus']))
+
+    ##########################################
+    ############### FORMA Y MONTO DE PAGO ##################
+    elif tipo == 'pago':
+      
+      ### Obtener contratos de PABS ###
+      consulta = """
+        SELECT 
+          CONCAT(con.serie, con.no_contrato) as contrato,
+          CASE
+            WHEN forma_pago_actual = 1 THEN 'weekly' 
+            WHEN forma_pago_actual = 2 THEN 'biweekly' 
+            WHEN forma_pago_actual = 3 THEN 'monthly' 
+          END as forma,
+          monto_pago_actual as monto
+        FROM contratos AS con
+          WHERE con.tipo_bd != 20
+          AND con.serie != '1CZ'
+            ORDER BY CONCAT(con.serie, con.no_contrato) DESC
+      """
+      respuesta = self._get_data(company_id, consulta)
+
+      contratos_pabs = []
+      for res in respuesta:
+        contratos_pabs.append({
+          'contrato': res['contrato'],
+          'forma': res['forma'],
+          'monto': float(res['monto'])
+        })
+
+      ### Obtener contratos de ODOO ###
+      consulta = """
+        SELECT 
+          con.id as id,
+          con.name as contrato,
+          way_to_payment as forma,
+          payment_amount as monto
+        FROM pabs_contract AS con
+          WHERE con.company_id = {}
+            ORDER BY con.name DESC
+      """.format(company_id)
+
+      self.env.cr.execute(consulta)
+
+      contratos_odoo = []
+      for res in self.env.cr.fetchall():
+        contratos_odoo.append({
+          'id': res[0], 
+          'contrato': res[1], 
+          'forma': res[2],
+          'monto': float(res[3])
+        })
+
+      if len(contratos_odoo) == 0:
+        _logger.info("No hay contratos")
+        return
+
+      ### Comparar y actualizar contratos de odoo ###
+      cantidad_contratos_odoo = len(contratos_odoo)
+      for index, con in enumerate(contratos_odoo, 1):
+
+        #Buscar contrato de pabs
+        con_pabs = next( (x for x in contratos_pabs if x['contrato'] == con['contrato']), 0)
+        if con_pabs == 0:
+          _logger.info("{} de {}. {} No se encontró contrato en pabs".format(index, cantidad_contratos_odoo, con['contrato']))
+          continue
+
+        #Comparar y actualizar
+        actualizar = {}
+        if con['forma'] != con_pabs['forma']:
+          actualizar.update({'way_to_payment': con_pabs['forma']})
+
+        if con['monto'] != con_pabs['monto']:
+          actualizar.update({'payment_amount': con_pabs['monto']})
+
+        if actualizar:
+          contract_obj.browse(con['id']).write(actualizar)
+          _logger.info("{} de {}. {} forma y monto asignado -> {} - {}".format(index, cantidad_contratos_odoo, con['contrato'], con_pabs['forma'], con_pabs['monto']))
+
+    else:
+      raise ValidationError("No se ha elegido un tipo")
