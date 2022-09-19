@@ -1411,7 +1411,10 @@ class PabsMigration(models.Model):
 			INNER JOIN personal AS per ON pago.no_personal = per.no_personal
 			INNER JOIN cargos AS car ON pago.no_cargo = car.no_cargo
 				WHERE pago.comision > 0
-				AND CONCAT(rec.serie, rec.no_recibo) IN ({})
+				AND CASE 
+          WHEN abo.no_movimiento IN (2,11) THEN abo.no_abono
+          ELSE CONCAT(rec.serie, rec.no_recibo)
+        END CONCAT(rec.serie, rec.no_recibo) IN ({})
     """.format(",".join(solo_recibos))
 
     respuesta = self._get_data(company_id, consulta)
