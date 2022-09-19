@@ -1395,7 +1395,7 @@ class PabsMigration(models.Model):
       SELECT 
 				pago.no_pago_abono as x_no_salida_pabs,
         CASE 
-          WHEN abo.no_movimiento IN (2,11) THEN abo.no_abono
+          WHEN abo.no_movimiento IN (2,11) THEN CAST(abo.no_abono AS CHAR(20))
           ELSE CONCAT(rec.serie, rec.no_recibo) 
         END as recibo,
 				per.no_empleado_ext as codigo,
@@ -1414,7 +1414,7 @@ class PabsMigration(models.Model):
 				AND CASE 
           WHEN abo.no_movimiento IN (2,11) THEN abo.no_abono
           ELSE CONCAT(rec.serie, rec.no_recibo)
-        END CONCAT(rec.serie, rec.no_recibo) IN ({})
+        END IN ({})
     """.format(",".join(solo_recibos))
 
     respuesta = self._get_data(company_id, consulta)
