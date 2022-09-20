@@ -2196,7 +2196,7 @@ class PABSContracts(models.Model):
         #Obtener registro del último pago de cobranza
         ultimo_abono_cobranza = self.payment_ids.filtered(lambda r: r.state == 'posted' and r.reference == 'payment')
         if ultimo_abono_cobranza:
-          ultimo_abono_cobranza = ultimo_abono_cobranza.sorted(key=lambda r: r.date_receipt)
+          ultimo_abono_cobranza = ultimo_abono_cobranza.sorted(key=lambda r: r.date_receipt if r.date_receipt else r.payment_date )
           days = (today - ultimo_abono_cobranza[-1].date_receipt).days
           rec.days_without_payment = days
           return days
