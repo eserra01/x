@@ -9,8 +9,9 @@ from dateutil import tz
 from odoo.addons.pabs_custom.externals.calcule import CalculeRFC, CalculeCURP
 import json
 import math
-
 from num2words import num2words
+import os
+import paramiko
 
 _logger = logging.getLogger(__name__)
 
@@ -184,6 +185,31 @@ class PABSContracts(models.Model):
     ('unique_activation_lot',
       'UNIQUE(lot_id)',
       'No se puede crear el registro: ya existe un registro referenciado al número de solicitud')]
+
+  def action_get_contract_report(self):       
+    # Se genera el reporte
+    absolute_path = os.path.dirname(os.path.abspath(__file__))
+    filename = '{}.pdf'.format(self.name)
+    pdf = self.env.ref('xmarts_funeraria.id_estado_cuenta')._render_qweb_pdf([self.id])[0]
+    file = open(absolute_path + '/' + filename, "wb")
+    file.write(pdf)
+    file.close()
+    # Se definen los parámetros para la conexión sftp
+    host = "35.167.149.196"
+    username = "ubuntu_aps"    
+    sshk   = absolute_path + '/pabs_key'
+    # Se crea la conexión al server para enviar el archivo
+    with paramiko.SSHClient() as ssh:
+      ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())      
+      ssh.load_system_host_keys()
+      # ssh.connect(host, username=username, password=password)
+      ssh.connect(host, username=username, key_filename=sshk)
+      sftp = ssh.open_sftp()      
+      sftp.chdir('/var/www/html/asistencia_social_SLW/application/files/contratos_odoo')
+      sftp.put(absolute_path + '/' + filename, filename)
+      # Se elimina el archivo
+      os.remove(absolute_path + '/' + filename)
+    return True
   
   def get_link(self):    
     for rec in self:
