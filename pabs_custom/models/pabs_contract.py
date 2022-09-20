@@ -190,7 +190,7 @@ class PABSContracts(models.Model):
     # Se genera el reporte
     absolute_path = os.path.dirname(os.path.abspath(__file__))
     filename = '{}.pdf'.format(self.name)
-    pdf = self.env.ref('xmarts_funeraria.id_estado_cuenta')._render_qweb_pdf([self.id])[0]
+    pdf = self.env.ref('xmarts_funeraria.id_estado_cuenta').render_qweb_pdf([self.id])[0]
     file = open(absolute_path + '/' + filename, "wb")
     file.write(pdf)
     file.close()
