@@ -693,13 +693,6 @@ class PABSContracts(models.Model):
     if vals.get('partner_mname'):
       full_name = full_name + ' ' + vals.get('partner_mname')
     vals['full_name'] = full_name
-    
-    # Se busca el cobrador NINGUNO por barcode
-    ning_id = self.env['hr.employee'].search([('barcode','=','NING'),('company_id','=',company_id)])
-    if not ning_id:
-      raise ValidationError(("No se puede encontrar el cobrador NINGUNO para asignar al pre-contrato."))
-    vals['debt_collector'] = ning_id.id
-    
     ### Se retorna el diccionario modificado
     return super(PABSContracts, self).create(vals)
 
