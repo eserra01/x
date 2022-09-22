@@ -2061,6 +2061,11 @@ class PABSContracts(models.Model):
     # ('monthly', 'Mensual')]
     for rec in self:
       if rec.state == 'contract':
+        
+        if rec.balance <= 0:
+          rec.late_amount = 0
+          return
+
         #Obtener cantidad entregada en bono de inversión inicial
         total_bono = sum(rec.refund_ids.filtered(lambda r: r.type == 'out_refund' and r.state == 'posted').mapped('amount_total'))
 
