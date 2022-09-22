@@ -1584,6 +1584,7 @@ class PABSContracts(models.Model):
         if vals.get('lot_id'):
           previous = self.search([('lot_id','=',vals['lot_id'])],limit=1)
 
+
           #### COMIENZA VALIDACIÓN DE COMISIONES Validar que en la plantilla de comisiones el asistente tenga comisión asignada > $0 #####
           if previous.employee_id and previous.name_service:
             #Obtener el puesto de asistente social
@@ -1636,6 +1637,12 @@ class PABSContracts(models.Model):
           else:
             fecha_creacion = previous.invoice_date
           self.validate_date(str(fecha_creacion))
+
+          # Se busca el cobrador NINGUNO por barcode
+          ning_id = self.env['hr.employee'].search([('barcode','=','NING'),('company_id','=',previous.company_id.id)])
+          if not ning_id:
+            raise ValidationError(("No se puede encontrar el cobrador NINGUNO para asignar al pre-contrato."))
+          vals['debt_collector'] = ning_id.id
 
           #Actualizar campos asignados hasta el momento
           previous.write(vals)
@@ -1874,7 +1881,8 @@ class PABSContracts(models.Model):
     res = super(PABSContracts, self).write(vals)
     ### Si se modificó el campo del cobrador
     if vals.get('debt_collector'):
-      self.assign_collector_date = fields.Date.today() 
+      if self.env['hr.employee'].browse(vals.get('debt_collector')).barcode != 'NING':
+        self.assign_collector_date = fields.Date.today() 
     return res 
 
   #Agregar comentario como nota interna
