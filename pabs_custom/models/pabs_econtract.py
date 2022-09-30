@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from asyncio.log import logger
-from operator import truediv
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from datetime import datetime, timedelta, date
+import pytz
 
 import requests
 import logging
@@ -100,6 +99,11 @@ class PABSElectronicContracts(models.TransientModel):
                 metodo = "controlcartera/getNewClientInfoRegistered"
             elif tipo == 8:
                 metodo = "controlcartera/updateClienteDetalleAsUpdated"
+            # Sincronizar datos de afiliacion
+            elif tipo == 9:
+                metodo = "controlsolicitudes/getClientInfoUpdated"
+            elif tipo == 10:
+                metodo = "controlsolicitudes/setClientInfoUpdatedAsSync"
 
             if not metodo:
                 _logger.error("No se ha definido la plaza de ecobro")
@@ -113,7 +117,7 @@ class PABSElectronicContracts(models.TransientModel):
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
     def SincronizarContratos(self, company_id):
-        _logger.info("Comienza sincronización de afiliaciones electrónicas")
+        _logger.info("Comienza sincronización de afiliaciones electrónicas compañia: {}".format(company_id))
 
         contract_obj = self.env['pabs.contract']
         municipality_obj = self.env['res.locality']
@@ -122,12 +126,6 @@ class PABSElectronicContracts(models.TransientModel):
         ### Validar parámetros ###
         if not company_id:
             _logger.error("No se ha definido la compañia")
-            return
-
-        ### Validar cuentas para póliza ###
-        info_de_cuentas = {}
-        info_de_cuentas = self.ValidarCuentas(company_id, info_de_cuentas)
-        if not info_de_cuentas:
             return
 
         ### Validar web service de consulta y respuesta ###
@@ -151,6 +149,58 @@ class PABSElectronicContracts(models.TransientModel):
             _logger.error("Error al consultar afiliaciones electrónicas {}".format(ex))
             return
 
+        # TEST
+        # array_solicitudes = [{
+		# 	"qr_string": "202205231256513DJ000183MC340568525.3852089-101.0111063",
+		# 	"contrato_id": "999999",
+		# 	"serie": "PCD",
+		# 	"contrato": "000005",
+		# 	"solicitud_codigoActivacion": "MC0000014",
+		# 	"inversion_inicial": "500",
+		# 	"fecha_contrato": "2022-09-28 12:56:51",
+		# 	"timestamp": "1653332211",
+		# 	"fecha_primer_abono": "2022-11-01",
+		# 	"monto_abono": "400",
+		# 	"forma_pago": "Mensuales",
+		# 	"promotor_id": "260",
+		# 	"promotor_nombre": "FELIPE ANGELES RAMOS ALMANZA1",
+		# 	"promotor_codigo": "P0251",
+		# 	"plan_id": "2076",
+		# 	"plan": "IMPERIAL PREMIUM",
+		# 	"solicitud_latitud": "25.3852089",
+		# 	"solicitud_longitud": "-101.0111063",
+		# 	"afiliado_nombre": "MARÍA DEL ROBLE",
+		# 	"afiliado_apellidoPaterno": "JUAREZ",
+		# 	"afiliado_apellidoMaterno": "RAMIREZ",
+		# 	"afiliado_fechaNacimiento": "1973-03-10",
+		# 	"afiliado_estadoCivil": "",
+		# 	"afiliado_ocupacion": "",
+		# 	"afiliado_telefono": "8442568280",
+		# 	"afiliado_RFC": " ",
+		# 	"afiliado_email": "roblejr73@gmail.com",
+		# 	"tipo_domicilio": "Casa",
+		# 	"domCasa_codigoPostal": "25086",
+		# 	"domCasa_Calle": "ABEL BARRAGAN",
+		# 	"domCasa_numExt": "251",
+		# 	"domCasa_numInt": "",
+		# 	"domCasa_EntreCalles": "FRANCISCO H GARZA Y BOULEVARD CID GONZALEZ",
+		# 	"domCasa_Colonia": "BUROCRATAS MUNICIPALES",
+		# 	"domCasa_Municipio": "SALTILLO",
+		# 	"domCasa_LocalidadID": "99998",
+		# 	"domCasa_ColoniaID": "99998",
+		# 	"domCobro_tipoDomicilio": "Cobranza",
+		# 	"domCobro_codigoPostal": "25086",
+		# 	"domCobro_Calle": "ABEL BARRAGAN",
+		# 	"domCobro_numExt": "251",
+		# 	"domCobro_numInt": "",
+		# 	"domCobro_entreClles": "FRANCISCO H GARZA Y BOULEVARD CID GONZALEZ",
+		# 	"domCobro_Colonia": "BUROCRATAS MUNICIPALES",
+		# 	"domCobro_Municipio": "SALTILLO",
+		# 	"domCobro_LocalidadID": "99998",
+		# 	"domCobro_ColoniaID": "99998",
+        #    "generar_contrato": "0"
+		# }]
+
         cantidad_afiliaciones = len(array_solicitudes)
         _logger.info("Afiliaciones obtenidas: {}".format(cantidad_afiliaciones))
 
@@ -159,7 +209,6 @@ class PABSElectronicContracts(models.TransientModel):
         #     array_solicitudes.pop(1)
         # cantidad_afiliaciones = len(array_solicitudes)
         # _logger.info("PRUEBA -> Se recorta a {} afilaciones".format(cantidad_afiliaciones))
-        # FIN TEST
 
         ###################################
         ### Sincronizar cada afiliación ### Si ocurre error al crear una afiliación pasar a la siguiente
@@ -168,17 +217,50 @@ class PABSElectronicContracts(models.TransientModel):
                 indice = index + 1
                 _logger.info("{} de {}. {}{}".format(indice, cantidad_afiliaciones, sol['serie'], sol['contrato']))
 
-                ### Verificar si ya existe el contrato ###
-                contrato = "{}{}".format(sol['serie'], sol['contrato'])
-                existe_contrato = contract_obj.search([
-                    ('company_id', '=', company_id),
-                    ('name', '=', contrato)
-                ])
+                pre_numero_contrato = "{}{}".format(sol['serie'], sol['contrato'])
+                generar_contrato = sol['generar_contrato']
+                
+                ### Verificar si ya existe el pre contrato ###
+                if generar_contrato == "0":
+                    contrato = contract_obj.search([
+                        ('company_id', '=', company_id),
+                        ('name', '=', pre_numero_contrato)
+                    ])
 
-                # Si ya existe, informar a eCobro
-                if existe_contrato:
-                    self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], 2, "Ya existe el contrato")
-                    continue
+                    if contrato:
+                        _logger.info("Ya existe el pre-contrato")
+                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 2, "Ya existe el pre-contrato")
+                        continue
+
+                ### Si se debe generar contrato obtener siguiente número de contrato y asignar al contrato y al contacto. Si ya existe responder. ###
+                if generar_contrato == "1":
+                    contrato = contract_obj.search([
+                        ('company_id', '=', company_id),
+                        ('name', '=', pre_numero_contrato)
+                    ])
+
+                    if not contrato:
+                        _logger.info("No se encontró el pre-contrato")
+                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, contrato.name[0:3], contrato.name[3:], 2, "No se encontró el pre-contrato")
+                        continue
+
+                    if contrato.state == "contract": #singleton cuando hay dos contratos con mismo numero de activacion
+                        _logger.info("Ya existe el contrato")
+                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, contrato.name[0:3], contrato.name[3:], 2, "Ya existe el contrato")
+                        continue
+                    else:
+                        # Se busca la tarifa porque esta ligada a la secuencia
+                        tarifa = self.env['product.pricelist.item'].search([('product_id', '=', contrato.name_service.id)])
+                        if not tarifa:
+                            raise ValidationError(("No se encontró la información del plan {}".format(contrato.product_id.name)))
+
+                        siguiente_numero = tarifa.sequence_id._next()
+                        contrato.write({'name': siguiente_numero, 'state': 'contract'})
+                        contrato.partner_id.write({'name' : siguiente_numero})
+                        
+                        _logger.info("Se asignó número de contrato {}".format(contrato.name))
+                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, siguiente_numero[0:3], siguiente_numero[3:99], 2, "Se asignó número de contrato")
+                        continue
 
                 ### Validar datos de la afiliación ###
                 # 0. Obtener fecha de creación
@@ -187,13 +269,13 @@ class PABSElectronicContracts(models.TransientModel):
                 # 1. Obtener monto de papeleria
                 plan = self.env['product.pricelist.item'].search([
                     ('company_id', '=', company_id),
-                    ('prefix_contract', '=', sol['serie'])
+                    ('product_tmpl_id', '=', int(sol['plan_id']))
                 ])
 
                 if not plan:
-                    raise ValidationError("No se encontró el plan {}".format(sol['serie']))
+                    raise ValidationError("No se encontró el plan {}".format(sol['plan']))
                 if len(plan) > 1:
-                    raise ValidationError("No se encontró el plan {}".format(sol['serie']))
+                    raise ValidationError("No se encontró el plan {}".format(sol['plan']))
 
                 # 2. Calcular bono
                 bonos = self.env['pabs.bonus'].search([
@@ -256,10 +338,10 @@ class PABSElectronicContracts(models.TransientModel):
 
                         id_municipio = municipality_obj.create({
                             'name': nombre,
-                            'country_id': mun.country_id,
-                            'state_id': mun.state_id,
+                            'country_id': mun.country_id.id,
+                            'state_id': mun.state_id.id,
                             'company_id': company_id
-                        })
+                        }).id
 
                         _logger.info("Se crea municipio de casa {}".format(nombre))
                     else:
@@ -268,7 +350,7 @@ class PABSElectronicContracts(models.TransientModel):
                 if id_municipio == 0:
                     raise ValidationError("No se pudo obtener el municipio de casa")
 
-                # 5.2 Municipio casa
+                # 5.2 Municipio cobro
                 if sol['domCobro_Municipio']:
                     nombre = sol['domCobro_Municipio']
                     municipio = municipality_obj.search([
@@ -285,10 +367,10 @@ class PABSElectronicContracts(models.TransientModel):
 
                         id_municipio_cobro = municipality_obj.create({
                             'name': nombre,
-                            'country_id': mun.country_id,
-                            'state_id': mun.state_id,
+                            'country_id': mun.country_id.id,
+                            'state_id': mun.state_id.id,
                             'company_id': company_id
-                        })
+                        }).id
 
                         _logger.info("Se crea municipio de cobro {}".format(nombre))
                     else:
@@ -316,7 +398,7 @@ class PABSElectronicContracts(models.TransientModel):
                             'municipality_id': id_municipio,
                             'company_id': company_id,
                             'zip_code': sol['domCasa_codigoPostal']
-                        })
+                        }).id
 
                         _logger.info("Se crea colonia de casa {}".format(nombre))
                     else:
@@ -344,7 +426,7 @@ class PABSElectronicContracts(models.TransientModel):
                             'municipality_id': id_municipio,
                             'company_id': company_id,
                             'zip_code': sol['domCobro_codigoPostal']
-                        })
+                        }).id
                         
                         _logger.info("Se crea colonia de cobro {}".format(nombre))
                     else:
@@ -356,17 +438,13 @@ class PABSElectronicContracts(models.TransientModel):
                 ### Crear registros de los que depende el contrato ###
                 # 1. Crear solicitud. Primero se busca la oficina del empleado
                 
-                #TEST. Se realiza consulta de empleado por código. En producción el id de empleado es parte de la respuesta
                 employee = self.env['hr.employee'].search([
                     ('company_id', '=', company_id),
                     ('barcode', '=', sol['promotor_codigo'])
                 ])
-                #FIN TEST
-                #employee = self.env['hr.employee'].browse(sol['promotor_id']) #PROD
                 
                 if not employee:
                     raise ValidationError("No se encontró al asistente")
-
 
                 id_oficina = employee.warehouse_id.id
                 if not id_oficina:
@@ -376,12 +454,12 @@ class PABSElectronicContracts(models.TransientModel):
                 if not id_cuenta_analitica_oficina:
                     raise ValidationError("La oficina no tiene una cuenta analítica asignada")
 
-                lot_id = self.crear_solicitud(contrato, employee.id, id_oficina, plan.product_id.id, company_id)         
+                lot_id = self.crear_solicitud(pre_numero_contrato, employee.id, id_oficina, plan.product_id.id, company_id)
                 if not lot_id:
                     raise ValidationError("No se pudo crear la solicitud")
 
                 # 2. Crear partner
-                partner_id = self.crear_contacto(contrato, company_id)
+                partner_id = self.crear_contacto(pre_numero_contrato, company_id)
 
                 if not partner_id:
                     raise ValidationError("No se pudo crear el partner")
@@ -400,14 +478,13 @@ class PABSElectronicContracts(models.TransientModel):
 
                     'invoice_date': fecha_contrato,
                     'qr_string': sol['qr_string'],
-                    'state': 'contract',
+                    'state': 'precontract',
                     'type_view': 'precontract',
                     'captured': True,
                     'activation_code': sol['solicitud_codigoActivacion'],
                     'payment_scheme_id': 2, # Constante: comision
-                    'name': contrato,
-                    'sale_employee_id': employee.id, #TEST
-                    #'sale_employee_id': sol['promotor_id'],
+                    'name': pre_numero_contrato,
+                    'sale_employee_id': employee.id,
                     'contract_status_item': 21, # Constante: activo
                     'contract_status_reason': 282, # Constante: activo
                     'initial_investment': inversion_inicial,
@@ -449,27 +526,20 @@ class PABSElectronicContracts(models.TransientModel):
 
                 ### Crear contrato con información básica ###
                 contrato = contract_obj.create(datos_afiliacion)
-                _logger.info("Se creó el pre contrato {}".format(contrato.id))
+                _logger.info("Se creó el precontrato con id: {}".format(contrato.id))
 
                 ### Actualizar cuenta por cobrar del contacto. No sabemos por qué al crear el contrato se actualiza a una cuenta distinta.
                 self.ActualizarCuentaContacto(partner_id)
 
-                ### Complementar creación del contrato usando el método pabs_contract.create_contract() ###
-                contrato.create_contract(vals={'lot_id' : lot_id})
-                _logger.info("Se creó el contrato")
-
-                ### Generar póliza de inversiones y excedentes ###
-                id_poliza = self.CrearPoliza(company_id, fecha_contrato, contrato.name, plan.stationery, inversion_inicial - plan.stationery, id_cuenta_analitica_oficina, info_de_cuentas)
-
                 ### Crear registro en tabla de cierre
-                self.CrearRegistroPrecierre(company_id, employee.id, contrato.id, id_poliza)
+                self.CrearRegistroPrecierre(company_id, employee.id, contrato.id)
 
                 ### Actualizar en ecobro con mensaje de éxito ###
-                self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], 1, "Contrato creado")
+                self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 1, "Contrato creado")
 
             except Exception as ex:
                 _logger.error("Error al procesar: {}".format(ex))
-                self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], 0, "{}".format(ex)[0:248])
+                self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 0, "{}".format(ex)[0:248])
                 continue            
 
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
@@ -586,16 +656,18 @@ class PABSElectronicContracts(models.TransientModel):
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
     # Actualiza el estatus de captura de la solicitud en ecobro
-    # 2 = Ya existe el contrato
-    # 1 = Creado
-    # 0 = No creado
-    def ActualizarAfiliacionEnEcobro(self, url, id_contrato, registro, mensaje):
+    # Registrada: 0 = No creado; 1 = Creado; 2 = Ya existe el contrato
+    def ActualizarAfiliacionEnEcobro(self, url, id_contrato, generar_contrato, serie, contrato, registrada, mensaje):
+
         try:
-            _logger.info("Actualizando en eCobro: {},{},{}".format(id_contrato, registro, mensaje))
+            _logger.info("Actualizando en eCobro: {},{},{}".format(id_contrato, registrada, mensaje))
             data_response = {"contratos" : [
                 {
                     "contrato_id": id_contrato,
-                    "registrada": registro,
+                    "generar_contrato": generar_contrato,
+                    "serie": serie,
+                    "contrato": contrato,
+                    "registrada": registrada,
                     "resultado": mensaje
                 }
             ]}
@@ -612,6 +684,504 @@ class PABSElectronicContracts(models.TransientModel):
             mensaje = "Error al actualizar por web service: {}".format(ex)
             _logger.error(mensaje)
             raise ValidationError(mensaje)
+            
+#################################################################################################################################################
+######################################          ACTUALIZAR DATOS DE SOLICITUDES           #######################################################
+#################################################################################################################################################
+
+    #Actualiza los datos de la afiliación electrónica con los cambios hechos desde la aplicación
+    def ActualizarDatosDeAfiliaciones(self, company_id):
+
+        _logger.info("Comienza actualización de datos de afiliaciones electrónicas")
+
+        ### Obtener web services ###
+        url_consultar_actualizaciones = self.get_url(company_id, 9)
+        url_actualizar_afiliaciones = self.get_url(company_id, 10)
+
+        if not url_consultar_actualizaciones or not url_actualizar_afiliaciones:
+            _logger.error("No se han definido los web service de consulta y actualización")
+            return
+
+        contract_obj = self.env['pabs.contract']
+        municipality_obj = self.env['res.locality']
+        colonia_obj = self.env['colonias']
+
+        #TEST#
+        # json_afiliaciones = {
+        #     "solicitudes": [
+        #         {
+        #             "serie": "3NJ",
+        #             "contrato": "000019",
+                    
+        #             "afiliado_nombre": "HUGO",
+        #             "afiliado_apellidoPaterno": "JURADO",
+        #             "afiliado_apellidoMaterno": "MUSTANG",
+        #             "afiliado_fechaNacimiento": "1957-11-17",
+        #             "afiliado_telefono": "2580963741",
+        #             "afiliado_email": "corre@correo.com",
+
+        #             "tipo_domicilio": "Casa",
+        #             "domCasa_codigoPostal": "25204",
+        #             "domCasa_Calle": "Casonas",
+        #             "domCasa_numExt": "123",
+        #             "domCasa_numInt": "",
+        #             "domCasa_EntreCalles": "Entre calles casa",
+        #             "domCasa_Colonia": "ALBAREDA RESIDENCIAL 3",
+        #             "domCasa_Municipio": "SALTILLO",
+        #             "domCasa_LocalidadID": "37151",
+        #             "domCasa_ColoniaID": "37151",
+
+        #             "domCobro_tipoDomicilio": "Cobranza",
+        #             "domCobro_codigoPostal": "25204",
+        #             "domCobro_Calle": "Cobronas",
+        #             "domCobro_numExt": "456",
+        #             "domCobro_numInt": "",
+        #             "domCobro_entreClles": "Entre calles cobro",
+        #             "domCobro_Colonia": "BONANZA",
+        #             "domCobro_Municipio": "SALTILLO",
+        #             "domCobro_LocalidadID": "37151",
+        #             "domCobro_ColoniaID": "37151",
+
+        #             "qr_string": "20220714144639ASD000073MC761158820.6823975-103.3816011",
+        #             "contrato_id": "531",
+        #             "solicitud_codigoActivacion": "MC7611588",
+        #             "inversion_inicial": "500",
+        #             "fecha_contrato": "2022-07-14 14:46:39",
+        #             "timestamp": "1657827999",
+        #             "fecha_primer_abono": "2022-07-21",
+        #             "monto_abono": "300",
+        #             "forma_pago": "Mensuales",
+        #             "promotor_id": "712",
+        #             "promotor_nombre": "VENTAS OFICINA X",
+        #             "promotor_codigo": "P9999",
+        #             "plan_id": "2076",
+        #             "plan": "IMPERIAL PREMIUM",
+        #             "solicitud_latitud": "20.6823975",
+        #             "solicitud_longitud": "-103.3816011",
+        #             "afiliado_estadoCivil": "",
+        #             "afiliado_ocupacion": "",
+        #             "afiliado_RFC": " "
+        #         }
+        #     ]
+        # }
+
+        ### Consultar afiliaciones por actualizar ###
+        array_afiliaciones = []
+        try:
+            respuesta = requests.post(url_consultar_actualizaciones)
+            json_afiliaciones = json.loads(respuesta.text) # NO ES TEST
+            array_afiliaciones = json_afiliaciones.get('solicitudes')
+        except Exception as ex:
+            _logger.error("Error al consultar las afiliaciones por actualizar {}".format(ex))
+            return
+
+        if not array_afiliaciones:
+            _logger.info("No hay afiliaciones por actualizar")
+            return
+
+        ### Iterar en cada afiliacion ###
+        cantidad_afiliaciones = len(array_afiliaciones)
+        for index, afi in enumerate(array_afiliaciones, 1):
+
+            numero_de_contrato = "{}{}".format(afi['serie'], afi['contrato'])
+            _logger.info("{} de {}. {}".format(index, cantidad_afiliaciones, numero_de_contrato))
+
+            ### Buscar contrato ###
+            contrato = contract_obj.search([
+                ('company_id', '=', company_id),
+                ('name', '=', numero_de_contrato)
+            ])
+
+            if not contrato:
+                _logger.info("No se encontró el contrato")
+                continue
+
+            ### Construir diccionario con datos a actualizar ###
+            actualizar = {}
+
+            if afi['afiliado_nombre'] != contrato.partner_name:
+                actualizar.update({'partner_name': afi['afiliado_nombre']})
+
+            if afi['afiliado_apellidoPaterno'] != contrato.partner_fname:
+                actualizar.update({'partner_fname': afi['afiliado_apellidoPaterno']})
+
+            if afi['afiliado_apellidoMaterno'] != contrato.partner_mname:
+                actualizar.update({'partner_mname': afi['afiliado_apellidoMaterno']})
+
+            if fields.Date.to_date(afi['afiliado_fechaNacimiento']) != contrato.birthdate:
+                actualizar.update({'birthdate': afi['afiliado_fechaNacimiento']})
+
+            if afi['afiliado_telefono'] != contrato.phone_toll:
+                actualizar.update({'phone_toll': afi['afiliado_telefono']})
+
+            if afi['afiliado_email'] != contrato.client_email:
+                actualizar.update({'client_email': afi['afiliado_email']})
+
+            ### Domicilio de casa ###
+            if afi['domCasa_Calle'] != contrato.street_name:
+                actualizar.update({'street_name': afi['domCasa_Calle']})
+
+            casa_num = ""
+            if len(afi['domCasa_numInt']) > 0:
+                casa_num = "{} - {}".format(afi['domCasa_numExt'], afi['domCasa_numInt'])
+            else:
+                casa_num = afi['domCasa_numExt']
+
+            if casa_num != contrato.street_number:
+                actualizar.update({'street_number': casa_num})
+
+            if afi['domCasa_EntreCalles'] != contrato.between_streets:
+                actualizar.update({'between_streets': afi['domCasa_EntreCalles']})
+
+            # Buscar municipio casa. Si no existe crear
+            if afi['domCasa_Municipio']:
+                nombre = afi['domCasa_Municipio']
+                municipio = municipality_obj.search([
+                    ('company_id', '=', company_id),
+                    ('name', '=', nombre)
+                ], limit = 1)
+
+                # Si no existe el municipio, crearlo. Tomar los otros datos del primer registro
+                if not municipio:
+                    mun = municipality_obj.search([('company_id', '=', company_id)], limit = 1)
+
+                    if not mun:
+                        _logger.error("No existen municipios")
+                        return
+
+                    id_municipio = municipality_obj.create({
+                        'name': nombre,
+                        'country_id': mun.country_id.id,
+                        'state_id': mun.state_id.id,
+                        'company_id': company_id
+                    }).id
+
+                    _logger.info("Se crea municipio de casa {}".format(nombre))
+                else:
+                    id_municipio = municipio.id
+
+            if id_municipio == 0:
+                _logger.error("No se pudo obtener el municipio de casa")
+                continue
+
+            if id_municipio != contrato.municipality_id.id:
+                actualizar.update({'municipality_id': id_municipio})
+
+            # Buscar colonia casa. Si no existe crear #
+            if afi['domCasa_Colonia']:
+                nombre = afi['domCasa_Colonia']
+                colonia = colonia_obj.search([
+                    ('company_id', '=', company_id),
+                    ('name', '=', nombre),
+                    ('municipality_id', '=', id_municipio)
+                ], limit = 1)
+
+                # Si no existe la colonia, crearla
+                if not afi['domCasa_codigoPostal']:
+                    _logger.error("No se encontró el codigo postal de la colonia de casa")
+                    continue
+
+                if not colonia:
+                    id_colonia = colonia_obj.create({
+                        'name': nombre,
+                        'municipality_id': id_municipio,
+                        'company_id': company_id,
+                        'zip_code': afi['domCasa_codigoPostal']
+                    }).id
+
+                    _logger.info("Se crea colonia de casa {}".format(nombre))
+                else:
+                    id_colonia = colonia.id
+
+            if id_colonia == 0:
+                _logger.error("No se pudo obtener la colonia de casa")
+                continue
+
+            if id_colonia != contrato.neighborhood_id.id:
+                actualizar.update({'neighborhood_id': id_colonia})
+
+            ### Domicilio de cobro ###
+            if afi['domCobro_Calle'] != contrato.street_name_toll:
+                actualizar.update({'street_name_toll': afi['domCobro_Calle']})
+
+            cobro_num = ""
+            if len(afi['domCobro_numInt']) > 0:
+                cobro_num = "{} - {}".format(afi['domCobro_numExt'], afi['domCobro_numInt'])
+            else:
+                cobro_num = afi['domCobro_numExt']
+
+            if cobro_num != contrato.street_number_toll:
+                actualizar.update({'street_number_toll': cobro_num})
+
+            if afi['domCobro_entreClles'] != contrato.between_streets_toll:
+                actualizar.update({'between_streets_toll': afi['domCobro_entreClles']})
+
+            # Buscar municipio cobro. Si no existe crear
+            if afi['domCobro_Municipio']:
+                nombre = afi['domCobro_Municipio']
+                municipio = municipality_obj.search([
+                    ('company_id', '=', company_id),
+                    ('name', '=', nombre)
+                ], limit = 1)
+
+                # Si no existe el municipio, crearlo. Tomar los otros datos del primer registro
+                if not municipio:
+                    mun = municipality_obj.search([('company_id', '=', company_id)], limit = 1)
+
+                    if not mun:
+                        _logger.error("No existen municipios")
+                        return
+
+                    id_municipio_cobro = municipality_obj.create({
+                        'name': nombre,
+                        'country_id': mun.country_id.id,
+                        'state_id': mun.state_id.id,
+                        'company_id': company_id
+                    }).id
+
+                    _logger.info("Se crea municipio de cobro {}".format(nombre))
+                else:
+                    id_municipio_cobro = municipio.id
+            
+            if id_municipio_cobro == 0:
+                _logger.error("No se pudo obtener el municipio de cobro")
+                continue
+
+            if id_municipio_cobro != contrato.toll_municipallity_id.id:
+                actualizar.update({'toll_municipallity_id': id_municipio_cobro})
+            
+            ### Buscar colonia cobro. Si no existe crear ###
+            if afi['domCobro_Colonia']:
+                nombre = afi['domCobro_Colonia']
+                colonia = colonia_obj.search([
+                    ('company_id', '=', company_id),
+                    ('name', '=', nombre),
+                    ('municipality_id', '=', id_municipio_cobro)
+                ], limit = 1)
+
+                # Si no existe la colonia, crearla
+                if not afi['domCobro_codigoPostal']:
+                    _logger.error("No se encontró el codigo postal de la colonia de cobro")
+                    continue
+
+                if not colonia:
+                    id_colonia_cobro = colonia_obj.create({
+                        'name': nombre,
+                        'municipality_id': id_municipio,
+                        'company_id': company_id,
+                        'zip_code': afi['domCobro_codigoPostal']
+                    }).id
+
+                    _logger.info("Se crea colonia de cobro {}".format(nombre))
+                else:
+                    id_colonia_cobro = colonia.id
+
+            if id_colonia_cobro == 0:
+                _logger.error("No se pudo obtener la colonia de cobro")
+                continue
+
+            if id_colonia_cobro != contrato.toll_colony_id.id:
+                actualizar.update({'toll_colony_id': id_colonia_cobro})
+
+            try:
+                ### Actualizar datos en odoo y ecobro###
+                if not actualizar:
+                    _logger.info("No hay diferencias")
+                    self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 2, "No hay diferencias")
+                    continue
+
+                _logger.info("{}".format(actualizar))
+                contrato.write(actualizar)
+                _logger.info("Actualizada en odoo!")
+
+                self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 2, "Actualizado")
+            except Exception as ex:
+                _logger.error("No se puede actualizar la afiliacion: {}".format(ex))
+                self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 0, ex[0:100])
+
+#  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+
+    def MarcarAfiliacionComoActualizadaEnEcobro(self, url_actualizar_afiliaciones, id_registro, estatus, mensaje):
+        # estatus 2: actualizado
+
+        data_response = {
+            "contratos": [
+                {
+                    "contrato_id": id_registro,
+                    "registrada": estatus,
+                    "resultado": mensaje
+                }
+            ]
+        }
+
+        llamada = requests.post(url_actualizar_afiliaciones, json=data_response)
+        
+        respuesta = json.loads(llamada.text)
+
+        if len(respuesta['success']) > 0:
+            _logger.info("Actualizada en eCobro!!")
+        else:
+            _logger.error("No actualizada en eCobro") 
+
+#################################################################################################################################################
+######################################                SINCRONIZADOR DE CORTES             #######################################################
+#################################################################################################################################################
+
+    def SincronizarCortes(self, company_id):
+        _logger.info("Comienza sincronización de cortes")
+
+        if not company_id:
+            raise ValidationError("No se ha definido una compañia")
+
+        ### Validar web service de consulta y respuesta ###
+        url_obtener_cortes = self.get_url(company_id, 3)
+        if not url_obtener_cortes:
+            _logger.error("No se ha definido la dirección del web service: obtener cortes")
+            return
+
+        url_actualizar_corte = self.get_url(company_id, 4)
+        if not url_actualizar_corte:
+            _logger.error("No se ha definido la dirección del web service: actualizar cortes")
+            return
+        
+        ### Validar cuentas para póliza ###
+        info_de_cuentas = {}
+        info_de_cuentas = self.ValidarCuentas(company_id, info_de_cuentas)
+        if not info_de_cuentas:
+            return
+
+        ### Llamar web service de consulta ###
+        try:
+            _logger.info("Comienza consulta de cortes")
+            respuesta = requests.post(url_obtener_cortes)
+            json_cortes = json.loads(respuesta.text)
+            array_cortes = json_cortes.get('result')
+        except Exception as ex:
+            _logger.error("Error al consultar los cortes de afiliaciones electrónicas {}".format(ex))
+            return
+            
+        # TEST
+        # array_cortes = [
+        #     { 
+        #         "id": "245",
+        #         "promotor_id": "260",
+        #         "codigo_promotor": "P0251",
+        #         "contrato": "PCD000004",
+        #         "periodo": "10",
+        #         "fecha_cierre_periodo": "2022-09-28 07:01:47"
+        #     },
+        #     { 
+        #         "id": "246",
+        #         "promotor_id": "260",
+        #         "codigo_promotor": "P0251",
+        #         "contrato": "3NJ003036",
+        #         "periodo": "10",
+        #         "fecha_cierre_periodo": "2022-09-28 07:01:47"
+        #     }
+        # ]
+
+        cantidad_cortes = len(array_cortes)
+        _logger.info("Cortes obtenidos: {}".format(cantidad_cortes))
+
+        # Calcular fecha de contrato por cierre de mes                
+        params = self.env['ir.config_parameter'].sudo()
+        actually_day = params.get_param('pabs_custom.actually_day')
+        last_day = params.get_param('pabs_custom.last_day')
+
+        corte_obj = self.env['pabs.econtract.move']
+        contrato_obj = self.env['pabs.contract']
+        
+        ### Actualizar registros de corte ###
+        for index, cor in enumerate(array_cortes):
+            try:
+                _logger.info("{} de {}. {}".format(index + 1, cantidad_cortes, cor['contrato']))
+
+                ### Buscar registro de corte
+                corte = corte_obj.search([
+                    ('company_id', '=', company_id),
+                    ('id_contrato.name', '=', cor['contrato'])
+                ])
+
+                if not corte:
+                    _logger.error("No se encontró el corte")
+                    continue
+
+                if len(corte) > 1:
+                    raise ValidationError("Se encontró más de un corte")
+
+                if corte.estatus == 'cerrado':
+                    _logger.warning("Ya existe el registro de corte")
+                    self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
+                    continue
+
+                if corte.estatus == 'confirmado':
+                    _logger.warning("Ya fue recibida en contratos")
+                    self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
+                    continue
+                
+                contrato = contrato_obj.browse(corte.id_contrato.id)
+
+                ### Actualizar fecha de contrato (Si se fijó una fecha para los contratos tomar esa fecha) ###
+                actualizar = {}
+
+                fecha_creacion = fields.Date.to_date(cor['fecha_cierre_periodo'])
+
+                if actually_day and last_day:
+                    fecha_creacion = last_day
+
+                actualizar.update({'invoice_date': fecha_creacion})
+
+                ### Si es precontrato actualizar nombre a "Nuevo contrato" (para que genere el número de contrato siguiente en el metodo create_contract) ###
+                if contrato.state in ('actived', 'precontract'):
+                    actualizar.update({'name': 'Nuevo Contrato', 'state': 'contract'})
+
+                contrato.write(actualizar)
+
+                ### Complementar creación del contrato usando el método pabs_contract.create_contract() ###
+                _logger.info("Comienza metodo create_contract()")
+                contrato_obj.create_contract(vals={'lot_id' : contrato.lot_id.id})
+                _logger.info("Se creó el contrato {}: ".format(contrato.name))
+
+                ### Generar póliza de inversiones y excedentes ###
+                id_poliza = self.CrearPoliza(company_id, contrato.invoice_date, contrato.name, contrato.stationery, contrato.initial_investment - contrato.stationery, contrato.sale_employee_id.warehouse_id.analytic_account_id.id, info_de_cuentas)
+                
+                ### Actualizar registro de cierre en odoo ###
+                local = pytz.timezone("Mexico/General")
+
+                local_dt = local.localize(fields.Datetime.to_datetime(cor['fecha_cierre_periodo']), is_dst=None)
+
+                fecha_hora_cierre_utc = local_dt.astimezone(pytz.utc)
+
+                corte.write({
+                    'fecha_hora_cierre': fecha_hora_cierre_utc.strftime("%Y-%m-%d %H:%M:%S"),
+                    'estatus': 'cerrado',
+                    'periodo': cor['periodo'],
+                    'id_poliza_caja_transito': id_poliza
+                })
+
+                _logger.info("Actualizado en odoo")
+
+                ### Actualizar en eCobro ###
+                self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
+
+            except Exception as ex:
+                mensaje = "Error al procesar corte: {}".format(ex)
+                _logger.error(mensaje)
+
+#  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+    
+    def ActualizarCorteEnEcobro(self, url_actualizar_corte, id_contrato):
+
+        data_response = {"result": [id_contrato]}
+
+        llamada = requests.post(url_actualizar_corte, json=data_response)
+        
+        respuesta = json.loads(llamada.text)
+
+        if respuesta['result'] == True:
+            _logger.info("Actualizada en eCobro")
+        else:
+            _logger.warning("No actualizada")
 
 #################################################################################################################################################
 ######################################                  GENERACIÓN DE POLIZAS             #######################################################
@@ -769,7 +1339,7 @@ class PABSElectronicContracts(models.TransientModel):
 
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
-    def CrearRegistroPrecierre(self, company_id, id_asistente, id_contrato, id_poliza_caja_transito):
+    def CrearRegistroPrecierre(self, company_id, id_asistente, id_contrato):
         _logger.info("Comienza registro de precierre")
 
         obj_cierre = self.env['pabs.econtract.move']
@@ -778,8 +1348,7 @@ class PABSElectronicContracts(models.TransientModel):
         existe_cierre = obj_cierre.search([
             ('company_id', '=', company_id),
             ('id_asistente', '=', id_asistente),
-            ('id_contrato', '=', id_contrato),
-            ('id_poliza_caja_transito', '=', id_poliza_caja_transito)
+            ('id_contrato', '=', id_contrato)
         ])
 
         if existe_cierre:
@@ -790,107 +1359,14 @@ class PABSElectronicContracts(models.TransientModel):
             'company_id': company_id,
             'id_asistente': id_asistente,
             'id_contrato': id_contrato,
-            'id_poliza_caja_transito': id_poliza_caja_transito,
             'estatus': 'sin_cierre'
         }
 
-        obj_cierre.create(datos)
+        nuevo = obj_cierre.create(datos)
 
         _logger.info("Se crea registro de precierre")
 
-#################################################################################################################################################
-######################################                SINCRONIZADOR DE CORTES             #######################################################
-#################################################################################################################################################
-
-    def SincronizarCortes(self, company_id):
-        _logger.info("Comienza sincronización de cortes")
-
-        if not company_id:
-            raise ValidationError("No se ha definido una compañia")
-
-        ### Validar web service de consulta y respuesta ###
-        url_obtener_cortes = self.get_url(company_id, 3)
-        if not url_obtener_cortes:
-            _logger.error("No se ha definido la dirección del web service: obtener cortes")
-            return
-
-        url_actualizar_corte = self.get_url(company_id, 4)
-        if not url_actualizar_corte:
-            _logger.error("No se ha definido la dirección del web service: actualizar cortes")
-            return
-
-        ### Llamar web service de consulta ###
-        try:
-            _logger.info("Comienza consulta de cortes")
-            respuesta = requests.post(url_obtener_cortes)
-            json_cortes = json.loads(respuesta.text)
-            array_cortes = json_cortes.get('result')
-        except Exception as ex:
-            _logger.error("Error al consultar los cortes de afiliaciones electrónicas {}".format(ex))
-            return
-
-        cantidad_cortes = len(array_cortes)
-        _logger.info("Cortes obtenidos: {}".format(cantidad_cortes))
-
-        corte_obj = self.env['pabs.econtract.move']
-        
-        ### Actualizar registros de corte ###
-        for index, cor in enumerate(array_cortes):
-            try:
-                _logger.info("{} de {}. {}".format(index + 1, cantidad_cortes, cor['contrato']))
-
-                ### Buscar registro de corte
-                corte = corte_obj.search([
-                    ('company_id', '=', company_id),
-                    ('id_contrato.name', '=', cor['contrato'])
-                ])
-
-                if not corte:
-                    _logger.error("No se encontró el corte")
-                    continue
-
-                if len(corte) > 1:
-                    raise ValidationError("Se encontró más de un corte")
-
-                if corte.estatus == 'cerrado':
-                    _logger.warning("Ya existe el registro de corte")
-                    self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
-                    continue
-
-                if corte.estatus == 'confirmado':
-                    _logger.warning("Ya fue recibida en contratos")
-                    self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
-                    continue
-                
-                ### Actualizar en odoo ###
-                corte.write({
-                    'periodo': cor['periodo'],
-                    'fecha_hora_cierre': cor['fecha_cierre_periodo'],
-                    'estatus': 'cerrado'
-                })
-
-                _logger.info("Actualizado en odoo")
-
-                ### Actualizar en eCobro ###
-                self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
-
-            except Exception as ex:
-                mensaje = "Error al procesar corte: {}".format(ex)
-                _logger.error(mensaje)
-
-#  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-    
-    def ActualizarCorteEnEcobro(self, url_actualizar_corte, id_contrato):
-        data_response = {"result": [id_contrato]}
-
-        llamada = requests.post(url_actualizar_corte, json=data_response)
-        
-        respuesta = json.loads(llamada.text)
-
-        if respuesta['result'] == True:
-            _logger.info("Actualizada en eCobro")
-        else:
-            _logger.warning("No actualizada")
+        return nuevo
 
 #################################################################################################################################################
 ######################################           SINCRONIZACION DE COBRADORES ASIGNADOS        ##################################################
@@ -952,7 +1428,6 @@ class PABSElectronicContracts(models.TransientModel):
         #     array_contratos.pop(1)
         # cantidad_contratos = len(array_contratos)
         # _logger.info("PRUEBA -> Se recorta a {} contratos".format(cantidad_contratos))
-        # FIN TEST
 
         ###################################
         ### Sincronizar cada contrato ### Si ocurre error al actualizar un contrato pasar al siguiente
@@ -1047,7 +1522,6 @@ class PABSElectronicContracts(models.TransientModel):
         #     array_contratos.pop(1)
         # cantidad_contratos = len(array_contratos)
         # _logger.info("PRUEBA -> Se recorta a {} contratos".format(cantidad_contratos))
-        # FIN TEST
 
         ###################################
         ### Sincronizar cada contrato ### Si ocurre error al actualizar un contrato pasar al siguiente
