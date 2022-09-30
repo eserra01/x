@@ -676,7 +676,7 @@ class PabsMigration(models.Model):
     if automatico:
       consulta = """
         SELECT 
-          COALESCE(MIN(abo.payment_date), '2022-06-30') as fecha_minima /*PROD*/
+          COALESCE(MIN(abo.payment_date), '2022-09-23') as fecha_minima /*PROD*/
         FROM account_payment AS abo
         INNER JOIN pabs_contract AS con ON abo.contract = con.id
           WHERE abo.reference = '{}'
@@ -706,14 +706,14 @@ class PabsMigration(models.Model):
     cobrador_notas = 0
 
     if company_id == COMPANY_SAL:
-      series_notas = ""
-      cobrador_notas = 0
+      series_notas = "'CNC,', 'CNC'"
+      cobrador_notas = "78,79"
     elif company_id == COMPANY_MON:
-      series_notas = "CNC"
-      cobrador_notas = 50
+      series_notas = "'CNC'"
+      cobrador_notas = "50"
     elif company_id == COMPANY_NUE:
-      series_notas = "CNC"
-      cobrador_notas = 45
+      series_notas = "'CNC'"
+      cobrador_notas = "45"
 
     pagos = []
     recibos_odoo = []
@@ -794,7 +794,7 @@ class PabsMigration(models.Model):
 					WHERE con.tipo_bd != 20
           AND abo.importe > 0
           AND abo.no_movimiento = {}
-					AND rec.serie NOT IN ('{}')
+					AND rec.serie NOT IN ({})
 					AND abo.no_cobrador NOT IN ({})
 					{} /*Limitar fechas pabs*/
             ORDER BY abo.fecha_oficina DESC, no_abono DESC
@@ -1047,7 +1047,7 @@ class PabsMigration(models.Model):
     if automatico and tipo_nota == 'bonos':
       consulta = """
         SELECT 
-          COALESCE(MIN(invoice_date), '2021-12-01') as fecha_minima /*PROD*/
+          COALESCE(MIN(invoice_date), '2021-10-30') as fecha_minima /*PROD*/
         FROM account_move
           WHERE type = 'out_refund'
           AND state IN ('posted', 'sent', 'reconciled')
@@ -1082,15 +1082,16 @@ class PabsMigration(models.Model):
     referencia = ""
 
     if company_id == COMPANY_SAL:
-      series_notas = ""
-      cobrador_notas = 0
+      cobrador_bonos = 9
+      series_notas = "'CNC,', 'CNC'"
+      cobrador_notas = "78,79"
     elif company_id == COMPANY_MON:
       cobrador_bonos = 9
-      series_notas = "CNC"
+      series_notas = "'CNC'"
       cobrador_notas = 50
     elif company_id == COMPANY_NUE:
       cobrador_bonos = 9
-      series_notas = "CNC"
+      series_notas = "'CNC'"
       cobrador_notas = 45
 
     notas = []
@@ -1111,7 +1112,7 @@ class PabsMigration(models.Model):
 				INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
 					WHERE con.tipo_bd != 20
           AND abo.importe > 0
-          AND rec.serie NOT IN ('{}')
+          AND rec.serie NOT IN ({})
           AND (abo.no_cobrador IN ({}) OR (abo.no_movimiento = {} AND abo.no_cobrador NOT IN ({})) ) 
           {}
 						ORDER BY fecha_oficina DESC, no_abono DESC
@@ -1131,7 +1132,7 @@ class PabsMigration(models.Model):
 				INNER JOIN contratos AS con ON abo.id_contrato = con.id_contrato
 					WHERE con.tipo_bd != 20
           AND abo.importe > 0
-          AND (rec.serie IN ('{}') OR abo.no_cobrador IN ('{}'))
+          AND (rec.serie IN ({}) OR abo.no_cobrador IN ({}))
 						ORDER BY fecha_oficina DESC, no_abono DESC
       """.format(series_notas, cobrador_notas)
 
@@ -2139,7 +2140,7 @@ class PabsMigration(models.Model):
 
     ###################################################################################################################
   ### Actualizar datos ###
-  def ActualizarDatos(self, company_id, tipo):
+  def ActualizarDatos(self, company_id, tipo, limite):
     contract_obj = self.env['pabs.contract']
 
     _logger.info("Comienza actualizacion de {}".format(tipo))
@@ -2217,6 +2218,7 @@ class PabsMigration(models.Model):
 
       ### Comparar y actualizar contratos de odoo ###
       cantidad_contratos_odoo = len(contratos_odoo)
+      conteo_actualizados = 0
       for index, con in enumerate(contratos_odoo, 1):
 
         #Buscar contrato de pabs
@@ -2235,6 +2237,12 @@ class PabsMigration(models.Model):
           #Actualizar contrato
           contract_obj.browse(con['id']).write({'debt_collector': cob['id']})
           _logger.info("{} de {}. {} Cobrador asignado -> {}".format(index, cantidad_contratos_odoo, con['contrato'], con_pabs['cobrador']))
+
+          conteo_actualizados = conteo_actualizados + 1
+          if conteo_actualizados > limite:
+            _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
+            break
+
 
     ##########################################
     ############### ESTATUS ##################
@@ -2316,6 +2324,7 @@ class PabsMigration(models.Model):
 
       ### Comparar y actualizar contratos de odoo ###
       cantidad_contratos_odoo = len(contratos_odoo)
+      conteo_actualizados = 0
       for index, con in enumerate(contratos_odoo, 1):
 
         #Buscar contrato de pabs
@@ -2351,14 +2360,24 @@ class PabsMigration(models.Model):
                 #Actualizar solo el motivo del contrato
               contract_obj.browse(con['id']).write({'contract_status_reason': mot['id']})
               _logger.info("{} de {}. {} Motivo asignado -> {} - {}".format(index, cantidad_contratos_odoo, con['contrato'], est['estatus'], mot['motivo']))
+
+              conteo_actualizados = conteo_actualizados + 1
             else:
               #Actualizar estatus y motivo del contrato
               contract_obj.browse(con['id']).write({'contract_status_item': est['id'], 'contract_status_reason': mot['id']})
               _logger.info("{} de {}. {} Estatus y motivo asignado -> {} - {}".format(index, cantidad_contratos_odoo, con['contrato'], est['estatus'], mot['motivo']))
+
+              conteo_actualizados = conteo_actualizados + 1
           else:
             #Actualizar solo el estatus del contrato
             contract_obj.browse(con['id']).write({'contract_status_item': est['id']})
             _logger.info("{} de {}. {} Estatus asignado -> {}".format(index, cantidad_contratos_odoo, con['contrato'], est['estatus']))
+            
+            conteo_actualizados = conteo_actualizados + 1
+
+          if conteo_actualizados > limite:
+            _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
+            break
 
     ##########################################
     ############### FORMA Y MONTO DE PAGO ##################
@@ -2418,6 +2437,7 @@ class PabsMigration(models.Model):
 
       ### Comparar y actualizar contratos de odoo ###
       cantidad_contratos_odoo = len(contratos_odoo)
+      conteo_actualizados = 0
       for index, con in enumerate(contratos_odoo, 1):
 
         #Buscar contrato de pabs
@@ -2437,6 +2457,12 @@ class PabsMigration(models.Model):
         if actualizar:
           contract_obj.browse(con['id']).write(actualizar)
           _logger.info("{} de {}. {} forma y monto asignado -> {} - {}".format(index, cantidad_contratos_odoo, con['contrato'], con_pabs['forma'], con_pabs['monto']))
+
+          conteo_actualizados = conteo_actualizados + 1
+
+          if conteo_actualizados > limite:
+            _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
+            break
 
     else:
       raise ValidationError("No se ha elegido un tipo")
