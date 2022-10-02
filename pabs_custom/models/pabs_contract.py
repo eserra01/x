@@ -191,7 +191,8 @@ class PABSContracts(models.Model):
     path = os.path.dirname(os.path.abspath(__file__))
     absolute_path = '/home/odoo/tmp'
     filename = '{}.pdf'.format(self.name)
-    pdf = self.env.ref('merge_docx.id_econtrato').render_qweb_pdf([self.id])[0]
+    # pdf = self.env.ref('merge_docx.id_econtrato').render_qweb_pdf([self.id])[0]
+    pdf = self.env.ref('merge_docx.id_econtrato').render([self.id])[0]
     file = open(absolute_path + '/' + filename, "wb")
     file.write(pdf)
     file.close()
