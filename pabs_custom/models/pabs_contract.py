@@ -188,7 +188,7 @@ class PABSContracts(models.Model):
 
   def action_get_contract_report(self):       
     # Se genera el reporte
-    absolute_path = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.dirname(os.path.abspath(__file__))
     absolute_path = '/home/odoo/tmp'
     filename = '{}.pdf'.format(self.name)
     pdf = self.env.ref('merge_docx.id_econtrato').render_qweb_pdf([self.id])[0]
@@ -198,7 +198,7 @@ class PABSContracts(models.Model):
     # Se definen los parámetros para la conexión sftp
     host = "35.167.149.196"
     username = "ubuntu_aps"    
-    sshk   = absolute_path + '/pabs_key'
+    sshk   = path + '/pabs_key'
     # Se crea la conexión al server para enviar el archivo
     with paramiko.SSHClient() as ssh:
       ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())      
