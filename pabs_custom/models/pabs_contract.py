@@ -216,21 +216,27 @@ class PABSContracts(models.Model):
   
   def action_get_contract_report(self, activation_code=False, company_id=False):
     #
-    if not activation_code or not company_id:
-      vals = {
+    vals = {
         'contract': '',
         'b64_data': '',
-        'msg': 'No existe un contrato con los parámetros enviados'
+        'msg': 'Defina los parámetros de búsqueda'
       }
-    else:
-        contract_id = self.env['pabs.contract'].sudo().search([('activation_code','=',activation_code),('company_id','=',company_id)], limit=1)         
-        if contract_id:
-          pdf = self.env.ref('merge_docx.id_econtrato').render([contract_id.id])[0]       
-          vals = {
-            'contract': contract_id.name,
-            'b64_data': base64.b64encode(pdf).decode('utf-8'),
-            'msg': ''
-          }
+    #
+    if activation_code and company_id:
+      contract_id = self.env['pabs.contract'].sudo().search([('activation_code','=',activation_code),('company_id','=',company_id)], limit=1)         
+      if contract_id:
+        pdf = self.env.ref('merge_docx.id_econtrato').render([contract_id.id])[0]       
+        vals = {
+          'contract': contract_id.name,
+          'b64_data': base64.b64encode(pdf).decode('utf-8'),
+          'msg': ''
+        }
+      else:
+        vals = {
+          'contract': '',
+          'b64_data': '',
+          'msg': 'No existe un contrato con los parámetros enviados'
+        }
     #
     raise UserError(vals.get('b64_data'))
     return json.dumps(vals)
