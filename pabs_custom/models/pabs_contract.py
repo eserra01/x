@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from datetime import datetime, timedelta, date
 import logging
 import calendar
@@ -232,7 +232,7 @@ class PABSContracts(models.Model):
             'msg': ''
           }
     #
-    print(vals.get('b64_data'))
+    raise UserError(vals.get('b64_data'))
     return json.dumps(vals)
   
   def get_link(self):    
