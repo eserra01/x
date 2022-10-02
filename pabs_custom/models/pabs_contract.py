@@ -225,7 +225,7 @@ class PABSContracts(models.Model):
     else:
         contract_id = self.env['pabs.contract'].sudo().search([('activation_code','=',activation_code)], limit=1)         
         if contract_id:
-          pdf = self.env.ref('xmarts_funeraria.id_estado_cuenta').render([contract_id.id])[0]       
+          pdf = self.env.ref('merge_docx.id_econtrato').render([contract_id.id])[0]       
           vals = {
             'contract': contract_id.name,
             'b64_data': base64.b64encode(pdf).decode('utf-8'),
