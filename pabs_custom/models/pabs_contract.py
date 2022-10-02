@@ -237,8 +237,7 @@ class PABSContracts(models.Model):
           'b64_data': '',
           'msg': 'No existe un contrato con los parámetros enviados'
         }
-    #
-    raise UserError(vals.get('b64_data'))
+    #   
     return json.dumps(vals)
   
   def get_link(self):    
