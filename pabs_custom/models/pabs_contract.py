@@ -12,6 +12,7 @@ import math
 from num2words import num2words
 import os
 import paramiko
+import base64
 
 _logger = logging.getLogger(__name__)
 
@@ -186,7 +187,7 @@ class PABSContracts(models.Model):
       'UNIQUE(lot_id)',
       'No se puede crear el registro: ya existe un registro referenciado al número de solicitud')]
 
-  def action_get_contract_report(self):       
+  def action_get_contract_report_sftp(self):       
     # Se genera el reporte
     path = os.path.dirname(os.path.abspath(__file__))
     absolute_path = '/home/odoo/tmp'
@@ -212,6 +213,27 @@ class PABSContracts(models.Model):
       # Se elimina el archivo
       os.remove(absolute_path + '/' + filename)
     return True
+  
+  def action_get_contract_report(self, activation_code=False):
+    #
+    if not activation_code:
+      vals = {
+        'contract': '',
+        'b64_data': '',
+        'msg': 'No existe un contrato con ese número de activación'
+      }
+    else:
+        contract_id = self.env['pabs.contract'].sudo().search([('activation_code','=',activation_code)], limit=1)         
+        if contract_id:
+          pdf = self.env.ref('xmarts_funeraria.id_estado_cuenta').render([contract_id.id])[0]       
+          vals = {
+            'contract': contract_id.name,
+            'b64_data': base64.b64encode(pdf).decode('utf-8'),
+            'msg': ''
+          }
+    #
+    print(vals.get('b64_data'))
+    return json.dumps(vals)
   
   def get_link(self):    
     for rec in self:
