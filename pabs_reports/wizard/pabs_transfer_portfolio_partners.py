@@ -15,7 +15,7 @@ class TransferPortfolioPartners(models.Model):
     string='Cobrador Destino',
     required=True)
 
-  def transfer_parnters(self):
+  def transfer_parnters_old(self):
     ### Declaración de objetos:
     contract_obj = self.env['pabs.contract']
     ### Buscamos todos los contratos que tenga asignado el cobrador origen
@@ -33,3 +33,14 @@ class TransferPortfolioPartners(models.Model):
     self._cr.commit()
     raise ValidationError((
       'Se asignaron {} contratos al asistente {}'.format(len(contract_ids),self.collector_dest_id.name)))
+
+  def transfer_parnters(self):  
+    #
+    qry = """UPDATE pabs_contract SET debt_collector = {destino} WHERE id IN(
+    SELECT id FROM pabs_contract WHERE debt_collector = {origen} AND contract_status_item in (
+    SELECT id FROM pabs_contract_status WHERE status IN ('REALIZADO POR COBRAR','SUSP. TEMPORAL','ACTIVO')
+    ));
+    """.format(destino=self.collector_dest_id.id,origen=self.collector_origin_id.id)       
+    self.env.cr.execute(qry)
+    self._cr.commit()
+    raise ValidationError(('Se asignaron los contratos al asistente {}'.format(self.collector_dest_id.name)))
