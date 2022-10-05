@@ -261,14 +261,19 @@ class PABSEcobroSync(models.Model):
         between = ''
       ### AGREGANDO INFORMACIÓN DE CONTRATO A LA LISTA
       log += 'Contrato {} de {} \n'.format((index + 1), len_contract)
-      # TEMPORAL:  Manda el tipo de compañia 03 en SALTILLO 
+
+      ### MANEJO DE EMPRESAS POR SERIE DE CONTRATO ###
       empresa = cont_comp.serie
-      # Si es SALTILLO
-      if company_id == 12: 
+      if company_id == 12: #SALTILLO NUEVO ESQUEMA
         if '3DJ' in contract_id.name or '4NJ' in contract_id.name:
           empresa = '03'
         else: 
           empresa = '04'
+      if company_id == 16: #TAMPICO NUEVO ESQUEMA
+        if '2NJ' in contract_id.name or '3NJ' in contract_id.name:
+          empresa = '04' #NUEVO ESQUEMA
+        else:
+          empresa = '01' #SERVICIOS A FUTURO
 
       contract_info.append({
         'contratoID' : int(contract_id.ecobro_id) or contract_id.id,
