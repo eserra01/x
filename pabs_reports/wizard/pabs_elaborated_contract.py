@@ -44,9 +44,10 @@ class ContractsElaboratedW1zard(models.TransientModel):
       titulo = "CORTE DE CONTRATOS ELABORADOS"
 
       contract_ids = contract_obj.search([
-            ('state','=','contract'),
-            ('invoice_date','>=',start_date),
-            ('invoice_date','<=',end_date)
+          ('state','=','contract'),
+          ('invoice_date','>=',start_date),
+          ('invoice_date','<=',end_date),
+          ('balance', '<', 90000)
       ]).sorted(key=lambda r: r.name)
       
       contract_ids = contract_ids.filtered(lambda x: x.name != x.lot_id.name)
