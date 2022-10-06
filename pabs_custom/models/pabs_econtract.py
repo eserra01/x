@@ -229,7 +229,7 @@ class PABSElectronicContracts(models.TransientModel):
 
                     if contrato:
                         _logger.info("Ya existe el pre-contrato")
-                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 2, "Ya existe el pre-contrato")
+                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 1, "Ya existe el pre-contrato")
                         continue
 
                 ### Si se debe generar contrato obtener siguiente número de contrato y asignar al contrato y al contacto. Si ya existe responder. ###
@@ -241,7 +241,7 @@ class PABSElectronicContracts(models.TransientModel):
 
                     if not contrato:
                         _logger.info("No se encontró el pre-contrato")
-                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, sol['serie'], sol['contrato'], 2, "No se encontró el pre-contrato")
+                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, sol['serie'], sol['contrato'], 0, "No se encontró el pre-contrato")
                         continue
 
                     if contrato.state == "contract": #singleton cuando hay dos contratos con mismo número de solicitud
@@ -259,7 +259,7 @@ class PABSElectronicContracts(models.TransientModel):
                         contrato.partner_id.write({'name' : siguiente_numero})
                         
                         _logger.info("Se asignó número de contrato {}".format(contrato.name))
-                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, siguiente_numero[0:3], siguiente_numero[3:99], 2, "Se asignó número de contrato")
+                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, siguiente_numero[0:3], siguiente_numero[3:99], 1, "Se asignó número de contrato")
                         continue
 
                 ### Validar datos de la afiliación ###

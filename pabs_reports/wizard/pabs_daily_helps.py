@@ -101,6 +101,10 @@ class PabsReportXLSX(models.AbstractModel):
         ('invoice_date','=',start_date)], order="invoice_date")
       report_name = "Ayudas Diarias de {}".format(start_date)
     ### SI NO SE ENCONTRARÓN CONTRATOS
+
+    ### Quitar afiliaciones electrónicas que no se han generado documentos ###
+    contract_ids = contract_ids.filtered(lambda x: len(x.refund_ids) > 0) # Quitar afiliaciones de contratos digitales
+
     if not contract_ids:
       ### MENSAJE DE ERROR
       raise ValidationError((
