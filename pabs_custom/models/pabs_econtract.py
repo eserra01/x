@@ -236,17 +236,17 @@ class PABSElectronicContracts(models.TransientModel):
                 if generar_contrato == "1":
                     contrato = contract_obj.search([
                         ('company_id', '=', company_id),
-                        ('name', '=', pre_numero_contrato)
+                        ('lot_id.name', '=', pre_numero_contrato)
                     ])
 
                     if not contrato:
                         _logger.info("No se encontró el pre-contrato")
-                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, contrato.name[0:3], contrato.name[3:], 2, "No se encontró el pre-contrato")
+                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, sol['serie'], sol['contrato'], 2, "No se encontró el pre-contrato")
                         continue
 
-                    if contrato.state == "contract": #singleton cuando hay dos contratos con mismo numero de activacion
+                    if contrato.state == "contract": #singleton cuando hay dos contratos con mismo número de solicitud
                         _logger.info("Ya existe el contrato")
-                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, contrato.name[0:3], contrato.name[3:], 2, "Ya existe el contrato")
+                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, contrato.name[0:3], contrato.name[3:], 2, "El contrato ya habia sido creado")
                         continue
                     else:
                         # Se busca la tarifa porque esta ligada a la secuencia
@@ -997,7 +997,7 @@ class PABSElectronicContracts(models.TransientModel):
                 self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 2, "Actualizado")
             except Exception as ex:
                 _logger.error("No se puede actualizar la afiliacion: {}".format(ex))
-                self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 0, ex[0:100])
+                self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 0, ex)
 
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
