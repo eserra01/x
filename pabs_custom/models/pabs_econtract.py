@@ -1099,7 +1099,7 @@ class PABSElectronicContracts(models.TransientModel):
                 ### Buscar registro de corte
                 corte = corte_obj.search([
                     ('company_id', '=', company_id),
-                    ('id_contrato.name', '=', cor['contrato'])
+                    ('id_contrato.lot_id.name', '=', cor['contrato']) #PCD...
                 ])
 
                 if not corte:
