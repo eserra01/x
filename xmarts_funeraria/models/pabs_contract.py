@@ -158,7 +158,7 @@ class PabsContract(models.Model):
                         #Si hay monto abonado
                         if abonado > 0:
                             #Si el monto abonado es mayor al monto programado
-                            if abonado > rec.payment_amount:
+                            if abonado >= rec.payment_amount:
                                 vals = {
                                     'item': cont,
                                     'date': siguiente_fecha,
@@ -219,7 +219,7 @@ class PabsContract(models.Model):
                         #Si hay monto abonado
                         if abonado > 0:
                             #Si el monto abonado es mayor al monto programado
-                            if abonado > rec.payment_amount:
+                            if abonado >= rec.payment_amount:
                                 vals = {
                                     'item': cont,
                                     'date': siguiente_fecha,
