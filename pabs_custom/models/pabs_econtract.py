@@ -141,7 +141,7 @@ class PABSElectronicContracts(models.TransientModel):
 
         ### Llamar web service de consulta ###
         try:
-            _logger.info("Comienza consulta de afiliaciones")
+            # _logger.info("Comienza consulta de afiliaciones")
             respuesta = requests.post(url_obtener_afiliaciones)
             json_afiliaciones = json.loads(respuesta.text)
             array_solicitudes = json_afiliaciones.get('solicitudes')
