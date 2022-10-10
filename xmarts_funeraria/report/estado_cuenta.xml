@@ -159,7 +159,7 @@
     name="xmarts_funeraria.estado_cuenta"
     file="xmarts_funeraria.estado_cuenta"
     report_type="qweb-pdf"
-    print_report_name="'Estado de cuenta'"
+    print_report_name="object.name"
     paperformat="xmarts_funeraria.paperformat_estado_cuenta"
   />
 </odoo>
