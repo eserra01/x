@@ -273,7 +273,7 @@ class PABSEcobroSync(models.Model):
         if '2NJ' in contract_id.name or '3NJ' in contract_id.name:
           empresa = '04' #NUEVO ESQUEMA
         else:
-          empresa = '99' #SERVICIOS A FUTURO
+          empresa = '03' #SERVICIOS A FUTURO
 
       contract_info.append({
         'contratoID' : int(contract_id.ecobro_id) or contract_id.id,

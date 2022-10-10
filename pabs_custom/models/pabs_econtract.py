@@ -117,7 +117,7 @@ class PABSElectronicContracts(models.TransientModel):
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
     def SincronizarContratos(self, company_id):
-        _logger.info("Comienza sincronización de afiliaciones electrónicas compañia: {}".format(company_id))
+        #_logger.info("Comienza sincronización de afiliaciones electrónicas compañia: {}".format(company_id))
 
         contract_obj = self.env['pabs.contract']
         municipality_obj = self.env['res.locality']
@@ -202,7 +202,7 @@ class PABSElectronicContracts(models.TransientModel):
 		# }]
 
         cantidad_afiliaciones = len(array_solicitudes)
-        _logger.info("Afiliaciones obtenidas: {}".format(cantidad_afiliaciones))
+        _logger.info("{} >>> Afiliaciones electrónicas a sincronizar: {}".format(company_id, cantidad_afiliaciones))
 
         # TEST
         # for i in range(1, cantidad_afiliaciones): # Tomar solo X elementos de la lista
