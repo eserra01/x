@@ -925,8 +925,7 @@ class APIREST(http.Controller):
       SaldoMensual, 
       SaldoAnual, 
       Project, 
-      Comments,
-      Cliente
+      Comments
     FROM
     (
       /*TODO LO QUE NO SEAN PAGOS*/
@@ -1062,11 +1061,9 @@ class APIREST(http.Controller):
         0 as SaldoMensual,
         0 as SaldoAnual,
         '' as Project,
-        mov.name as comments,
-        cli.name as Cliente
+        mov.name as comments
 
-      FROM account_move AS enc 
-      INNER JOIN res_partner as cli on enc.partner_id = cli.id 
+      FROM account_move AS enc
       INNER JOIN account_move_line as mov on enc.id = mov.move_id
       INNER JOIN res_users AS usr ON enc.create_uid = usr.id
       INNER JOIN res_partner AS part ON usr.partner_id = part.id
@@ -1212,11 +1209,9 @@ class APIREST(http.Controller):
         0 as SaldoMensual,
         0 as SaldoAnual,
         '' as Project,
-        '' as comments,
-        cli.name as Cliente
+        '' as comments
 
-      FROM account_move AS enc 
-      INNER JOIN res_partner as cli on enc.partner_id = cli.id
+      FROM account_move AS enc
       INNER JOIN account_move_line as mov on enc.id = mov.move_id
       INNER JOIN res_users AS usr ON enc.create_uid = usr.id
       INNER JOIN res_partner AS part ON usr.partner_id = part.id
@@ -1227,7 +1222,7 @@ class APIREST(http.Controller):
         WHERE enc.state = 'posted'
         AND COALESCE(enc.ref, '') IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND enc.company_id = {}
-          GROUP BY enc.date, jou.name, enc.type, enc.ref, ana.name, acc.code, acc.name, aaa.name,Cliente 
+          GROUP BY enc.date, jou.name, enc.type, enc.ref, ana.name, acc.code, acc.name, aaa.name
     UNION
     /*FACTURAS AGRUPADAS*/
     SELECT 
@@ -1359,11 +1354,9 @@ class APIREST(http.Controller):
         0 as SaldoMensual,
         0 as SaldoAnual,
         '' as Project,
-        '' as comments,
-        cli.name as Cliente 
+        '' as comments
 
-      FROM account_move AS enc 
-      INNER JOIN res_partner as cli on enc.partner_id = cli.id 
+      FROM account_move AS enc
       INNER JOIN account_move_line as mov on enc.id = mov.move_id
       INNER JOIN res_users AS usr ON enc.create_uid = usr.id
       INNER JOIN res_partner AS part ON usr.partner_id = part.id
@@ -1376,7 +1369,7 @@ class APIREST(http.Controller):
         AND enc.type = 'out_invoice'
         AND enc.contract_id IS NOT NULL
         AND enc.company_id = {}
-          GROUP BY enc.date, jou.name, enc.type, ana.name, acc.code, acc.name, aaa.name, Cliente 
+          GROUP BY enc.date, jou.name, enc.type, ana.name, acc.code, acc.name, aaa.name
     ) as financieros
     """.format(company.name, company_id, company.name, company_id, company.name, company_id)
     try:
