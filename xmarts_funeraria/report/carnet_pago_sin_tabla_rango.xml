@@ -48,7 +48,7 @@
                     }
                 </style>
                <!-- -->
-                <t t-if="doc['company_id']!=13">
+                <t t-if="doc['company_id'] not in [13,19]">
                     <div>
                         <!-- Margen superior -->
                         <div style="height: 9mm;"> </div>
@@ -137,7 +137,7 @@
                     </div>
                 </t>
                 <!-- MONCLOVA -->
-                <t t-if="doc['company_id']==13">
+                <t t-if="doc['company_id'] in [13,19]">
                     <!-- Margen superior -->
                     <div style="float: left; width: 100%; text-align:center; margin-top: 5mm;"><span t-esc="doc['cobrador_contrato']" /></div>                    
                     <div style="height: 20mm;"> </div> 
