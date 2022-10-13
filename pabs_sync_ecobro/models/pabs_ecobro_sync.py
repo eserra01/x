@@ -571,7 +571,7 @@ class PABSEcobroSync(models.Model):
       contract_id = False
       mortuary_id = False
       ### SI EL COBRO HACE REFERENCIA A COOPERATIVA O APOYO
-      if not company_sync:
+      if not company_sync or company_sync.type_company != 'mortuary':
         ### BUSCAMOS EL CONTRATO QUE SE CONCATENO
         contract_id = contract_obj.search([
           ('company_id','=',company_id),
