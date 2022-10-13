@@ -551,26 +551,27 @@ class PABSEcobroSync(models.Model):
           log += 'Estatus: Se cancelo el recibo correctamente \n'
           continue
 
-      ### VERIFICAMOS EL TIPO DE COMPAÑIA
-      # TEMPORAL PARA SALTILLO CON EMPRESA 03
+      ### Se quita validación de empresa para pagos de planes a prevision ###
       empresa = rec['empresa']
-      if company_id == 12 and rec['empresa'] == '03':
-        empresa = '04'
-      # company_sync = company.companies.filtered(lambda r: r.serie == rec['empresa'])
       company_sync = company.companies.filtered(lambda r: r.serie == empresa)
-      if not company_sync:
-        _logger.warning("No se encontró el tipo de compañia: {} para la empresa {}".format(rec['empresa'],company.name))
-        fails.append({
-          'afectacionID' : rec['afectacionID'],
-          'estatus' : 2,
-          'detalle' : "No esta configurado el tipo de empresa: {}".format(rec['empresa'])
-        })
-        log += 'Estatus: No esta configurado el tipo de empresa: {}'.format(rec['empresa'])
-        continue
+
+      # if company_id == 12 and rec['empresa'] == '03':
+      #   empresa = '04'
+      # # company_sync = company.companies.filtered(lambda r: r.serie == rec['empresa'])
+      # company_sync = company.companies.filtered(lambda r: r.serie == empresa)
+      # if not company_sync:
+      #   _logger.warning("No se encontró el tipo de compañia: {} para la empresa {}".format(rec['empresa'],company.name))
+      #   fails.append({
+      #     'afectacionID' : rec['afectacionID'],
+      #     'estatus' : 2,
+      #     'detalle' : "No esta configurado el tipo de empresa: {}".format(rec['empresa'])
+      #   })
+      #   log += 'Estatus: No esta configurado el tipo de empresa: {}'.format(rec['empresa'])
+      #   continue
       contract_id = False
       mortuary_id = False
       ### SI EL COBRO HACE REFERENCIA A COOPERATIVA O APOYO
-      if company_sync.type_company in ('support', 'cooperative'):
+      if not company_sync:
         ### BUSCAMOS EL CONTRATO QUE SE CONCATENO
         contract_id = contract_obj.search([
           ('company_id','=',company_id),
