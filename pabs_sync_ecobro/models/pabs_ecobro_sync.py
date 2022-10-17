@@ -276,7 +276,7 @@ class PABSEcobroSync(models.Model):
           empresa = '03' #SERVICIOS A FUTURO
 
       contract_info.append({
-        'contratoID' : int(contract_id.ecobro_id) or contract_id.id,
+        'contratoID' : contract_id.id,
         'serie' : contract_id.name[0:3],
         'no_contrato' : contract_id.name[3:],
         'nombre' : contract_id.partner_name or '',
