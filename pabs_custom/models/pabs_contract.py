@@ -544,7 +544,19 @@ class PABSContracts(models.Model):
       # Aumentar el monto entregado por traspasos
       traspasos = rec.transfer_balance_ids.filtered(lambda x: x.move_id.state == 'posted')
       if len(traspasos) > 0:
-        saldo = saldo + sum(traspasos.mapped('debit'))
+        
+        # No sumar traspasos cuando el contrato ya fue cancelado fiscalmente (tiene una factura con el producto "Cancelación fiscal")
+        if rec.company_id.apply_taxes:
+          cancelado_fiscalmente = self.env['account_move_line'].search_count([
+            ('partner_id', '=', rec.partner_id),
+            ('parent_state', '=', 'posted'),
+            ('product_id.default_code', '=', 'DESC-0009')
+          ])
+
+          if cancelado_fiscalmente == 0:
+            saldo = saldo + sum(traspasos.mapped('debit'))
+        else:
+          saldo = saldo + sum(traspasos.mapped('debit'))
 
       rec.balance = saldo
 
