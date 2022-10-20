@@ -547,7 +547,7 @@ class PABSContracts(models.Model):
         
         # No sumar traspasos cuando el contrato ya fue cancelado fiscalmente (tiene una factura con el producto "Cancelación fiscal")
         if rec.company_id.apply_taxes:
-          cancelado_fiscalmente = self.env['account_move_line'].search_count([
+          cancelado_fiscalmente = self.env['account.move.line'].search_count([
             ('partner_id', '=', rec.partner_id),
             ('parent_state', '=', 'posted'),
             ('product_id.default_code', '=', 'DESC-0009')
