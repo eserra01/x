@@ -54,7 +54,7 @@ class PabsAccountMove(models.TransientModel):
       ('invoice_date','=',date)])
 
     ### Quitar los contratos de tipo Afiliación electrónica
-    contract_ids = contract_ids.filtered(lambda x: x.name != x.lot_id.name)
+    contract_ids = contract_ids.filtered(lambda x: 'PCD' not in x.lot_id.name)
 
     ### Sí no hay contratos
     if not contract_ids:
@@ -131,7 +131,7 @@ class PabsAccountMove(models.TransientModel):
       ('invoice_date','=',date)])
 
     ### Quitar los contratos de tipo Afiliación electrónica
-    contract_ids = contract_ids.filtered(lambda x: x.name != x.lot_id.name)
+    contract_ids = contract_ids.filtered(lambda x: 'PCD' not in x.lot_id.name)
     
     warehouse_ids = contract_ids.mapped('warehouse_id')
     for warehouse_id in warehouse_ids:
