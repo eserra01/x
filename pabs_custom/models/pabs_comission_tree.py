@@ -362,6 +362,30 @@ class ComissionTree(models.Model):
 
                         #Al no quedar mas por repartir se termina el proceso
                         break
+                #Parche 2022-10-27: Cuando el árbol se quedaba sin fideicomiso restante no generaba la salida de fideicomiso
+                elif MontoPago > 0 and com.remaining_commission == 0 and com.job_id.name == "FIDEICOMISO":
+                    comisionPagada = com.commission_paid
+                    comisionRealPagada = com.actual_commission_paid
+
+                    comisionPagadaSalida = 0
+                    comisionRealPagadaSalida = 0
+                    
+                    comisionPagadaSalida = MontoPago                                        #1.1 Comision pagada de salida = Monto_pago
+                    comisionRealPagadaSalida = MontoPago - (MontoPago * PorcentajeCobrador) #1.2 Comision real pagada de salida = Monto_pago - (Monto_pago * Porcentaje_cobrador)
+
+                    comisionPagada = comisionPagada + MontoPago                             #2.1 Comision a pagar = Comision pagada + Monto_pago
+                    comisionRealPagada = comisionRealPagada + comisionRealPagadaSalida      #2.2 Comisión real pagada de arbol = Comision_real_pagada + Comision_real_pagada_salida
+                    comisionRestante = 0                                                    #2.3 Comision restante = 0
+                    MontoPago = 0                                                           #4. Disminuir el monto del abono = 0
+
+                    #Actualizar arbol
+                    com.write({"commission_paid":comisionPagada, "actual_commission_paid":comisionRealPagada, "remaining_commission":comisionRestante})
+
+                    #Crear registro en salida de comisiones
+                    salida_comisiones_obj.create([{"payment_id":IdPago, "job_id":com.job_id.id, "comission_agent_id":com.comission_agent_id.id, "commission_paid":comisionPagadaSalida, "actual_commission_paid": comisionRealPagadaSalida, "company_id" : contrato.company_id.id}])
+
+                    #Al no quedar mas por repartir se termina el proceso
+                    break
 
         else: # NO FISCAL
             #Calcular cambios al árbol de comisiones y la salida de comisiones del recibo
@@ -423,6 +447,30 @@ class ComissionTree(models.Model):
 
                         #Al no quedar mas por repartir se termina el proceso
                         break
+                #Parche 2022-10-27: Cuando el árbol se quedaba sin fideicomiso restante no generaba la salida de fideicomiso
+                elif MontoPago > 0 and com.remaining_commission == 0 and com.job_id.name == "FIDEICOMISO":
+                    comisionPagada = com.commission_paid
+                    comisionRealPagada = com.actual_commission_paid
+
+                    comisionPagadaSalida = 0
+                    comisionRealPagadaSalida = 0
+                    
+                    comisionPagadaSalida = MontoPago                                        #1.1 Comision pagada de salida = Monto_pago
+                    comisionRealPagadaSalida = MontoPago - (MontoPago * PorcentajeCobrador) #1.2 Comision real pagada de salida = Monto_pago - (Monto_pago * Porcentaje_cobrador)
+
+                    comisionPagada = comisionPagada + MontoPago                             #2.1 Comision a pagar = Comision pagada + Monto_pago
+                    comisionRealPagada = comisionRealPagada + comisionRealPagadaSalida      #2.2 Comisión real pagada de arbol = Comision_real_pagada + Comision_real_pagada_salida
+                    comisionRestante = 0                                                    #2.3 Comision restante = 0
+                    MontoPago = 0                                                           #4. Disminuir el monto del abono = 0
+
+                    #Actualizar arbol
+                    com.write({"commission_paid":comisionPagada, "actual_commission_paid":comisionRealPagada, "remaining_commission":comisionRestante})
+
+                    #Crear registro en salida de comisiones
+                    salida_comisiones_obj.create([{"payment_id":IdPago, "job_id":com.job_id.id, "comission_agent_id":com.comission_agent_id.id, "commission_paid":comisionPagadaSalida, "actual_commission_paid": comisionRealPagadaSalida, "company_id" : contrato.company_id.id}])
+
+                    #Al no quedar mas por repartir se termina el proceso
+                    break
             
     #Revierte las comisiones generadas por un pago. Actualiza los montos en el arbol de comisiones. Las salidas permanecen en el pago cancelado.
     def RevertirSalidas(self, IdPago, NumeroContrato, RefundID = False):
