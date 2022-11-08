@@ -344,9 +344,9 @@ class PABSContracts(models.Model):
                 contract.message_post(body=(error_log))
                 continue
               # Llenar datos de Linea principal de débito
-              amount= 6000
+              amount= 8000
               if contract.payment_amount >= 100:
-                amount = 6500              
+                amount = 8500              
 
               line_data = {
                 'move_id' : refund_id.id,
