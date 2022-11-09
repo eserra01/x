@@ -422,7 +422,7 @@ class StockMove(models.Model):
             inversion_inicial = vals.get('inversion_inicial')
           else:
             inversion_inicial = rec.inversion_inicial
-          if inversion_inicial <= 0:
+          if inversion_inicial <= 0 and not rec.asistente_social_bf:
             raise ValidationError("La inversión inicial de una solicitud está en cero")
           toma_comision = 0
           if vals.get('toma_comision'):
@@ -432,7 +432,7 @@ class StockMove(models.Model):
 
           importe_recibido = 0
           importe_recibido = inversion_inicial - toma_comision
-          if importe_recibido < rec.papeleria:
+          if importe_recibido < rec.papeleria and not rec.asistente_social_bf:
             raise ValidationError("El importe recibido de una solicitud es menor a la papeleria")
 
     return super(StockMove, self).write(vals)
@@ -487,10 +487,10 @@ class StockMove(models.Model):
             else:
               inversion_inicial = self.inversion_inicial
             
-            if inversion_inicial <= 0:
+            if inversion_inicial <= 0 and not self.asistente_social_bf:
               raise ValidationError("La inversión inicial de una solicitud está en cero")
 
-            if self.amount_received < self.papeleria:
+            if self.amount_received < self.papeleria and not self.asistente_social_bf:
               raise ValidationError("El importe recibido de una solicitud es menor a la papeleria")
 
         ### SI EL MOVIMIENTO ES OFICINA DE VENTAS - ASISTENTE
