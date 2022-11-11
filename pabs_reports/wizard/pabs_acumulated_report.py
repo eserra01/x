@@ -138,6 +138,9 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
           status = 'F'
         elif contract_id.state == 'contract':
           status = 'V'
+        # Si la ubicación origen es de tipo contrato
+        if line.picking_id.location_id.contract_location:
+          status ='P'
         sheet.write(count, 7, status or "")
         move_id = stock_move_obj.search([
           ('series','=',line.lot_id.name),
