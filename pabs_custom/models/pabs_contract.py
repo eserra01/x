@@ -266,12 +266,12 @@ class PABSContracts(models.Model):
     journal_id = self.env['account.move'].with_context(default_type='out_invoice')._get_default_journal()
     currency_id = self.env['account.move'].with_context(default_type='out_invoice')._get_default_currency()
     aml_obj = self.env['account.move.line'].with_context(check_move_validity=False)
-    #
+    #  
     # Se obtienen las solictudes en las que se asignó agente del BF
     lot_ids = []
     mov_ids = self.env['stock.move'].search([('asistente_social_bf','!=',False)])
     for mov in mov_ids:
-      move_line_ids = self.env['stock.move.line'].search([('mov_id','=',mov.id)])
+      move_line_ids = self.env['stock.move.line'].search([('move_id','=',mov.id)])
       for line in move_line_ids:
         lot_ids.append(line.lot_id)
     # Se obtienen los contratos 
