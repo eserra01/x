@@ -267,7 +267,21 @@ class PABSContracts(models.Model):
     currency_id = self.env['account.move'].with_context(default_type='out_invoice')._get_default_currency()
     aml_obj = self.env['account.move.line'].with_context(check_move_validity=False)
     #
-    contract_ids = self.search([('company_id','=',company_id),('has_bf_bonus','=',False)])   
+    # Se obtienen las solictudes en las que se asignó agente del BF
+    lot_ids = []
+    mov_ids = self.env['stock.move'].search([('asistente_social_bf','!=',False)])
+    for mov in mov_ids:
+      move_line_ids = self.env['stock.move.line'].search([('mov_id','=',mov.id)])
+      for line in move_line_ids:
+        lot_ids.append(line.lot_id)
+    # Se obtienen los contratos 
+    contract_ids = []
+    for lot in lot_ids:
+      contract_id = self.search([('lot_id','=',lot.id),('has_bf_bonus','=',False)],limit=1)
+      if contract_id:
+        if contract_id not in contract_ids:
+          contract_ids.append(contract_id) 
+    # contract_ids = self.search([('company_id','=',company_id),('has_bf_bonus','=',False)])   
     for contract in contract_ids:
       error_log = str(contract.name) + ' - ' + 'Se intentó crear una NC por Bono de inversión inicial (Buen fin) - '
       bf = False
