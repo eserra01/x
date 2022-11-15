@@ -269,7 +269,7 @@ class PABSContracts(models.Model):
     #  
     # Se obtienen las solictudes en las que se asignó agente del BF
     lot_ids = []
-    mov_ids = self.env['stock.move'].search([('asistente_social_bf','!=',False)])
+    mov_ids = self.env['stock.move'].search([('asistente_social_bf','!=',False),('company_id','=',company_id)])
     for mov in mov_ids:
       move_line_ids = self.env['stock.move.line'].search([('move_id','=',mov.id)])
       for line in move_line_ids:
