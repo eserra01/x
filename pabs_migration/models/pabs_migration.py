@@ -838,8 +838,7 @@ class PabsMigration(models.Model):
           emp.id as id_cobrador
 				FROM hr_employee AS emp
         INNER JOIN hr_job AS car ON emp.job_id = car.id
-					WHERE car.name NOT LIKE '%ASIS%'
-					AND emp.company_id = {}
+					WHERE emp.company_id = {}
       """.format(company_id)
 
       self.env.cr.execute(consulta)
