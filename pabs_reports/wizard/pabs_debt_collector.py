@@ -85,7 +85,10 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
           payment_way = 'M'
         else:
           payment_way = ''
-        last_payment = contract_id.payment_ids.filtered(lambda r: r.state in ('posted','reconciled','sent')).sorted(key=lambda r: r.payment_date)[-1]
+        #
+        last_payment = False
+        if contract_id.payment_ids:
+          last_payment = contract_id.payment_ids.filtered(lambda r: r.state in ('posted','reconciled','sent')).sorted(key=lambda r: r.payment_date)[-1]
         # Formato de dirección
         address = ''
         neightborhood = ''         
@@ -102,7 +105,8 @@ class PabsDebtCollectorReportPDF(models.AbstractModel):
           'neightborhood' : neightborhood,
           'locality_id' : contract_id.toll_municipallity_id.name or '',
           'payment_way' : payment_way or '',
-          'last_payment' : last_payment.date_receipt if last_payment.date_receipt else last_payment.payment_date,
+          # 'last_payment' : last_payment.date_receipt if last_payment.date_receipt else last_payment.payment_date,
+          'last_payment' : last_payment.date_receipt or last_payment.payment_date if last_payment else False,
           'phone' : contract_id.phone_toll or contract_id.phone or '',
           'status' : 'Activo' if contract_id.contract_status_item.status == 'ACTIVO' else 'Inactivo',
         })
