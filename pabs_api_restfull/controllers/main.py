@@ -1663,7 +1663,7 @@ class APIREST(http.Controller):
           AND payment_date BETWEEN '{}' AND '{}' 
               GROUP BY emp.barcode, car.name
     ) as x
-      WHERE x.cargo != 'FIDEICOMISO'
+      WHERE x.cargo NOT IN ('FIDEICOMISO', 'PAPELERIA')
         ORDER BY x.no_nomina, x.cargo, x.fecha_oficina;
         """.format(company_id, date_start,date_end)
     #
