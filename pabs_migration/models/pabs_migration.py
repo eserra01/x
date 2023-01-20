@@ -1349,7 +1349,8 @@ class PabsMigration(models.Model):
       consulta = """
         SELECT 
 					abo.id as id,
-          abo.ecobro_receipt as recibo
+          abo.ecobro_receipt as recibo,
+          TO_CHAR(abo.payment_date, 'yyyy-mm-dd') as fecha_oficina
 				FROM account_payment as abo
         INNER JOIN pabs_contract as con on abo.contract = con.id
 				LEFT JOIN pabs_comission_output as sal on abo.id = sal.payment_id
@@ -1366,7 +1367,8 @@ class PabsMigration(models.Model):
       consulta = """
         SELECT 
 					mov.id as id,
-					mov.recibo as recibo
+					mov.recibo as recibo,
+          TO_CHAR(mov.invoice_date, 'yyyy-mm-dd') as fecha_oficina
 				FROM account_move AS mov
 				LEFT JOIN pabs_comission_output AS sal ON mov.id = sal.refund_id
 					WHERE mov.state = 'posted'
@@ -1382,6 +1384,7 @@ class PabsMigration(models.Model):
 
     recibos_odoo = []
     solo_recibos = []
+    solo_fechas = []
     for res in self.env.cr.fetchall():
       recibo = res[1]
       
@@ -1391,6 +1394,10 @@ class PabsMigration(models.Model):
       })
 
       solo_recibos.append("'{}'".format(recibo))
+      solo_fechas.append(res[2])
+
+    fecha_minima = min(solo_fechas)
+    fecha_maxima = max(solo_fechas)
 
     if not recibos_odoo:
       _logger.info("No hay recibos")
@@ -1417,11 +1424,12 @@ class PabsMigration(models.Model):
 			INNER JOIN personal AS per ON pago.no_personal = per.no_personal
 			INNER JOIN cargos AS car ON pago.no_cargo = car.no_cargo
 				WHERE pago.comision > 0
+        AND abo.fecha_oficina BETWEEN '{}' AND '{}'
 				AND CASE 
           WHEN abo.no_movimiento IN (2,11) THEN abo.no_abono
           ELSE CONCAT(rec.serie, rec.no_recibo)
         END IN ({})
-    """.format(",".join(solo_recibos))
+    """.format(",".join(solo_recibos, fecha_minima, fecha_maxima))
 
     respuesta = self._get_data(company_id, consulta)
 
