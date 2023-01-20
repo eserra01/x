@@ -2256,6 +2256,9 @@ class PabsMigration(models.Model):
             _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
             break
 
+        #Remover elemento encontrado de la lista de PABS
+        contratos_pabs.remove(con_pabs)
+
 
     ##########################################
     ############### ESTATUS ##################
@@ -2392,6 +2395,9 @@ class PabsMigration(models.Model):
             _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
             break
 
+        #Remover elemento encontrado de la lista de PABS
+        contratos_pabs.remove(con_pabs)
+
     ##########################################
     ############### FORMA Y MONTO DE PAGO ##################
     elif tipo == 'pago':
@@ -2476,6 +2482,9 @@ class PabsMigration(models.Model):
           if conteo_actualizados > limite:
             _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
             break
+
+        #Remover elemento encontrado de la lista de PABS
+        contratos_pabs.remove(con_pabs)
 
     else:
       raise ValidationError("No se ha elegido un tipo")
