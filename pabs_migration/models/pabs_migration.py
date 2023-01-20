@@ -1043,15 +1043,24 @@ class PabsMigration(models.Model):
     # a) Por fecha mas antigua de nota
     consulta = ""
     limite_fechas_pabs = ""
-    if automatico and tipo_nota == 'bonos':
+
+    # a) modo automático
+    if automatico:
+      filtro_referencia = ""
+      if tipo_nota == 'bonos':
+        filtro_referencia = 'Bono por inversión inicial'
+      elif tipo_nota == 'notas':
+        filtro_referencia = 'Migracion de nota de crédito'
+
       consulta = """
         SELECT 
           COALESCE(MIN(invoice_date), '2021-10-30') as fecha_minima /*PROD*/
         FROM account_move
           WHERE type = 'out_refund'
           AND state IN ('posted', 'sent', 'reconciled')
+          AND ref = '{}'
           AND company_id = '{}'
-      """.format(company_id)
+      """.format(filtro_referencia, company_id)
 
       self.env.cr.execute(consulta)
 
@@ -1063,11 +1072,7 @@ class PabsMigration(models.Model):
 
       limite_fechas_pabs = " AND abo.fecha_oficina BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
       limite_fechas_odoo = " AND nota.invoice_date BETWEEN '{}' AND '{}' ".format(fecha_inicial, fecha_final)
-
     # b) Entre fechas elegidas
-    elif tipo_nota == 'notas':
-      limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '1900-01-01' AND '2999-12-31'"
-      limite_fechas_odoo = " AND nota.invoice_date BETWEEN '1900-01-01' AND '2999-12-31'"
     else:
       limite_fechas_pabs = " AND abo.fecha_Oficina BETWEEN '{}' AND '{}'".format(desde, hasta)
       limite_fechas_odoo = " AND nota.invoice_date BETWEEN '{}' AND '{}'".format(desde, hasta)
@@ -1132,8 +1137,9 @@ class PabsMigration(models.Model):
 					WHERE con.tipo_bd != 20
           AND abo.importe > 0
           AND (rec.serie IN ({}) OR abo.no_cobrador IN ({}))
+          {}
 						ORDER BY fecha_oficina DESC, no_abono DESC
-      """.format(series_notas, cobrador_notas)
+      """.format(series_notas, cobrador_notas, limite_fechas_pabs)
 
     respuesta = self._get_data(company_id, consulta)
 
