@@ -1429,7 +1429,7 @@ class PabsMigration(models.Model):
           WHEN abo.no_movimiento IN (2,11) THEN abo.no_abono
           ELSE CONCAT(rec.serie, rec.no_recibo)
         END IN ({})
-    """.format(",".join(solo_recibos, fecha_minima, fecha_maxima))
+    """.format(fecha_minima, fecha_maxima, ",".join(solo_recibos))
 
     respuesta = self._get_data(company_id, consulta)
 
