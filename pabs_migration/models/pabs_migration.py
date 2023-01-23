@@ -2252,7 +2252,7 @@ class PabsMigration(models.Model):
           _logger.info("{} de {}. {} Cobrador asignado -> {}".format(index, cantidad_contratos_odoo, con['contrato'], con_pabs['cobrador']))
 
           conteo_actualizados = conteo_actualizados + 1
-          if conteo_actualizados > limite:
+          if conteo_actualizados >= limite:
             _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
             break
 
@@ -2391,7 +2391,7 @@ class PabsMigration(models.Model):
             
             conteo_actualizados = conteo_actualizados + 1
 
-          if conteo_actualizados > limite:
+          if conteo_actualizados >= limite:
             _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
             break
 
@@ -2479,12 +2479,235 @@ class PabsMigration(models.Model):
 
           conteo_actualizados = conteo_actualizados + 1
 
-          if conteo_actualizados > limite:
+          if conteo_actualizados >= limite:
             _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
             break
 
         #Remover elemento encontrado de la lista de PABS
         contratos_pabs.remove(con_pabs)
+    ########################################################
+    ###############         Nombres       ##################
+    elif tipo == 'nombres':
+      ### Obtener contratos de PABS ###
+      consulta = """
+        SELECT
+          CONCAT(con.serie, con.no_contrato) as contrato,
+          UPPER(cli.nombre) as nombre,
+          UPPER(cli.apellido_pat) as apellido_paterno,
+          UPPER(cli.apellido_mat) as apellido_materno
+        FROM contratos AS con
+        INNER JOIN clientes AS cli ON con.no_cliente = cli.no_cliente
+          WHERE con.tipo_bd != 20
+          AND con.serie != '1CZ'
+            ORDER BY CONCAT(con.serie, con.no_contrato) DESC
+      """
+      respuesta = self._get_data(company_id, consulta)
 
+      contratos_pabs = []
+      for res in respuesta:
+        contratos_pabs.append({
+          'contrato': res['contrato'],
+          'nombre': res['nombre'],
+          'apellido_paterno': res['apellido_paterno'],
+          'apellido_materno': res['apellido_materno']
+        })
+
+      ### Obtener contratos de ODOO ###
+      consulta = """
+        SELECT
+          con.id as id,
+          con.name as contrato,
+          COALESCE(con.partner_name, '') as nombre,
+          COALESCE(con.partner_fname, '') as apellido_paterno,
+          COALESCE(con.partner_mname, '') as apellido_materno
+        FROM pabs_contract as con
+          WHERE con.company_id = {}
+            ORDER BY con.name DESC
+      """.format(company_id)
+
+      self.env.cr.execute(consulta)
+
+      contratos_odoo = []
+      for res in self.env.cr.fetchall():
+        contratos_odoo.append({
+          'id': res[0],
+          'contrato': res[1],
+          'nombre': res[2],
+          'apellido_paterno': res[3],
+          'apellido_materno': res[4]
+        })
+
+      if len(contratos_odoo) == 0:
+        _logger.info("No hay contratos")
+        return
+
+      ### Comparar y actualizar contratos de odoo ###
+      cantidad_contratos_odoo = len(contratos_odoo)
+      conteo_actualizados = 0
+      for index, con in enumerate(contratos_odoo, 1):
+
+        #Buscar contrato de pabs
+        con_pabs = next( (x for x in contratos_pabs if x['contrato'] == con['contrato']), 0)
+        if con_pabs == 0:
+          _logger.info("{} de {}. {} No se encontró contrato en pabs".format(index, cantidad_contratos_odoo, con['contrato']))
+          continue
+
+        #Comparar y actualizar
+        actualizar = {}
+        if con['nombre'] != con_pabs['nombre']:
+          actualizar.update({'partner_name': con_pabs['nombre']})
+
+        if con['apellido_paterno'] != con_pabs['apellido_paterno']:
+          actualizar.update({'partner_fname': con_pabs['apellido_paterno']})
+
+        if con['apellido_materno'] != con_pabs['apellido_materno']:
+          actualizar.update({'partner_mname': con_pabs['apellido_materno']})
+
+        if actualizar:
+          contract_obj.browse(con['id']).write(actualizar)
+          _logger.info("{} de {}. {} Nombre actualizado".format(index, cantidad_contratos_odoo, con['contrato']))
+
+          conteo_actualizados = conteo_actualizados + 1
+
+          if conteo_actualizados >= limite:
+            _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
+            break
+
+        #Remover elemento encontrado de la lista de PABS
+        contratos_pabs.remove(con_pabs)
+    ########################################################
+    ###############        Domicilio      ##################
+    elif tipo == 'domicilio':
+      ### Obtener contratos de PABS ###
+      consulta = """
+        SELECT
+          CONCAT(con.serie, con.no_contrato) as contrato,
+          cli.calle_cobro as calle, 
+          CASE 
+            WHEN LENGTH(no_int_cobro) = 0 THEN cli.no_ext_cobro
+            ELSE CONCAT(cli.no_ext_cobro, ' ', cli.no_INT_cobro)
+          END as numero,
+          col.colonia as colonia,
+          loc.localidad as municipio,
+          cli.entre_calles as entre_calles,
+          cli.telefono as telefono
+        FROM contratos AS con
+        INNER JOIN clientes AS cli ON con.no_cliente = cli.no_cliente
+        INNER JOIN colonias AS col ON cli.no_col_cobro = col.no_colonia
+        INNER JOIN localidad AS loc ON col.no_loc  = loc.no_loc
+          WHERE con.tipo_bd != 20
+          AND con.serie != '1CZ'
+            ORDER BY CONCAT(con.serie, con.no_contrato) DESC
+      """
+      respuesta = self._get_data(company_id, consulta)
+
+      contratos_pabs = []
+      for res in respuesta:
+        contratos_pabs.append({
+          'contrato': res['contrato'],
+          'calle': res['calle'],
+          'numero': res['numero'],
+          'colonia': res['colonia'],
+          'municipio': res['municipio'],
+          'entre_calles': res['entre_calles'],
+          'telefono': res['telefono']
+        })
+
+      ### Obtener contratos de ODOO ###
+      consulta = """
+        SELECT 
+          con.id as id,
+          con.name as contrato,
+          COALESCE(con.street_name_toll, '') as calle,
+          COALESCE(con.street_number_toll, '') as numero,
+          COALESCE(col_cobro.name, '') as colonia,
+          COALESCE(loc_cobro.name, '') as municipio,
+          COALESCE(con.between_streets_toll, '') as entre_calles,
+          COALESCE(con.phone_toll, '') as telefono       
+        FROM pabs_contract as con
+        LEFT JOIN colonias AS col_cobro ON col_cobro.id = con.toll_colony_id
+        LEFT JOIN res_locality AS loc_cobro ON loc_cobro.id = con.toll_municipallity_id
+          WHERE con.company_id = {}
+            ORDER BY con.name DESC
+      """.format(company_id)
+
+      self.env.cr.execute(consulta)
+
+      contratos_odoo = []
+      for res in self.env.cr.fetchall():
+        contratos_odoo.append({
+          'id': res[0],
+          'contrato': res[1],
+          'calle': res[2],
+          'numero': res[3],
+          'colonia': res[4],
+          'municipio': res[5],
+          'entre_calles': res[6],
+          'telefono': res[7]
+        })
+
+      if len(contratos_odoo) == 0:
+        _logger.info("No hay contratos")
+        return
+
+      ### COLONIAS Y MUNICIPIOS ODOO ###
+      colonias = []
+
+      col_obj = self.env['colonias'].search([
+        ('company_id', '=', company_id)
+      ])
+
+      for col in col_obj:
+        colonias.append({
+          'id_colonia': col.id,
+          'colonia': col.name,
+          'id_municipio': col.municipality_id.id,
+          'municipio': col.municipality_id.name
+        })
+
+      ### Comparar y actualizar contratos de odoo ###
+      cantidad_contratos_odoo = len(contratos_odoo)
+      conteo_actualizados = 0
+      for index, con in enumerate(contratos_odoo, 1):
+
+        #Buscar contrato de pabs
+        con_pabs = next( (x for x in contratos_pabs if x['contrato'] == con['contrato']), 0)
+        if con_pabs == 0:
+          _logger.info("{} de {}. {} No se encontró contrato en pabs".format(index, cantidad_contratos_odoo, con['contrato']))
+          continue
+
+        #Comparar y actualizar
+        actualizar = {}
+        if con['calle'] != con_pabs['calle']:
+          actualizar.update({'street_name_toll': con_pabs['calle']})
+
+        if con['numero'] != con_pabs['numero']:
+          actualizar.update({'street_number_toll': con_pabs['numero']})
+
+        if con['entre_calles'] != con_pabs['entre_calles']:
+          actualizar.update({'between_streets_toll': con_pabs['entre_calles']})
+
+        if con['telefono'] != con_pabs['telefono']:
+          actualizar.update({'phone_toll': con_pabs['telefono']})
+
+        #Buscar colonia
+        colonia = next((x for x in colonias if con_pabs['colonia'] == x['colonia'] and con_pabs['municipio'] == x['municipio']), 0)
+
+        if colonia:
+          actualizar.update({'toll_colony_id': colonia['id_colonia'], 'toll_municipallity_id': colonia['id_municipio']})
+        else:
+          _logger.info("{} No se encontró {} - {}".format(con['contrato'], con_pabs['municipio'], con_pabs['colonia']))
+
+        if actualizar:
+          contract_obj.browse(con['id']).write(actualizar)
+          _logger.info("{} de {}. {} domicilio actualizado".format(index, cantidad_contratos_odoo, con['contrato']))
+
+          conteo_actualizados = conteo_actualizados + 1
+          if conteo_actualizados >= limite:
+            _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
+            break
+
+        #Remover elemento encontrado de la lista de PABS
+        contratos_pabs.remove(con_pabs)
     else:
       raise ValidationError("No se ha elegido un tipo")
