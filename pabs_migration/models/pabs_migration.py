@@ -2259,7 +2259,6 @@ class PabsMigration(models.Model):
         #Remover elemento encontrado de la lista de PABS
         contratos_pabs.remove(con_pabs)
 
-
     ##########################################
     ############### ESTATUS ##################
     elif tipo == 'estatus':
@@ -2397,8 +2396,7 @@ class PabsMigration(models.Model):
 
         #Remover elemento encontrado de la lista de PABS
         contratos_pabs.remove(con_pabs)
-
-    ##########################################
+    ########################################################
     ############### FORMA Y MONTO DE PAGO ##################
     elif tipo == 'pago':
       
@@ -2582,19 +2580,34 @@ class PabsMigration(models.Model):
       consulta = """
         SELECT
           CONCAT(con.serie, con.no_contrato) as contrato,
-          cli.calle_cobro as calle, 
-          CASE 
+            cli.telefono as telefono,
+            cli.entre_calles as entre_calles,
+            
+            /* Casa */
+            cli.calle as calle_casa, 
+            CASE 
+              WHEN LENGTH(no_int) = 0 THEN cli.no_ext
+                ELSE CONCAT(cli.no_ext, ' ', cli.no_int)
+            END as numero_casa,
+            col_casa.colonia as colonia_casa,
+            loc_casa.localidad as municipio_casa,
+            
+            /* Cobro */
+            cli.calle_cobro as calle_cobro, 
+            CASE 
             WHEN LENGTH(no_int_cobro) = 0 THEN cli.no_ext_cobro
-            ELSE CONCAT(cli.no_ext_cobro, ' ', cli.no_INT_cobro)
-          END as numero,
-          col.colonia as colonia,
-          loc.localidad as municipio,
-          cli.entre_calles as entre_calles,
-          cli.telefono as telefono
+              ELSE CONCAT(cli.no_ext_cobro, ' ', cli.no_int_cobro)
+            END as numero_cobro,
+            col_cobro.colonia as colonia_cobro,
+            loc_cobro.localidad as municipio_cobro
         FROM contratos AS con
         INNER JOIN clientes AS cli ON con.no_cliente = cli.no_cliente
-        INNER JOIN colonias AS col ON cli.no_col_cobro = col.no_colonia
-        INNER JOIN localidad AS loc ON col.no_loc  = loc.no_loc
+
+        INNER JOIN colonias AS col_casa ON cli.no_colonia = col_casa.no_colonia
+        INNER JOIN localidad AS loc_casa ON col_casa.no_loc = loc_casa.no_loc
+
+        INNER JOIN colonias AS col_cobro ON cli.no_col_cobro = col_cobro.no_colonia
+        INNER JOIN localidad AS loc_cobro ON col_cobro.no_loc = loc_cobro.no_loc
           WHERE con.tipo_bd != 20
           AND con.serie != '1CZ'
             ORDER BY CONCAT(con.serie, con.no_contrato) DESC
@@ -2605,12 +2618,18 @@ class PabsMigration(models.Model):
       for res in respuesta:
         contratos_pabs.append({
           'contrato': res['contrato'],
-          'calle': res['calle'],
-          'numero': res['numero'],
-          'colonia': res['colonia'],
-          'municipio': res['municipio'],
+          'telefono': res['telefono'],
           'entre_calles': res['entre_calles'],
-          'telefono': res['telefono']
+
+          'calle_casa': res['calle_casa'],
+          'numero_casa': res['numero_casa'],
+          'colonia_casa': res['colonia_casa'],
+          'municipio_casa': res['municipio_casa'],
+
+          'calle_cobro': res['calle_cobro'],
+          'numero_cobro': res['numero_cobro'],
+          'colonia_cobro': res['colonia_cobro'],
+          'municipio_cobro': res['municipio_cobro']
         })
 
       ### Obtener contratos de ODOO ###
@@ -2618,13 +2637,23 @@ class PabsMigration(models.Model):
         SELECT 
           con.id as id,
           con.name as contrato,
-          COALESCE(con.street_name_toll, '') as calle,
-          COALESCE(con.street_number_toll, '') as numero,
-          COALESCE(col_cobro.name, '') as colonia,
-          COALESCE(loc_cobro.name, '') as municipio,
+          COALESCE(con.phone_toll, '') as telefono,
           COALESCE(con.between_streets_toll, '') as entre_calles,
-          COALESCE(con.phone_toll, '') as telefono       
+          
+          COALESCE(con.street_name, '') as calle_casa,
+          COALESCE(con.street_number, '') as numero_casa,
+          COALESCE(col_casa.name, '') as colonia_casa,
+          COALESCE(loc_casa.name, '') as municipio_casa,
+          
+          COALESCE(con.street_name_toll, '') as calle_cobro,
+          COALESCE(con.street_number_toll, '') as numero_cobro,
+          COALESCE(col_cobro.name, '') as colonia_cobro,
+          COALESCE(loc_cobro.name, '') as municipio_cobro
         FROM pabs_contract as con
+
+        LEFT JOIN colonias AS col_casa ON col_casa.id = con.neighborhood_id
+        LEFT JOIN res_locality AS loc_casa ON loc_casa.id = con.municipality_id
+
         LEFT JOIN colonias AS col_cobro ON col_cobro.id = con.toll_colony_id
         LEFT JOIN res_locality AS loc_cobro ON loc_cobro.id = con.toll_municipallity_id
           WHERE con.company_id = {}
@@ -2636,14 +2665,20 @@ class PabsMigration(models.Model):
       contratos_odoo = []
       for res in self.env.cr.fetchall():
         contratos_odoo.append({
-          'id': res[0],
-          'contrato': res[1],
-          'calle': res[2],
-          'numero': res[3],
-          'colonia': res[4],
-          'municipio': res[5],
-          'entre_calles': res[6],
-          'telefono': res[7]
+          'id':             res[0],
+          'contrato':       res[1],
+          'telefono':       res[2],
+          'entre_calles':   res[3],
+
+          'calle_casa':     res[4],
+          'numero_casa':    res[5],
+          'colonia_casa':   res[6],
+          'municipio_casa': res[7],
+
+          'calle_cobro':    res[8],
+          'numero_cobro':   res[9],
+          'colonia_cobro':  res[10],
+          'municipio_cobro':res[11]
         })
 
       if len(contratos_odoo) == 0:
@@ -2676,29 +2711,47 @@ class PabsMigration(models.Model):
           _logger.info("{} de {}. {} No se encontró contrato en pabs".format(index, cantidad_contratos_odoo, con['contrato']))
           continue
 
-        #Comparar y actualizar
         actualizar = {}
-        if con['calle'] != con_pabs['calle']:
-          actualizar.update({'street_name_toll': con_pabs['calle']})
 
-        if con['numero'] != con_pabs['numero']:
-          actualizar.update({'street_number_toll': con_pabs['numero']})
+        #Comparar y actualizar
+        if con['telefono'] != con_pabs['telefono']:
+          actualizar.update({'phone': con_pabs['telefono'], 'phone_toll': con_pabs['telefono']})
 
         if con['entre_calles'] != con_pabs['entre_calles']:
           actualizar.update({'between_streets_toll': con_pabs['entre_calles']})
 
-        if con['telefono'] != con_pabs['telefono']:
-          actualizar.update({'phone_toll': con_pabs['telefono']})
+        # Domicilio de casa
+        if con['calle_casa'] != con_pabs['calle_casa']:
+          actualizar.update({'street_name': con_pabs['calle_casa']})
 
-        #Buscar colonia
-        colonia = next((x for x in colonias if con_pabs['colonia'] == x['colonia'] and con_pabs['municipio'] == x['municipio']), 0)
+        if con['numero_casa'] != con_pabs['numero_casa']:
+          actualizar.update({'street_number': con_pabs['numero_casa']})
 
-        if colonia:
-          actualizar.update({'toll_colony_id': colonia['id_colonia'], 'toll_municipallity_id': colonia['id_municipio']})
-        else:
-          _logger.info("{} No se encontró {} - {}".format(con['contrato'], con_pabs['municipio'], con_pabs['colonia']))
+        if con['colonia_casa'] != con_pabs['colonia_casa']:
+          colonia_casa = next((x for x in colonias if con_pabs['colonia_casa'] == x['colonia'] and con_pabs['municipio_casa'] == x['municipio']), 0)
+
+          if colonia_casa:
+            actualizar.update({'neighborhood_id': colonia_casa['id_colonia'], 'municipality_id': colonia_casa['id_municipio']})
+          else:
+            _logger.info("{} Casa: No se encontró {} - {}".format(con['contrato'], con_pabs['municipio_casa'], con_pabs['colonia_casa']))
+
+        # Domicilio de cobro
+        if con['calle_cobro'] != con_pabs['calle_cobro']:
+          actualizar.update({'street_name_toll': con_pabs['calle_cobro']})
+
+        if con['numero_cobro'] != con_pabs['numero_cobro']:
+          actualizar.update({'street_number_toll': con_pabs['numero_cobro']})
+
+        if con['colonia_cobro'] != con_pabs['colonia_cobro']:
+          colonia_cobro = next((x for x in colonias if con_pabs['colonia_cobro'] == x['colonia'] and con_pabs['municipio_cobro'] == x['municipio']), 0)
+
+          if colonia_cobro:
+            actualizar.update({'toll_colony_id': colonia_cobro['id_colonia'], 'toll_municipallity_id': colonia_cobro['id_municipio']})
+          else:
+            _logger.info("{} Cobro: No se encontró {} - {}".format(con['contrato'], con_pabs['municipio_cobro'], con_pabs['colonia_cobro']))
 
         if actualizar:
+          actualizar.update({'between_streets': ''})
           contract_obj.browse(con['id']).write(actualizar)
           _logger.info("{} de {}. {} domicilio actualizado".format(index, cantidad_contratos_odoo, con['contrato']))
 
