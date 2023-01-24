@@ -2069,7 +2069,7 @@ class PabsMigration(models.Model):
     if company_id == 1:
       country_id = 156 # México
       state_id = 1384 # TOLUCA
-    elif company_id == 12:
+    elif company_id == 18:
       country_id = 156 # México
       estado = est_obj.search([('name', '=', 'Coahuila')])
 
