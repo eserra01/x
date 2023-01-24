@@ -2026,9 +2026,11 @@ class PabsMigration(models.Model):
       pago.action_cancel()
       _logger.info("Pago cancelado")
 
-###################################################################################################################
+  ###################################################################################################################
   ### CREAR MUNICIPIOS ###
-  def get_res_locality(self, company_id):
+  def CrearMunicipios(self, company_id):
+    _logger.info("Comienza creación de municipios")
+
     qry = """
       SELECT 
         UPPER(loc.localidad) as localidad,
@@ -2055,32 +2057,57 @@ class PabsMigration(models.Model):
     data = self._get_data(company_id, qry)
     self.response_pabs = data
     
-    locality_obj = self.env['res.locality']
-    #
     localities = []
     for d in data:
       if str(d.get('localidad')).strip() not in localities:
         localities.append(str(d.get('localidad')).strip().upper())
-    #
+        
+    est_obj = self.env['res.country.state']
     country_id = 0
     state_id = 0
 
     if company_id == 1:
       country_id = 156 # México
       state_id = 1384 # TOLUCA
+    elif company_id == 12:
+      country_id = 156 # México
+      estado = est_obj.search([('name', '=', 'Coahuila')])
+
+      if not estado:
+        raise ValidationError("No se encontró el estado Coahuila")
+      else:
+        state_id = estado.id
     else:
       raise ValidationError("No se ha definido una compañia")
 
+    ### MUNICIPIOS DE ODOO ###
+    mun_obj = self.env['res.locality'].search([
+      ('company_id', '=', company_id)
+    ])
+
+    municipios = []
+    for mun in mun_obj:
+      if mun.name not in municipios:
+        municipios.append(mun.name)
+
     vals = []
-    for d in localities:            
-      vals.append({'name':d, 'country_id': country_id, 'state_id': state_id, 'company_id': company_id})
-    # Se crean los municipios
-    locality_obj.create(vals)
-    return True
+    for loc in localities:
+      if loc not in municipios:
+        vals.append({
+          'name': loc, 
+          'country_id': country_id, 
+          'state_id': state_id, 
+          'company_id': company_id
+        })
+
+        _logger.info("{}".format(loc))
+
+    self.env['res.locality'].create(vals)
+    _logger.info("Municipios creados: {}".format(len(vals)))
   
   ###################################################################################################################
   ### CREAR COLONIAS ###
-  def get_colonias(self, company_id):
+  def CrearColonias(self, company_id):
     qry = """
       SELECT 
         UPPER(loc.localidad) as localidad,
@@ -2105,27 +2132,120 @@ class PabsMigration(models.Model):
           ORDER BY localidad, colonia
     """
     data = self._get_data(company_id, qry)
-    self.response_pabs = data
-    #
-    locality_obj = self.env['res.locality']
-    colonia_obj = self.env['colonias']
-    # 
-    colonias = []
-    vals = []
-    for d in data:    
-      if str(d.get('colonia')).strip() not in colonias:
-        colonias.append(str(d.get('colonia')).strip().upper())
-        vals.append({'colonia': str(d.get('colonia')).strip().upper(), 'localidad': str(d.get('localidad')).strip().upper(), 'company_id': company_id})
+    
+    colonias_pabs = []
+    for res in data:
+      colonias_pabs.append({
+        'municipio': str(res['localidad']).strip().upper(),
+        'colonia': str(res['colonia']).strip().upper()
+      })
 
-    #   
-    vals_ = []
-    for d in vals:   
-      # Se busca la localidad      
-      locality_id = locality_obj.search([('name','=',d.get('localidad').strip().upper())])
-      if locality_id:   
-          vals_.append({'name': d.get('colonia').strip().upper(), 'municipality_id': locality_id.id})   
-    colonia_obj.create(vals_)      
-    return True
+    ### MUNICIPIOS DE ODOO ###
+    mun_obj = self.env['res.locality'].search([
+      ('company_id', '=', company_id)
+    ])
+
+    municipios = []
+    for mun in mun_obj:
+      if mun.name not in municipios:
+        municipios.append({
+          'id_municipio': mun.id,
+          'municipio': mun.name
+        })
+
+    ### COLONIAS DE ODOO ###
+    col_obj = self.env['colonias'].search([
+      ('company_id', '=', company_id)
+    ])
+
+    colonias_odoo = []
+    for col in col_obj:
+      colonias_odoo.append({
+        'municipio': col.municipality_id.name.strip().upper(),
+        'colonia': col.name.strip().upper()
+      })
+
+    nuevas_colonias = []
+    for col in colonias_pabs:
+
+      if col not in colonias_odoo:
+        mun = next((x for x in municipios if col['municipio'] == x['municipio']), 0)
+
+        if mun == 0:
+          raise ValidationError("No existe el municipio: {}".format(col['municipio']))
+
+        nuevas_colonias.append({
+          'name': col['colonia'], 
+          'municipality_id': mun['id_municipio'],
+          'company_id': company_id
+        })
+
+        _logger.info("{} {}".format(col['municipio'], col['colonia']))
+          
+    self.env['colonias'].create(nuevas_colonias)      
+    _logger.info("Colonias creadas: {}".format(len(nuevas_colonias)))
+
+  ###################################################################################################################
+  ### CREAR MOTIVOS ###
+  def CrearMotivos(self, company_id):
+    qry = """
+      SELECT 
+        TRIM(UPPER(est.estatus)) as estatus,
+        TRIM(UPPER(mot.motivo)) as motivo
+      FROM motivos AS mot
+      INNER JOIN estatus AS est ON mot.no_estatus = est.no_estatus
+      INNER JOIN contratos AS con ON mot.no_motivo = con.no_motivo
+        WHERE LENGTH(mot.motivo) > 3
+          GROUP BY TRIM(UPPER(est.estatus)), TRIM(UPPER(mot.motivo))
+    """
+    data = self._get_data(company_id, qry)
+    
+    motivos_pabs = []
+    for res in data:
+      motivos_pabs.append({
+        'estatus': str(res['estatus']).strip().upper(),
+        'motivo': str(res['motivo']).strip().upper()
+      })
+
+    ### ESTATUS DE ODOO ###
+    est_obj = self.env['pabs.contract.status'].search([('id', '>', 0)])
+
+    estatus = []
+    for est in est_obj:
+      if est.status not in estatus:
+        estatus.append({
+          'id_estatus': est.id,
+          'estatus': est.status
+        })
+
+    ### MOTIVOS DE ODOO ###
+    mot_obj = self.env['pabs.contract.status.reason'].search([('id', '>', 0)])
+
+    motivos_odoo = []
+    for mot in mot_obj:
+      motivos_odoo.append({
+        'estatus': mot.status_id.status.strip().upper(),
+        'motivo': mot.reason.strip().upper()
+      })
+
+    nuevos_motivos = []
+    for mot in motivos_pabs:
+
+      if mot not in motivos_odoo:
+        est = next((x for x in estatus if mot['estatus'] == x['estatus']), 0)
+
+        if est == 0:
+          raise ValidationError("No existe el motivo: {}".format(mot['estatus']))
+
+        nuevos_motivos.append({
+          'reason': mot['motivo'],
+          'status_id': est['id_estatus']
+        })
+
+        _logger.info("{} {}".format(est['estatus'], mot['motivo']))
+    
+    self.env['pabs.contract.status.reason'].create(nuevos_motivos)      
+    _logger.info("Motivos creados: {}".format(len(nuevos_motivos)))
 
   ###################################################################################################################
   ### CREAR OFICINAS ###
