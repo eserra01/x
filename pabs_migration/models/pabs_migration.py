@@ -2235,7 +2235,7 @@ class PabsMigration(models.Model):
         est = next((x for x in estatus if mot['estatus'] == x['estatus']), 0)
 
         if est == 0:
-          raise ValidationError("No existe el motivo: {}".format(mot['estatus']))
+          raise ValidationError("No existe el estatus: {}".format(mot['estatus']))
 
         nuevos_motivos.append({
           'reason': mot['motivo'],
@@ -2387,8 +2387,8 @@ class PabsMigration(models.Model):
       consulta = """
         SELECT 
           CONCAT(con.serie, con.no_contrato) as contrato,
-          UPPER(est.estatus) as estatus,
-          UPPER(mot.motivo) as motivo
+          TRIM(UPPER(est.estatus)) as estatus,
+          TRIM(UPPER(mot.motivo)) as motivo
         FROM contratos AS con
         INNER JOIN motivos AS mot ON con.no_motivo = mot.no_motivo
         INNER JOIN estatus AS est ON mot.no_estatus = est.no_estatus
@@ -2402,8 +2402,8 @@ class PabsMigration(models.Model):
       for res in respuesta:
         contratos_pabs.append({
           'contrato': res['contrato'],
-          'estatus': res['estatus'],
-          'motivo': res['motivo']
+          'estatus': str(res['estatus']).strip().upper(),
+          'motivo': str(res['motivo']).strip().upper()
         })
 
       ### Obtener contratos de ODOO ###
@@ -2427,8 +2427,8 @@ class PabsMigration(models.Model):
         contratos_odoo.append({
           'id': res[0], 
           'contrato': res[1], 
-          'estatus': res[2],
-          'motivo': res[3],
+          'estatus': str(res[2]).strip().upper(),
+          'motivo': str(res[3]).strip().upper()
         })
 
       if len(contratos_odoo) == 0:
