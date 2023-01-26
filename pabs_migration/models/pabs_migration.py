@@ -2882,5 +2882,75 @@ class PabsMigration(models.Model):
 
         #Remover elemento encontrado de la lista de PABS
         contratos_pabs.remove(con_pabs)
+    ########################################################
+    ###########  ecobro_id en contratos   ##################
+    elif tipo == 'ecobro_id':
+      ### Obtener contratos de PABS ###
+      consulta = """
+        SELECT
+          CAST(id_contrato AS CHAR(20)) as ecobro_id,
+          CONCAT(con.serie, con.no_contrato) as contrato
+        FROM contratos AS con
+        INNER JOIN clientes AS cli ON con.no_cliente = cli.no_cliente
+          WHERE con.tipo_bd != 20
+          AND con.serie != '1CZ'
+            ORDER BY CONCAT(con.serie, con.no_contrato) DESC
+      """
+      respuesta = self._get_data(company_id, consulta)
+
+      contratos_pabs = []
+      for res in respuesta:
+        contratos_pabs.append({
+          'ecobro_id': res['ecobro_id'],
+          'contrato': res['contrato']
+        })
+
+      ### Obtener contratos de ODOO ###
+      consulta = """
+        SELECT
+          con.id as id,
+          con.name as contrato
+        FROM pabs_contract as con
+          WHERE (con.ecobro_id IS NULL OR con.ecobro_id = '')
+          AND con.company_id = {}
+            ORDER BY con.name DESC
+      """.format(company_id)
+
+      self.env.cr.execute(consulta)
+
+      contratos_odoo = []
+      for res in self.env.cr.fetchall():
+        contratos_odoo.append({
+          'id': res[0],
+          'contrato': res[1]
+        })
+
+      if len(contratos_odoo) == 0:
+        _logger.info("No hay contratos")
+        return
+
+      ### Comparar y actualizar contratos de odoo ###
+      cantidad_contratos_odoo = len(contratos_odoo)
+      conteo_actualizados = 0
+      for index, con in enumerate(contratos_odoo, 1):
+
+        #Buscar contrato de pabs
+        con_pabs = next( (x for x in contratos_pabs if x['contrato'] == con['contrato']), 0)
+        if con_pabs == 0:
+          _logger.info("{} de {}. {} No se encontró contrato en pabs".format(index, cantidad_contratos_odoo, con['contrato']))
+          continue
+
+        #Actualizar
+        contract_obj.browse(con['id']).write({'ecobro_id': str(con_pabs['ecobro_id'])})
+        _logger.info("{} de {}. {} ecobro_id actualizado".format(index, cantidad_contratos_odoo, con['contrato']))
+
+        conteo_actualizados = conteo_actualizados + 1
+
+        if conteo_actualizados >= limite:
+          _logger.info("Se alcanzó el limite de {} actualizaciones".format(limite))
+          break
+
+        #Remover elemento encontrado de la lista de PABS
+        contratos_pabs.remove(con_pabs)
     else:
       raise ValidationError("No se ha elegido un tipo")
