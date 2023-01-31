@@ -246,7 +246,7 @@ class PABSElectronicContracts(models.TransientModel):
 
                     if contrato.state == "contract": #singleton cuando hay dos contratos con mismo número de solicitud
                         _logger.info("Ya existe el contrato")
-                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, contrato.name[0:3], contrato.name[3:], 2, "El contrato ya habia sido creado")
+                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, contrato.name[0:3], contrato.name[3:], 1, "El contrato ya habia sido creado")
                         continue
                     else:
                         # Se busca la tarifa porque esta ligada a la secuencia
