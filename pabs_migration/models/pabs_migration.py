@@ -1334,7 +1334,7 @@ class PabsMigration(models.Model):
 ###################################################################################################################
 
   # Nota: Se toma el campo cargo_general de la tabla cargos de PABS. Estos puestos deben existir en odoo.
-  def CrearSalidas(self, company_id, tipo, limite):
+  def CrearSalidas(self, company_id, tipo, limite, buscar_existente):
     _logger.info("Comienza creacion de salidas: {}".format(tipo))
     
     if tipo not in ('pagos', 'notas'):
@@ -1487,15 +1487,16 @@ class PabsMigration(models.Model):
     for index, sal in enumerate(salidas, 1):
       _logger.info("{} de {}. {} -> {} {} ${}".format(index, cantidad_salidas, sal['recibo'], sal['cargo'], sal['codigo'], sal['actual_commission_paid']))
 
-      # Validar que no exista salida
-      ya_existe = output_obj.search([
-        ('company_id', '=', company_id),
-        ('x_no_salida_pabs', '=', sal['x_no_salida_pabs'])
-      ])
+      if buscar_existente:
+        # Validar que no exista salida
+        ya_existe = output_obj.search([
+          ('company_id', '=', company_id),
+          ('x_no_salida_pabs', '=', sal['x_no_salida_pabs'])
+        ])
 
-      if ya_existe:
-        _logger.info("Ya existe la salida {}".format(sal['x_no_salida_pabs']))
-        continue
+        if ya_existe:
+          _logger.info("Ya existe la salida {}".format(sal['x_no_salida_pabs']))
+          continue
 
       # Buscar id de recibo de odoo
       id_recibo_odoo = 0
