@@ -1129,7 +1129,7 @@ class PABSElectronicContracts(models.TransientModel):
                 if actually_day and last_day:
                     fecha_creacion = last_day
 
-                actualizar.update({'invoice_date': fecha_creacion})
+                actualizar.update({'invoice_date': fecha_creacion, 'date_of_last_status': datetime.today()})
 
                 ### Si es precontrato actualizar nombre a "Nuevo contrato" (para que genere el número de contrato siguiente en el metodo create_contract) ###
                 if contrato.state in ('actived', 'precontract'):
@@ -1147,9 +1147,7 @@ class PABSElectronicContracts(models.TransientModel):
                 
                 ### Actualizar registro de cierre en odoo ###
                 local = pytz.timezone("Mexico/General")
-
                 local_dt = local.localize(fields.Datetime.to_datetime(cor['fecha_cierre_periodo']), is_dst=None)
-
                 fecha_hora_cierre_utc = local_dt.astimezone(pytz.utc)
 
                 corte.write({

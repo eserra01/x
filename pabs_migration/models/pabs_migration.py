@@ -1396,12 +1396,12 @@ class PabsMigration(models.Model):
       solo_recibos.append("'{}'".format(recibo))
       solo_fechas.append(res[2])
 
-    fecha_minima = min(solo_fechas)
-    fecha_maxima = max(solo_fechas)
-
     if not recibos_odoo:
       _logger.info("No hay recibos")
       return
+
+    fecha_minima = min(solo_fechas)
+    fecha_maxima = max(solo_fechas)
 
     #--- Consultar salidas de pabs ---#
     consulta = """
