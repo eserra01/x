@@ -148,37 +148,31 @@ class DelinquentCustomerPDFReport(models.AbstractModel):
             ORDER BY cobrador, contrato""".format(company_id)
     ### EJECUTAMOS EL QUERY
     cr.execute(query)
-    ### NOMBRE DEL COBRADOR
-    collector_name = False
-    ### ITERAMOS EN EL RESULTADO
-    for index, rec in enumerate(cr.fetchall()):
-        if not collector_name:
-            collector_name = rec[7]
-        if collector_name == rec[7]:
-            data_rec.append({
-                'contract_name' : rec[0],
-                'partner_name' : rec[1],
-                'address' : rec[2],
-                'colony' : rec[3],
-                'municipality' : rec[4],
-                'period' : rec[5],
-                'last_payment' : rec[6],
-            })
-        else:
-            data.update({
-                collector_name: data_rec,
-            })
-            data_rec = []
-            collector_name = rec[7]
-            data_rec.append({
-                'contract_name' : rec[0],
-                'partner_name' : rec[1],
-                'address' : rec[2],
-                'colony' : rec[3],
-                'municipality' : rec[4],
-                'period' : rec[5],
-                'last_payment' : rec[6],
-            })
+
+     # Se obtienen los registros
+    recs = [x for x in cr.fetchall()]
+    collectors = []
+    # Se obtienen los cobradores
+    for rec in recs:
+        if rec[7] not in collectors:
+            collectors.append(rec[7])
+    # Para cada cobrador
+    for collector in collectors:
+        #
+        data_rec = []
+        for rec in recs:
+            if collector == rec[7]:
+                data_rec.append({
+                    'contract_name' : rec[0],
+                    'partner_name' : rec[1],
+                    'address' : rec[2],
+                    'colony' : rec[3],
+                    'municipality' : rec[4],
+                    'period' : rec[5],
+                    'last_payment' : rec[6],
+                })
+        
+        data.update({collector: data_rec})
 
     ### RETORNAMOS LA INFORMACIÓN
     return {
