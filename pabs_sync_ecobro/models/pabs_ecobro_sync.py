@@ -1103,6 +1103,12 @@ class PABSEcobroSync(models.Model):
 
     #####     1. Buscar estatus con los que se trabajará     #####
 
+    # 1.0 Estatus CANCELADO
+    obj_estatus_cancelado = self.env['pabs.contract.status'].search([('status','=','CANCELADO')])
+    if not obj_estatus_cancelado:
+      _logger.warning("No se encontró el estatus CANCELADO")
+      raise ValidationError("{}".format("No se encontró el estatus CANCELADO"))
+
     # 1.1 Estatus PAGADO
     obj_estatus_pagado = self.env['pabs.contract.status'].search([('status','=','PAGADO')])
     if not obj_estatus_pagado:
@@ -1142,12 +1148,12 @@ class PABSEcobroSync(models.Model):
       INNER JOIN account_move AS fac ON con.id = fac.contract_id AND fac.type = 'out_invoice' AND fac.state = 'posted'
       INNER JOIN res_company as comp ON con.company_id = comp.id
         WHERE con.state = 'contract'
-        AND con.contract_status_item NOT IN ({},{})
+        AND con.contract_status_item NOT IN ({},{},{})
         AND con.service_detail IN ('unrealized')
         AND NOT (con.contract_status_reason = {})
           GROUP BY con.id, comp.name, con.name HAVING SUM(fac.amount_residual) = 0 AND COUNT(fac.id) > 0
             ORDER BY con.company_id, con.name
-      """.format(obj_estatus_pagado.id, obj_estatus_realizado.id, id_realizado_por_cobrar,)
+      """.format(obj_estatus_pagado.id, obj_estatus_realizado.id, obj_estatus_cancelado.id, id_realizado_por_cobrar,)
     
     self.env.cr.execute(consulta)
 
@@ -1187,11 +1193,11 @@ class PABSEcobroSync(models.Model):
       INNER JOIN account_move AS fac ON con.id = fac.contract_id AND fac.type = 'out_invoice' AND fac.state = 'posted'
       INNER JOIN res_company as comp ON con.company_id = comp.id
         WHERE con.state = 'contract'
-        AND con.contract_status_item NOT IN ({},{})
+        AND con.contract_status_item NOT IN ({},{},{})
         AND (con.contract_status_reason = {} OR con.service_detail IN ('made_receivable', 'realized') )
           GROUP BY con.id, comp.name, con.name HAVING SUM(fac.amount_residual) = 0 AND COUNT(fac.id) > 0
             ORDER BY con.company_id, con.name
-      """.format(obj_estatus_pagado.id, obj_estatus_realizado.id, id_realizado_por_cobrar)
+      """.format(obj_estatus_pagado.id, obj_estatus_realizado.id, obj_estatus_cancelado.id, id_realizado_por_cobrar)
 
     self.env.cr.execute(consulta)
 
