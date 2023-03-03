@@ -84,10 +84,10 @@ class PabsVerificationReportXLSX(models.AbstractModel):
         ('date_done','=',start_date)],order="date_done")
       report_name = "Reporte de Acumulados de {}".format(start_date)
 
-    ### SI NO SE ENCONTRARON REGISTROS COINCIDENTES
-    if not closing_ids:
-      raise ValidationError((
-        "No se encontraron registros para procesar"))
+    # ### SI NO SE ENCONTRARON REGISTROS COINCIDENTES
+    # if not closing_ids:
+    #   raise ValidationError((
+    #     "No se encontraron registros para procesar"))
 
     ### GENERAMOS LA HOJA
     sheet = workbook.add_worksheet(report_name[:31])
