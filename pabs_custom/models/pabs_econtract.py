@@ -720,94 +720,98 @@ class PABSElectronicContracts(models.TransientModel):
 #################################################################################################################################################
 
     #Actualiza los datos de la afiliación electrónica con los cambios hechos desde la aplicación
-    def ActualizarDatosDeAfiliaciones(self, company_id):
-
+    def ActualizarDatosDeAfiliaciones(self, company_id, solicitud):
         _logger.info("Comienza actualización de datos de afiliaciones electrónicas")
-
-        ### Obtener web services ###
-        url_consultar_actualizaciones = self.get_url(company_id, 9)
-        url_actualizar_afiliaciones = self.get_url(company_id, 10)
-
-        if not url_consultar_actualizaciones or not url_actualizar_afiliaciones:
-            _logger.error("No se han definido los web service de consulta y actualización")
-            return
 
         contract_obj = self.env['pabs.contract']
         municipality_obj = self.env['res.locality']
         colonia_obj = self.env['colonias']
 
-        #TEST#
-        # json_afiliaciones = {
-        #     "solicitudes": [
-        #         {
-        #             "serie": "3NJ",
-        #             "contrato": "000019",
-                    
-        #             "afiliado_nombre": "HUGO",
-        #             "afiliado_apellidoPaterno": "JURADO",
-        #             "afiliado_apellidoMaterno": "MUSTANG",
-        #             "afiliado_fechaNacimiento": "1957-11-17",
-        #             "afiliado_telefono": "2580963741",
-        #             "afiliado_email": "corre@correo.com",
-
-        #             "tipo_domicilio": "Casa",
-        #             "domCasa_codigoPostal": "25204",
-        #             "domCasa_Calle": "Casonas",
-        #             "domCasa_numExt": "123",
-        #             "domCasa_numInt": "",
-        #             "domCasa_EntreCalles": "Entre calles casa",
-        #             "domCasa_Colonia": "ALBAREDA RESIDENCIAL 3",
-        #             "domCasa_Municipio": "SALTILLO",
-        #             "domCasa_LocalidadID": "37151",
-        #             "domCasa_ColoniaID": "37151",
-
-        #             "domCobro_tipoDomicilio": "Cobranza",
-        #             "domCobro_codigoPostal": "25204",
-        #             "domCobro_Calle": "Cobronas",
-        #             "domCobro_numExt": "456",
-        #             "domCobro_numInt": "",
-        #             "domCobro_entreClles": "Entre calles cobro",
-        #             "domCobro_Colonia": "BONANZA",
-        #             "domCobro_Municipio": "SALTILLO",
-        #             "domCobro_LocalidadID": "37151",
-        #             "domCobro_ColoniaID": "37151",
-
-        #             "qr_string": "20220714144639ASD000073MC761158820.6823975-103.3816011",
-        #             "contrato_id": "531",
-        #             "solicitud_codigoActivacion": "MC7611588",
-        #             "inversion_inicial": "500",
-        #             "fecha_contrato": "2022-07-14 14:46:39",
-        #             "timestamp": "1657827999",
-        #             "fecha_primer_abono": "2022-07-21",
-        #             "monto_abono": "300",
-        #             "forma_pago": "Mensuales",
-        #             "promotor_id": "712",
-        #             "promotor_nombre": "VENTAS OFICINA X",
-        #             "promotor_codigo": "P9999",
-        #             "plan_id": "2076",
-        #             "plan": "IMPERIAL PREMIUM",
-        #             "solicitud_latitud": "20.6823975",
-        #             "solicitud_longitud": "-103.3816011",
-        #             "afiliado_estadoCivil": "",
-        #             "afiliado_ocupacion": "",
-        #             "afiliado_RFC": " "
-        #         }
-        #     ]
-        # }
-
-        ### Consultar afiliaciones por actualizar ###
         array_afiliaciones = []
-        try:
-            respuesta = requests.post(url_consultar_actualizaciones)
-            json_afiliaciones = json.loads(respuesta.text) # NO ES TEST
-            array_afiliaciones = json_afiliaciones.get('solicitudes')
-        except Exception as ex:
-            _logger.error("Error al consultar las afiliaciones por actualizar {}".format(ex))
-            return
+        url_consultar_actualizaciones = ""
+        url_consultar_actualizaciones = ""
+        
+        if solicitud:
+            array_afiliaciones.append(solicitud)
+        else:
+            ### Obtener web services ###
+            url_consultar_actualizaciones = self.get_url(company_id, 9)
+            url_actualizar_afiliaciones = self.get_url(company_id, 10)
 
-        if not array_afiliaciones:
-            _logger.info("No hay afiliaciones por actualizar")
-            return
+            if not url_consultar_actualizaciones or not url_actualizar_afiliaciones:
+                _logger.error("No se han definido los web service de consulta y actualización")
+                return
+
+            try:
+                respuesta = requests.post(url_consultar_actualizaciones)
+                json_afiliaciones = json.loads(respuesta.text) # NO ES TEST
+                array_afiliaciones = json_afiliaciones.get('solicitudes')
+            except Exception as ex:
+                _logger.error("Error al consultar las afiliaciones por actualizar {}".format(ex))
+                return
+
+            if not array_afiliaciones:
+                _logger.info("No hay afiliaciones por actualizar")
+                return
+            
+            #TEST#
+            # json_afiliaciones = {
+            #     "solicitudes": [
+            #         {
+            #             "serie": "3NJ",
+            #             "contrato": "000019",
+                        
+            #             "afiliado_nombre": "HUGO",
+            #             "afiliado_apellidoPaterno": "JURADO",
+            #             "afiliado_apellidoMaterno": "MUSTANG",
+            #             "afiliado_fechaNacimiento": "1957-11-17",
+            #             "afiliado_telefono": "2580963741",
+            #             "afiliado_email": "corre@correo.com",
+
+            #             "tipo_domicilio": "Casa",
+            #             "domCasa_codigoPostal": "25204",
+            #             "domCasa_Calle": "Casonas",
+            #             "domCasa_numExt": "123",
+            #             "domCasa_numInt": "",
+            #             "domCasa_EntreCalles": "Entre calles casa",
+            #             "domCasa_Colonia": "ALBAREDA RESIDENCIAL 3",
+            #             "domCasa_Municipio": "SALTILLO",
+            #             "domCasa_LocalidadID": "37151",
+            #             "domCasa_ColoniaID": "37151",
+
+            #             "domCobro_tipoDomicilio": "Cobranza",
+            #             "domCobro_codigoPostal": "25204",
+            #             "domCobro_Calle": "Cobronas",
+            #             "domCobro_numExt": "456",
+            #             "domCobro_numInt": "",
+            #             "domCobro_entreClles": "Entre calles cobro",
+            #             "domCobro_Colonia": "BONANZA",
+            #             "domCobro_Municipio": "SALTILLO",
+            #             "domCobro_LocalidadID": "37151",
+            #             "domCobro_ColoniaID": "37151",
+
+            #             "qr_string": "20220714144639ASD000073MC761158820.6823975-103.3816011",
+            #             "contrato_id": "531",
+            #             "solicitud_codigoActivacion": "MC7611588",
+            #             "inversion_inicial": "500",
+            #             "fecha_contrato": "2022-07-14 14:46:39",
+            #             "timestamp": "1657827999",
+            #             "fecha_primer_abono": "2022-07-21",
+            #             "monto_abono": "300",
+            #             "forma_pago": "Mensuales",
+            #             "promotor_id": "712",
+            #             "promotor_nombre": "VENTAS OFICINA X",
+            #             "promotor_codigo": "P9999",
+            #             "plan_id": "2076",
+            #             "plan": "IMPERIAL PREMIUM",
+            #             "solicitud_latitud": "20.6823975",
+            #             "solicitud_longitud": "-103.3816011",
+            #             "afiliado_estadoCivil": "",
+            #             "afiliado_ocupacion": "",
+            #             "afiliado_RFC": " "
+            #         }
+            #     ]
+            # }
 
         ### Iterar en cada afiliacion ###
         cantidad_afiliaciones = len(array_afiliaciones)
@@ -819,12 +823,17 @@ class PABSElectronicContracts(models.TransientModel):
             ### Buscar contrato ###
             contrato = contract_obj.search([
                 ('company_id', '=', company_id),
-                ('name', '=', numero_de_contrato)
+                '|', ('name', '=', numero_de_contrato),
+                ('lot_id.name', '=', numero_de_contrato)
             ])
 
             if not contrato:
-                _logger.info("No se encontró el contrato")
-                continue
+                msj = "No se encontró el contrato"
+                _logger.info(msj)
+                if solicitud:
+                    return {"error": msj}
+                else:
+                    continue
 
             ### Construir diccionario con datos a actualizar ###
             actualizar = {}
@@ -876,8 +885,12 @@ class PABSElectronicContracts(models.TransientModel):
                     mun = municipality_obj.search([('company_id', '=', company_id)], limit = 1)
 
                     if not mun:
-                        _logger.error("No existen municipios")
-                        return
+                        msj = "No existen municipios"
+                        _logger.error(msj)
+                        if solicitud:
+                            return {"error": msj}
+                        else:
+                            return
 
                     id_municipio = municipality_obj.create({
                         'name': nombre,
@@ -891,8 +904,12 @@ class PABSElectronicContracts(models.TransientModel):
                     id_municipio = municipio.id
 
             if id_municipio == 0:
-                _logger.error("No se pudo obtener el municipio de casa")
-                continue
+                msj = "No se pudo obtener el municipio de casa"
+                _logger.error(msj)
+                if solicitud:
+                    return {"error": msj}
+                else:
+                    continue
 
             if id_municipio != contrato.municipality_id.id:
                 actualizar.update({'municipality_id': id_municipio})
@@ -908,8 +925,12 @@ class PABSElectronicContracts(models.TransientModel):
 
                 # Si no existe la colonia, crearla
                 if not afi['domCasa_codigoPostal']:
-                    _logger.error("No se encontró el codigo postal de la colonia de casa")
-                    continue
+                    msj = "No se definió el codigo postal de la colonia de casa"
+                    _logger.error(msj)
+                    if solicitud:
+                        return {"error": msj}
+                    else:
+                        continue
 
                 if not colonia:
                     id_colonia = colonia_obj.create({
@@ -924,8 +945,12 @@ class PABSElectronicContracts(models.TransientModel):
                     id_colonia = colonia.id
 
             if id_colonia == 0:
-                _logger.error("No se pudo obtener la colonia de casa")
-                continue
+                msj = "No se pudo obtener la colonia de casa"
+                _logger.error(msj)
+                if solicitud:
+                    return {"error": msj}
+                else:
+                    continue
 
             if id_colonia != contrato.neighborhood_id.id:
                 actualizar.update({'neighborhood_id': id_colonia})
@@ -959,8 +984,12 @@ class PABSElectronicContracts(models.TransientModel):
                     mun = municipality_obj.search([('company_id', '=', company_id)], limit = 1)
 
                     if not mun:
-                        _logger.error("No existen municipios")
-                        return
+                        msj = "No existen municipios"
+                        _logger.error(msj)
+                        if solicitud:
+                            return {"error": msj}
+                        else:
+                            return
 
                     id_municipio_cobro = municipality_obj.create({
                         'name': nombre,
@@ -974,8 +1003,12 @@ class PABSElectronicContracts(models.TransientModel):
                     id_municipio_cobro = municipio.id
             
             if id_municipio_cobro == 0:
-                _logger.error("No se pudo obtener el municipio de cobro")
-                continue
+                msj = "No se pudo obtener el municipio de cobro"
+                _logger.error(msj)
+                if solicitud:
+                    return {"error": msj}
+                else:
+                    continue
 
             if id_municipio_cobro != contrato.toll_municipallity_id.id:
                 actualizar.update({'toll_municipallity_id': id_municipio_cobro})
@@ -991,8 +1024,12 @@ class PABSElectronicContracts(models.TransientModel):
 
                 # Si no existe la colonia, crearla
                 if not afi['domCobro_codigoPostal']:
-                    _logger.error("No se encontró el codigo postal de la colonia de cobro")
-                    continue
+                    msj = "No se definió el codigo postal de la colonia de cobro"
+                    _logger.error(msj)
+                    if solicitud:
+                        return {"error": msj}
+                    else:
+                        continue
 
                 if not colonia:
                     id_colonia_cobro = colonia_obj.create({
@@ -1007,8 +1044,12 @@ class PABSElectronicContracts(models.TransientModel):
                     id_colonia_cobro = colonia.id
 
             if id_colonia_cobro == 0:
-                _logger.error("No se pudo obtener la colonia de cobro")
-                continue
+                msj = "No se pudo obtener la colonia de cobro"
+                _logger.error(msj)
+                if solicitud:
+                    return {"error": msj}
+                else:
+                    continue
 
             if id_colonia_cobro != contrato.toll_colony_id.id:
                 actualizar.update({'toll_colony_id': id_colonia_cobro})
@@ -1016,18 +1057,31 @@ class PABSElectronicContracts(models.TransientModel):
             try:
                 ### Actualizar datos en odoo y ecobro###
                 if not actualizar:
-                    _logger.info("No hay diferencias")
-                    self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 2, "No hay diferencias")
-                    continue
+                    msj = "No se actualizó porque no hay diferencias"
+                    _logger.info(msj)
+                    if solicitud:
+                        return {"correcto": msj}
+                    else:
+                        self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 2, "No hay diferencias")
+                        continue
 
                 _logger.info("{}".format(actualizar))
                 contrato.write(actualizar)
                 _logger.info("Actualizada en odoo!")
 
-                self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 2, "Actualizado")
+                if solicitud:
+                    return {"correcto": contrato.name}
+                else:
+                    self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 2, "Actualizado")
+
             except Exception as ex:
-                _logger.error("No se puede actualizar la afiliacion: {}".format(ex))
-                self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 0, ex)
+                msj = "Error al actualizar: {}".format(ex)
+                _logger.error(msj)
+
+                if solicitud:
+                    return {"error": msj[0:248]}
+                else:
+                    self.MarcarAfiliacionComoActualizadaEnEcobro(url_actualizar_afiliaciones, afi['contrato_id'], 0, ex)
 
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
