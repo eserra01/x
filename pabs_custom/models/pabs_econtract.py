@@ -116,90 +116,92 @@ class PABSElectronicContracts(models.TransientModel):
 
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
-    def SincronizarContratos(self, company_id):
-        #_logger.info("Comienza sincronización de afiliaciones electrónicas compañia: {}".format(company_id))
+    def SincronizarContratos(self, company_id, solicitud):
+        _logger.info("Comienza sincronización de afiliaciones electrónicas compañia: {}".format(company_id))
 
         contract_obj = self.env['pabs.contract']
         municipality_obj = self.env['res.locality']
         colonia_obj = self.env['colonias']
 
-        ### Validar parámetros ###
-        if not company_id:
-            _logger.error("No se ha definido la compañia")
-            return
+        url_obtener_afiliaciones = ""
+        url_actualizar_afiliaciones = ""
+        array_solicitudes = []
 
-        ### Validar web service de consulta y respuesta ###
-        url_obtener_afiliaciones = self.get_url(company_id, 1)
-        if not url_obtener_afiliaciones:
-            _logger.error("No se ha definido la dirección del web service: obtener afiliaciones electrónicas")
-            return
+        if solicitud:
+            # TEST
+            # solicitud = {
+            #     "qr_string": "202205231256513DJ000183MC340568525.3852089-101.0111063",
+            #     "contrato_id": "999999",
+            #     "serie": "PCD",
+            #     "contrato": "000006",
+            #     "solicitud_codigoActivacion": "MC0000006",
+            #     "inversion_inicial": "500",
+            #     "fecha_contrato": "2022-09-28 12:56:51",
+            #     "timestamp": "1653332211",
+            #     "fecha_primer_abono": "2022-11-01",
+            #     "monto_abono": "400",
+            #     "forma_pago": "Mensuales",
+            #     "promotor_id": "260",
+            #     "promotor_nombre": "FELIPE ANGELES RAMOS ALMANZA1",
+            #     "promotor_codigo": "P0251",
+            #     "plan_id": "2076",
+            #     "plan": "IMPERIAL PREMIUM",
+            #     "solicitud_latitud": "25.3852089",
+            #     "solicitud_longitud": "-101.0111063",
+            #     "afiliado_nombre": "MARÍA DEL ROBLE",
+            #     "afiliado_apellidoPaterno": "JUAREZ",
+            #     "afiliado_apellidoMaterno": "RAMIREZ",
+            #     "afiliado_fechaNacimiento": "1973-03-10",
+            #     "afiliado_estadoCivil": "",
+            #     "afiliado_ocupacion": "",
+            #     "afiliado_telefono": "8442568280",
+            #     "afiliado_RFC": " ",
+            #     "afiliado_email": "roblejr73@gmail.com",
+            #     "tipo_domicilio": "Casa",
+            #     "domCasa_codigoPostal": "25086",
+            #     "domCasa_Calle": "ABEL BARRAGAN",
+            #     "domCasa_numExt": "251",
+            #     "domCasa_numInt": "",
+            #     "domCasa_EntreCalles": "FRANCISCO H GARZA Y BOULEVARD CID GONZALEZ",
+            #     "domCasa_Colonia": "BUROCRATAS MUNICIPALES",
+            #     "domCasa_Municipio": "SALTILLO",
+            #     "domCasa_LocalidadID": "99998",
+            #     "domCasa_ColoniaID": "99998",
+            #     "domCobro_tipoDomicilio": "Cobranza",
+            #     "domCobro_codigoPostal": "25086",
+            #     "domCobro_Calle": "ABEL BARRAGAN",
+            #     "domCobro_numExt": "251",
+            #     "domCobro_numInt": "",
+            #     "domCobro_entreClles": "FRANCISCO H GARZA Y BOULEVARD CID GONZALEZ",
+            #     "domCobro_Colonia": "BUROCRATAS MUNICIPALES",
+            #     "domCobro_Municipio": "SALTILLO",
+            #     "domCobro_LocalidadID": "99998",
+            #     "domCobro_ColoniaID": "99998",
+            #     "generar_contrato": "0"
+            # }
 
-        url_actualizar_afiliaciones = self.get_url(company_id, 2)
-        if not url_actualizar_afiliaciones:
-            _logger.error("No se ha definido la dirección del web service: actualizar afiliaciones electrónicas")
-            return
+            array_solicitudes.append(solicitud)
+        else:
+            ### Validar web service de consulta y respuesta ###
+            url_obtener_afiliaciones = self.get_url(company_id, 1)
+            if not url_obtener_afiliaciones:
+                _logger.error("No se ha definido la dirección del web service: obtener afiliaciones electrónicas")
+                return
 
-        ### Llamar web service de consulta ###
-        try:
-            # _logger.info("Comienza consulta de afiliaciones")
-            respuesta = requests.post(url_obtener_afiliaciones)
-            json_afiliaciones = json.loads(respuesta.text)
-            array_solicitudes = json_afiliaciones.get('solicitudes')
-        except Exception as ex:
-            _logger.error("Error al consultar afiliaciones electrónicas {}".format(ex))
-            return
+            url_actualizar_afiliaciones = self.get_url(company_id, 2)
+            if not url_actualizar_afiliaciones:
+                _logger.error("No se ha definido la dirección del web service: actualizar afiliaciones electrónicas")
+                return
 
-        # TEST
-        # array_solicitudes = [{
-		# 	"qr_string": "202205231256513DJ000183MC340568525.3852089-101.0111063",
-		# 	"contrato_id": "999999",
-		# 	"serie": "PCD",
-		# 	"contrato": "000005",
-		# 	"solicitud_codigoActivacion": "MC0000014",
-		# 	"inversion_inicial": "500",
-		# 	"fecha_contrato": "2022-09-28 12:56:51",
-		# 	"timestamp": "1653332211",
-		# 	"fecha_primer_abono": "2022-11-01",
-		# 	"monto_abono": "400",
-		# 	"forma_pago": "Mensuales",
-		# 	"promotor_id": "260",
-		# 	"promotor_nombre": "FELIPE ANGELES RAMOS ALMANZA1",
-		# 	"promotor_codigo": "P0251",
-		# 	"plan_id": "2076",
-		# 	"plan": "IMPERIAL PREMIUM",
-		# 	"solicitud_latitud": "25.3852089",
-		# 	"solicitud_longitud": "-101.0111063",
-		# 	"afiliado_nombre": "MARÍA DEL ROBLE",
-		# 	"afiliado_apellidoPaterno": "JUAREZ",
-		# 	"afiliado_apellidoMaterno": "RAMIREZ",
-		# 	"afiliado_fechaNacimiento": "1973-03-10",
-		# 	"afiliado_estadoCivil": "",
-		# 	"afiliado_ocupacion": "",
-		# 	"afiliado_telefono": "8442568280",
-		# 	"afiliado_RFC": " ",
-		# 	"afiliado_email": "roblejr73@gmail.com",
-		# 	"tipo_domicilio": "Casa",
-		# 	"domCasa_codigoPostal": "25086",
-		# 	"domCasa_Calle": "ABEL BARRAGAN",
-		# 	"domCasa_numExt": "251",
-		# 	"domCasa_numInt": "",
-		# 	"domCasa_EntreCalles": "FRANCISCO H GARZA Y BOULEVARD CID GONZALEZ",
-		# 	"domCasa_Colonia": "BUROCRATAS MUNICIPALES",
-		# 	"domCasa_Municipio": "SALTILLO",
-		# 	"domCasa_LocalidadID": "99998",
-		# 	"domCasa_ColoniaID": "99998",
-		# 	"domCobro_tipoDomicilio": "Cobranza",
-		# 	"domCobro_codigoPostal": "25086",
-		# 	"domCobro_Calle": "ABEL BARRAGAN",
-		# 	"domCobro_numExt": "251",
-		# 	"domCobro_numInt": "",
-		# 	"domCobro_entreClles": "FRANCISCO H GARZA Y BOULEVARD CID GONZALEZ",
-		# 	"domCobro_Colonia": "BUROCRATAS MUNICIPALES",
-		# 	"domCobro_Municipio": "SALTILLO",
-		# 	"domCobro_LocalidadID": "99998",
-		# 	"domCobro_ColoniaID": "99998",
-        #    "generar_contrato": "0"
-		# }]
+            ### Llamar web service de consulta ###
+            try:
+                _logger.info("Comienza consulta de afiliaciones")
+                respuesta = requests.post(url_obtener_afiliaciones)
+                json_afiliaciones = json.loads(respuesta.text)
+                array_solicitudes = json_afiliaciones.get('solicitudes')
+            except Exception as ex:
+                _logger.error("Error al consultar afiliaciones electrónicas {}".format(ex))
+                return
 
         cantidad_afiliaciones = len(array_solicitudes)
         _logger.info("{} >>> Afiliaciones electrónicas a sincronizar: {}".format(company_id, cantidad_afiliaciones))
@@ -228,8 +230,13 @@ class PABSElectronicContracts(models.TransientModel):
                     ])
 
                     if contrato:
-                        _logger.info("Ya existe el pre-contrato")
-                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 1, "Ya existe el pre-contrato")
+                        msj = "Ya existe el pre-contrato"
+                        _logger.info(msj)
+
+                        if solicitud:
+                            return {"resultado": 1, "msj": "{} - {}".format(msj, pre_numero_contrato)}
+                        else:
+                            self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 1, msj)
                         continue
 
                 ### Si se debe generar contrato obtener siguiente número de contrato y asignar al contrato y al contacto. Si ya existe responder. ###
@@ -240,14 +247,21 @@ class PABSElectronicContracts(models.TransientModel):
                     ])
 
                     if not contrato:
-                        _logger.info("No se encontró el pre-contrato")
-                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, sol['serie'], sol['contrato'], 0, "No se encontró el pre-contrato")
-                        continue
+                        msj = "No se encontró el pre-contrato"
+                        _logger.info(msj)
 
-                    if contrato.state == "contract": #singleton cuando hay dos contratos con mismo número de solicitud
-                        _logger.info("Ya existe el contrato")
-                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, contrato.name[0:3], contrato.name[3:], 1, "El contrato ya habia sido creado")
-                        continue
+                        if solicitud:
+                            return {"resultado": 0, "msj": "{} - {}".format(msj, pre_numero_contrato)}
+                        else:
+                            self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, sol['serie'], sol['contrato'], 0, msj)
+                    elif contrato.state == "contract": #singleton cuando hay dos contratos con mismo número de solicitud
+                        msj = "El contrato ya habia sido creado"
+                        _logger.info(msj)
+
+                        if solicitud:
+                            return {"resultado": 1, "msj": "{} - {}".format(msj, pre_numero_contrato)}
+                        else:
+                            self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, contrato.name[0:3], contrato.name[3:], 1, msj)
                     else:
                         # Se busca la tarifa porque esta ligada a la secuencia
                         tarifa = self.env['product.pricelist.item'].search([('product_id', '=', contrato.name_service.id)])
@@ -258,9 +272,15 @@ class PABSElectronicContracts(models.TransientModel):
                         contrato.write({'name': siguiente_numero, 'state': 'contract'})
                         contrato.partner_id.write({'name' : siguiente_numero})
                         
-                        _logger.info("Se asignó número de contrato {}".format(contrato.name))
-                        self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, siguiente_numero[0:3], siguiente_numero[3:99], 1, "Se asignó número de contrato")
-                        continue
+                        msj = "Se asignó número de contrato {}".format(contrato.name)
+                        _logger.info(msj)
+
+                        if solicitud:
+                            return {"resultado": 1, "msj": "{} - {}".format(msj, pre_numero_contrato)}
+                        else:
+                            self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, siguiente_numero[0:3], siguiente_numero[3:99], 1, msj)
+                        
+                    continue
 
                 ### Validar datos de la afiliación ###
                 # 0. Obtener fecha de creación
@@ -427,7 +447,7 @@ class PABSElectronicContracts(models.TransientModel):
                             'company_id': company_id,
                             'zip_code': sol['domCobro_codigoPostal']
                         }).id
-                        
+
                         _logger.info("Se crea colonia de cobro {}".format(nombre))
                     else:
                         id_colonia_cobro = colonia.id
@@ -535,12 +555,22 @@ class PABSElectronicContracts(models.TransientModel):
                 self.CrearRegistroPrecierre(company_id, employee.id, contrato.id)
 
                 ### Actualizar en ecobro con mensaje de éxito ###
-                self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 1, "Contrato creado")
+                msj = "Precontrato creado"
+                _logger.info(msj)
+
+                if solicitud:
+                    return {"resultado": 1, "msj": "{} - {}".format(msj, pre_numero_contrato)}
+                else:
+                    self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 1, msj)
 
             except Exception as ex:
-                _logger.error("Error al procesar: {}".format(ex))
-                self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 0, "{}".format(ex)[0:248])
-                continue            
+                msj = "Error al procesar: {}".format(ex)
+                _logger.error(msj)
+
+                if solicitud:
+                    return {"resultado": 0, "msj": msj[0:248]}
+                else:
+                    self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 0, "{}".format(ex)[0:248])
 
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
@@ -684,7 +714,7 @@ class PABSElectronicContracts(models.TransientModel):
             mensaje = "Error al actualizar por web service: {}".format(ex)
             _logger.error(mensaje)
             raise ValidationError(mensaje)
-            
+
 #################################################################################################################################################
 ######################################          ACTUALIZAR DATOS DE SOLICITUDES           #######################################################
 #################################################################################################################################################
