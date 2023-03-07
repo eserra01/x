@@ -1027,58 +1027,73 @@ class PABSElectronicContracts(models.TransientModel):
 ######################################                SINCRONIZADOR DE CORTES             #######################################################
 #################################################################################################################################################
 
-    def SincronizarCortes(self, company_id):
+    ### Cuando no se envia una solicitud ejecuta los web services de consulta de ecobro
+    def SincronizarCortes(self, company_id, solicitud):
         _logger.info("Comienza sincronización de cortes")
 
-        if not company_id:
-            raise ValidationError("No se ha definido una compañia")
+        array_cortes = []
+        url_obtener_cortes = ""
+        url_actualizar_corte = ""
 
-        ### Validar web service de consulta y respuesta ###
-        url_obtener_cortes = self.get_url(company_id, 3)
-        if not url_obtener_cortes:
-            _logger.error("No se ha definido la dirección del web service: obtener cortes")
-            return
-
-        url_actualizar_corte = self.get_url(company_id, 4)
-        if not url_actualizar_corte:
-            _logger.error("No se ha definido la dirección del web service: actualizar cortes")
-            return
-        
-        ### Validar cuentas para póliza ###
+        ### Validar cuentas para creación de póliza ###
         info_de_cuentas = {}
         info_de_cuentas = self.ValidarCuentas(company_id, info_de_cuentas)
-        if not info_de_cuentas:
-            return
 
-        ### Llamar web service de consulta ###
-        try:
-            _logger.info("Comienza consulta de cortes")
-            respuesta = requests.post(url_obtener_cortes)
-            json_cortes = json.loads(respuesta.text)
-            array_cortes = json_cortes.get('result')
-        except Exception as ex:
-            _logger.error("Error al consultar los cortes de afiliaciones electrónicas {}".format(ex))
-            return
+        if not info_de_cuentas:
+            return {'error': "No se encontraron las cuentas para la poliza"}
+
+        if solicitud:
+            if 'contrato' not in solicitud.keys() or 'periodo' not in solicitud.keys() or 'fecha_cierre_periodo' not in solicitud.keys():
+                return {'error': "Falta algunos de las llaves (contrato, periodo, fecha_cierre_periodo)"}
             
-        # TEST
-        # array_cortes = [
-        #     { 
-        #         "id": "245",
-        #         "promotor_id": "260",
-        #         "codigo_promotor": "P0251",
-        #         "contrato": "PCD000004",
-        #         "periodo": "10",
-        #         "fecha_cierre_periodo": "2022-09-28 07:01:47"
-        #     },
-        #     { 
-        #         "id": "246",
-        #         "promotor_id": "260",
-        #         "codigo_promotor": "P0251",
-        #         "contrato": "3NJ003036",
-        #         "periodo": "10",
-        #         "fecha_cierre_periodo": "2022-09-28 07:01:47"
-        #     }
-        # ]
+            if not solicitud['contrato'] or not solicitud['periodo'] or not solicitud['fecha_cierre_periodo']:
+                return {'error': "Algunos de los valores esta vacio o es cero (contrato, periodo, fecha_cierre_periodo)"}
+            
+            array_cortes.append({
+                "contrato": solicitud['contrato'],
+                "periodo": solicitud['periodo'],
+                "fecha_cierre_periodo": solicitud['fecha_cierre_periodo']
+            })
+        else:
+            ### Por web service ###
+            url_obtener_cortes = self.get_url(company_id, 3)
+            if not url_obtener_cortes:
+                _logger.error("No se ha definido la dirección del web service: obtener cortes")
+                return
+
+            url_actualizar_corte =  self.get_url(company_id, 4)
+            if not url_actualizar_corte:
+                _logger.error("No se ha definido la dirección del web service: actualizar cortes")
+                return
+        
+            try:
+                _logger.info("Comienza consulta de cortes")
+                respuesta = requests.post(url_obtener_cortes)
+                json_cortes = json.loads(respuesta.text)
+                array_cortes = json_cortes.get('result')
+            except Exception as ex:
+                _logger.error("Error al consultar los cortes de afiliaciones electrónicas {}".format(ex))
+                return
+            
+            # TEST
+            # array_cortes = [
+            #     { 
+            #         "id": "245",
+            #         "promotor_id": "260",
+            #         "codigo_promotor": "P0251",
+            #         "contrato": "PCD000004",
+            #         "periodo": "10",
+            #         "fecha_cierre_periodo": "2022-09-28 07:01:47"
+            #     },
+            #     { 
+            #         "id": "246",
+            #         "promotor_id": "260",
+            #         "codigo_promotor": "P0251",
+            #         "contrato": "3NJ003036",
+            #         "periodo": "10",
+            #         "fecha_cierre_periodo": "2022-09-28 07:01:47"
+            #     }
+            # ]
 
         cantidad_cortes = len(array_cortes)
         _logger.info("Cortes obtenidos: {}".format(cantidad_cortes))
@@ -1099,27 +1114,54 @@ class PABSElectronicContracts(models.TransientModel):
                 ### Buscar registro de corte
                 corte = corte_obj.search([
                     ('company_id', '=', company_id),
-                    ('id_contrato.lot_id.name', '=', cor['contrato']) #PCD...
+                    '|', ('id_contrato.lot_id.name', '=', cor['contrato']), #PCD...
+                    ('id_contrato.name', '=', cor['contrato']) #XDJ...
                 ])
 
                 if not corte:
-                    _logger.error("No se encontró el corte")
-                    continue
+                    msj = "No se encontró el registro de pre-corte del contrato {}".format(cor['contrato'])
+
+                    if solicitud:
+                        return {'error': msj}
+                    else:
+                        _logger.error(msj)
+                        continue
 
                 if len(corte) > 1:
-                    raise ValidationError("Se encontró más de un corte")
+                    msj = "Se encontró más de un registro de pre-corte"
+
+                    if solicitud:
+                        return {'error': msj}
+                    else:
+                        _logger.error(msj)
+                        raise ValidationError(msj)
 
                 if corte.estatus == 'cerrado':
-                    _logger.warning("Ya existe el registro de corte")
-                    self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
-                    continue
+                    msj = "El registro de corte ya fue previamente actualizado"
+
+                    if solicitud:
+                        return {"error": msj}
+                    else:
+                        _logger.warning(msj)
+                        self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
+                        continue
 
                 if corte.estatus == 'confirmado':
-                    _logger.warning("Ya fue recibida en contratos")
-                    self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
-                    continue
+                    msj = "Ya fue recibida en contratos"
+
+                    if solicitud:
+                        return {"error": msj}
+                    else:
+                        _logger.warning(msj)
+                        self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
+                        continue
                 
                 contrato = contrato_obj.browse(corte.id_contrato.id)
+
+                ### Obtener tiempo local ###
+                local = pytz.timezone("Mexico/General")
+                local_dt = local.localize(fields.Datetime.to_datetime(cor['fecha_cierre_periodo']), is_dst=None)
+                fecha_hora_cierre_utc = local_dt.astimezone(pytz.utc)
 
                 ### Actualizar fecha de contrato (Si se fijó una fecha para los contratos tomar esa fecha) ###
                 actualizar = {}
@@ -1147,7 +1189,9 @@ class PABSElectronicContracts(models.TransientModel):
                 
                 ### Actualizar registro de cierre en odoo ###
                 local = pytz.timezone("Mexico/General")
+
                 local_dt = local.localize(fields.Datetime.to_datetime(cor['fecha_cierre_periodo']), is_dst=None)
+
                 fecha_hora_cierre_utc = local_dt.astimezone(pytz.utc)
 
                 corte.write({
@@ -1160,11 +1204,17 @@ class PABSElectronicContracts(models.TransientModel):
                 _logger.info("Actualizado en odoo")
 
                 ### Actualizar en eCobro ###
-                self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
+                if solicitud:
+                    return {"correcto": contrato.name}
+                else:
+                    self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
 
             except Exception as ex:
-                mensaje = "Error al procesar corte: {}".format(ex)
-                _logger.error(mensaje)
+                if solicitud:
+                    return "error: Error en el proceso: {}".format(mensaje)
+                else:
+                    mensaje = "Error al procesar corte: {}".format(ex)
+                    _logger.error(mensaje)
 
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
     
