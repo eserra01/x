@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+        <record id="pabs_eleanor_area_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.area.tree.view</field>
+            <field name="model">pabs.eleanor.area</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" string="Áreas">
+                    <field name="name" />
+                    <field name="company_id" readonly="1" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+         <record id="pabs_eleanor_area_action" model="ir.actions.act_window">
+            <field name="name">Áreas</field>
+            <field name="res_model">pabs.eleanor.area</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>            
+        </record>
+
+
+        <menuitem id="pabs_eleanor_area_menu" 
+        name="Áreas" 
+        parent="pabs_eleanor_config_menu" 
+        action="pabs_eleanor_area_action" 
+        sequence="10"/>
+
+    </data>
+</odoo>

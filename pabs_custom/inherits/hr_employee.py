@@ -15,14 +15,46 @@ RELATIONSHIP = [
   ('father','Padre'),
   ('mother','Madre')]
 
+RESCISSION_REASONS = [
+  ('RETIRO VOLUNTARIO','RETIRO VOLUNTARIO'),
+  ('ABANDONO DE TRABAJO','ABANDONO DE TRABAJO'),
+  ('FALTA DE PROBIDAD','FALTA DE PROBIDAD'),
+  ('FALTA A LA MORAL','FALTA A LA MORAL'),
+  ('INSUBORDINACION','INSUBORDINACIÓN'),
+  ('BAJA PRODUCTIVIDAD','BAJA PRODUCTIVIDAD'),
+  ('RESICION ART.47','RESICION ART.47'),
+  ('DEMANDA LABORAL','DEMANDA LABORAL'),
+  ('CAMBIO DE PLAZA','CAMBIO DE PLAZA'),
+  ('BAJA POR PENSION','BAJA POR PENSIÓN'),
+  ('BAJA POR M40','BAJA POR M40'),
+  ('CAMBIO DE AREA','CAMBIO DE AREA'),
+  ('NO CONTRATABLE','NO CONTRATABLE'),
+  ('AUSENTISMO','AUSENTISMO'),
+  ('PLANTA NO OTORGADA','PLANTA NO OTORGADA'),
+  ('REINGRESO PENDIENTE','REINGRESO PENDIENTE'),
+  ('NO INGRESA','NO INGRESA'),
+  ('DANO A EQUIPO','DAÑO A EQUIPO'),
+  ('NO FIRMA CONTRATO','NO FIRMA CONTRATO'),
+  ('DOC. PENDIENTE','DOC. PENDIENTE'),
+  ('DEF. DEL COLABORADOR','DEF. DEL COLABORADOR'),
+  ('DESPIDO','DESPIDO'),
+  ('RESCISION LABORAL','RESCISIÓN LABORAL'),
+  ('MAL ASIGNADO','MAL ASIGNADO'),
+  ('FALLECIMIENTO','FALLECIMIENTO'),
+  ('AJUSTE DE PLATILLA','AJUSTE DE PLATILLA')]
+
+EMPRESAS = [('pabs','PABS'),('funeraria','FUNERARIA'),('diremovil','DIREMOVIL')]
+
 class HrEmployee(models.Model):
   _inherit = 'hr.employee'
   
   # Declaración de campos
   employee_status = fields.Many2one(comodel_name='hr.employee.status',
     string='Estatus')
+  
+  employee_status_date = fields.Date(string='Fecha cambio de estatus')
 
-  barcode = fields.Char(groups=False)
+  barcode = fields.Char(string="Código de empleado",groups=False)
 
   first_name = fields.Char(string='Nombre',
     tracking=True,
@@ -210,7 +242,7 @@ class HrEmployee(models.Model):
 
   fist_beneficiary_relationship = fields.Selection(selection=RELATIONSHIP,
     tracking=True,
-    string='Parentezco')
+    string='Parentesco')
 
   second_beneficiary = fields.Char(string='Nombre del beneficiario',
     tracking=True)
@@ -220,9 +252,21 @@ class HrEmployee(models.Model):
 
   second_beneficiary_relationship = fields.Selection(selection=RELATIONSHIP,
     tracking=True,
-    string='Parentezco')
+    string='Parentesco')
 
   date_of_admission = fields.Date(string="Fecha de ingreso", tracking=True)
+
+  salary_contract_number = fields.Integer(string="Contratos a sueldo",copy=False)
+
+  recommended_id = fields.Char(string='Recomendador')
+
+  code_extension = fields.Char(string='Extensión de código')
+
+  rescission_reason = fields.Selection(selection=RESCISSION_REASONS, tracking=True, string='Motivo rescisión')
+
+  pabs_company = fields.Selection(selection=EMPRESAS, string='Empresa')
+
+  pabs_location = fields.Char(string='Ubicación')
 
   # Calculo de nombre completo
   @api.onchange('first_name','last_name')
@@ -246,8 +290,17 @@ class HrEmployee(models.Model):
     if vals.get('barcode'):
       ### cambia el código de empleado a mayusculas para mantener un estándar
       vals['barcode'] = vals['barcode'].upper()
+    
     ### Validar que no se repitan los códigos de empleado
-    duplicated = self.search([('barcode','=',vals.get('barcode'))])
+    duplicated = None
+    if self.env.context.get('migration'):
+      duplicated = self.search([
+        ('barcode','=',vals.get('barcode')),
+        ('period_type','=',vals.get('period_type'))
+      ])
+    else:
+      duplicated = self.search([('barcode','=',vals.get('barcode'))])
+
     deb_collector = job_obj.search([
       ('name','=','COBRADOR')],limit=1)
     if not deb_collector:
@@ -264,12 +317,9 @@ class HrEmployee(models.Model):
         warehouse_id = warehouse_obj.browse(vals.get('warehouse_id'))
         view_location_id = warehouse_id.view_location_id
         ### Buscar la ubicación de contratos
-        contract_location = location_obj.search([
-          ('contract_location','=',True)], limit=1)
+        contract_location = location_obj.search([('contract_location','=',True)], limit=1)
         ### Buscar la ubicación de solicitudes
-        request_location = location_obj.search([
-          ('location_id','=',view_location_id.id),
-          ('office_location','=',True)],limit=1)
+        request_location = location_obj.search([('location_id','=',view_location_id.id),('office_location','=',True)],limit=1)
         ### Sí encuentra una ubicación de solicitudes
         if request_location:
           vals['request_location_id'] = request_location.id
@@ -341,6 +391,11 @@ class HrEmployee(models.Model):
         local_location_id.write({'location_id' : warehouse_id.view_location_id.id})
       vals['request_location_id'] = warehouse_id.lot_stock_id.id
     return super(HrEmployee, self).write(vals)
+
+  @api.onchange('employee_status')
+  def _onchange_employee_status(self):
+    for rec in self:
+      rec.employee_status_date = fields.Date.today()
 
   @api.model
   def _name_search(self, name='', args=None, operator="ilike", limit=100):

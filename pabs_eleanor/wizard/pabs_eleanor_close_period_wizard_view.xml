@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openerp>
+    <data>
+        <record id="pabs_eleanor_close_period_wizard_form" model="ir.ui.view">
+            <field name="name">pabs.eleanor.close.period.wizard.form</field>
+            <field name="model">pabs.eleanor.close.period.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Cerrar periodo" >                              
+                    <group>
+                        <field name="closed" invisible="1" />  
+                        <field name="info" nolabel="1" attrs="{'invisible': [('info','=','')]}" style="color: red;"/>  
+                    </group>                                                                       
+                    <newline/>                            
+                    <footer>                                                
+                        <button string="Aceptar" class="oe_highlight" name="close_period" type="object" 
+                        attrs="{'invisible':[('closed','=',True)]}"/>
+                        <button string="Cancelar" class="btn-default" special="cancel" attrs="{'invisible':[('closed','=',True)]}"/>
+                        <button string="Cerrar" class="oe_highlight" special="cancel" attrs="{'invisible':[('closed','=',False)]}"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo> 
+    <record id="pabs_eleanor_move_detail_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.eleanor.move.detail.wizard.view</field>
+		<field name="model">pabs.eleanor.move.detail</field>
+		<field name="arch" type="xml">
+			<form>
+                <h3>Elige el tipo de periodo. Solo mostrará los empleados en estatus ACTIVO.</h3>
+                <group>
+                    <field name="period_type"/>
+                </group>
+            
+                <footer>
+                    <button name="generate_xls_report" string="Generar XLS" type="object" class="btn-primary"/>
+                    ó
+                    <button string="Cancelar" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+		</field>
+	</record>
+
+    <record id="action_eleanor_move_detail_report_action" model="ir.actions.act_window">
+        <field name="name">Detalle de movimientos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pabs.eleanor.move.detail</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="pabs_eleanor_move_detail_wizard_view"/>
+        <field name="target">new</field>
+    </record>
+
+    <report
+        id="pabs_eleanor_move_detail_xlsx_report_id"
+        model="pabs.eleanor.move"
+        string="Detalle de movimientos"
+        report_type="xlsx"
+        name="pabs_eleanor.pabs_eleanor_move_detail_xlsx_report"
+        file="Detalle de movimientos"
+        attachment_use="False" 
+    />   
+
+    <menuitem 
+        id="pabs_eleanor_move_detail_menu" 
+        name="Detalle de movimientos" 
+        parent="pabs_eleanor_report_menu" 
+        action="action_eleanor_move_detail_report_action" 
+        sequence="20"
+    />
+    
+</odoo>

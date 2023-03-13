@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pabs_eleanor_move_layout_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.eleanor.move.layout.wizard.view</field>
+		<field name="model">pabs.eleanor.move.layout</field>
+		<field name="arch" type="xml">
+			<form>
+                <h3>Elige el tipo de periodo. Solo se mostrarán los empleados en estatus ACTIVO.</h3>
+                <group>
+                    <field name="period_type"/>
+                </group>
+            
+                <footer>
+                    <button name="generate_xls_report" string="Generar XLS" type="object" class="btn-primary"/>
+                    ó
+                    <button string="Cancelar" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+		</field>
+	</record>
+
+    <record id="action_eleanor_move_layout_report_action" model="ir.actions.act_window">
+        <field name="name">Plantilla de carga de Eleanor</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pabs.eleanor.move.layout</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="pabs_eleanor_move_layout_wizard_view"/>
+        <field name="target">new</field>
+    </record>
+  
+    <report
+        id="pabs_eleanor_move_layout_xlsx_report_id"
+        model="pabs.eleanor.move"
+        string="Plantilla de carga"
+        report_type="xlsx"
+        name="pabs_eleanor.pabs_eleanor_move_layout_xlsx_report"
+        file="Plantilla de carga de movimientos ELEANOR"
+        attachment_use="False"
+    />   
+
+    <menuitem 
+        id="pabs_eleanor_move_layout_menu" 
+        name="Plantilla de carga" 
+        parent="pabs_eleanor_report_menu" 
+        action="action_eleanor_move_layout_report_action" 
+        sequence="10"
+    />
+    
+</odoo>

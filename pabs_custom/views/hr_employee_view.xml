@@ -32,6 +32,13 @@
         <field name="name" invisible="1"/>
       </xpath>
 
+    <xpath expr="//div[@class='oe_title']" position="before">
+      <h1>
+        <label for="barcode" string="Código de Empleado" />
+        <field name="barcode" required="True" class="oe_inline"  attrs="{'readonly' : [('id','!=',False)]}"/>
+      </h1>
+    </xpath> 
+
       <xpath expr="//field[@name='job_id']" position="replace">
         <!-- <field name="ecobro_id" groups="pabs_custom.admin_profile"/> -->
         <field name="job_id" string="Puesto Laboral"/>
@@ -160,7 +167,8 @@
       </xpath>
 
       <xpath expr="//field[@name='work_email']" position="after">
-        <field name="employee_status" options="{'no_open': True, 'no_create':True}"/>
+        <field name="employee_status"/>
+        <field name="employee_status_date"/>
       </xpath>
 
     </field>

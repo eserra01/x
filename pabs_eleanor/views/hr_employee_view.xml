@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="eleanor_pabs_hr_employee_form_view_inherit" model="ir.ui.view">
+            <field name="name">eleanor.pabs.hr.employee.form.view.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="pabs_custom.pabs_hr_employee_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='employee_status']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='employee_status_date']" position="attributes">
+                    <attribute name="readonly">True</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="eleanor_hr_employee_form_view_inherit" model="ir.ui.view">
+            <field name="name">eleanor.hr.employee.form.view.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Parámetros ELEANOR" >                              
+                        <group>
+                            <field name="birth_place" options="{'no_create':True, 'no_open':True}"/>
+                            <field name="fathers_name" />
+                            <field name="mothers_name" />
+                            <field name="infonavit_credit" />                                
+                            <field name="pabs_eleanor_area_id" options="{'no_create':True, 'no_open':True}"/>                                
+                            <field name="boss" />
+                            <field name="total_internal_salary" />
+                            <field name="daily_internal_salary" />
+                            <field name="period_internal_salary" />
+                            <field name="daily_salary" />
+                            <field name="integrated_daily_salary" />                         
+                            <field name="personal_file_name" invisible="1"/>
+                            <field name="personal_file_file" filename="personal_file_name" />
+                            <field name="constancy_up_name" invisible="1"/>                            
+                            <field name="constancy_up_file" filename="constancy_up_name" />    
+                            <field name="infonavit_credit_amortization" />    
+                            <field name="discount_value" />    
+                            <field name="interest_conflict" />    
+                            <field name="relationship" /> 
+                            <field name="period_type" />
+                            <field name="way_to_pay" />
+                        </group>                                          
+                    </page>
+                    <page string="Cambios de estatus" >
+                        <field name="status_log_ids">
+                             <tree editable="top" delete="0">
+                                <field name="employee_status_id" options="{'no_create':True, 'no_open':True}"/>
+                                <field name="comments" />
+                                <field name="status_date" />
+                                <field name="attachment_name" invisible="1"/>
+                                <field name="attachment_file" filename="attachment_name" widget="binary" />
+                                <field name="employee_id" invisible="1" />
+                             </tree>
+                        </field>                            
+                    </page>
+                    <page string="Incapacidades" >
+                        <field name="inability_ids">
+                             <tree editable="top" delete="0">
+                                <field name="disease_id" options="{'no_create':True, 'no_open':True}"/>
+                                <field name="start_date" />
+                                <field name="end_date" />
+                                <field name="folio" />
+                                <field name="attachment_name" invisible="1"/>
+                                <field name="attachment_file" filename="attachment_name" widget="binary"/>
+                                <field name="employee_id" invisible="1"/>
+                             </tree>
+                        </field>
+                    </page>
+                    <page string="EMA" >
+                        <field name="ema_ids">
+                             <!-- <tree editable="top" delete="0">
+                                <field name="nss" />                               
+                                <field name="employee_id" invisible="1"/>
+                             </tree> -->
+                        </field>
+                    </page>
+                    <page string="EBA" >
+                        <field name="eba_ids">
+                             <!-- <tree editable="top" delete="0">
+                                <field name="nss" />                               
+                                <field name="employee_id" invisible="1"/>
+                             </tree> -->
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+                
+    </data>    
+</odoo>

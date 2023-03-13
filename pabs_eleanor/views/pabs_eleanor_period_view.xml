@@ -1,0 +1,53 @@
+<odoo>
+    <data>
+        <record id="pabs_eleanor_period_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.period.tree.view</field>
+            <field name="model">pabs.eleanor.period</field>
+            <field name="arch" type="xml">
+                <tree string="Periodos" edit="0">
+                    <field name="week_number" options="{'type':'number', 'step': 1}" attrs="{'readonly':[('state','=','close')]}" force_save="1"/>
+                    <field name="date_start" attrs="{'readonly':[('state','=','close')]}" force_save="1"/>
+                    <field name="date_end" attrs="{'readonly':[('state','=','close')]}" force_save="1"/>
+                    <field name="period_type" attrs="{'readonly':[('state','=','close')]}" force_save="1"/>
+                    <field name="state" readonly="1" force_save="1"/>
+                    <field name="company_id" readonly="1" optional="hide" attrs="{'readonly':[('state','=','close')]}" force_save="1"/>
+                    <button class="btn btn-primary" name="close_period" type="object" string="Cerrar periodo" 
+                    attrs="{'invisible':[('state','=','close')]}" 
+                    confirm="Esta acción cerrará el periodo seleccionado, de click en Aceptar para continuar ..."/> 
+                </tree>
+            </field>
+        </record>
+
+         <record id="pabs_eleanor_period_action" model="ir.actions.act_window">
+            <field name="name">Periodos</field>
+            <field name="res_model">pabs.eleanor.period</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>            
+        </record>
+
+        <!-- BARRA DE BUSQUEDA  -->
+        <record id="pabs_eleanor_period_search_view" model="ir.ui.view" >
+            <field name="name">pabs.eleanor.period.search.view</field>
+            <field name="model">pabs.eleanor.period</field>
+            <field name="arch" type="xml">
+                <search>
+                    <!-- Filtros -->
+                    <field name="state"/>
+                    <field name="period_type"/>
+                    <field name="week_number"/>
+                    <field name="date_start"/>
+                </search>
+            </field>
+        </record>
+
+        <menuitem 
+            id="pabs_eleanor_period_menu" 
+            name="Periodos" 
+            parent="pabs_eleanor_config_menu" 
+            action="pabs_eleanor_period_action" 
+            sequence="50"
+        />
+
+    </data>
+</odoo>

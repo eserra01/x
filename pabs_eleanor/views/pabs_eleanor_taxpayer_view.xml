@@ -1,0 +1,36 @@
+<odoo>
+    <data>
+        <record id="pabs_eleanor_taxpayer_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.taxpayer.tree.view</field>
+            <field name="model">pabs.eleanor.taxpayer</field>
+            <field name="arch" type="xml">
+                <tree string="Contribuyentes" create="0" delete="0">
+                    <field name="taxpayer" />
+                    <field name="rfc" />
+                    <field name="curp" />
+                    <field name="address" />
+                    <field name="imss_class" />
+                    <field name="register_date" />                    
+                    <field name="boss_register" />                    
+                    <field name="company_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+         <record id="pabs_eleanor_taxpayer_action" model="ir.actions.act_window">
+            <field name="name">Contribuyentes</field>
+            <field name="res_model">pabs.eleanor.taxpayer</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>            
+        </record>
+
+
+        <menuitem id="pabs_eleanor_taxpayer_menu" 
+        name="Contribuyentes" 
+        parent="pabs_eleanor_cofiplem_menu" 
+        action="pabs_eleanor_taxpayer_action" 
+        sequence="10"/>
+
+    </data>
+</odoo>

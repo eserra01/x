@@ -1,0 +1,66 @@
+<odoo>
+    <data>
+        <record id="pabs_eleanor_salary_history_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.salary.history.tree.view</field>
+            <field name="model">pabs.eleanor.salary.history</field>
+            <field name="arch" type="xml">
+                <tree string="Histórico de sueldos" create="0" delete="0" default_order="period_type desc, date_start desc">
+                    <!-- <field name="period_id" /> -->
+                    <field name="period_type" />                    
+                    <field name="week_number" />                    
+                    <field name="date_start" />
+                    <field name="employee_id" />
+                    <field name="salary" />
+                    <field name="daily_internal_salary" />
+                    <field name="period_internal_salary" />
+                    <field name="company_id" readonly="1" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+         <record id="pabs_eleanor_salary_history_action" model="ir.actions.act_window">
+            <field name="name">Histórico de sueldos</field>
+            <field name="res_model">pabs.eleanor.salary.history</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>            
+        </record>
+
+        <!-- BARRA DE BUSQUEDA  -->
+        <record id="pabs_eleanor_salary_history_search_view" model="ir.ui.view" >
+            <field name="name">pabs.eleanor.salary.history.search.view</field>
+            <field name="model">pabs.eleanor.salary.history</field>
+            <field name="arch" type="xml">
+                <search>
+                    <!-- Filtros -->
+                    <field name="period_type"/>
+                    <field name="week_number"/>
+                    <field name="date_start"/>
+                    <field name="employee_id"/>
+                </search>
+            </field>
+        </record>
+
+        <menuitem id="pabs_eleanor_salary_history_menu" 
+        name="Histórico de sueldos" 
+        parent="pabs_eleanor_move_menu" 
+        action="pabs_eleanor_salary_history_action" 
+        sequence="50"/>
+
+<!--         
+        <record id="pabs_eleanor_create_salary_history_server_action" model="ir.actions.server">
+            <field name="name">Crear histórico de sueldos </field>
+            <field name="model_id" ref="model_pabs_eleanor_salary_history"/>
+            <field name="binding_model_id" ref="model_pabs_eleanor_salary_history"/>            
+            <field name="state">code</field>
+            <field name="code">action=model.create_salary_history()</field>
+        </record>
+        
+        <menuitem id="pabs_eleanor_create_salary_history_menu" 
+        name="Crear Histórico de sueldos" 
+        parent="pabs_eleanor_move_menu" 
+        action="pabs_eleanor_create_salary_history_server_action" 
+        sequence="60"/> -->
+
+    </data>
+</odoo>

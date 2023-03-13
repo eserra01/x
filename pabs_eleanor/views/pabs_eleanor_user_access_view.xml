@@ -1,0 +1,35 @@
+<odoo>
+    <data>
+        <record id="pabs_eleanor_user_access_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.user.access.tree.view</field>
+            <field name="model">pabs.eleanor.user.access</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" string="Permisos de acceso">
+                    <field name="user_id" options="{'no_open':True, 'no_create':True}"/>
+                    <field name="location_type" />
+                    <field name="warehouse_id" options="{'no_open':True, 'no_create':True}" 
+                        attrs="{'required':[('location_type','=','office')], 'readonly':[('location_type','!=','office')]}"/>
+                    <field name="department_id" options="{'no_open':True, 'no_create':True}" 
+                        attrs="{'required':[('location_type','=','department')], 'readonly':[('location_type','!=','department')]}"/>
+                    <field name="company_id" readonly="1" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+         <record id="pabs_eleanor_user_access_action" model="ir.actions.act_window">
+            <field name="name">Permisos de acceso</field>
+            <field name="res_model">pabs.eleanor.user.access</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>            
+        </record>
+
+
+        <menuitem id="pabs_eleanor_user_acccess_menu" 
+        name="Permisos de acceso" 
+        parent="pabs_eleanor_config_menu" 
+        action="pabs_eleanor_user_access_action" 
+        sequence="60"/>
+
+    </data>
+</odoo>

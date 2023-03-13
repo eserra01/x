@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openerp>
+    <data>
+        <record id="pabs_eleanor_cofiplem_import_xls_wizard_form" model="ir.ui.view">
+            <field name="name">pabs.eleanor.cofiplem.import.xls.wizard.form</field>
+            <field name="model">pabs.eleanor.cofiplem.import.xls.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Importar registros" >
+                    <group>                       
+                        <group>
+                            <field name="info" nolabel="1" attrs="{'invisible': [('info','=','')]}" style="color: blue;"/> 
+                            <field name="option" attrs="{'invisible': [('info','!=','')]}"/> 
+                            <field name="file_name" invisible="1" /> 
+                            <field name="file" filename="file_name" attrs="{'invisible': [('info','!=','')]}"/>
+                            </group>
+                        <group>
+                        </group>
+                    </group>                                 
+                    <newline/>                            
+                    <footer>                                                
+                        <button string="Importar" class="oe_highlight" 
+                        icon="fa-check-square" name="import_file" type="object" 
+                        attrs="{'invisible': [('info','!=','')]}"/>
+                        <button string="Cancelar" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="pabs_eleanor_cofiplem_import_xls_wizard_action" model="ir.actions.act_window">
+            <field name="name">Importar registros</field>
+            <field name="res_model">pabs.eleanor.cofiplem.import.xls.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pabs_eleanor_cofiplem_import_xls_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="pabs_eleanor_cofiplem_import_xls_wizard_menu" 
+        name="Importar registros" 
+        parent="pabs_eleanor_cofiplem_menu" sequence="40" 
+        action="pabs_eleanor_cofiplem_import_xls_wizard_action"/>
+
+    </data>
+</openerp>

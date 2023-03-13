@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="eleanor_hr_department_form_view_inherit" model="ir.ui.view">
+            <field name="name">eleanor.hr.department.form.view.inherit</field>
+            <field name="model">hr.department</field>
+            <field name="inherit_id" ref="hr.view_department_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='parent_id']" position="after">
+                    <field name="pabs_eleanor_area_id" options="{'no_open':True, 'no_create':True}"/>
+                    <field name="account_analytic_id" options="{'no_open':True, 'no_create':True}"/>                    
+                </xpath>
+            </field>
+        </record>
+                
+    </data>    
+</odoo>

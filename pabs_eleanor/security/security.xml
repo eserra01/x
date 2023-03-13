@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Reglas de registro de multicompañia -->   
+
+    <record model="ir.rule" id="pabs_eleanor_area_company_rule">
+        <field name="name">Area por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_area"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record model="ir.rule" id="pabs_eleanor_job_category_company_rule">
+        <field name="name">Categoria de puestos por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_job_category"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record model="ir.rule" id="pabs_eleanor_disease_company_rule">
+        <field name="name">Enfermedades por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_disease"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record model="ir.rule" id="pabs_eleanor_concept_category_company_rule">
+        <field name="name">Categoria de conceptos por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_concept_category"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record model="ir.rule" id="pabs_eleanor_concept_company_rule">
+        <field name="name">Conceptos por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_concept"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record model="ir.rule" id="pabs_eleanor_period_company_rule">
+        <field name="name">Periodos por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_period"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record model="ir.rule" id="pabs_eleanor_salary_company_rule">
+        <field name="name">Historico de sueldos por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_salary_history"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record model="ir.rule" id="pabs_eleanor_move_company_rule">
+        <field name="name">Movimientos por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_move"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+        <record model="ir.rule" id="pabs_eleanor_move_binnacle_company_rule">
+        <field name="name">Bitacora de movimientos por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_move_binnacle"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+</odoo>

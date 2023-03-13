@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+        <record id="pabs_eleanor_disease_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.disease.tree.view</field>
+            <field name="model">pabs.eleanor.disease</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" string="Enfermedades">
+                    <field name="name" />
+                    <field name="company_id" readonly="1" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+         <record id="pabs_eleanor_disease_action" model="ir.actions.act_window">
+            <field name="name">Enfermedades</field>
+            <field name="res_model">pabs.eleanor.disease</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>            
+        </record>
+
+
+        <menuitem id="pabs_eleanor_disease_menu" 
+        name="Enfermedades" 
+        parent="pabs_eleanor_config_menu" 
+        action="pabs_eleanor_disease_action" 
+        sequence="40"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='utf-8'?>
+<openerp>
+    <data>
+        <record id="pabs_eleanor_move_import_xls_wizard_form" model="ir.ui.view">
+            <field name="name">pabs.eleanor.move.import.xls.wizard.form</field>
+            <field name="model">pabs.eleanor.move.import.xls.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Importar movimientos" >
+                    <group>                       
+                        <group>
+                            <field name="info" nolabel="1" attrs="{'invisible': [('info','=','')]}" style="color: blue;"/> 
+                            <field name="file_name" invisible="1"  /> 
+                            <field name="file" filename="file_name" attrs="{'invisible': [('info','!=','')]}" />                  
+                            <field name="period_type" attrs="{'invisible': [('info','!=','')]}"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>                                 
+                    <newline/>                            
+                    <footer>                                                
+                        <button string="Importar" class="oe_highlight" icon="fa-check-square" 
+                        name="import_file" type="object" attrs="{'invisible': [('info','!=','')]}"/>
+                        <button string="Cancelar" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="pabs_eleanor_move_import_xls_wizard_action" model="ir.actions.act_window">
+            <field name="name">Importar movimientos</field>
+            <field name="res_model">pabs.eleanor.move.import.xls.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pabs_eleanor_move_import_xls_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="pabs_eleanor_move_import_xls_wizard_menu" 
+        name="Importar movimientos" 
+        parent="pabs_eleanor_move_menu" sequence="60" 
+        action="pabs_eleanor_move_import_xls_wizard_action"/>
+
+    </data>
+</openerp>

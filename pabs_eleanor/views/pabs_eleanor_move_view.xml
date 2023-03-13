@@ -1,0 +1,174 @@
+<odoo>
+    <data>
+        <!-- BARRA DE BUSQUEDA  -->
+        <record id="pabs_eleanor_move_search_view" model="ir.ui.view" >
+            <field name="name">pabs.eleanor.move.search.view</field>
+            <field name="model">pabs.eleanor.move</field>
+            <field name="arch" type="xml">
+                <search>
+                    <!-- Filtros -->
+                    <field name="period_type"/>
+                    <field name="week_number"/>
+                    <field name="date_start"/>
+                    <field name="employee_id"/>
+                    <field name="concept_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="pabs_eleanor_weekly_move_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.weekly.move.tree.view</field>
+            <field name="model">pabs.eleanor.move</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" import="0" string="Movimientos semanales">
+                    <field name="id" invisible="1"/>                      
+                    <field name="move_type" attrs="{'readonly':[('id','!=',False)]}" />                      
+                    <field name="employee_id" options="{'no_open':True, 'no_create':True}" attrs="{'readonly':[('id','!=',False)]}"/>  
+                    <field name="area_id" attrs="{'readonly':[('id','!=',False)]}" invisible="1"/>  
+                    <field name="warehouse_id" attrs="{'readonly':[('id','!=',False)]}" invisible="1"/>
+                    <field name="department_id" attrs="{'readonly':[('id','!=',False)]}" invisible="1"/>
+                    <field name="job_id" attrs="{'readonly':[('id','!=',False)]}" invisible="1"/>                                                            
+                    <field name="concept_id" options="{'no_open':True, 'no_create':True}" attrs="{'readonly':[('id','!=',False)]}"/>  
+                    <field name="concept_type" invisible="1"/>
+                    <field name="amount"/>                       
+                    <field name="period_id" options="{'no_open':True, 'no_create':True}" readonly="1" invisible="1" force_save="1"/>  
+                    <field name="period_type" invisible="1"/>  
+                    <field name="state" invisible="1"/>                      
+                    <field name="create_uid" string="Creado por" readonly="1" optional="hide"/>  
+                    <field name="create_date" string="Creado el" readonly="1" optional="hide"/>
+                    <field name="company_id" readonly="1" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+      
+        <record id="pabs_eleanor_weekly_move_action" model="ir.actions.act_window">
+            <field name="name">Movimientos semanales</field>
+            <field name="res_model">pabs.eleanor.move</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="pabs_eleanor_weekly_move_tree_view"/>
+             <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('pabs_eleanor_weekly_move_tree_view')}),]"/>
+            <field name="domain">[('period_type','=','weekly'),('state','=','open'),('concept_allow_load','=',True)]</field>
+            <field name="context">{'period_type':'weekly'}</field>            
+        </record>
+
+        <record id="pabs_eleanor_weekly_move_server_action" model="ir.actions.server">
+            <field name="name">Movimientos semanales</field>
+            <field name="model_id" ref="model_pabs_eleanor_move"/>
+            <field name="binding_model_id" ref="model_pabs_eleanor_move"/>            
+            <field name="state">code</field>
+            <field name="code">action=model.show_weekly_movs()</field>
+        </record>
+        
+        <menuitem id="pabs_eleanor_weekly_move_menu" 
+        name="Movimientos semanales" 
+        parent="pabs_eleanor_move_menu" 
+        action="pabs_eleanor_weekly_move_server_action" 
+        sequence="10"/>
+
+        
+        <record id="pabs_eleanor_biweekly_move_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.biweekly.move.tree.view</field>
+            <field name="model">pabs.eleanor.move</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" import="0" string="Movimientos quincenales">
+                    <field name="id" invisible="1"/>                      
+                    <field name="move_type" attrs="{'readonly':[('id','!=',False)]}" />                      
+                    <field name="employee_id" options="{'no_open':True, 'no_create':True}" attrs="{'readonly':[('id','!=',False)]}"/>  
+                    <field name="area_id" attrs="{'readonly':[('id','!=',False)]}" invisible="1"/>  
+                    <field name="warehouse_id" attrs="{'readonly':[('id','!=',False)]}" invisible="1"/>
+                    <field name="department_id" attrs="{'readonly':[('id','!=',False)]}" invisible="1"/>
+                    <field name="job_id" attrs="{'readonly':[('id','!=',False)]}" invisible="1"/>                                                            
+                    <field name="concept_id" options="{'no_open':True, 'no_create':True}" attrs="{'readonly':[('id','!=',False)]}"/>  
+                    <field name="concept_type" invisible="1"/>
+                    <field name="amount" />                       
+                    <field name="period_id" options="{'no_open':True, 'no_create':True}" readonly="1" invisible="1" force_save="1"/>  
+                    <field name="period_type" invisible="1"/>  
+                    <field name="state" invisible="1"/>                      
+                    <field name="create_uid" string="Creado por" readonly="1" optional="hide"/>  
+                    <field name="create_date" string="Creado el" readonly="1" optional="hide"/>
+                    <field name="company_id" readonly="1" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+            
+        <record id="pabs_eleanor_biweekly_move_action" model="ir.actions.act_window">
+            <field name="name">Movimientos quincenales</field>
+            <field name="res_model">pabs.eleanor.move</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="pabs_eleanor_biweekly_move_tree_view"/>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('pabs_eleanor_biweekly_move_tree_view')}),]"/>
+            <field name="domain">[]</field>
+            <field name="context">{'period_type':'biweekly'}</field>            
+        </record> 
+        
+
+        <record id="pabs_eleanor_biweekly_move_server_action" model="ir.actions.server">
+            <field name="name">Movimientos quincenales</field>
+            <field name="model_id" ref="model_pabs_eleanor_move"/>
+            <field name="binding_model_id" ref="model_pabs_eleanor_move"/>            
+            <field name="state">code</field>
+            <field name="code">action=model.show_biweekly_movs()</field>
+        </record>
+        
+        <menuitem id="pabs_eleanor_biweekly_move_menu" 
+        name="Movimientos quincenales" 
+        parent="pabs_eleanor_move_menu" 
+        action="pabs_eleanor_biweekly_move_server_action" 
+        sequence="20"/>
+
+        
+        <record id="pabs_eleanor_all_move_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.all.move.tree.view</field>
+            <field name="model">pabs.eleanor.move</field>
+            <field name="arch" type="xml">
+                <tree string="Movimientos (todos)" create="0" delete="0">
+                    <field name="id" invisible="1"/>                      
+                    <field name="period_type"/>
+                    <field name="week_number"/>
+                    <field name="date_start"/>
+                    <field name="move_type" attrs="{'readonly':[('id','!=',False)]}" />                      
+                    <field name="concept_id" options="{'no_open':True, 'no_create':True}" attrs="{'readonly':[('id','!=',False)]}"/>  
+                    <field name="employee_id" options="{'no_open':True, 'no_create':True}" attrs="{'readonly':[('id','!=',False)]}"/>  
+                    <field name="amount"/>                     
+                    <field name="area_id" attrs="{'readonly':[('id','!=',False)]}" optional="hide"/>  
+                    <field name="warehouse_id" attrs="{'readonly':[('id','!=',False)]}" optional="hide"/>
+                    <field name="department_id" attrs="{'readonly':[('id','!=',False)]}" optional="hide"/>
+                    <field name="job_id" attrs="{'readonly':[('id','!=',False)]}" optional="hide"/>                                                            
+                    <field name="state" optional="hide"/>                      
+                    <field name="create_uid" string="Creado por" readonly="1" optional="hide"/>  
+                    <field name="create_date" string="Creado el" readonly="1" optional="hide"/>
+                    <field name="company_id" readonly="1" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="pabs_eleanor_all_move_action" model="ir.actions.act_window">
+            <field name="name">Movimientos</field>
+            <field name="res_model">pabs.eleanor.move</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="pabs_eleanor_all_move_tree_view"/>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('pabs_eleanor_all_move_tree_view')}),]"/>
+            <field name="domain">[]</field>
+            <field name="context">{'period_type':'all'}</field>            
+        </record> 
+        
+
+        <record id="pabs_eleanor_all_move_server_action" model="ir.actions.server">
+            <field name="name">Movimientos</field>
+            <field name="model_id" ref="model_pabs_eleanor_move"/>
+            <field name="binding_model_id" ref="model_pabs_eleanor_move"/>            
+            <field name="state">code</field>
+            <field name="code">action=model.show_all_movs()</field>
+        </record>
+
+        <menuitem id="pabs_eleanor_all_move_menu" 
+        name="Todos lo movimientos" 
+        parent="pabs_eleanor_move_menu" 
+        action="pabs_eleanor_all_move_server_action" 
+        sequence="40"/>
+
+    </data>
+</odoo>

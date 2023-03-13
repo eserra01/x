@@ -1,0 +1,38 @@
+<odoo>
+    <data>
+        <record id="pabs_eleanor_ema_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.ema.tree.view</field>
+            <field name="model">pabs.eleanor.ema</field>
+            <field name="arch" type="xml">
+                <tree string="EMA" create="0" delete="0">
+                    <field name="nss" />
+                    <field name="full_name" />
+                    <field name="salary" />
+                    <field name="company" />
+                    <field name="period" />
+                    <field name="boss_register" />
+                    <field name="move_type" />
+                    <field name="move_date" />
+                    <field name="employee_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+         <record id="pabs_eleanor_ema_action" model="ir.actions.act_window">
+            <field name="name">EMA</field>
+            <field name="res_model">pabs.eleanor.ema</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>            
+        </record>
+
+
+        <menuitem id="pabs_eleanor_ema_menu" 
+        name="EMA" 
+        parent="pabs_eleanor_cofiplem_menu" 
+        action="pabs_eleanor_ema_action" 
+        sequence="20"/>
+
+    </data>
+</odoo>

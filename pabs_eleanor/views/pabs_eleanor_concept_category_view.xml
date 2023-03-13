@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+        <record id="pabs_eleanor_concept_category_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.concept.category.tree.view</field>
+            <field name="model">pabs.eleanor.concept.category</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" string="Categorías de conceptos">
+                    <field name="name" />
+                    <field name="company_id" readonly="1" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+         <record id="pabs_eleanor_concept_category_action" model="ir.actions.act_window">
+            <field name="name">Categorías de conceptos</field>
+            <field name="res_model">pabs.eleanor.concept.category</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>            
+        </record>
+
+
+        <menuitem id="pabs_eleanor_concept_category_menu" 
+        name="Categorías de conceptos" 
+        parent="pabs_eleanor_config_menu" 
+        action="pabs_eleanor_concept_category_action" 
+        sequence="20"/>
+
+    </data>
+</odoo>

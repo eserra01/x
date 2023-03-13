@@ -1,0 +1,60 @@
+<odoo>
+    <data>
+               
+        <record id="pabs_eleanor_move_binnacle_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.move.binnacle.tree.view</field>
+            <field name="model">pabs.eleanor.move.binnacle</field>
+            <field name="arch" type="xml">
+                <tree string="Bitácora de movimientos" create="0" delete="0">
+                    <field name="id" invisible="1"/>                      
+                    <field name="action_type" />  
+                    <field name="mode" />  
+                    <field name="period_type"/>
+                    <field name="move_type"  />                      
+                    <field name="concept_id" />  
+                    <field name="employee_id" />  
+                    <field name="amount" />                       
+                    <field name="user_id" />  
+                    <field name="state" optional="hide"/>                      
+                    <field name="area_id" optional="hide"/>  
+                    <field name="warehouse_id" optional="hide"/>
+                    <field name="department_id" optional="hide"/>
+                    <field name="job_id" optional="hide"/>                                                            
+                    <field name="create_date" string="Creado el" />
+                    <field name="company_id" readonly="1" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="pabs_eleanor_move_binnacle_action" model="ir.actions.act_window">
+            <field name="name">Bitácora de movimientos</field>
+            <field name="res_model">pabs.eleanor.move.binnacle</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="pabs_eleanor_move_binnacle_tree_view"/>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('pabs_eleanor_move_binnacle_tree_view')}),]"/>            
+        </record> 
+
+        <!-- BARRA DE BUSQUEDA  -->
+        <record id="pabs_eleanor_move_binnacle_search_view" model="ir.ui.view" >
+            <field name="name">pabs.eleanor.move.binnacle.search.view</field>
+            <field name="model">pabs.eleanor.move.binnacle</field>
+            <field name="arch" type="xml">
+                <search>
+                    <!-- Filtros -->
+                    <field name="period_type"/>
+                    <field name="employee_id"/>
+                    <field name="concept_id"/>
+                    <field name="user_id"/>
+                </search>
+            </field>
+        </record>
+                       
+        <menuitem id="pabs_eleanor_move_binnacle_menu" 
+        name="Bitácora de movimientos" 
+        parent="pabs_eleanor_move_menu" 
+        action="pabs_eleanor_move_binnacle_action" 
+        sequence="30"/>
+
+    </data>
+</odoo>

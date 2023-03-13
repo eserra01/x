@@ -1,0 +1,36 @@
+<odoo>
+    <data>
+        <record id="pabs_eleanor_concept_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.concept.tree.view</field>
+            <field name="model">pabs.eleanor.concept</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" string="Conceptos">
+                    <field name="name" />
+                    <field name="name2" />
+                    <field name="category_id" options="{'no_open':True, 'no_create':True}"/>
+                    <field name="account_id" options="{'no_open':True, 'no_create':True}"/>
+                    <field name="concept_type" />
+                    <field name="order" options="{'type':'number', 'step':1}"/>
+                    <field name="allow_load" />
+                    <field name="company_id" readonly="1" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+         <record id="pabs_eleanor_concept_action" model="ir.actions.act_window">
+            <field name="name">Conceptos</field>
+            <field name="res_model">pabs.eleanor.concept</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>            
+        </record>
+
+
+        <menuitem id="pabs_eleanor_concept_menu" 
+        name="Conceptos" 
+        parent="pabs_eleanor_config_menu" 
+        action="pabs_eleanor_concept_action" 
+        sequence="30"/>
+
+    </data>
+</odoo>
