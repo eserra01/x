@@ -26,13 +26,6 @@ BASES_ELEANOR = {
     'NUEVO LAREDO NUEVO E': 9,
     'TUXTLA GUTIERREZ': 11,
     'VILLAHERMOSA': 12
-
-    ### TEST
-    ,'SALTILLO': 6,
-    'MONCLOVA': 7,
-    'NUEVO LAREDO': 9,
-    'TUXTLA GUTIERREZ': 11,
-    'VILLAHERMOSA': 12
 }
 
 class PabsEleanorMigrationLog(models.Model):
@@ -43,6 +36,7 @@ class PabsEleanorMigrationLog(models.Model):
     tabla = fields.Char(string="Tabla")
     registro = fields.Char(string="Registro")
     mensaje = fields.Char(string="Mensaje")
+    company_id = fields.Many2one(comodel_name="res.company",string="Compañia",default=lambda self: self.env.company, copy=True, required=True,)
 
     # log_obj = self.env['pabs.eleanor.migration.log']
 
@@ -646,10 +640,23 @@ class PabsEleanorMigration(models.TransientModel):
 
                 for exi in coincidencias_codigo:
                     
-                    # Quitar espacios extra
+                    ### Quitar espacios extra
                     nombre = " ".join(exi.first_name.split()).upper()
                     apellido = " ".join(exi.last_name.split()).upper()
 
+                    ### Quitar acentos
+                    nombre = nombre.replace('Á', 'A')
+                    nombre = nombre.replace('É', 'E')
+                    nombre = nombre.replace('Í', 'I')
+                    nombre = nombre.replace('Ó', 'O')
+                    nombre = nombre.replace('Ú', 'U')
+
+                    apellido = apellido.replace('Á', 'A')
+                    apellido = apellido.replace('É', 'E')
+                    apellido = apellido.replace('Í', 'I')
+                    apellido = apellido.replace('Ó', 'O')
+                    apellido = apellido.replace('Ú', 'U')
+                    
                     nombre_apellidos = "{} {}".format(nombre, apellido)
                     apellidos_nombre = "{} {}".format(apellido, nombre)
                     

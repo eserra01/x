@@ -58,9 +58,16 @@
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
-        <record model="ir.rule" id="pabs_eleanor_move_binnacle_company_rule">
+    <record model="ir.rule" id="pabs_eleanor_move_binnacle_company_rule">
         <field name="name">Bitacora de movimientos por compañia</field>
         <field name="model_id" ref="model_pabs_eleanor_move_binnacle"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record model="ir.rule" id="pabs_eleanor_migration_company_rule">
+        <field name="name">Log de migracion por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_migration_log"/>
         <field name="domain_force">[('company_id', 'in', company_ids)]</field>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>

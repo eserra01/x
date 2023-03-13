@@ -40,6 +40,7 @@
         'views/pabs_eleanor_concept_view.xml',
         'views/pabs_eleanor_period_view.xml',
         'views/pabs_eleanor_move_view.xml',
+        'views/pabs_eleanor_migration_view.xml',
         'reports/pabs_eleanor_move_detail_xlsx_report_view.xml',
         'reports/pabs_eleanor_move_resume_xlsx_report_view.xml',
         'reports/pabs_eleanor_move_resume_acc_xlsx_report_view.xml',

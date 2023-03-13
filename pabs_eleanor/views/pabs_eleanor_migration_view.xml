@@ -1,0 +1,31 @@
+<odoo>
+    <data>
+        <record id="pabs_eleanor_migration_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.migration.tree.view</field>
+            <field name="model">pabs.eleanor.migration.log</field>
+            <field name="arch" type="xml">
+                <tree create="0" edit="0">
+                    <field name="tabla"/>
+                    <field name="registro"/>
+                    <field name="mensaje"/>
+                </tree>
+            </field>
+        </record>
+
+         <record id="pabs_eleanor_migration_action" model="ir.actions.act_window">
+            <field name="name">Log de migracion</field>
+            <field name="res_model">pabs.eleanor.migration.log</field>
+            <field name="view_mode">tree</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>            
+        </record>
+
+
+        <menuitem id="pabs_eleanor_migration_menu" 
+        name="Log de migracion" 
+        parent="pabs_eleanor_config_menu" 
+        action="pabs_eleanor_migration_action" 
+        sequence="100"/>
+
+    </data>
+</odoo>
