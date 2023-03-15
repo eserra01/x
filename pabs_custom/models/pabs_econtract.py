@@ -816,245 +816,244 @@ class PABSElectronicContracts(models.TransientModel):
         ### Iterar en cada afiliacion ###
         cantidad_afiliaciones = len(array_afiliaciones)
         for index, afi in enumerate(array_afiliaciones, 1):
-
-            numero_de_contrato = "{}{}".format(afi['serie'], afi['contrato'])
-            _logger.info("{} de {}. {}".format(index, cantidad_afiliaciones, numero_de_contrato))
-
-            ### Buscar contrato ###
-            contrato = contract_obj.search([
-                ('company_id', '=', company_id),
-                '|', ('name', '=', numero_de_contrato),
-                ('lot_id.name', '=', numero_de_contrato)
-            ])
-
-            if not contrato:
-                msj = "No se encontró el contrato"
-                _logger.info(msj)
-                if solicitud:
-                    return {"error": msj}
-                else:
-                    continue
-
-            ### Construir diccionario con datos a actualizar ###
-            actualizar = {}
-
-            if afi['afiliado_nombre'] != contrato.partner_name:
-                actualizar.update({'partner_name': afi['afiliado_nombre']})
-
-            if afi['afiliado_apellidoPaterno'] != contrato.partner_fname:
-                actualizar.update({'partner_fname': afi['afiliado_apellidoPaterno']})
-
-            if afi['afiliado_apellidoMaterno'] != contrato.partner_mname:
-                actualizar.update({'partner_mname': afi['afiliado_apellidoMaterno']})
-
-            if fields.Date.to_date(afi['afiliado_fechaNacimiento']) != contrato.birthdate:
-                actualizar.update({'birthdate': afi['afiliado_fechaNacimiento']})
-
-            if afi['afiliado_telefono'] != contrato.phone_toll:
-                actualizar.update({'phone_toll': afi['afiliado_telefono']})
-
-            if afi['afiliado_email'] != contrato.client_email:
-                actualizar.update({'client_email': afi['afiliado_email']})
-
-            ### Domicilio de casa ###
-            if afi['domCasa_Calle'] != contrato.street_name:
-                actualizar.update({'street_name': afi['domCasa_Calle']})
-
-            casa_num = ""
-            if len(afi['domCasa_numInt']) > 0:
-                casa_num = "{} - {}".format(afi['domCasa_numExt'], afi['domCasa_numInt'])
-            else:
-                casa_num = afi['domCasa_numExt']
-
-            if casa_num != contrato.street_number:
-                actualizar.update({'street_number': casa_num})
-
-            if afi['domCasa_EntreCalles'] != contrato.between_streets:
-                actualizar.update({'between_streets': afi['domCasa_EntreCalles']})
-
-            # Buscar municipio casa. Si no existe crear
-            if afi['domCasa_Municipio']:
-                nombre = afi['domCasa_Municipio']
-                municipio = municipality_obj.search([
-                    ('company_id', '=', company_id),
-                    ('name', '=', nombre)
-                ], limit = 1)
-
-                # Si no existe el municipio, crearlo. Tomar los otros datos del primer registro
-                if not municipio:
-                    mun = municipality_obj.search([('company_id', '=', company_id)], limit = 1)
-
-                    if not mun:
-                        msj = "No existen municipios"
-                        _logger.error(msj)
-                        if solicitud:
-                            return {"error": msj}
-                        else:
-                            return
-
-                    id_municipio = municipality_obj.create({
-                        'name': nombre,
-                        'country_id': mun.country_id.id,
-                        'state_id': mun.state_id.id,
-                        'company_id': company_id
-                    }).id
-
-                    _logger.info("Se crea municipio de casa {}".format(nombre))
-                else:
-                    id_municipio = municipio.id
-
-            if id_municipio == 0:
-                msj = "No se pudo obtener el municipio de casa"
-                _logger.error(msj)
-                if solicitud:
-                    return {"error": msj}
-                else:
-                    continue
-
-            if id_municipio != contrato.municipality_id.id:
-                actualizar.update({'municipality_id': id_municipio})
-
-            # Buscar colonia casa. Si no existe crear #
-            if afi['domCasa_Colonia']:
-                nombre = afi['domCasa_Colonia']
-                colonia = colonia_obj.search([
-                    ('company_id', '=', company_id),
-                    ('name', '=', nombre),
-                    ('municipality_id', '=', id_municipio)
-                ], limit = 1)
-
-                # Si no existe la colonia, crearla
-                if not afi['domCasa_codigoPostal']:
-                    msj = "No se definió el codigo postal de la colonia de casa"
-                    _logger.error(msj)
-                    if solicitud:
-                        return {"error": msj}
-                    else:
-                        continue
-
-                if not colonia:
-                    id_colonia = colonia_obj.create({
-                        'name': nombre,
-                        'municipality_id': id_municipio,
-                        'company_id': company_id,
-                        'zip_code': afi['domCasa_codigoPostal']
-                    }).id
-
-                    _logger.info("Se crea colonia de casa {}".format(nombre))
-                else:
-                    id_colonia = colonia.id
-
-            if id_colonia == 0:
-                msj = "No se pudo obtener la colonia de casa"
-                _logger.error(msj)
-                if solicitud:
-                    return {"error": msj}
-                else:
-                    continue
-
-            if id_colonia != contrato.neighborhood_id.id:
-                actualizar.update({'neighborhood_id': id_colonia, 'zip_code': afi['domCasa_codigoPostal']})
-
-            ### Domicilio de cobro ###
-            if afi['domCobro_Calle'] != contrato.street_name_toll:
-                actualizar.update({'street_name_toll': afi['domCobro_Calle']})
-
-            cobro_num = ""
-            if len(afi['domCobro_numInt']) > 0:
-                cobro_num = "{} - {}".format(afi['domCobro_numExt'], afi['domCobro_numInt'])
-            else:
-                cobro_num = afi['domCobro_numExt']
-
-            if cobro_num != contrato.street_number_toll:
-                actualizar.update({'street_number_toll': cobro_num})
-
-            if afi['domCobro_entreClles'] != contrato.between_streets_toll:
-                actualizar.update({'between_streets_toll': afi['domCobro_entreClles']})
-
-            # Buscar municipio cobro. Si no existe crear
-            if afi['domCobro_Municipio']:
-                nombre = afi['domCobro_Municipio']
-                municipio = municipality_obj.search([
-                    ('company_id', '=', company_id),
-                    ('name', '=', nombre)
-                ], limit = 1)
-
-                # Si no existe el municipio, crearlo. Tomar los otros datos del primer registro
-                if not municipio:
-                    mun = municipality_obj.search([('company_id', '=', company_id)], limit = 1)
-
-                    if not mun:
-                        msj = "No existen municipios"
-                        _logger.error(msj)
-                        if solicitud:
-                            return {"error": msj}
-                        else:
-                            return
-
-                    id_municipio_cobro = municipality_obj.create({
-                        'name': nombre,
-                        'country_id': mun.country_id.id,
-                        'state_id': mun.state_id.id,
-                        'company_id': company_id
-                    }).id
-
-                    _logger.info("Se crea municipio de cobro {}".format(nombre))
-                else:
-                    id_municipio_cobro = municipio.id
-            
-            if id_municipio_cobro == 0:
-                msj = "No se pudo obtener el municipio de cobro"
-                _logger.error(msj)
-                if solicitud:
-                    return {"error": msj}
-                else:
-                    continue
-
-            if id_municipio_cobro != contrato.toll_municipallity_id.id:
-                actualizar.update({'toll_municipallity_id': id_municipio_cobro})
-            
-            ### Buscar colonia cobro. Si no existe crear ###
-            if afi['domCobro_Colonia']:
-                nombre = afi['domCobro_Colonia']
-                colonia = colonia_obj.search([
-                    ('company_id', '=', company_id),
-                    ('name', '=', nombre),
-                    ('municipality_id', '=', id_municipio_cobro)
-                ], limit = 1)
-
-                # Si no existe la colonia, crearla
-                if not afi['domCobro_codigoPostal']:
-                    msj = "No se definió el codigo postal de la colonia de cobro"
-                    _logger.error(msj)
-                    if solicitud:
-                        return {"error": msj}
-                    else:
-                        continue
-
-                if not colonia:
-                    id_colonia_cobro = colonia_obj.create({
-                        'name': nombre,
-                        'municipality_id': id_municipio,
-                        'company_id': company_id,
-                        'zip_code': afi['domCobro_codigoPostal']
-                    }).id
-
-                    _logger.info("Se crea colonia de cobro {}".format(nombre))
-                else:
-                    id_colonia_cobro = colonia.id
-
-            if id_colonia_cobro == 0:
-                msj = "No se pudo obtener la colonia de cobro"
-                _logger.error(msj)
-                if solicitud:
-                    return {"error": msj}
-                else:
-                    continue
-
-            if id_colonia_cobro != contrato.toll_colony_id.id:
-                actualizar.update({'toll_colony_id': id_colonia_cobro, 'zip_code_toll': afi['domCobro_codigoPostal']})
-
             try:
+                numero_de_contrato = "{}{}".format(afi['serie'], afi['contrato'])
+                _logger.info("{} de {}. {}".format(index, cantidad_afiliaciones, numero_de_contrato))
+
+                ### Buscar contrato ###
+                contrato = contract_obj.search([
+                    ('company_id', '=', company_id),
+                    '|', ('name', '=', numero_de_contrato),
+                    ('lot_id.name', '=', numero_de_contrato)
+                ])
+
+                if not contrato:
+                    msj = "No se encontró el contrato"
+                    _logger.info(msj)
+                    if solicitud:
+                        return {"error": msj}
+                    else:
+                        continue
+
+                ### Construir diccionario con datos a actualizar ###
+                actualizar = {}
+
+                if afi['afiliado_nombre'] != contrato.partner_name:
+                    actualizar.update({'partner_name': afi['afiliado_nombre']})
+
+                if afi['afiliado_apellidoPaterno'] != contrato.partner_fname:
+                    actualizar.update({'partner_fname': afi['afiliado_apellidoPaterno']})
+
+                if afi['afiliado_apellidoMaterno'] != contrato.partner_mname:
+                    actualizar.update({'partner_mname': afi['afiliado_apellidoMaterno']})
+
+                if fields.Date.to_date(afi['afiliado_fechaNacimiento']) != contrato.birthdate:
+                    actualizar.update({'birthdate': afi['afiliado_fechaNacimiento']})
+
+                if afi['afiliado_telefono'] != contrato.phone_toll:
+                    actualizar.update({'phone_toll': afi['afiliado_telefono']})
+
+                if afi['afiliado_email'] != contrato.client_email:
+                    actualizar.update({'client_email': afi['afiliado_email']})
+
+                ### Domicilio de casa ###
+                if afi['domCasa_Calle'] != contrato.street_name:
+                    actualizar.update({'street_name': afi['domCasa_Calle']})
+
+                casa_num = ""
+                if len(afi['domCasa_numInt']) > 0:
+                    casa_num = "{} - {}".format(afi['domCasa_numExt'], afi['domCasa_numInt'])
+                else:
+                    casa_num = afi['domCasa_numExt']
+
+                if casa_num != contrato.street_number:
+                    actualizar.update({'street_number': casa_num})
+
+                if afi['domCasa_EntreCalles'] != contrato.between_streets:
+                    actualizar.update({'between_streets': afi['domCasa_EntreCalles']})
+
+                # Buscar municipio casa. Si no existe crear
+                if afi['domCasa_Municipio']:
+                    nombre = afi['domCasa_Municipio']
+                    municipio = municipality_obj.search([
+                        ('company_id', '=', company_id),
+                        ('name', '=', nombre)
+                    ], limit = 1)
+
+                    # Si no existe el municipio, crearlo. Tomar los otros datos del primer registro
+                    if not municipio:
+                        mun = municipality_obj.search([('company_id', '=', company_id)], limit = 1)
+
+                        if not mun:
+                            msj = "No existen municipios"
+                            _logger.error(msj)
+                            if solicitud:
+                                return {"error": msj}
+                            else:
+                                return
+
+                        id_municipio = municipality_obj.create({
+                            'name': nombre,
+                            'country_id': mun.country_id.id,
+                            'state_id': mun.state_id.id,
+                            'company_id': company_id
+                        }).id
+
+                        _logger.info("Se crea municipio de casa {}".format(nombre))
+                    else:
+                        id_municipio = municipio.id
+
+                if id_municipio == 0:
+                    msj = "No se pudo obtener el municipio de casa"
+                    _logger.error(msj)
+                    if solicitud:
+                        return {"error": msj}
+                    else:
+                        continue
+
+                if id_municipio != contrato.municipality_id.id:
+                    actualizar.update({'municipality_id': id_municipio})
+
+                # Buscar colonia casa. Si no existe crear #
+                if afi['domCasa_Colonia']:
+                    nombre = afi['domCasa_Colonia']
+                    colonia = colonia_obj.search([
+                        ('company_id', '=', company_id),
+                        ('name', '=', nombre),
+                        ('municipality_id', '=', id_municipio)
+                    ], limit = 1)
+
+                    # Si no existe la colonia, crearla
+                    if not afi['domCasa_codigoPostal']:
+                        msj = "No se definió el codigo postal de la colonia de casa"
+                        _logger.error(msj)
+                        if solicitud:
+                            return {"error": msj}
+                        else:
+                            continue
+
+                    if not colonia:
+                        id_colonia = colonia_obj.create({
+                            'name': nombre,
+                            'municipality_id': id_municipio,
+                            'company_id': company_id,
+                            'zip_code': afi['domCasa_codigoPostal']
+                        }).id
+
+                        _logger.info("Se crea colonia de casa {}".format(nombre))
+                    else:
+                        id_colonia = colonia.id
+
+                if id_colonia == 0:
+                    msj = "No se pudo obtener la colonia de casa"
+                    _logger.error(msj)
+                    if solicitud:
+                        return {"error": msj}
+                    else:
+                        continue
+
+                if id_colonia != contrato.neighborhood_id.id:
+                    actualizar.update({'neighborhood_id': id_colonia, 'zip_code': afi['domCasa_codigoPostal']})
+
+                ### Domicilio de cobro ###
+                if afi['domCobro_Calle'] != contrato.street_name_toll:
+                    actualizar.update({'street_name_toll': afi['domCobro_Calle']})
+
+                cobro_num = ""
+                if len(afi['domCobro_numInt']) > 0:
+                    cobro_num = "{} - {}".format(afi['domCobro_numExt'], afi['domCobro_numInt'])
+                else:
+                    cobro_num = afi['domCobro_numExt']
+
+                if cobro_num != contrato.street_number_toll:
+                    actualizar.update({'street_number_toll': cobro_num})
+
+                if afi['domCobro_entreClles'] != contrato.between_streets_toll:
+                    actualizar.update({'between_streets_toll': afi['domCobro_entreClles']})
+
+                # Buscar municipio cobro. Si no existe crear
+                if afi['domCobro_Municipio']:
+                    nombre = afi['domCobro_Municipio']
+                    municipio = municipality_obj.search([
+                        ('company_id', '=', company_id),
+                        ('name', '=', nombre)
+                    ], limit = 1)
+
+                    # Si no existe el municipio, crearlo. Tomar los otros datos del primer registro
+                    if not municipio:
+                        mun = municipality_obj.search([('company_id', '=', company_id)], limit = 1)
+
+                        if not mun:
+                            msj = "No existen municipios"
+                            _logger.error(msj)
+                            if solicitud:
+                                return {"error": msj}
+                            else:
+                                return
+
+                        id_municipio_cobro = municipality_obj.create({
+                            'name': nombre,
+                            'country_id': mun.country_id.id,
+                            'state_id': mun.state_id.id,
+                            'company_id': company_id
+                        }).id
+
+                        _logger.info("Se crea municipio de cobro {}".format(nombre))
+                    else:
+                        id_municipio_cobro = municipio.id
+                
+                if id_municipio_cobro == 0:
+                    msj = "No se pudo obtener el municipio de cobro"
+                    _logger.error(msj)
+                    if solicitud:
+                        return {"error": msj}
+                    else:
+                        continue
+
+                if id_municipio_cobro != contrato.toll_municipallity_id.id:
+                    actualizar.update({'toll_municipallity_id': id_municipio_cobro})
+                
+                ### Buscar colonia cobro. Si no existe crear ###
+                if afi['domCobro_Colonia']:
+                    nombre = afi['domCobro_Colonia']
+                    colonia = colonia_obj.search([
+                        ('company_id', '=', company_id),
+                        ('name', '=', nombre),
+                        ('municipality_id', '=', id_municipio_cobro)
+                    ], limit = 1)
+
+                    # Si no existe la colonia, crearla
+                    if not afi['domCobro_codigoPostal']:
+                        msj = "No se definió el codigo postal de la colonia de cobro"
+                        _logger.error(msj)
+                        if solicitud:
+                            return {"error": msj}
+                        else:
+                            continue
+
+                    if not colonia:
+                        id_colonia_cobro = colonia_obj.create({
+                            'name': nombre,
+                            'municipality_id': id_municipio,
+                            'company_id': company_id,
+                            'zip_code': afi['domCobro_codigoPostal']
+                        }).id
+
+                        _logger.info("Se crea colonia de cobro {}".format(nombre))
+                    else:
+                        id_colonia_cobro = colonia.id
+
+                if id_colonia_cobro == 0:
+                    msj = "No se pudo obtener la colonia de cobro"
+                    _logger.error(msj)
+                    if solicitud:
+                        return {"error": msj}
+                    else:
+                        continue
+
+                if id_colonia_cobro != contrato.toll_colony_id.id:
+                    actualizar.update({'toll_colony_id': id_colonia_cobro, 'zip_code_toll': afi['domCobro_codigoPostal']})
+
                 ### Actualizar datos en odoo y ecobro###
                 if not actualizar:
                     msj = "No se actualizó porque no hay diferencias"
