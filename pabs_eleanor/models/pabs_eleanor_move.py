@@ -285,13 +285,29 @@ class PabsEleanorMove(models.Model):
             'target': 'main',
             'context': {'period_type': 'all'},
             'domain': "[]"
-        }            
+        }
+    
+    def show_comissions_movs(self):
+        ### Obtener permisos de acceso del usuario ###
+        domain = [
+            ('company_id', '=', self.env.company.id),
+            ('period_type','=','weekly'),
+            ('state','=','open'),
+            ('concept_allow_load','=',False)
+        ]
 
-       
-
-
-
-   
-
-
-
+        name = "Movimientos semanales"
+        period_id = self.get_period('weekly')
+        if period_id:
+            name = "Comisiones semana {}, periodo del {} al {}".format(period_id.week_number, str(period_id.date_start), str(period_id.date_end))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': name,        
+            'res_model': 'pabs.eleanor.move',
+            'view_type': 'form',
+            'view_mode': 'tree',
+            'view_id'      : self.env.ref('pabs_eleanor.pabs_eleanor_comissions_move_tree_view').id,
+            'target': 'main',
+            'context': {'period_type': 'weekly'},
+            'domain': domain
+        }

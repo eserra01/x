@@ -48,7 +48,7 @@
             <field name="view_id" ref="pabs_eleanor_weekly_move_tree_view"/>
              <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('pabs_eleanor_weekly_move_tree_view')}),]"/>
-            <field name="domain">[('period_type','=','weekly'),('state','=','open'),('concept_allow_load','=',True)]</field>
+            <field name="domain">[]s</field>
             <field name="context">{'period_type':'weekly'}</field>            
         </record>
 
@@ -169,6 +169,58 @@
         parent="pabs_eleanor_move_menu" 
         action="pabs_eleanor_all_move_server_action" 
         sequence="40"/>
+
+        <!-- VISTA PARA ELIMINACION DE COMISIONES (SOLO ADMINISTRADOR) -->
+        <record id="pabs_eleanor_comissions_move_tree_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.comissions.move.tree.view</field>
+            <field name="model">pabs.eleanor.move</field>
+            <field name="arch" type="xml">
+                <tree string="Movimientos (Comisiones)" create="0" edit="0">
+                    <field name="id" invisible="1"/>                      
+                    <field name="period_type"/>
+                    <field name="week_number"/>
+                    <field name="date_start"/>
+                    <field name="move_type" attrs="{'readonly':[('id','!=',False)]}" />                      
+                    <field name="concept_id" options="{'no_open':True, 'no_create':True}" attrs="{'readonly':[('id','!=',False)]}"/>  
+                    <field name="employee_id" options="{'no_open':True, 'no_create':True}" attrs="{'readonly':[('id','!=',False)]}"/>  
+                    <field name="amount"/>                     
+                    <field name="area_id" attrs="{'readonly':[('id','!=',False)]}" optional="hide"/>  
+                    <field name="warehouse_id" attrs="{'readonly':[('id','!=',False)]}" optional="hide"/>
+                    <field name="department_id" attrs="{'readonly':[('id','!=',False)]}" optional="hide"/>
+                    <field name="job_id" attrs="{'readonly':[('id','!=',False)]}" optional="hide"/>                                                            
+                    <field name="state" optional="hide"/>                      
+                    <field name="create_uid" string="Creado por" readonly="1" optional="hide"/>  
+                    <field name="create_date" string="Creado el" readonly="1" optional="hide"/>
+                    <field name="company_id" readonly="1" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="pabs_eleanor_comissions_move_action" model="ir.actions.act_window">
+            <field name="name">Movimientos</field>
+            <field name="res_model">pabs.eleanor.move</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="pabs_eleanor_comissions_move_tree_view"/>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('pabs_eleanor_comissions_move_tree_view')}),]"/>
+            <field name="domain">[]</field>
+            <field name="context">{'period_type':'weekly'}</field>            
+        </record> 
+        
+
+        <record id="pabs_eleanor_comissions_move_server_action" model="ir.actions.server">
+            <field name="name">Movimientos</field>
+            <field name="model_id" ref="model_pabs_eleanor_move"/>
+            <field name="binding_model_id" ref="model_pabs_eleanor_move"/>            
+            <field name="state">code</field>
+            <field name="code">action=model.show_comissions_movs()</field>
+        </record>
+
+        <menuitem id="pabs_eleanor_comissions_move_menu" 
+        name="Movimientos (Comisiones)" 
+        parent="pabs_eleanor_config_menu" 
+        action="pabs_eleanor_comissions_move_server_action" 
+        sequence="90"/>
 
     </data>
 </odoo>

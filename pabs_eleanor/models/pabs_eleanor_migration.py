@@ -644,7 +644,7 @@ class PabsEleanorMigration(models.TransientModel):
                     nombre = " ".join(exi.first_name.split()).upper()
                     apellido = " ".join(exi.last_name.split()).upper()
 
-                    ### Quitar acentos
+                    ### Quitar acentos (En la consulta hacia Eleanor se aplicaron los mismos reemplazos)
                     nombre = nombre.replace('Á', 'A')
                     nombre = nombre.replace('É', 'E')
                     nombre = nombre.replace('Í', 'I')
@@ -1574,7 +1574,7 @@ class PabsEleanorMigration(models.TransientModel):
                     detener = True
                     continue
 
-            ### Arreglo de nuevos conceptos
+            ### Arreglo de nuevos movimientos
             nuevos_movimientos.append({
                 'period_id': per.id,
                 'move_type': mov['tipo'],

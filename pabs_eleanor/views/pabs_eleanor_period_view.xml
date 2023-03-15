@@ -13,7 +13,9 @@
                     <field name="company_id" readonly="1" optional="hide" attrs="{'readonly':[('state','=','close')]}" force_save="1"/>
                     <button class="btn btn-primary" name="close_period" type="object" string="Cerrar periodo" 
                     attrs="{'invisible':[('state','=','close')]}" 
-                    confirm="Esta acción cerrará el periodo seleccionado, de click en Aceptar para continuar ..."/> 
+                    confirm="Esta acción cerrará el periodo seleccionado, de click en Aceptar para continuar ..."/>
+                    <button class="btn btn-secondary" name="CargarComisiones" type="object" string="Cargar comisiones" 
+                    attrs="{'invisible':['|', ('state','=','close'), ('period_type','!=','weekly')]}"/>
                 </tree>
             </field>
         </record>
@@ -23,7 +25,7 @@
             <field name="res_model">pabs.eleanor.period</field>
             <field name="view_mode">tree</field>
             <field name="domain">[]</field>
-            <field name="context">{}</field>            
+            <field name="context">{'search_default_state':'open'}</field>            
         </record>
 
         <!-- BARRA DE BUSQUEDA  -->

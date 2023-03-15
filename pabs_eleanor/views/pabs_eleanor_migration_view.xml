@@ -8,6 +8,7 @@
                     <field name="tabla"/>
                     <field name="registro"/>
                     <field name="mensaje"/>
+                    <field name="create_date"/>
                 </tree>
             </field>
         </record>
