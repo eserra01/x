@@ -1052,7 +1052,7 @@ class PABSElectronicContracts(models.TransientModel):
                     continue
 
             if id_colonia_cobro != contrato.toll_colony_id.id:
-                actualizar.update({'toll_colony_id': id_colonia_cobro, 'zip_code_toll': afi['domCasa_codigoPostal']})
+                actualizar.update({'toll_colony_id': id_colonia_cobro, 'zip_code_toll': afi['domCobro_codigoPostal']})
 
             try:
                 ### Actualizar datos en odoo y ecobro###
