@@ -20,11 +20,14 @@
         </record>
 
 
-        <menuitem id="pabs_eleanor_concept_category_menu" 
-        name="Categorías de conceptos" 
-        parent="pabs_eleanor_config_menu" 
-        action="pabs_eleanor_concept_category_action" 
-        sequence="20"/>
+        <menuitem 
+            id="pabs_eleanor_concept_category_menu" 
+            name="Categorías de conceptos" 
+            parent="pabs_eleanor_config_menu" 
+            action="pabs_eleanor_concept_category_action" 
+            sequence="20"
+            groups="pabs_eleanor_admin"
+        />
 
     </data>
 </odoo>

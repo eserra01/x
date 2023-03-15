@@ -42,5 +42,7 @@
         name="Resúmen de cuentas contables" 
         parent="pabs_eleanor_report_menu" 
         action="action_eleanor_move_resume_acc_report_action" 
-        sequence="40"/>
+        sequence="40"
+        groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente"
+        />
 </odoo>

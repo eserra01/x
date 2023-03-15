@@ -38,9 +38,12 @@
         attachment_use="False" 
     />   
 
-    <menuitem id="pabs_eleanor_move_resume_menu" 
+    <menuitem 
+        id="pabs_eleanor_move_resume_menu" 
         name="Resúmen de movimientos" 
         parent="pabs_eleanor_report_menu" 
         action="action_eleanor_move_resume_report_action" 
-        sequence="30"/>
+        sequence="30"
+        groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente"
+    />
 </odoo>

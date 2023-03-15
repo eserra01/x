@@ -25,11 +25,14 @@
         </record>
 
 
-        <menuitem id="pabs_eleanor_user_acccess_menu" 
-        name="Permisos de acceso" 
-        parent="pabs_eleanor_config_menu" 
-        action="pabs_eleanor_user_access_action" 
-        sequence="60"/>
+        <menuitem 
+            id="pabs_eleanor_user_acccess_menu" 
+            name="Permisos de acceso" 
+            parent="pabs_eleanor_config_menu" 
+            action="pabs_eleanor_user_access_action" 
+            sequence="60"
+            groups="pabs_eleanor_admin"
+        />
 
     </data>
 </odoo>

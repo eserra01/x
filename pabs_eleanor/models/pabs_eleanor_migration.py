@@ -1596,3 +1596,258 @@ class PabsEleanorMigration(models.TransientModel):
             mov_obj.with_context(migration=True).create(nuevos_movimientos)
 
             _logger.info("Movimientos creados: {}".format(len(nuevos_movimientos)))
+
+################################################################################
+    def MigrarAdjuntos(self, limite):
+        _logger.info("Comienza migración de archivos adjuntos. LIMITE {}".format(limite))
+
+        id_compania = self.env.company.id
+        log_obj = self.env['pabs.eleanor.migration.log']
+        adj_obj = self.env['ir.attachment']
+
+        creados = 0
+        no_creados = 0
+
+        ### Migrar adjuntos de empleados ###
+        consulta = """
+            SELECT 
+                emp.id as id_empleado,
+                emp.barcode,
+                emp.name,
+                CASE
+                    WHEN per.id IS NULL THEN emp.personal_file_name
+                    ELSE ''
+                END as personal_file_name,
+                '' as constancy_up_name
+            FROM hr_employee AS emp
+            LEFT JOIN ir_attachment AS per ON emp.id = per.res_id AND per.res_model = 'hr.employee' AND per.res_field = 'personal_file_file'
+                WHERE (emp.personal_file_name IS NOT NULL AND emp.personal_file_name != '' )
+                AND per.id IS NULL
+                AND emp.company_id = {}
+            UNION SELECT 
+                emp.id as id_empleado,
+                emp.barcode,
+                emp.name,
+                '' as personal_file_name,
+                CASE
+                    WHEN con.id IS NULL THEN emp.constancy_up_name
+                    ELSE ''
+                END as constancy_up_name
+            FROM hr_employee AS emp
+            LEFT JOIN ir_attachment AS con ON emp.id = con.res_id AND con.res_model = 'hr.employee' AND con.res_field = 'constancy_up_file'
+                WHERE (emp.constancy_up_name IS NOT NULL AND emp.constancy_up_name != '')
+                AND (con.id IS NULL)
+                AND emp.company_id = {}
+            ORDER BY barcode
+        """.format(id_compania, id_compania)
+
+        self.env.cr.execute(consulta)
+
+        empleados = []
+        for res in self.env.cr.fetchall():
+            empleados.append({
+                'id_empleado': res[0],
+                'barcode': res[1],
+                'name': res[2],
+                'personal_file_name': res[3],
+                'constancy_up_name': res[4]
+            })
+
+        cantidad_empleados = len(empleados)
+
+        _logger.info("Expedientes y constancias: {}".format(cantidad_empleados))
+        for index, emp in enumerate(empleados, 1):
+            if creados >= limite:
+                _logger.info("Limite alcanzado")
+                break
+
+
+            hubo_carga = False
+            if emp['personal_file_name']:
+                _logger.info("{} de {}. Expediente - {} {}".format(index, cantidad_empleados, emp['barcode'], emp['name']))
+                url = "http://52.27.95.193/api/adjunto?nombre={}".format(emp['personal_file_name'])
+                
+                respuesta = requests.get(url)
+
+                if respuesta.text != "0":
+                    archivo = respuesta.text
+                    adj_obj.create({
+                        'name': 'personal_file_file',
+                        'type': 'binary',
+                        'datas': archivo,
+                        'res_model': 'hr.employee',
+                        'res_field': 'personal_file_file',
+                        'res_id': emp['id_empleado'],
+                        'company_id': id_compania
+                    })
+                    hubo_carga = True
+                else:
+                    log_obj.create([{
+                        'tabla': 'Adjuntos', 
+                        'registro': "{} - expediente".format(emp['barcode'], ), 
+                        'mensaje': "No se encontró el archivo {}".format(emp['personal_file_name'])
+                    }])
+                    no_creados = no_creados + 1
+
+            if emp['constancy_up_name']:
+                _logger.info("{} de {}. Constancia - {} {}".format(index, cantidad_empleados, emp['barcode'], emp['name']))
+                url = "http://52.27.95.193/api/adjunto?nombre={}".format(emp['constancy_up_name'])
+                
+                respuesta = requests.get(url)
+
+                if respuesta.text != "0":
+                    archivo = respuesta.text
+                    adj_obj.create({
+                        'name': 'constancy_up_file',
+                        'type': 'binary',
+                        'datas': archivo,
+                        'res_model': 'hr.employee',
+                        'res_field': 'constancy_up_file',
+                        'res_id': emp['id_empleado'],
+                        'company_id': id_compania
+                    })
+                    hubo_carga = True
+                else:
+                    log_obj.create([{
+                        'tabla': 'Adjuntos', 
+                        'registro': "{} - constancia".format(emp['barcode'], ), 
+                        'mensaje': "No se encontró el archivo {}".format(emp['constancy_up_name'])
+                    }])
+                    no_creados = no_creados + 1
+
+            if hubo_carga:
+                creados = creados + 1
+
+        ### Migrar adjuntos de cambios de estatus ###
+        consulta = """
+            SELECT 
+                cam.id as id_cambio,	
+                emp.barcode,
+                emp.name,
+                CASE
+                    WHEN adj.id IS NULL THEN cam.attachment_name
+                    ELSE ''
+                END as attachment_name
+            FROM hr_employee AS emp
+            INNER JOIN pabs_eleanor_status_log AS cam ON emp.id = cam.employee_id
+            LEFT JOIN ir_attachment AS adj ON cam.id = adj.res_id AND adj.res_model = 'pabs.eleanor.status.log' AND adj.res_field = 'attachment_file'
+                WHERE (cam.attachment_name IS NOT NULL AND cam.attachment_name != '')
+                AND adj.id IS NULL
+                AND emp.company_id = {}
+                    ORDER BY emp.barcode
+        """.format(id_compania)
+
+        self.env.cr.execute(consulta)
+
+        cambios = []
+        for res in self.env.cr.fetchall():
+            cambios.append({
+                'id_cambio': res[0],
+                'barcode': res[1],
+                'name': res[2],
+                'attachment_name': res[3]
+            })
+
+        cantidad_cambios = len(cambios)
+
+        _logger.info("Adjuntos de cambios: {}".format(cantidad_cambios))
+        for index, cam in enumerate(cambios, 1):
+            if creados >= limite:
+                _logger.info("Limite alcanzado")
+                break
+
+            _logger.info("{} de {}. {} {}".format(index, cantidad_cambios, cam['barcode'], cam['name']))
+        
+            if cam['attachment_name']:
+                _logger.info("Cambios de estatus")
+                url = "http://52.27.95.193/api/adjunto?nombre={}".format(cam['attachment_name'])
+                
+                respuesta = requests.get(url)
+
+                if respuesta.text != "0":
+                    archivo = respuesta.text
+                    adj_obj.create({
+                        'name': 'attachment_file',
+                        'type': 'binary',
+                        'datas': archivo,
+                        'res_model': 'pabs.eleanor.status.log',
+                        'res_field': 'attachment_file',
+                        'res_id': cam['id_cambio'],
+                        'company_id': id_compania
+                    })
+                    creados = creados + 1
+                else:
+                    log_obj.create([{
+                        'tabla': 'Adjuntos', 
+                        'registro': "{} - cambios de estatus".format(cam['barcode'], ), 
+                        'mensaje': "No se encontró el archivo {}".format(cam['attachment_name'])
+                    }])
+                    no_creados = no_creados + 1
+
+        ### Migrar adjuntos de incapacidades ###
+        consulta = """
+            SELECT 
+                inc.id as id_incapacidad,
+                emp.barcode,
+                emp.name,
+                CASE
+                    WHEN adj.id IS NULL THEN inc.attachment_name
+                    ELSE ''
+                END as attachment_name
+            FROM hr_employee AS emp
+            INNER JOIN pabs_eleanor_inability AS inc ON emp.id = inc.employee_id
+            LEFT JOIN ir_attachment AS adj ON inc.id = adj.res_id AND adj.res_model = 'pabs.eleanor.inability' AND adj.res_field = 'attachment_file'
+                WHERE (inc.attachment_name IS NOT NULL AND inc.attachment_name != '')
+                AND adj.id IS NULL
+                AND emp.company_id = {}
+                    ORDER BY emp.barcode
+        """.format(id_compania)
+
+        self.env.cr.execute(consulta)
+
+        incapacidades = []
+        for res in self.env.cr.fetchall():
+            incapacidades.append({
+                'id_incapacidad': res[0],
+                'barcode': res[1],
+                'name': res[2],
+                'attachment_name': res[3]
+            })
+
+        cantidad_incapacidades = len(incapacidades)
+
+        _logger.info("Adjuntos de incapacidades {}".format(cantidad_incapacidades))
+        for index, inc in enumerate(incapacidades, 1):
+            if creados >= limite:
+                _logger.info("Limite alcanzado")
+                break
+
+            _logger.info("{} de {}. {} {}".format(index, cantidad_incapacidades, inc['barcode'], inc['name']))
+        
+            if inc['attachment_name']:
+                _logger.info("Incapacidad")
+                url = "http://52.27.95.193/api/adjunto?nombre={}".format(inc['attachment_name'])
+                
+                respuesta = requests.get(url)
+
+                if respuesta.text != "0":
+                    archivo = respuesta.text
+                    adj_obj.create({
+                        'name': 'attachment_file',
+                        'type': 'binary',
+                        'datas': archivo,
+                        'res_model': 'pabs.eleanor.inability',
+                        'res_field': 'attachment_file',
+                        'res_id': inc['id_incapacidad'],
+                        'company_id': id_compania
+                    })
+                    creados = creados + 1
+                else:
+                    log_obj.create([{
+                        'tabla': 'Adjuntos', 
+                        'registro': "{} - incapacidad".format(inc['barcode'], ), 
+                        'mensaje': "No se encontró el archivo {}".format(inc['attachment_name'])
+                    }])
+                    no_creados = no_creados + 1
+
+        _logger.info("Adjuntos >>> Creados: {}. No creados :{}".format(creados, no_creados))

@@ -28,11 +28,14 @@
         </record>
 
 
-        <menuitem id="pabs_eleanor_ema_menu" 
-        name="EMA" 
-        parent="pabs_eleanor_cofiplem_menu" 
-        action="pabs_eleanor_ema_action" 
-        sequence="20"/>
+        <menuitem 
+            id="pabs_eleanor_ema_menu" 
+            name="EMA" 
+            parent="pabs_eleanor_cofiplem_menu" 
+            action="pabs_eleanor_ema_action" 
+            sequence="20"
+            groups="pabs_eleanor_admin,pabs_eleanor_cofiplem"
+        />
 
     </data>
 </odoo>

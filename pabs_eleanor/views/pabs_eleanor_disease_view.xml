@@ -20,11 +20,14 @@
         </record>
 
 
-        <menuitem id="pabs_eleanor_disease_menu" 
-        name="Enfermedades" 
-        parent="pabs_eleanor_config_menu" 
-        action="pabs_eleanor_disease_action" 
-        sequence="40"/>
+        <menuitem 
+            id="pabs_eleanor_disease_menu" 
+            name="Enfermedades" 
+            parent="pabs_eleanor_config_menu" 
+            action="pabs_eleanor_disease_action" 
+            sequence="40"
+            groups="pabs_eleanor_admin"
+        />
 
     </data>
 </odoo>

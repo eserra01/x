@@ -26,11 +26,14 @@
         </record>
 
 
-        <menuitem id="pabs_eleanor_concept_menu" 
-        name="Conceptos" 
-        parent="pabs_eleanor_config_menu" 
-        action="pabs_eleanor_concept_action" 
-        sequence="30"/>
+        <menuitem 
+            id="pabs_eleanor_concept_menu" 
+            name="Conceptos" 
+            parent="pabs_eleanor_config_menu" 
+            action="pabs_eleanor_concept_action" 
+            sequence="30"
+            groups="pabs_eleanor_admin"
+        />
 
     </data>
 </odoo>

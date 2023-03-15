@@ -15,13 +15,13 @@
                     <field name="employee_id" />  
                     <field name="amount" />                       
                     <field name="user_id" />  
-                    <field name="state" optional="hide"/>                      
+                    <field name="state" invisible="1"/>                      
                     <field name="area_id" optional="hide"/>  
                     <field name="warehouse_id" optional="hide"/>
                     <field name="department_id" optional="hide"/>
                     <field name="job_id" optional="hide"/>                                                            
-                    <field name="create_date" string="Creado el" />
-                    <field name="company_id" readonly="1" optional="hide"/>
+                    <field name="create_date" string="Creado el" optional="hide"/>
+                    <field name="company_id" invisible="1" readonly="1"/>
                 </tree>
             </field>
         </record>
@@ -32,7 +32,8 @@
             <field name="view_mode">tree</field>
             <field name="view_id" ref="pabs_eleanor_move_binnacle_tree_view"/>
             <field name="view_ids" eval="[(5, 0, 0),
-            (0, 0, {'view_mode': 'tree', 'view_id': ref('pabs_eleanor_move_binnacle_tree_view')}),]"/>            
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('pabs_eleanor_move_binnacle_tree_view')}),]"/>
+            <field name="domain">[('state', '=', 'open')]</field>
         </record> 
 
         <!-- BARRA DE BUSQUEDA  -->
@@ -53,8 +54,10 @@
         <menuitem id="pabs_eleanor_move_binnacle_menu" 
         name="Bitácora de movimientos" 
         parent="pabs_eleanor_move_menu" 
-        action="pabs_eleanor_move_binnacle_action" 
-        sequence="30"/>
+        action="pabs_eleanor_move_binnacle_action"
+        sequence="30"
+        groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente"
+        />
 
     </data>
 </odoo>

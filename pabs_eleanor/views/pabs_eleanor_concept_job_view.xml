@@ -22,11 +22,14 @@
         </record>
 
 
-        <menuitem id="pabs_eleanor_job_category_menu" 
-        name="Categorías de puestos" 
-        parent="pabs_eleanor_config_menu" 
-        action="pabs_eleanor_job_category_action" 
-        sequence="18"/>
+        <menuitem 
+            id="pabs_eleanor_job_category_menu" 
+            name="Categorías de puestos" 
+            parent="pabs_eleanor_config_menu" 
+            action="pabs_eleanor_job_category_action" 
+            sequence="18"
+            groups="pabs_eleanor_admin"
+        />
 
     </data>
 </odoo>

@@ -49,6 +49,7 @@
             parent="pabs_eleanor_config_menu" 
             action="pabs_eleanor_period_action" 
             sequence="50"
+            groups="pabs_eleanor_admin"
         />
 
     </data>

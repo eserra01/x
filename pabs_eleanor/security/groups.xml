@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1"> 
+        <!-- Categoría  -->
+        <record id="pabs_eleanor_category" model="ir.module.category">
+            <field name="name">Eleanor</field>
+        </record>
+
+        <record id="pabs_eleanor_admin" model="res.groups">
+            <field name="name">Administrador</field>
+            <field name="category_id" ref="pabs_eleanor_category"/>
+        </record>
+
+        <record id="pabs_eleanor_cofiplem" model="res.groups">
+            <field name="name">Cofiplem</field>
+            <field name="category_id" ref="pabs_eleanor_category"/>
+        </record>
+
+        <record id="pabs_eleanor_gerente" model="res.groups">
+            <field name="name">Gerente</field>
+            <field name="category_id" ref="pabs_eleanor_category"/>
+        </record>
+
+        <record id="pabs_eleanor_rh" model="res.groups">
+            <field name="name">Recursos humanos</field>
+            <field name="category_id" ref="pabs_eleanor_category"/>
+        </record>
+
+        <record id="pabs_eleanor_capturista" model="res.groups">
+            <field name="name">Capturista</field>
+            <field name="category_id" ref="pabs_eleanor_category"/>
+        </record>
+
+    </data>
+</odoo>

@@ -44,6 +44,7 @@
         parent="pabs_eleanor_report_menu" 
         action="action_eleanor_move_detail_report_action" 
         sequence="20"
+        groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente,pabs_eleanor_capturista"
     />
     
 </odoo>

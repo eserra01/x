@@ -26,11 +26,14 @@
         </record>
 
 
-        <menuitem id="pabs_eleanor_taxpayer_menu" 
-        name="Contribuyentes" 
-        parent="pabs_eleanor_cofiplem_menu" 
-        action="pabs_eleanor_taxpayer_action" 
-        sequence="10"/>
+        <menuitem 
+            id="pabs_eleanor_taxpayer_menu" 
+            name="Contribuyentes" 
+            parent="pabs_eleanor_cofiplem_menu" 
+            action="pabs_eleanor_taxpayer_action" 
+            sequence="10"
+            groups="pabs_eleanor_admin,pabs_eleanor_cofiplem"
+        />
 
     </data>
 </odoo>

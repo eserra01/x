@@ -1293,11 +1293,11 @@ class PABSElectronicContracts(models.TransientModel):
                     self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
 
             except Exception as ex:
-                msj = "Error al actualizar: {}".format(ex)
+                msj = "Error en el proceso de corte: {}".format(ex)
                 _logger.error(msj)
 
                 if solicitud:
-                    return "error: Error en el proceso: {}".format(msj)
+                    return "error: Error en el proceso de corte: {}".format(msj)
                 else:
                     _logger.error(msj)
 

@@ -36,10 +36,13 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem id="pabs_eleanor_cofiplem_import_xls_wizard_menu" 
-        name="Importar registros" 
-        parent="pabs_eleanor_cofiplem_menu" sequence="40" 
-        action="pabs_eleanor_cofiplem_import_xls_wizard_action"/>
+        <menuitem 
+            id="pabs_eleanor_cofiplem_import_xls_wizard_menu" 
+            name="Importar registros" 
+            parent="pabs_eleanor_cofiplem_menu" sequence="40" 
+            action="pabs_eleanor_cofiplem_import_xls_wizard_action"
+            groups="pabs_eleanor_admin"
+        />
 
     </data>
 </openerp>

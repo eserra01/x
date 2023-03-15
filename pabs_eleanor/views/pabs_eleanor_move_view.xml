@@ -48,7 +48,7 @@
             <field name="view_id" ref="pabs_eleanor_weekly_move_tree_view"/>
              <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('pabs_eleanor_weekly_move_tree_view')}),]"/>
-            <field name="domain">[]s</field>
+            <field name="domain">[]</field>
             <field name="context">{'period_type':'weekly'}</field>            
         </record>
 
@@ -60,11 +60,14 @@
             <field name="code">action=model.show_weekly_movs()</field>
         </record>
         
-        <menuitem id="pabs_eleanor_weekly_move_menu" 
-        name="Movimientos semanales" 
-        parent="pabs_eleanor_move_menu" 
-        action="pabs_eleanor_weekly_move_server_action" 
-        sequence="10"/>
+        <menuitem 
+            id="pabs_eleanor_weekly_move_menu" 
+            name="Movimientos semanales" 
+            parent="pabs_eleanor_move_menu" 
+            action="pabs_eleanor_weekly_move_server_action" 
+            sequence="10"
+            groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente,pabs_eleanor_capturista"
+        />
 
         
         <record id="pabs_eleanor_biweekly_move_tree_view" model="ir.ui.view">
@@ -112,11 +115,14 @@
             <field name="code">action=model.show_biweekly_movs()</field>
         </record>
         
-        <menuitem id="pabs_eleanor_biweekly_move_menu" 
-        name="Movimientos quincenales" 
-        parent="pabs_eleanor_move_menu" 
-        action="pabs_eleanor_biweekly_move_server_action" 
-        sequence="20"/>
+        <menuitem 
+            id="pabs_eleanor_biweekly_move_menu" 
+            name="Movimientos quincenales" 
+            parent="pabs_eleanor_move_menu" 
+            action="pabs_eleanor_biweekly_move_server_action" 
+            sequence="20"
+            groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente,pabs_eleanor_capturista"
+        />
 
         
         <record id="pabs_eleanor_all_move_tree_view" model="ir.ui.view">
@@ -164,11 +170,14 @@
             <field name="code">action=model.show_all_movs()</field>
         </record>
 
-        <menuitem id="pabs_eleanor_all_move_menu" 
-        name="Todos lo movimientos" 
-        parent="pabs_eleanor_move_menu" 
-        action="pabs_eleanor_all_move_server_action" 
-        sequence="40"/>
+        <menuitem 
+            id="pabs_eleanor_all_move_menu" 
+            name="Todos lo movimientos" 
+            parent="pabs_eleanor_move_menu" 
+            action="pabs_eleanor_all_move_server_action" 
+            sequence="40"
+            groups="pabs_eleanor_admin"
+        />
 
         <!-- VISTA PARA ELIMINACION DE COMISIONES (SOLO ADMINISTRADOR) -->
         <record id="pabs_eleanor_comissions_move_tree_view" model="ir.ui.view">
@@ -216,11 +225,14 @@
             <field name="code">action=model.show_comissions_movs()</field>
         </record>
 
-        <menuitem id="pabs_eleanor_comissions_move_menu" 
-        name="Movimientos (Comisiones)" 
-        parent="pabs_eleanor_config_menu" 
-        action="pabs_eleanor_comissions_move_server_action" 
-        sequence="90"/>
+        <menuitem 
+            id="pabs_eleanor_comissions_move_menu" 
+            name="Movimientos (Comisiones)" 
+            parent="pabs_eleanor_config_menu" 
+            action="pabs_eleanor_comissions_move_server_action" 
+            sequence="90"
+            groups="pabs_eleanor_admin"
+        />
 
     </data>
 </odoo>

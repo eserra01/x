@@ -20,11 +20,14 @@
         </record>
 
 
-        <menuitem id="pabs_eleanor_area_menu" 
-        name="Áreas" 
-        parent="pabs_eleanor_config_menu" 
-        action="pabs_eleanor_area_action" 
-        sequence="10"/>
+        <menuitem 
+            id="pabs_eleanor_area_menu" 
+            name="Áreas" 
+            parent="pabs_eleanor_config_menu" 
+            action="pabs_eleanor_area_action" 
+            sequence="10"
+            groups="pabs_eleanor_admin"
+        />
 
     </data>
 </odoo>

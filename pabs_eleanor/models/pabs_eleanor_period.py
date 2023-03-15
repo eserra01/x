@@ -44,7 +44,7 @@ class PabsEleanorPeriod(models.Model):
         return True
 
     def CargarComisiones(self, id_compania = False):
-        
+
         # DICCIONARIO DE PARAMETROS PARA CARGA DE COMISIONES
         EMPRESAS = [
             ### PRODUCCION ###
@@ -125,7 +125,7 @@ class PabsEleanorPeriod(models.Model):
                 'version': 13,
                 'id_compania': 8,
                 'id_compania_viejo_esquema': 0
-            },
+            }
         ]
 
         if not id_compania:

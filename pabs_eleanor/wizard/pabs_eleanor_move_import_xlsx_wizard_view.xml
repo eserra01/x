@@ -35,10 +35,13 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem id="pabs_eleanor_move_import_xls_wizard_menu" 
-        name="Importar movimientos" 
-        parent="pabs_eleanor_move_menu" sequence="60" 
-        action="pabs_eleanor_move_import_xls_wizard_action"/>
+        <menuitem 
+            id="pabs_eleanor_move_import_xls_wizard_menu" 
+            name="Importar movimientos" 
+            parent="pabs_eleanor_move_menu" sequence="60" 
+            action="pabs_eleanor_move_import_xls_wizard_action"
+            groups="pabs_eleanor_admin,pabs_eleanor_gerente,pabs_eleanor_capturista"
+        />
 
     </data>
 </openerp>

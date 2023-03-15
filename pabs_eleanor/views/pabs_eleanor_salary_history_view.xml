@@ -4,7 +4,7 @@
             <field name="name">pabs.eleanor.salary.history.tree.view</field>
             <field name="model">pabs.eleanor.salary.history</field>
             <field name="arch" type="xml">
-                <tree string="Histórico de sueldos" create="0" delete="0" default_order="period_type desc, date_start desc">
+                <tree string="Histórico de sueldos" create="0" edit="0" delete="0" default_order="period_type desc, date_start desc">
                     <!-- <field name="period_id" /> -->
                     <field name="period_type" />                    
                     <field name="week_number" />                    
@@ -13,6 +13,7 @@
                     <field name="salary" />
                     <field name="daily_internal_salary" />
                     <field name="period_internal_salary" />
+                    <field name="create_date" string="Creado el"/>
                     <field name="company_id" readonly="1" optional="hide"/>
                 </tree>
             </field>
@@ -41,26 +42,14 @@
             </field>
         </record>
 
-        <menuitem id="pabs_eleanor_salary_history_menu" 
-        name="Histórico de sueldos" 
-        parent="pabs_eleanor_move_menu" 
-        action="pabs_eleanor_salary_history_action" 
-        sequence="50"/>
-
-<!--         
-        <record id="pabs_eleanor_create_salary_history_server_action" model="ir.actions.server">
-            <field name="name">Crear histórico de sueldos </field>
-            <field name="model_id" ref="model_pabs_eleanor_salary_history"/>
-            <field name="binding_model_id" ref="model_pabs_eleanor_salary_history"/>            
-            <field name="state">code</field>
-            <field name="code">action=model.create_salary_history()</field>
-        </record>
-        
-        <menuitem id="pabs_eleanor_create_salary_history_menu" 
-        name="Crear Histórico de sueldos" 
-        parent="pabs_eleanor_move_menu" 
-        action="pabs_eleanor_create_salary_history_server_action" 
-        sequence="60"/> -->
+        <menuitem 
+            id="pabs_eleanor_salary_history_menu" 
+            name="Histórico de sueldos" 
+            parent="pabs_eleanor_move_menu" 
+            action="pabs_eleanor_salary_history_action" 
+            sequence="50"
+            groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente,pabs_eleanor_rh"
+        />
 
     </data>
 </odoo>

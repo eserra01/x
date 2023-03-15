@@ -1,9 +1,23 @@
 <odoo>
     <data>
-        <menuitem id="pabs_eleanor_root_menu" name="Eleanor" sequence="1000" web_icon="pabs_eleanor,static/src/img/icon.png"/>/>        
-        <menuitem id="pabs_eleanor_move_menu" name="Movimientos" parent="pabs_eleanor_root_menu" sequence="10"/>        
-        <menuitem id="pabs_eleanor_report_menu" name="Reportes" parent="pabs_eleanor_root_menu" sequence="20"/>        
-        <menuitem id="pabs_eleanor_cofiplem_menu" name="Cofiplem" parent="pabs_eleanor_root_menu" sequence="30"/>        
-        <menuitem id="pabs_eleanor_config_menu" name="Configuración" parent="pabs_eleanor_root_menu" sequence="100"/>
+        <menuitem id="pabs_eleanor_root_menu" name="Eleanor" sequence="1000" web_icon="pabs_eleanor,static/src/img/icon.png"
+            groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente,pabs_eleanor_rh,pabs_eleanor_capturista"
+        />
+
+        <menuitem id="pabs_eleanor_move_menu" name="Movimientos" parent="pabs_eleanor_root_menu" sequence="10"
+            groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente,pabs_eleanor_rh,pabs_eleanor_capturista"
+        />
+
+        <menuitem id="pabs_eleanor_report_menu" name="Reportes" parent="pabs_eleanor_root_menu" sequence="20"
+            groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente,pabs_eleanor_rh,pabs_eleanor_capturista"
+        />
+
+        <menuitem id="pabs_eleanor_cofiplem_menu" name="Cofiplem" parent="pabs_eleanor_root_menu" sequence="30"
+            groups="pabs_eleanor_admin,pabs_eleanor_cofiplem"
+        />
+
+        <menuitem id="pabs_eleanor_config_menu" name="Configuración" parent="pabs_eleanor_root_menu" sequence="100"
+            groups="pabs_eleanor_admin"
+        />
     </data>
 </odoo>
