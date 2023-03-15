@@ -24,9 +24,9 @@
 
     # always loaded
     'data': [
-        'security/ir.model.access.csv',
         'security/security.xml',
         'security/groups.xml',
+        'security/ir.model.access.csv',
         'views/menus.xml',
         'views/pabs_eleanor_area_view.xml',
         'views/pabs_eleanor_disease_view.xml',
