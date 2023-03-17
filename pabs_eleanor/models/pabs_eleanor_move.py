@@ -16,7 +16,7 @@ class PabsEleanorMove(models.Model):
     period_id = fields.Many2one(comodel_name="pabs.eleanor.period", string="Periodo", required=True, default=get_period)
     move_type = fields.Selection([('perception','Percepcion'),('deduction','Deducción')], string="Tipo movimiento", required=True)
     concept_id = fields.Many2one(comodel_name="pabs.eleanor.concept", string="Concepto", required=True, domain="[('id', '=', 0)]") ### No mostrar lista de conceptos si no se ha elegido un tipo
-    employee_id = fields.Many2one(comodel_name="hr.employee", string="Empleado", required=True)
+    employee_id = fields.Many2one(comodel_name="hr.employee", string="Empleado", required=True, domain=lambda self:[('period_type', '=', self.env.context.get('period_type'))])
     area_id = fields.Many2one(comodel_name="pabs.eleanor.area", string="Área", required=True)
     warehouse_id = fields.Many2one(comodel_name="stock.warehouse", string="Oficina")
     department_id = fields.Many2one(comodel_name="hr.department", string="Departamento")
