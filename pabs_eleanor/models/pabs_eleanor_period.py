@@ -125,7 +125,28 @@ class PabsEleanorPeriod(models.Model):
                 'version': 13,
                 'id_compania': 8,
                 'id_compania_viejo_esquema': 0
+            },
+
+            ### TEST
+            {
+                'empresa': 'SALTILLO',
+                'version': 13,
+                'id_compania': 12,
+                'id_compania_viejo_esquema': 0
+            },
+            {
+                'empresa': 'MONCLOVA',
+                'version': 13,
+                'id_compania': 13,
+                'id_compania_viejo_esquema': 0
+            },
+            {
+                'empresa': 'NUEVO LAREDO',
+                'version': 13,
+                'id_compania': 14,
+                'id_compania_viejo_esquema': 0
             }
+            ### FIN TEST
         ]
 
         if not id_compania:

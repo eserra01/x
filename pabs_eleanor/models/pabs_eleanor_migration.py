@@ -26,6 +26,13 @@ BASES_ELEANOR = {
     'NUEVO LAREDO NUEVO E': 9,
     'TUXTLA GUTIERREZ': 11,
     'VILLAHERMOSA': 12
+
+    ### TEST
+    ,'SALTILLO': 6,
+    'MONCLOVA': 7,
+    'NUEVO LAREDO': 9,
+    'TUXTLA GUTIERREZ': 11,
+    'VILLAHERMOSA': 12
 }
 
 class PabsEleanorMigrationLog(models.Model):
