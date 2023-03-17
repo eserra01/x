@@ -207,7 +207,15 @@ class PabsEleanorMove(models.Model):
                 rec.warehouse_id = rec.employee_id.warehouse_id.id
                 rec.department_id = rec.employee_id.department_id.id
                 rec.job_id = rec.employee_id.job_id.id
+
+                if not rec.job_id:
+                    raise ValidationError("El empleado {} - {} no tiene asignado un puesto".format(rec.employee_id.barcode, rec.employee_id.name))
+
+                if not rec.warehouse_id and not rec.department_id:
+                    raise ValidationError("El empleado {} - {} no tiene asignada un departamento o una oficina".format(rec.employee_id.barcode, rec.employee_id.name))
                 
+                if not rec.area_id:
+                    raise ValidationError("El empleado {} - {} no tiene asignada un área".format(rec.employee_id.barcode, rec.employee_id.name))
 
     def show_weekly_movs(self):
         ### Obtener permisos de acceso del usuario ###
