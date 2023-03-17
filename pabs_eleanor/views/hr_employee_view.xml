@@ -49,7 +49,7 @@
                     <page string="Cambios de estatus" >
                         <field name="status_log_ids">
                              <tree editable="top" delete="0">
-                                <field name="employee_status_id" options="{'no_create':True, 'no_open':True}"/>
+                                <field name="employee_status_id" attrs="{'readonly':[('id','!=',False)]}" options="{'no_create':True, 'no_open':True}"/>
                                 <field name="comments" />
                                 <field name="status_date" />
                                 <field name="attachment_name" invisible="1"/>
