@@ -72,4 +72,11 @@
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
+    <record model="ir.rule" id="pabs_eleanor_user_company_rule">
+        <field name="name">Empleados a los que se les puede generar movimiento por compañia</field>
+        <field name="model_id" ref="model_pabs_eleanor_user_access"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
 </odoo>

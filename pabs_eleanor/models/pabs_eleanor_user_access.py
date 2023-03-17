@@ -7,7 +7,7 @@ class PabsEleanorUserAccess(models.Model):
     _description = 'Permisos de acceso'
     _rec_name  = 'user_id'
 
-    user_id = fields.Many2one(comodel_name="res.users", string="Usuario", required=True)
+    user_id = fields.Many2one(comodel_name="res.users", string="Usuario", required=True, domain=lambda self: [('company_id.id', '=', self.env.company.id)])
     warehouse_id = fields.Many2one(comodel_name="stock.warehouse", string="Oficina")
     department_id = fields.Many2one(comodel_name="hr.department", string="Departamento")
     location_type = fields.Selection([('office','Oficina'),('department','Departamento')], string="Tipo de ubicación", required=True)
