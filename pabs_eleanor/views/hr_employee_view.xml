@@ -90,6 +90,25 @@
                 </xpath>
             </field>
         </record>
+
+        <!-- Formularios en blanco para evitar modificacion de otros modelos por el usuario -->
+        <record id="pabs_eleanor_inability_form_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.inability.form.view</field>
+            <field name="model">pabs.eleanor.inability</field>
+            <field name="arch" type="xml">
+                <form>
+                </form>
+            </field>
+        </record>
+
+        <record id="pabs_eleanor_status_log_form_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.status.log.form.view</field>
+            <field name="model">pabs.eleanor.status.log</field>
+            <field name="arch" type="xml">
+                <form>
+                </form>
+            </field>
+        </record>
                 
     </data>    
 </odoo>

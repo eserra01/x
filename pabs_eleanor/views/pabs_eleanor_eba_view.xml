@@ -20,6 +20,15 @@
             </field>
         </record>
 
+        <record id="pabs_eleanor_eba_form_view" model="ir.ui.view">
+            <field name="name">pabs.eleanor.eba.form.view</field>
+            <field name="model">pabs.eleanor.eba</field>
+            <field name="arch" type="xml">
+                <form>
+                </form>
+            </field>
+        </record>
+
          <record id="pabs_eleanor_eba_action" model="ir.actions.act_window">
             <field name="name">EBA</field>
             <field name="res_model">pabs.eleanor.eba</field>
