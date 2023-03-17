@@ -16,7 +16,7 @@ class PabsEleanorMove(models.Model):
     period_id = fields.Many2one(comodel_name="pabs.eleanor.period", string="Periodo", required=True, default=get_period)
     move_type = fields.Selection([('perception','Percepcion'),('deduction','Deducción')], string="Tipo movimiento", required=True)
     concept_id = fields.Many2one(comodel_name="pabs.eleanor.concept", string="Concepto", required=True, domain="[('id', '=', 0)]") ### No mostrar lista de conceptos si no se ha elegido un tipo
-    employee_id = fields.Many2one(comodel_name="hr.employee", string="Empleado", required=True, domain=lambda self:[('period_type', '=', self.env.context.get('period_type'))])
+    employee_id = fields.Many2one(comodel_name="hr.employee", string="Empleado", required=True)
     area_id = fields.Many2one(comodel_name="pabs.eleanor.area", string="Área", required=True)
     warehouse_id = fields.Many2one(comodel_name="stock.warehouse", string="Oficina")
     department_id = fields.Many2one(comodel_name="hr.department", string="Departamento")
@@ -133,8 +133,39 @@ class PabsEleanorMove(models.Model):
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         for rec in self:
-            if rec.employee_id:
+            
+            # Si no se ha elegido un empleado mostrar solo aquellos a los que el usuario tiene acceso
+            if not rec.employee_id:
+                ids_departamentos = []
+                ids_oficinas = []
+                all_employees_allowed = self.env.user.all_employees
 
+                domain = []
+                if all_employees_allowed:
+                    domain = [
+                        ('company_id.id', '=', self.env.company.id),
+                        ('period_type','=', self.env.context.get('period_type'))
+                    ]
+                else:
+                    accesos = self.env['pabs.eleanor.user.access'].search([
+                        ('company_id', '=', self.env.company.id),
+                        ('user_id', '=', self.env.user.id)
+                    ])
+
+                    ids_departamentos = accesos.mapped('department_id').ids
+                    ids_oficinas = accesos.mapped('warehouse_id').ids
+
+                    domain = [
+                        ('company_id.id', '=', self.env.company.id),
+                        ('period_type','=', self.env.context.get('period_type')),
+                        '|', ('department_id.id', 'in', ids_departamentos),
+                        ('warehouse_id.id', 'in', ids_oficinas)
+                    ]
+
+                res = {'domain': {'employee_id': domain}}
+                return res
+
+            else:
                 ### Verificar que el empleado pertenezca al tipo de periodo
                 tipo_periodo = self.env.context.get('period_type')
 
