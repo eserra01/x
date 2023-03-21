@@ -128,24 +128,24 @@ class PabsEleanorPeriod(models.Model):
             },
 
             ### TEST
-            {
-                'empresa': 'SALTILLO',
-                'version': 13,
-                'id_compania': 12,
-                'id_compania_viejo_esquema': 0
-            },
-            {
-                'empresa': 'MONCLOVA',
-                'version': 13,
-                'id_compania': 13,
-                'id_compania_viejo_esquema': 0
-            },
-            {
-                'empresa': 'NUEVO LAREDO',
-                'version': 13,
-                'id_compania': 14,
-                'id_compania_viejo_esquema': 0
-            }
+            # {
+            #     'empresa': 'SALTILLO',
+            #     'version': 13,
+            #     'id_compania': 12,
+            #     'id_compania_viejo_esquema': 0
+            # },
+            # {
+            #     'empresa': 'MONCLOVA',
+            #     'version': 13,
+            #     'id_compania': 13,
+            #     'id_compania_viejo_esquema': 0
+            # },
+            # {
+            #     'empresa': 'NUEVO LAREDO',
+            #     'version': 13,
+            #     'id_compania': 14,
+            #     'id_compania_viejo_esquema': 0
+            # }
             ### FIN TEST
         ]
 
@@ -358,7 +358,7 @@ class PabsEleanorPeriod(models.Model):
                     AND emp.company_id = {}
                     AND com.comision > 0
                         ORDER BY emp.barcode
-            """.format(param['id_compania_viejo_esquema'], company.id, '2022-01-01', '2022-01-10', company.id)#periodo.date_start, periodo.date_end, company.id)
+            """.format(param['id_compania_viejo_esquema'], company.id, periodo.date_start, periodo.date_end, company.id)
 
             self.env.cr.execute(consulta_cobradores)
 
