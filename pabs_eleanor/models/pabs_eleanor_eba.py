@@ -31,5 +31,5 @@ class PabsEleanorEba(models.Model):
     eba_id = fields.Char(string="EBA id", required=True)
     branch = fields.Char(string="Plaza", required=True)
     internal_period = fields.Char(string="Periodo interno", required=True)            
-    employee_id = fields.Many2one(comodel_name="hr.employee", string="Empleado", required=True)
-    company_id = fields.Many2one(comodel_name="res.company",string="Compañia",default=lambda self: self.env.company, copy=True, required=True,) 
+    employee_id = fields.Many2one(comodel_name="hr.employee", string="Empleado")
+    company_id = fields.Many2one(comodel_name="res.company",string="Compañia",default=lambda self: self.env.company, copy=True, required=True)

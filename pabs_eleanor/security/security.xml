@@ -79,4 +79,25 @@
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
 
+    <record model="ir.rule" id="pabs_eleanor_taxpayer_company_rule">
+        <field name="name">Contribuyentes</field>
+        <field name="model_id" ref="model_pabs_eleanor_taxpayer"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record model="ir.rule" id="pabs_eleanor_eba_company_rule">
+        <field name="name">EBA</field>
+        <field name="model_id" ref="model_pabs_eleanor_eba"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record model="ir.rule" id="pabs_eleanor_ema_company_rule">
+        <field name="name">EMA</field>
+        <field name="model_id" ref="model_pabs_eleanor_ema"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
 </odoo>

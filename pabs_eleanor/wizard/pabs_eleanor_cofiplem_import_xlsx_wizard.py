@@ -41,8 +41,8 @@ class PabsEleanorCofiplemImportImportXLSWizard(models.Model):
             for i,record in enumerate(records,1):
                 # Se busca el empleado mediante el NSS
                 employee_id = employee_obj.search([('nss','=',record[0])])
-                if not employee_id:
-                    raise ValidationError("No se encuentra el empleado con el NSS: {}".format(record[0]))
+                # if not employee_id:
+                #     raise ValidationError("No se encuentra el empleado con el NSS: {}".format(record[0]))
                 vals = {
                     'nss': record[0] or "",
                     'full_name': record[1] or "",
@@ -69,7 +69,7 @@ class PabsEleanorCofiplemImportImportXLSWizard(models.Model):
                     'ema_id': record[22] or "",
                     'branch': record[23] or "",
                     'internal_period': record[24] or "",
-                    'employee_id': employee_id.id,                
+                    'employee_id': employee_id.id or None
                 }
                 ema_obj.create(vals)                     
         # EBA
@@ -78,8 +78,8 @@ class PabsEleanorCofiplemImportImportXLSWizard(models.Model):
             for i,record in enumerate(records,1):
                  # Se busca el empleado mediante el NSS
                 employee_id = employee_obj.search([('nss','=',record[0])])
-                if not employee_id:
-                    raise ValidationError("No se encuentra el empleado con el NSS: {}".format(record[0]))
+                # if not employee_id:
+                #     raise ValidationError("No se encuentra el empleado con el NSS: {}".format(record[0]))
                 vals = {
                     'nss': record[0] or "",
                     'full_name': record[1] or "",
@@ -98,14 +98,14 @@ class PabsEleanorCofiplemImportImportXLSWizard(models.Model):
                     'credit_number': record[14] or "",
                     'amortization': record[15] or "",
                     'infonavit': record[16] or "",
-                    'total': record[17] or "",                  
+                    'total': record[17] or "",               
                     'company': record[18] or "",
                     'period': record[19] or "",
                     'boss_register': record[20] or "",
                     'eba_id': record[21] or "",
                     'branch': record[22] or "",
                     'internal_period': record[23] or "",
-                    'employee_id': employee_id.id,                
+                    'employee_id': employee_id.id or None
                 }
                 eba_obj.create(vals)         
             
