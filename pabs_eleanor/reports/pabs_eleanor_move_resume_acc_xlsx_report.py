@@ -55,6 +55,7 @@ class PabsEleanorMoveResumAcctXlsxReport(models.AbstractModel):
                 ) AS per
                 INNER JOIN
                 (
+                    /* Movimientos */
                     SELECT 
                         COALESCE(cue.name, '') as cuenta,
                         COALESCE(ana.name, '') as analitica,
@@ -76,12 +77,12 @@ class PabsEleanorMoveResumAcctXlsxReport(models.AbstractModel):
                     LEFT JOIN account_account AS cue ON conc.account_id = cue.id
                     INNER JOIN hr_employee AS emp ON mov.employee_id = emp.id
                     INNER JOIN hr_employee_status AS est ON emp.employee_status = est.id
-                        WHERE est.name IN ('ACTIVO')
-                        AND per.state = 'open'
+                        WHERE per.state = 'open'
                         AND per.period_type = 'zztipo_periodozz'
                         AND per.company_id = zzid_companiazz
                             GROUP BY cue.name, ana.name, emp.way_to_pay, conc.concept_type
                     UNION 
+                    /* Sueldos: Solo entregar sueldo a empleados activos */
                     SELECT
                         'Sueldos' as cuenta,
                         COALESCE(ana.name, '') as analitica,

@@ -75,6 +75,7 @@ class PabsEleanorMoveResumeXlsxReport(models.AbstractModel):
                 LEFT JOIN hr_department AS dep ON emp.department_id = dep.id
                 LEFT JOIN
                 (
+                    /* Sueldos: Solo entregar sueldo a empleados activos*/
                     SELECT 
                         emp.id as id_empleado,
                         CASE
@@ -83,11 +84,15 @@ class PabsEleanorMoveResumeXlsxReport(models.AbstractModel):
                             ELSE 0
                         END as sueldo
                     FROM hr_employee AS emp
-                        WHERE emp.period_type = 'zztipo_periodozz'
+                    INNER JOIN hr_employee_status AS est ON emp.employee_status = est.id
+                        WHERE est.name IN ('ACTIVO')
+                        AND emp.period_type = 'zztipo_periodozz'
                         AND emp.company_id = zzid_companiazz
+                        AND emp.total_internal_salary > 0
                 ) AS sue ON emp.id = sue.id_empleado
                 LEFT JOIN 
                 (
+                    /* Movimientos */
                     SELECT 
                         mov.employee_id as id_empleado,
                         SUM(CASE WHEN conc.concept_type = 'perception' AND conc.allow_load = TRUE THEN mov.amount ELSE 0 END) as total_percepciones,
@@ -104,9 +109,8 @@ class PabsEleanorMoveResumeXlsxReport(models.AbstractModel):
                 ) AS mov ON emp.id = mov.id_empleado
                     WHERE emp.period_type = 'zztipo_periodozz'
                     AND emp.company_id = zzid_companiazz
-                    AND est.name IN ('ACTIVO')
             ) AS x
-                WHERE (x.sueldo + x.total_percepciones + x.total_comisiones + x.total_com_transferencia + x.total_deducciones) > 0
+                WHERE (x.sueldo + x.total_percepciones + x.total_comisiones + x.total_com_transferencia + x.total_deducciones) > 0 /*Solo empleados con movimientos*/
                     ORDER BY x.codigo
         """
 

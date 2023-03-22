@@ -5,7 +5,7 @@
 		<field name="model">pabs.eleanor.move.resume</field>
 		<field name="arch" type="xml">
 			<form>
-                <h3>Elige el tipo de periodo. Solo mostrará los empleados en estatus ACTIVO.</h3>
+                <h3>Elige el tipo de periodo</h3>
                 <group>
                     <field name="period_type"/>
                 </group>

@@ -15,10 +15,34 @@
             </field>
         </record>
 
+        <!-- Formulario de cambios de estatus -->
+        <record id="status_log_hr_employee_form_view_inherit" model="ir.ui.view">
+            <field name="name">status.log.hr.employee.form.view.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Cambios de estatus" >
+                        <field name="status_log_ids">
+                             <tree editable="top" delete="0">
+                                <field name="employee_status_id" attrs="{'readonly':[('id','!=',False)]}" options="{'no_create':True, 'no_open':True}"/>
+                                <field name="comments" />
+                                <field name="status_date" />
+                                <field name="attachment_name" invisible="1"/>
+                                <field name="attachment_file" filename="attachment_name" widget="binary"/>
+                                <field name="employee_id" invisible="1" />
+                             </tree>
+                        </field>                            
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
         <record id="eleanor_hr_employee_form_view_inherit" model="ir.ui.view">
             <field name="name">eleanor.hr.employee.form.view.inherit</field>
             <field name="model">hr.employee</field>
             <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="groups_id" eval="[(4,ref('pabs_eleanor.pabs_eleanor_rh')), (4,ref('pabs_eleanor.pabs_eleanor_gerente')), (4,ref('pabs_eleanor.pabs_eleanor_admin'))]"/>
             <field name="arch" type="xml">
                 <xpath expr="//notebook" position="inside">
                     <page string="Parámetros ELEANOR" >                              
@@ -45,18 +69,6 @@
                             <field name="period_type" />
                             <field name="way_to_pay" />
                         </group>                                          
-                    </page>
-                    <page string="Cambios de estatus" >
-                        <field name="status_log_ids">
-                             <tree editable="top" delete="0">
-                                <field name="employee_status_id" attrs="{'readonly':[('id','!=',False)]}" options="{'no_create':True, 'no_open':True}"/>
-                                <field name="comments" />
-                                <field name="status_date" />
-                                <field name="attachment_name" invisible="1"/>
-                                <field name="attachment_file" filename="attachment_name" widget="binary" />
-                                <field name="employee_id" invisible="1" />
-                             </tree>
-                        </field>                            
                     </page>
                     <page string="Incapacidades" >
                         <field name="inability_ids">

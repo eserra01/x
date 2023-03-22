@@ -59,14 +59,12 @@ class PabsEleanorMoveDetailXlsxReport(models.AbstractModel):
         if all_employees_allowed:
             movimientos_aux = self.env['pabs.eleanor.move'].search([
                 ['company_id', '=', id_compania],
-                ['period_id', '=', period_id],
-                ['employee_id.employee_status.name', '=', 'ACTIVO']
+                ['period_id', '=', period_id]
             ])
         else:
             movimientos_aux = self.env['pabs.eleanor.move'].search([
                 ['company_id', '=', id_compania],
                 ['period_id', '=', period_id],
-                ['employee_id.employee_status.name', '=', 'ACTIVO'],
                 '|', ['employee_id.department_id.id', 'in', ids_departamentos],
                 ['employee_id.warehouse_id.id', 'in', ids_oficinas]
             ])
@@ -146,14 +144,12 @@ class PabsEleanorMoveDetailXlsxReport(models.AbstractModel):
         if all_employees_allowed:
             empleados = self.env['hr.employee'].search([
                 ('company_id', '=', id_compania),
-                ('period_type', '=', period_type),
-                ('employee_status.name', 'in', ['ACTIVO'])
+                ('period_type', '=', period_type)
             ], order="barcode")
         else:
             empleados = self.env['hr.employee'].search([
                 ('company_id', '=', id_compania),
                 ('period_type', '=', period_type),
-                ('employee_status.name', 'in', ['ACTIVO']),
                 '|', ['department_id.id', 'in', ids_departamentos],
                 ['warehouse_id.id', 'in', ids_oficinas]
             ], order="barcode")

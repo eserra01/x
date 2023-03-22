@@ -1,6 +1,6 @@
 <odoo>
     <data>
-        <menuitem id="pabs_eleanor_root_menu" name="Eleanor" sequence="1000" web_icon="pabs_eleanor,static/src/img/icon.png"
+        <menuitem id="pabs_eleanor_root_menu" name="Prenómina" sequence="1000" web_icon="pabs_eleanor,static/src/img/icon.png"
             groups="pabs_eleanor_admin,pabs_eleanor_cofiplem,pabs_eleanor_gerente,pabs_eleanor_rh,pabs_eleanor_capturista"
         />
 
