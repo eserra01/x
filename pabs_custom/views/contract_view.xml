@@ -886,7 +886,7 @@
     <field name="name">Contratos (Call center)</field>
     <field name="res_model">pabs.contract</field>
     <field name="view_mode">tree,form</field>
-    <field name="domain">[('state','=','contract')]</field>
+    <!-- <field name="domain">[('state','=','contract')]</field> -->
     <field name="target">current</field>
   </record>
 

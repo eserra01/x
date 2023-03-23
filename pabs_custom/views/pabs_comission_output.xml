@@ -8,7 +8,7 @@
         <field name="model">pabs.comission.output</field>
         <field name="arch" type="xml">
             <form string="Comission output form" editable="bottom">
-                <sheet>
+                <!-- <sheet>
                     <group>
                         <field name="payment_id" />
                         <field name="refund_id" />
@@ -17,7 +17,7 @@
                         <field name="commission_paid" />
                         <field name="actual_commission_paid" />
                     </group>
-                </sheet>
+                </sheet> -->
             </form>
         </field>
     </record>
@@ -28,10 +28,10 @@
         <field name="model">pabs.comission.output</field>
         <field name="arch" type="xml">
             <tree string="Comission Tree" editable="bottom">
-                <field name="payment_id" />
-                <field name="refund_id" />
-                <field name="job_id" />
-                <field name="comission_agent_id" />
+                <field name="payment_id" options="{'no_create':True, 'no_open':True}"/>
+                <field name="refund_id" options="{'no_create':True, 'no_open':True}"/>
+                <field name="job_id" options="{'no_create':True, 'no_open':True}"/>
+                <field name="comission_agent_id" options="{'no_create':True, 'no_open':True}"/>
                 <field name="commission_paid" sum="Comisión pagada"/>
                 <field name="actual_commission_paid" sum="Comisión real pagada"/>
             </tree>
