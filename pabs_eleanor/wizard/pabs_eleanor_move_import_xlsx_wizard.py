@@ -43,6 +43,10 @@ class PabsEleanorMoveImportImportXLSWizard(models.Model):
         conceptos_odoo = []
         for fila in headers:
             for celda in fila[4:9999]:
+                #Dejar de buscar en columnas en la primera columna en blanco
+                if celda == None:
+                    break
+
                 concepto = conc_obj.search([
                         ('company_id', '=', id_compania),
                         ('allow_load', '=', True),
@@ -52,7 +56,7 @@ class PabsEleanorMoveImportImportXLSWizard(models.Model):
                 if not concepto:
                     raise ValidationError("No se encuentra el concepto: {}".format(celda))
                 elif len(concepto) > 1:
-                    raise ValidationError("El concepto está dado de alta mas de una vez: {}".format(celda))
+                    raise ValidationError("El concepto se encuentra en más de una columna: {}".format(celda))
                 else:
                     conceptos_odoo.append(concepto)
 

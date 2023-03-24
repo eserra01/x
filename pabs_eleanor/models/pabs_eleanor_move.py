@@ -252,7 +252,7 @@ class PabsEleanorMove(models.Model):
         name = "Movimientos semanales"
         period_id = self.get_period('weekly')
         if period_id:
-            name = "Tipo: semanal, semana {}, periodo del {} al {}".format(period_id.week_number, str(period_id.date_start), str(period_id.date_end))
+            name = "Tipo: Semanal, periodo {}, periodo del {} al {}".format(period_id.week_number, str(period_id.date_start), str(period_id.date_end))
         return {
             'type': 'ir.actions.act_window',
             'name': name,        
@@ -300,7 +300,7 @@ class PabsEleanorMove(models.Model):
         name = "Movimientos quincenales"
         period_id = self.get_period('biweekly')
         if period_id:
-            name = "Tipo: Quincenal, semana {}, periodo del {} al {}".format(period_id.week_number, str(period_id.date_start), str(period_id.date_end))
+            name = "Tipo: Quincenal, periodo {}, periodo del {} al {}".format(period_id.week_number, str(period_id.date_start), str(period_id.date_end))
         return {
             'type': 'ir.actions.act_window',
             'name': name,        
