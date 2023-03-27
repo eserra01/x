@@ -7,3 +7,5 @@ access_pabs_balance_transfer_admin,pabs_balance_transfer_admin,pabs_account.mode
 access_pabs_econtract_move_admin,pabs.econtract.move,pabs_account.model_pabs_econtract_move,pabs_custom.admin_profile,1,1,1,1
 access_pabs_taxes,pabs.taxes,pabs_account.model_pabs_taxes,base.group_user,1,0,0,0
 access_pabs_taxes_admin,pabs.taxes,pabs_account.model_pabs_taxes,pabs_custom.admin_profile,1,1,1,1
+access_pabs_companies,pabs.companies,pabs_account.model_pabs_companies,base.group_user,1,1,1,1
+access_pabs_companies_by_contract,pabs.companies.by.contract,pabs_account.model_pabs_companies_by_contract,base.group_user,1,1,1,1

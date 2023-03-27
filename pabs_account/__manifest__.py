@@ -28,6 +28,7 @@
   'views/account_account_view.xml',
   'views/account_move_view.xml',
   'views/account_tax_view.xml',
+  'views/pabs_companies_view.xml',
   'security/security.xml',
   ],
   'installable': True,

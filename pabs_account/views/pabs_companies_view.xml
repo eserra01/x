@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+    
+    <!-- RAZONES SOCIALES  -->
+
+    <record id="pabs_companies_tree_view" model="ir.ui.view">
+      <field name="name">pabs.companies.tree.view</field>
+      <field name="model">pabs.companies</field>
+      <field name="arch" type="xml">
+        <tree editable="top">
+            <field name='name'/>
+            <field name="company_id" invisible="1"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_pabs_companies" model="ir.actions.act_window">
+      <field name="name">PABS Razones sociales</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">pabs.companies</field>
+      <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem
+      id = "pabs_companies_menu"
+      name = "PABS Razones sociales"
+      action = "action_pabs_companies"
+      parent = "sale.menu_sale_config"
+      sequence = "10"
+    />
+
+    <!-- RAZONES SOCIALES POR PLAN -->
+
+    <record id="pabs_companies_by_contract_tree_view" model="ir.ui.view">
+      <field name="name">pabs.companies.by.contract.tree.view</field>
+      <field name="model">pabs.companies.by.contract</field>
+      <field name="arch" type="xml">
+        <tree editable="top">
+            <field name='prefix_contract'/>
+            <field name='pabs_company' options="{'no_open':True, 'no_create':True}"/>
+            <field name="company_id" invisible="1"/>
+            <button class="btn btn-primary" name="contar_contratos" type="object" string="Contar contratos"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_pabs_companies_by_contract" model="ir.actions.act_window">
+      <field name="name">PABS Razon social por plan</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">pabs.companies.by.contract</field>
+      <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem
+      id = "pabs_companies_by_contract_menu"
+      name = "PABS Razon social por plan"
+      action = "action_pabs_companies_by_contract"
+      parent = "sale.menu_sale_config"
+      sequence = "11"
+    />
+
+  </data>
+</odoo>

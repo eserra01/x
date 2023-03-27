@@ -14,11 +14,23 @@
     <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
   </record>
 
-    <record model="ir.rule" id="pabs_taxes_rule">
+  <record model="ir.rule" id="pabs_taxes_rule">
     <field name="name">Impuestos PABS multi-company</field>
     <field name="model_id" search="[('model','=','pabs.taxes')]" model="ir.model"/>
     <field name="global" eval="True"/>
     <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+  </record>
+
+  <record model="ir.rule" id="pabs_companies_rule">
+    <field name="name">PABS Razones sociales</field>
+    <field name="model_id" ref="model_pabs_companies"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+  </record>
+
+  <record model="ir.rule" id="pabs_companies_by_contract_rule">
+    <field name="name">PABS Razon social por plan</field>
+    <field name="model_id" ref="model_pabs_companies_by_contract"/>
+    <field name="domain_force">[('company_id', 'in', company_ids)]</field>
   </record>
   
 </odoo>
