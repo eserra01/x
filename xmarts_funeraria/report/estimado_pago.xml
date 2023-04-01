@@ -52,7 +52,7 @@
               <t t-set="ids" t-value="doc.id"/>
               <t t-set="pay" t-value="doc.estimated_payment()"/>
               <t t-set="date" t-value="doc.estimated_payment_date(pay)"/>
-              <t t-set="late_amount" t-value="doc.late_amount_from_table(pay)"/>
+              <!-- <t t-set="late_amount" t-value="doc.late_amount_from_table(pay)"/> -->
 
               <table width="100%" class="tabla_encabezado">
                 <thead>
@@ -86,7 +86,7 @@
                   <td class="tabla_encabezado">$<t t-esc="doc.product_price"/></td>
                   <td class="tabla_encabezado">$<t t-esc="doc.balance"/></td>
                   <td class="tabla_encabezado">$<t t-esc="doc.calcular_saldo_a_plazos()"/></td>
-                  <td class="tabla_encabezado">$<t t-esc="late_amount"/></td>
+                  <td class="tabla_encabezado">$<t t-esc="doc.late_amount"/></td>
                   <td class="tabla_encabezado"><t t-esc="date" t-options='{"widget": "date"}'/></td>
                 </tr>
               </table>
