@@ -26,7 +26,7 @@ class TransferPortfolioPartners(models.Model):
   
   file = fields.Binary(string="Archivo")
   file_name = fields.Char(string="Archivo")
-  info = fields.Char(string="Resultados", default="Nota: El primer contrato debe estár en la celda A5 y el codigo de cobrador destino en columna M. No dejes filas en blanco entre los registros.")
+  info = fields.Char(string="Resultados", default="Nota: El primer contrato debe estár en la celda A5 y el codigo de cobrador destino en columna K. No dejes filas en blanco entre los registros.")
 
   def transfer_parnters(self):
     con_obj = self.env['pabs.contract']
@@ -107,7 +107,7 @@ class TransferPortfolioPartners(models.Model):
       query = ""
       for fila in records:
         numero_contrato = fila[0]
-        codigo_cobrador = fila[12]
+        codigo_cobrador = fila[10]
 
         if not numero_contrato:
           break
