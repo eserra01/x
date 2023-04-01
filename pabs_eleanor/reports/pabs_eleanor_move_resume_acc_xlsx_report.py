@@ -4,7 +4,7 @@ from odoo.exceptions import ValidationError
 
 class EleanorMoveResumeAcc(models.TransientModel):
   _name = 'pabs.eleanor.move.resume.acc'
-  _description = 'Detalle de movimientos'
+  _description = 'Resumen de cuentas contables'
 
   period_type = fields.Selection([('weekly','Semanal'),('biweekly','Quincenal')], string="Tipo de periodo", required=True)
 

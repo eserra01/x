@@ -5,15 +5,38 @@
 		<field name="model">pabs.transfer.portfolio.partners</field>
 		<field name="arch" type="xml">
 			<form string="Transferencia de Cartera">
-        <center><h3>Transferencia de Cartera de Clientes</h3></center><br/>
-        <group coslpan="2">
+        <h4>Se recomienda descargar la cartera del cobrador que va a entregar cuentas antes de realizar la transferencia.</h4>
+        <br/>
+
           <group>
-            <field name="collector_origin_id" domain="[('job_id','=','COBRADOR')]"/>
+          <field name="tipo"/>
+          </group>
+
+        <!-- Cartera completa -->
+          <group>
+          <group>
+            <field name="collector_origin_id" domain="[('job_id','=','COBRADOR')]" 
+              options="{'no_open': True, 'no_create': True}"
+              attrs="{'invisible': [('tipo', '!=', 'complete')], 'required': [('tipo', '=', 'complete')]}"/>
           </group>
           <group>
-            <field name="collector_dest_id" domain="[('job_id','=','COBRADOR')]"/>
+            <field name="collector_dest_id" domain="[('job_id','=','COBRADOR')]" 
+              options="{'no_open': True, 'no_create': True}"
+              attrs="{'invisible': [('tipo', '!=', 'complete')], 'required': [('tipo', '=', 'complete')]}"/>
           </group>
+          </group>
+
+        <!-- Cartera parcial -->
+        <group>
+          <group>
+            <field name="file_name" invisible="1"  /> 
+            <field name="file" filename="file_name" attrs="{'invisible': [('tipo', '!=', 'partial')], 'required': [('tipo', '=', 'partial')]}" />  
         </group>
+        </group>
+        <group>
+          <field name="info" nolabel="1" attrs="{'invisible': [('tipo', '!=', 'partial')]}" style="color: blue;"/>
+        </group>
+        
         <footer>
           <button name="transfer_parnters" string="Transferir Cartera" type="object" class="btn-primary"/>
           ó
