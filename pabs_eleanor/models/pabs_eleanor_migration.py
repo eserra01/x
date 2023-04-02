@@ -1372,15 +1372,15 @@ class PabsEleanorMigration(models.TransientModel):
 
         mov_obj = self.env['pabs.eleanor.move']
 
-        ### Validar que no existan registros
-        cant = mov_obj.search_count([
-            ('company_id', '=', id_compania)
-        ])
+        # ### Validar que no existan registros
+        # cant = mov_obj.search_count([
+        #     ('company_id', '=', id_compania)
+        # ])
 
-        if cant > 0:
-            _logger.info("Ya existen {} registros".format(cant))
-            log_obj.create([{'tabla': 'Movimientos', 'registro': '', 'mensaje': "Ya existen {} registros".format(cant)}])
-            return
+        # if cant > 0:
+        #     _logger.info("Ya existen {} registros".format(cant))
+        #     log_obj.create([{'tabla': 'Movimientos', 'registro': '', 'mensaje': "Ya existen {} registros".format(cant)}])
+        #     return
 
         ## Consultar registros de Odoo
         periodos = per_obj.search([
