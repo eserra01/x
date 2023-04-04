@@ -45,10 +45,12 @@ $( document ).ready(function() {
       $("#partner_fname").val('').prop('required',true);
       $("#partner_mname").val('').prop('required',true);
       $("#birthdate").val('').prop('required',true);
-      $("#phone").val('').prop('required',true);
+      $('#way_to_payment option:eq(0)').prop('selected', true)
+      $("#payment_amount").val('');
+      // $("#payment_scheme_id").find("option").remove().end().prop('required',true);
+      
       $("#municipality_id").find("option").remove().end().prop('required',true);
       $("#neighborhood_id").find("option").remove().end().prop('required',true);
-      $("#payment_scheme_id").find("option").remove().end().prop('required',true);
       $("#street_name").val('').prop('required',true);
       $("#street_number").val('').prop('required',true);
       $("#between_streets").val('');
@@ -74,7 +76,7 @@ $( document ).ready(function() {
   });
 
   $("#lot_id").change(function () {
-    $("#schemes").empty();
+    // $("#schemes").empty();
     var company_id = $("#company option:selected").val();
     var lot_id = $( this ).val();
     $("#activation_code").text("");
@@ -88,13 +90,13 @@ $( document ).ready(function() {
         if (data.result.product) {
           $("#product_id").text(data.result.product);
         }
-        if (data.result.schemes) {
-          var schemes = '';
-          for (var i = 0; i< data.result.schemes.length; i++){
-            schemes = schemes + '<option value="{0}">{1}</option>'.format(data.result.schemes[i].id, data.result.schemes[i].name);
-          }
-          $("#schemes").append('<label for="payment_scheme_id">Esquema de Pago</label><select id="payment_scheme_id" name="payment_scheme_id" class="form-control">{0}</select>'.format(schemes))
-        }
+        // if (data.result.schemes) {
+        //   var schemes = '';
+        //   for (var i = 0; i< data.result.schemes.length; i++){
+        //     schemes = schemes + '<option value="{0}">{1}</option>'.format(data.result.schemes[i].id, data.result.schemes[i].name);
+        //   }
+        //   $("#schemes").append('<label for="payment_scheme_id">Esquema de Pago</label><select id="payment_scheme_id" name="payment_scheme_id" class="form-control">{0}</select>'.format(schemes))
+        // }
         if (data.result.message) {
           $("#employee_id").text('');
           $("#product_id").text('');
@@ -124,10 +126,12 @@ $( document ).ready(function() {
               $("#partner_fname").val('');
               $("#partner_mname").val('');
               $("#birthdate").val('');
-              $("#phone").val('');
+              $('#way_to_payment option:eq(0)').prop('selected', true)
+              $("#payment_amount").val('');
+              // $("#payment_scheme_id").val($("#target option:first").val());
+              
               $("#municipality_id").val($("#target option:first").val());
               $("#neighborhood_id").val($("#target option:first").val());
-              $("#payment_scheme_id").val($("#target option:first").val());
               $("#street_name").val('');
               $("#street_number").val('');
               $("#between_streets").val('');

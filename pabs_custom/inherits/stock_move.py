@@ -86,6 +86,8 @@ class StockMove(models.Model):
   service_item_number = fields.Char(string="Serie del artículo")
   consumption_warehouse = fields.Many2one(comodel_name='account.analytic.account', string='Almacén de consumo')
 
+  payment_scheme = fields.Many2one(string = "Esquema de pago", comodel_name = "pabs.payment.scheme", domain="[('id', '=', 0)]")
+
   ### Termina Declaración de campos XMARTS
 
   @api.onchange('inversion_inicial','toma_comision')
@@ -699,3 +701,25 @@ class StockMove(models.Model):
 
     return rslt
     
+  ### Mostrar esquemas de pago disponibles
+  @api.onchange('payment_scheme')
+  def _calc_payment_scheme(self):
+    for rec in self:
+      if rec.picking_id.type_transfer == 'as-ov':
+        esquemas = self.env['pabs.payment.scheme'].search([])
+      
+        if "SUELDO" in self.picking_id.employee_id.payment_scheme.name:
+          return {
+                    'domain':
+                    {
+                        'payment_scheme': [('id','in', esquemas.ids)]                                          
+                    }
+                } 
+        else:
+          rec.payment_scheme = esquemas.filtered(lambda x: x.name == "COMISION").id
+          # return {
+          #           'domain':
+          #           {
+          #               'payment_scheme': [('id', '=', esquemas.filtered(lambda x: x.name == "COMISION").id)]                                         
+          #           }
+          #       } 

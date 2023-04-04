@@ -31,7 +31,8 @@
             </div>
           </div>
         </section>
-        <!-- Modal -->
+
+        <!-- Formulario de activacion -->
         <div class="modal fade" id="activation-form" tabindex="-1" role="dialog" aria-labelledby="activation-form" aria-hidden="true" data-backdrop="static">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -60,10 +61,10 @@
                             <label id="employee_id"/>
                           </div>
                         </div>
-                        <div>
+                        <!-- <div>
                           <div class="form-group col-md-6" id="schemes">
                           </div>
-                        </div>
+                        </div> -->
                       </fieldset>
                       <fieldset class="scheduler-border">
                         <legend class="scheduler-border">Datos del afiliado</legend>
@@ -89,6 +90,20 @@
                           <div class="form-group col-md-6">
                             <label for="phone">Teléfono</label>
                             <input type="text" class="form-control" id="phone" name="phone" placeholder="Ej. 3318487695"/>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="form-group col-md-8">
+                            <label for="way_to_payment">Forma de pago</label>
+                            <select type="date" class="form-control" id="way_to_payment" name="way_to_payment">
+                              <option value="weekly">Semanal</option>
+                              <option value="biweekly">Quincenal</option>
+                              <option value="monthly">Mensual</option>
+                            </select>
+                          </div>
+                          <div class="form-group col-md-4">
+                            <label for="payment_amount">Monto de pago</label>
+                            <input type="text" class="form-control" id="payment_amount" name="payment_amount"/>
                           </div>
                         </div>
                       </fieldset>

@@ -27,6 +27,7 @@
             <field name="origen_solicitud"/>
             <field name="referencia"/>
             <field name="amount_received"/>
+            <field name="payment_scheme" attrs="{'required': True}"  options="{'no_open': True, 'no_create': True}"/>
           </tree>
         </field>
         <footer>

@@ -78,6 +78,10 @@
         <field name="codigo_de_activacion_valid"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')],
           'required' : [('parent.type_transfer','=','as-ov')]}"/>
+        <field name="payment_scheme"
+          attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')],
+          'required' : [('parent.type_transfer','=','as-ov'),('origen_solicitud','!=','resguardo')]}"
+          options="{'no_open': True, 'no_create': True}"/>
         <field name="service_number"
           attrs="{'column_invisible': [('parent.type_transfer','!=','servicios')],
           'required' : [('parent.type_transfer','=','servicios')]}"/>
@@ -129,6 +133,10 @@
         <field name="codigo_de_activacion_valid"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')],
           'required' : [('parent.type_transfer','=','as-ov')]}"/>
+        <field name="payment_scheme"
+          attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')],
+          'required' : [('parent.type_transfer','=','as-ov')]}" 
+          options="{'no_open': True, 'no_create': True}"/>
       </xpath>
 
       <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom_qty']" position="replace">

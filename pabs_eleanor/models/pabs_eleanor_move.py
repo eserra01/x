@@ -10,7 +10,7 @@ class PabsEleanorMove(models.Model):
     def get_period(self, period_type=False):  
         if not period_type:
             period_type = self.env.context.get('period_type')         
-        period_id = self.env['pabs.eleanor.period'].search([('state','=','open'),('period_type','=',period_type)],limit=1)
+        period_id = self.env['pabs.eleanor.period'].search([('company_id','=',self.env.company.id),('state','=','open'),('period_type','=',period_type)],limit=1)
         return period_id
         
     period_id = fields.Many2one(comodel_name="pabs.eleanor.period", string="Periodo", required=True, default=get_period)
@@ -119,7 +119,7 @@ class PabsEleanorMove(models.Model):
                 self.concept_id = None
 
                 ids = []
-                for concept_id in self.env['pabs.eleanor.concept'].search([('concept_type','=',rec.move_type), ('allow_load', '=', True)]):                    
+                for concept_id in self.env['pabs.eleanor.concept'].search([('company_id','=',self.env.company.id), ('concept_type','=',rec.move_type), ('allow_load', '=', True)]):                    
                     if concept_id.id not in ids:
                         ids.append(concept_id.id)
               

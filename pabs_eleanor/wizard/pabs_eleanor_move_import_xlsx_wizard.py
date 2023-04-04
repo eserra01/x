@@ -149,6 +149,10 @@ class PabsEleanorMoveImportImportXLSWizard(models.Model):
                 _type = str(type(record[i]))
                 if 'int' in _type or 'float' in _type or 'None' in _type:
                     if 'int' in _type or 'float' in _type:
+
+                        ### No importar movimientos en cero
+                        if record[i] == 0:
+                            continue
                     
                         ### Validar area del empleado (buscar en oficina, si no tiene buscar en departamento)
                         lugar = ""

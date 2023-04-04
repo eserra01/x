@@ -76,7 +76,7 @@ class PABSContracts(models.Model):
   
   employee_id = fields.Many2one(comodel_name='hr.employee', related="lot_id.employee_id", tracking=True, string='Asistente activación')
   salary_scheme = fields.Boolean(string='Esquema de pago del empleado', related="employee_id.payment_scheme.allow_all",tracking=True)
-  payment_scheme_id = fields.Many2one(comodel_name='pabs.payment.scheme', tracking=True, default=lambda self : self.env['pabs.payment.scheme'].search([],limit=1).id, string='Esquema de pago')
+  payment_scheme_id = fields.Many2one(comodel_name='pabs.payment.scheme', tracking=True, string='Esquema de pago')
   trasnsfer_type = fields.Selection(string="Tipo de traspaso", selection=TRANSFERS, default='without')
   commission_rest_amount = fields.Float(string="Monto de comisión")
   full_name = fields.Char(string="Nombre completo", tracking=True, compute="calc_full_name", search="_search_full_name")
@@ -1399,6 +1399,10 @@ class PABSContracts(models.Model):
             if not comission_template:
               raise ValidationError("No se encontró la plantilla de comisiones del asistente")            
           ### TERMINA VALIDACION COMISIONES          
+
+          if not self.payment_scheme_id and not vals.get('payment_scheme_id'):
+            raise ValidationError("El contrato no tiene asignado un esquema de pago")
+
           invoice_id = self.create_invoice(previous)          
           account_id = invoice_id.partner_id.property_account_receivable_id.id
           journal_id = account_obj.with_context(

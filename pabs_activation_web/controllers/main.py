@@ -57,11 +57,11 @@ class ActivationWeb(http.Controller):
     ### DECLARACION DE OBJETOS
     lot_obj = request.env['stock.production.lot'].sudo()
     stock_quant_obj = request.env['stock.quant'].sudo()
-    payment_scheme_obj = request.env['pabs.payment.scheme'].sudo()
+    # payment_scheme_obj = request.env['pabs.payment.scheme'].sudo()
     contract_obj = request.env['pabs.contract'].sudo()
 
-    salary_id = payment_scheme_obj.search([
-      ('name','=','SUELDO')])
+    # salary_id = payment_scheme_obj.search([
+    #   ('name','=','SUELDO')])
 
     message = ""
     result = {}
@@ -70,7 +70,7 @@ class ActivationWeb(http.Controller):
     if kargs.get('company_id'):
       company_id = int(kargs.get('company_id'))
     if kargs.get('lot_id'):
-      lot_name = kargs.get('lot_id');
+      lot_name = kargs.get('lot_id')
     else:
       lot_name = ''
     ### BUSCAMOS LA SOLICITUD
@@ -98,20 +98,20 @@ class ActivationWeb(http.Controller):
     else:
       employee_name = "{} - {}".format(employee_id.barcode, employee_id.name) or False
       result.update({'employee' : employee_name})
-    scheme_data = []
-    if employee_id.payment_scheme.id == salary_id.id:
-      scheme_ids = payment_scheme_obj.search([])
-      for scheme_id in scheme_ids:
-        scheme_data.append({
-          'id' : scheme_id.id,
-          'name' : scheme_id.name,
-        })
-    else:
-      scheme_data.append({
-        'id' : employee_id.payment_scheme.id,
-        'name' : employee_id.payment_scheme.name,
-      })
-    result.update({"schemes" : scheme_data})
+    # scheme_data = []
+    # if employee_id.payment_scheme.id == salary_id.id:
+    #   scheme_ids = payment_scheme_obj.search([])
+    #   for scheme_id in scheme_ids:
+    #     scheme_data.append({
+    #       'id' : scheme_id.id,
+    #       'name' : scheme_id.name,
+    #     })
+    # else:
+    #   scheme_data.append({
+    #     'id' : employee_id.payment_scheme.id,
+    #     'name' : employee_id.payment_scheme.name,
+    #   })
+    # result.update({"schemes" : scheme_data})
     product_id = lot_id.product_id
     if not product_id:
       message = message + "No se encontró el servicio\n"

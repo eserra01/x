@@ -36,6 +36,7 @@ class PabsEleanorMoveLayoutXlsxReport(models.AbstractModel):
         ### Columnas de Percepciones   
         perception_ids = self.env['pabs.eleanor.concept'].search(
         [
+            ('company_id', '=', self.env.company.id),
             ('concept_type','=','perception'),
             ('allow_load','=',True)
         ], order='order asc')
@@ -47,6 +48,7 @@ class PabsEleanorMoveLayoutXlsxReport(models.AbstractModel):
         ### Columnas de Deducciones             
         deduction_ids = self.env['pabs.eleanor.concept'].search(
         [
+            ('company_id', '=', self.env.company.id),
             ('concept_type','=','deduction'),
             ('allow_load','=',True)
         ], order='order asc')

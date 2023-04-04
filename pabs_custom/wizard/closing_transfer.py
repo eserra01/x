@@ -61,7 +61,7 @@ class ClosingTransfers(models.TransientModel):
         'method_payment' : move_id.forma_pago,
         'reference' : move_id.referencia or 'NINGUNA',
         'origin' : move_id.origen_solicitud,
-        'scheme' : contract_id.payment_scheme_id.name
+        'scheme' : move_id.payment_scheme.name
       }
       # Se buscan todos los registros en los que el lot_id corresponda
       move_line_ids = self.env['stock.move.line'].search([('lot_id','=',line.lot_id.id)])
@@ -78,11 +78,16 @@ class ClosingTransfers(models.TransientModel):
               })
 
       data.append(data_dict)
-      contract_id.initial_investment = move_id.inversion_inicial or 0
-      contract_id.stationery = move_id.papeleria or 0
-      contract_id.comission = move_id.toma_comision or 0
-      if contract_id.state == 'actived':
-        contract_id.state = 'precontract'
+
+      ### No actualizar información del contrato al reimprimir el reporte
+      if not previus:
+        contract_id.initial_investment = move_id.inversion_inicial or 0
+        contract_id.stationery = move_id.papeleria or 0
+        contract_id.comission = move_id.toma_comision or 0
+        contract_id.payment_scheme_id = move_id.payment_scheme.id
+
+        if contract_id.state == 'actived':
+          contract_id.state = 'precontract'
 
     return data
 

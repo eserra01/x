@@ -82,8 +82,9 @@ class FixStockMove(models.TransientModel):
       if contract_id.state not in ('actived','precontract'):
         raise ValidationError((
           "La solicitud no puede ser modificada por que se encuentra en estado: {}".format(contract_id.state)))
-      contract_id.stationary = rec.papeleria
+      contract_id.stationery = rec.papeleria
       contract_id.initial_investment = rec.inversion_inicial
       contract_id.comission = rec.toma_comision
       contract_id.amount_received = rec.amount_received
+      contract_id.payment_scheme_id = rec.payment_scheme.id
       
