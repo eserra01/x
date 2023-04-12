@@ -151,43 +151,41 @@ class PabsEleanorMoveImportImportXLSWizard(models.Model):
                     if 'int' in _type or 'float' in _type:
 
                         ### No importar movimientos en cero
-                        if record[i] == 0:
-                            continue
-                    
-                        ### Validar area del empleado (buscar en oficina, si no tiene buscar en departamento)
-                        lugar = ""
-                        id_area = 0
-                        if employee_id.warehouse_id:
-                            if employee_id.warehouse_id.pabs_eleanor_area_id:
-                                id_area = employee_id.warehouse_id.pabs_eleanor_area_id.id
-                            else:
-                                lugar = "La oficina {}".format(employee_id.warehouse_id.name)
-                        elif employee_id.department_id:
-                            if employee_id.department_id.pabs_eleanor_area_id:
-                                id_area = employee_id.department_id.pabs_eleanor_area_id.id
-                            else:
-                                lugar = "El departamento {}".format(employee_id.department_id.name)
+                        if record[i] != 0:                    
+                            ### Validar area del empleado (buscar en oficina, si no tiene buscar en departamento)
+                            lugar = ""
+                            id_area = 0
+                            if employee_id.warehouse_id:
+                                if employee_id.warehouse_id.pabs_eleanor_area_id:
+                                    id_area = employee_id.warehouse_id.pabs_eleanor_area_id.id
+                                else:
+                                    lugar = "La oficina {}".format(employee_id.warehouse_id.name)
+                            elif employee_id.department_id:
+                                if employee_id.department_id.pabs_eleanor_area_id:
+                                    id_area = employee_id.department_id.pabs_eleanor_area_id.id
+                                else:
+                                    lugar = "El departamento {}".format(employee_id.department_id.name)
 
-                        if not id_area:
-                            raise ValidationError("{} del empleado {}-{} no tiene asignada un area.".format(lugar, employee_id.barcode, employee_id.name))
-                        
-                        ### Validar puesto del empleado
-                        if not employee_id.job_id: 
-                            raise ValidationError("El empleado {}-{} no tiene asignado un puesto".format(employee_id.barcode, employee_id.name))
+                            if not id_area:
+                                raise ValidationError("{} del empleado {}-{} no tiene asignada un area.".format(lugar, employee_id.barcode, employee_id.name))
+                            
+                            ### Validar puesto del empleado
+                            if not employee_id.job_id: 
+                                raise ValidationError("El empleado {}-{} no tiene asignado un puesto".format(employee_id.barcode, employee_id.name))
 
-                        ### Agregar registro a lista de movimientos por crear
-                        movimientos_por_crear.append({  
-                            'period_id': period_id,
-                            'move_type': conc.concept_type,
-                            'concept_id': conc.id,
-                            'employee_id': employee_id.id,
-                            'area_id': id_area,
-                            'warehouse_id': employee_id.warehouse_id.id,
-                            'department_id': employee_id.department_id.id,
-                            'job_id': employee_id.job_id.id,
-                            'amount': record[i],
-                            'company_id': id_compania
-                        })                        
+                            ### Agregar registro a lista de movimientos por crear
+                            movimientos_por_crear.append({  
+                                'period_id': period_id,
+                                'move_type': conc.concept_type,
+                                'concept_id': conc.id,
+                                'employee_id': employee_id.id,
+                                'area_id': id_area,
+                                'warehouse_id': employee_id.warehouse_id.id,
+                                'department_id': employee_id.department_id.id,
+                                'job_id': employee_id.job_id.id,
+                                'amount': record[i],
+                                'company_id': id_compania
+                            })
                 else:
                     raise ValidationError("El valor de una celda no es válido: {}. Empleado {}-{}. Concepto {}".format(record[i], employee_id.barcode, employee_id.name, conc.name))
                 
