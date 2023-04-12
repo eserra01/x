@@ -1400,7 +1400,7 @@ class PABSContracts(models.Model):
               raise ValidationError("No se encontró la plantilla de comisiones del asistente")            
           ### TERMINA VALIDACION COMISIONES          
 
-          if not self.payment_scheme_id and not vals.get('payment_scheme_id'):
+          if not previous.payment_scheme_id and not vals.get('payment_scheme_id'):
             raise ValidationError("El contrato no tiene asignado un esquema de pago")
 
           invoice_id = self.create_invoice(previous)          
@@ -1644,7 +1644,6 @@ class PABSContracts(models.Model):
         if vals.get('lot_id'):
           previous = self.search([('lot_id','=',vals['lot_id'])],limit=1)
 
-
           #### COMIENZA VALIDACIÓN DE COMISIONES Validar que en la plantilla de comisiones el asistente tenga comisión asignada > $0 #####
           if previous.employee_id and previous.name_service:
             #Obtener el puesto de asistente social
@@ -1676,6 +1675,9 @@ class PABSContracts(models.Model):
             if comission_template.comission_amount <= 0 and not bf:
               raise ValidationError(("El A.S {} tiene asignado ${} en su plantilla de comisiones. Debe asignarle un monto mayor a cero".format(comission_template.comission_agent_id.name, comission_template.comission_amount)))
           ### TERMINA VALIDACION COMISIONES
+
+          if not previous.payment_scheme_id and not vals.get('payment_scheme_id'):
+            raise ValidationError("El contrato no tiene asignado un esquema de pago")
 
           #Asignar asistente de venta PRODUCCION
           vals['sale_employee_id'] = previous.employee_id
@@ -1922,13 +1924,28 @@ class PABSContracts(models.Model):
     if vals.get('contract_status_item') or vals.get('contract_status_reason'):
       self.date_of_last_status = datetime.today()
 
-    ### Al poner en suspensión temporal validar que la fecha de reactivación sea mayor al dia de hoy.
-    if vals.get('reactivation_date') and fields.Date.to_date(vals.get('reactivation_date')) < fields.Date.today():
-      raise ValidationError("La fecha de suspensión temporal debe ser mayor a la fecha actual")
+    ##### Al cambiar estatus #####
+    if vals.get('contract_status_item'):
+      lista_de_estatus = self.env['pabs.contract.status'].search([])
+      nuevo_estatus = lista_de_estatus.filtered(lambda x: x.id == vals['contract_status_item'])
 
-    ### Si se quita la suspensión temporal quitar la fecha de reactivación
-    if vals.get('contract_status_item') and vals.get('contract_status_item') != "SUSPENSION TEMPORAL" and self.contract_status_item.status == "SUSPENSION TEMPORAL":
-      self.reactivation_date = None
+      ### Si se quita la suspensión temporal quitar la fecha de reactivación
+      if "TEMPORAL" not in nuevo_estatus.status and "TEMPORAL" in self.contract_status_item.status:
+        self.reactivation_date = None
+
+      ### Actualizar detalle de servicio si se pasó a estatus REALIZADO
+      if nuevo_estatus.status == "REALIZADO":
+        self.service_detail = 'realized'
+
+    ### Actualizar detalle de servicio si se pasó a motivo REALIZADO POR COBRAR
+    if vals.get('contract_status_reason'):
+      motivo_realizado_por_cobrar = self.env['pabs.contract.status.reason'].search([('reason', '=', 'REALIZADO POR COBRAR')])
+
+      if not motivo_realizado_por_cobrar:
+        raise ValidationError("No existe el motivo REALIZADO POR COBRAR")
+      
+      if vals['contract_status_reason'] == motivo_realizado_por_cobrar.id:
+        self.service_detail = 'made_receivable'
 
     full_name = ''
     if vals.get('partner_name') or self.partner_name:
