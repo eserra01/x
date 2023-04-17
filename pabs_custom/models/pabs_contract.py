@@ -1930,7 +1930,7 @@ class PABSContracts(models.Model):
       nuevo_estatus = lista_de_estatus.filtered(lambda x: x.id == vals['contract_status_item'])
 
       ### Si se quita la suspensión temporal quitar la fecha de reactivación
-      if "TEMPORAL" not in nuevo_estatus.status and "TEMPORAL" in self.contract_status_item.status:
+      if self.contract_status_item.status and "TEMPORAL" not in nuevo_estatus.status and "TEMPORAL" in self.contract_status_item.status:
         self.reactivation_date = None
 
       ### Actualizar detalle de servicio si se pasó a estatus REALIZADO
