@@ -166,7 +166,7 @@
               <br/>
               <label for="lot_id"/>
               <h2>
-                <field name="lot_id" class="oe_inline"/>
+                <field name="lot_id" class="oe_inline" options="{'no_create':True, 'no_open':True}" attrs="{'readonly' : [('state', '=', 'contract')]}"/>
               </h2>
               <field name="invoice_date" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" required="True"/>
               <field name="employee_id" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" readonly="True"/>
