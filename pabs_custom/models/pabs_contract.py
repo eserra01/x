@@ -116,6 +116,7 @@ class PABSContracts(models.Model):
   contract_expires = fields.Date(tracking=True, string="Vencimiento contrato", compute ="calcular_vencimiento_y_atraso")
   days_without_payment = fields.Integer(tracking=True, string="Dias sin abonar", compute="calcular_dias_sin_abonar")
   late_amount = fields.Float(tracking=True, string="Monto atrasado", compute="calculo_rapido_del_monto_atrasado")
+  late_amount_stored = fields.Float(tracking=True, string="Monto atrasado almacenado", default=0)
   late_amount2text = fields.Char(string="Monto atrasado", compute='_get_late_amount2text')
   comments = fields.Text(tracking=True, string='Comentarios de activación')
   service_detail = fields.Selection(tracking=True, selection=SERVICE, string='Detalle de servicio', default="unrealized", required="1")
