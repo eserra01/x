@@ -105,32 +105,46 @@
                 <!-- Margen de quitar bordes de tablas -->
                 <div style="height: 1mm;"> </div>
 
-                <!-- RECIBOS: Obtener último recibo por fecha de pago -->
-                <t t-set="last_payment" t-value="doc.payment_ids.filtered(lambda r: r.reference in ['stationary', 'payment'] and r.state != 'cancel').sorted(key=lambda r: r.date_receipt)"/>
+                <!-- RECIBOS: Obtener ultimo abono (dependiendo el tipo de recibo se mostrarán distintos datos) -->
+                <t t-set="last_payment" t-value="doc.payment_ids.filtered(lambda r: r.state in ('posted', 'sent', 'reconciled')).sorted(key=lambda r: r.payment_date, reverse=True)"/>
 
                 <table style="width: 100%;">
                     <tr style="height: 5mm;">
                     </tr>
                     <tr style="height: 63mm;">
                         <t t-if="last_payment">
+                            <t t-set="fecha_recibo" t-value=""/>
+                            <t t-set="recibo" t-value=""/>
+                            <t t-set="monto" t-value=""/>
+                            <t t-set="cobrador" t-value=""/>
+
                             <!-- Cuando el ultimo pago es papeleria (mostrar monto de inversion inicial) -->
-                            <t t-if="last_payment[-1].reference == 'stationary'">
-                                <td style="width: 8%; font-size: 8pt;" class="dato_s"><span t-esc="doc.invoice_date"></span></td>
-                                <td style="width: 10%;" class="dato_s">Inv. Inicial</td>
-                                <td style="width: 12%;" class="dato_s"><span t-esc="'${:,.2f}'.format(doc.initial_investment)"></span></td>
-                                <td style="width: 10%;" class="dato_s"></td>
-                                <td style="width: 10%;" class="dato_s"><span t-esc="'${:,.2f}'.format(doc.balance)"></span></td>
-                                <td style="width: 50%;"></td>
+                            <t t-if="last_payment[0].reference in ('stationary', 'surplus')">
+                                <t t-set="fecha_recibo" t-value="doc.invoice_date"/>
+                                <t t-set="recibo" t-value="'Inv. Inicial'"/>
+                                <t t-set="monto" t-value="doc.initial_investment"/>
                             </t>
                             <t t-else="">
                                 <!-- Cuando el ultimo pago es abono -->
-                                <td style="width: 8%; font-size: 8pt;" class="dato_s"><span t-esc="last_payment[-1].date_receipt"></span></td>
-                                <td style="width: 10%;" class="dato_s"><span t-esc="last_payment[-1].ecobro_receipt"></span></td>
-                                <td style="width: 12%;" class="dato_s"><span t-esc="'${:,.2f}'.format(last_payment[-1].amount)"></span></td>
-                                <td style="width: 10%;" class="dato_s"><span t-esc="last_payment[-1].debt_collector_code.name"></span></td>
-                                <td style="width: 10%;" class="dato_s"><span t-esc="'${:,.2f}'.format(doc.balance)"></span></td>
-                                <td style="width: 50%;"></td>
+                                <t t-set="fecha_recibo" t-value="last_payment[0].date_receipt"/>
+ 
+                                <t t-if="last_payment[0].ecobro_receipt">
+                                    <t t-set="recibo" t-value="last_payment[0].ecobro_receipt"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-set="recibo" t-value="dict(last_payment[0]._fields['reference'].selection).get(last_payment[0].reference)"/>
+                                </t>
+                                
+                                <t t-set="monto" t-value="last_payment[0].amount"/>
+                                <t t-set="cobrador" t-value="last_payment[0].debt_collector_code.name"/>
                             </t>
+
+                            <td style="width: 8%; font-size: 8pt;" class="dato_s"><span t-esc="fecha_recibo"></span></td>
+                            <td style="width: 10%;" class="dato_s"><span t-esc="recibo"></span></td>
+                            <td style="width: 12%;" class="dato_s"><span t-esc="'${:,.2f}'.format(monto)"></span></td>
+                            <td style="width: 10%;" class="dato_s"><span t-esc="cobrador"></span></td>
+                            <td style="width: 10%;" class="dato_s"><span t-esc="'${:,.2f}'.format(doc.balance)"></span></td>
+                            <td style="width: 50%;"></td>
                         </t>
                     </tr>
                 </table>
