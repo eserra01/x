@@ -54,37 +54,43 @@ class ReportCarnetPagoRango(models.AbstractModel):
         telefonos_compañia = compañia.service_phone
 
         contracts_list = []
-        #Ingresar cada contrato a la lista
+        
         for con in contract_ids:
 
-            #Obtener dato del ultimo abono (papeleria o abono)
+            ### Obtener ultimo abono (dependiendo el tipo de recibo se mostrarán distintos datos)
             last_payment = self.env['account.payment'].search([
                 ('contract','=',con.id),
-                ('state','in',('posted','reconciled')),
-                ('reference','in',('stationary','payment'))
+                ('state', 'in', ('posted', 'sent', 'reconciled'))
             ], limit=1, order="payment_date desc")
 
             fecha_recibo = ""
-            if last_payment.reference == 'payment':
-                fecha_recibo = fields.Date.to_string(last_payment.date_receipt)
-            else:
+            if last_payment.reference in ('stationary', 'surplus'):
                 fecha_recibo = fields.Date.to_string(con.invoice_date)
-            
-            if last_payment.reference == 'payment':
-                recibo = last_payment.ecobro_receipt
             else:
+                fecha_recibo = fields.Date.to_string(last_payment.date_receipt)
+            
+            recibo = ""
+            if last_payment.reference in ('stationary', 'surplus'):
                 recibo = "Inv. Inicial"
-
-            if last_payment.reference == 'payment':
-                monto = last_payment.amount
             else:
+                if last_payment.ecobro_receipt:
+                    recibo = last_payment.ecobro_receipt
+                else:
+                    recibo = dict(last_payment._fields['reference'].selection).get(last_payment.reference)
+
+            monto = 0
+            if last_payment.reference in ('stationary', 'surplus'):
                 monto = con.initial_investment
+            else:
+                monto = last_payment.amount
             
+            cobrador = ""
             if last_payment.debt_collector_code:
                 cobrador = last_payment.debt_collector_code.name
             else:
                 cobrador = ""
 
+            cobrador_contrato = ""
             if con.debt_collector:
                 cobrador_contrato = con.debt_collector.name
             else:
