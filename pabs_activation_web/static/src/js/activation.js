@@ -108,7 +108,7 @@ $( document ).ready(function() {
   });
 
   $("#activation_form").submit(function (){
-    $("#submit").addClass("disabled");
+    // $("#submit").addClass("disabled");
     var company_id = $("#company option:selected").val();
     var args = "company_id={0}&".format(company_id);
     var args = args + $("#activation_form").serialize();
