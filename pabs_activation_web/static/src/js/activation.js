@@ -148,7 +148,8 @@ $( document ).ready(function() {
             alert(data.result.message);
           }
           return false;
-        }
+        },
+        async: false
     });
     return false;
   });

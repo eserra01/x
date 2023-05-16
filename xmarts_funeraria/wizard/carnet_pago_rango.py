@@ -56,24 +56,29 @@ class ReportCarnetPagoRango(models.AbstractModel):
         contracts_list = []
         #Ingresar cada contrato a la lista
         for con in contract_ids:
-            #Obtener dato del ultimo abono
-            last_payment = self.env['account.payment'].search([('contract','=',con.id),('state','in',('posted','reconciled'))], limit=1, order="id desc")
+
+            #Obtener dato del ultimo abono (papeleria o abono)
+            last_payment = self.env['account.payment'].search([
+                ('contract','=',con.id),
+                ('state','in',('posted','reconciled')),
+                ('reference','in',('stationary','payment'))
+            ], limit=1, order="payment_date desc")
 
             fecha_recibo = ""
-            if last_payment.date_receipt:
+            if last_payment.reference == 'payment':
                 fecha_recibo = fields.Date.to_string(last_payment.date_receipt)
             else:
-                fecha_recibo = fields.Date.to_string(last_payment.payment_date)
+                fecha_recibo = fields.Date.to_string(con.invoice_date)
             
-            if last_payment.ecobro_receipt:
+            if last_payment.reference == 'payment':
                 recibo = last_payment.ecobro_receipt
             else:
-                recibo = ""
+                recibo = "Inv. Inicial"
 
-            if last_payment.amount:
+            if last_payment.reference == 'payment':
                 monto = last_payment.amount
             else:
-                monto = 0
+                monto = con.initial_investment
             
             if last_payment.debt_collector_code:
                 cobrador = last_payment.debt_collector_code.name

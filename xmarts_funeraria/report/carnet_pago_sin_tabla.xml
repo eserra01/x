@@ -104,44 +104,34 @@
 
                 <!-- Margen de quitar bordes de tablas -->
                 <div style="height: 1mm;"> </div>
-            
-                <!-- RECIBOS:  Obtener el ultimo recibo (por id) -->
-                <t t-set="saldo" t-value="doc.balance"/>
 
-                <t t-set="fecha_recibo" t-value="x"/>
-                <t t-set="recibo" t-value="x"/>
-                <t t-set="monto" t-value="0"/>
-                <t t-set="cobrador" t-value="x"/>
-
-                <t t-set="id_anterior" t-value="0"/>
-                <t t-foreach="doc.payment_ids" t-as="abono">
-                    <t t-if="abono.id > id_anterior">
-                        <t t-if="abono.date_receipt">
-                            <t t-set="fecha_recibo" t-value="abono.date_receipt"/>    
-                        </t>
-                        <t t-else="">
-                            <t t-set="fecha_recibo" t-value="abono.payment_date"/>
-                        </t>
-
-                        <t t-set="recibo" t-value="abono.ecobro_receipt"/>    
-                        <t t-set="monto" t-value="abono.amount"/>
-                        <t t-set="cobrador" t-value="abono.debt_collector_code.name"/>
-                    </t>
-
-                    <t t-set="id_anterior" t-value="abono.id"/>
-                </t>
+                <!-- RECIBOS: Obtener último recibo por fecha de pago -->
+                <t t-set="last_payment" t-value="doc.payment_ids.filtered(lambda r: r.reference in ['stationary', 'payment'] and r.state != 'cancel').sorted(key=lambda r: r.date_receipt)"/>
 
                 <table style="width: 100%;">
                     <tr style="height: 5mm;">
                     </tr>
                     <tr style="height: 63mm;">
-                        <!-- Margen izquierdo -->
-                        <td style="width: 8%; font-size: 8pt;" class="dato_s"><span t-esc="fecha_recibo"></span></td>
-                        <td style="width: 10%;" class="dato_s"><span t-esc="recibo"></span></td>
-                        <td style="width: 12%;" class="dato_s">$<span t-esc="monto"></span></td>
-                        <td style="width: 10%;" class="dato_s"><span t-esc="cobrador"></span></td>
-                        <td style="width: 10%;" class="dato_s">$<span t-esc="saldo"></span></td>
-                        <td style="width: 50%;"></td>
+                        <t t-if="last_payment">
+                            <!-- Cuando el ultimo pago es papeleria (mostrar monto de inversion inicial) -->
+                            <t t-if="last_payment[-1].reference == 'stationary'">
+                                <td style="width: 8%; font-size: 8pt;" class="dato_s"><span t-esc="doc.invoice_date"></span></td>
+                                <td style="width: 10%;" class="dato_s">Inv. Inicial</td>
+                                <td style="width: 12%;" class="dato_s"><span t-esc="'${:,.2f}'.format(doc.initial_investment)"></span></td>
+                                <td style="width: 10%;" class="dato_s"></td>
+                                <td style="width: 10%;" class="dato_s"><span t-esc="'${:,.2f}'.format(doc.balance)"></span></td>
+                                <td style="width: 50%;"></td>
+                            </t>
+                            <t t-else="">
+                                <!-- Cuando el ultimo pago es abono -->
+                                <td style="width: 8%; font-size: 8pt;" class="dato_s"><span t-esc="last_payment[-1].date_receipt"></span></td>
+                                <td style="width: 10%;" class="dato_s"><span t-esc="last_payment[-1].ecobro_receipt"></span></td>
+                                <td style="width: 12%;" class="dato_s"><span t-esc="'${:,.2f}'.format(last_payment[-1].amount)"></span></td>
+                                <td style="width: 10%;" class="dato_s"><span t-esc="last_payment[-1].debt_collector_code.name"></span></td>
+                                <td style="width: 10%;" class="dato_s"><span t-esc="'${:,.2f}'.format(doc.balance)"></span></td>
+                                <td style="width: 50%;"></td>
+                            </t>
+                        </t>
                     </tr>
                 </table>
 
