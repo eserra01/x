@@ -44,6 +44,7 @@ SERVICE = [
 TRANSFERS = [
   ('without','SIN TRASPASO'),  
   ('commission_200','TRASPASO CON COMISIÓN $200'),
+  ('commission_400','TRASPASO CON COMISIÓN $400'),
   ('commission_rest','TRASPASO CON COMISIÓN RESTANTE'),
   ('without_commission','TRASPASO SIN COMISIÓN')]
 
@@ -1363,9 +1364,14 @@ class PABSContracts(models.Model):
           line_ids.remaining_commission = 0
           # Comisiones correspondientes
           fide_line_id.corresponding_commission = fide_line_id.remaining_commission = amount_fide + plus_amount_fide + amount_as       
-        # Traspaso con comisión de 200
-        if previous.trasnsfer_type == 'commission_200':
-          transfer_amount = 200
+        # Traspaso con comisión de 200 ó 400
+        if previous.trasnsfer_type in ('commission_200', 'commission_400'):
+          transfer_amount = 0
+
+          if previous.trasnsfer_type == 'commission_200':
+            transfer_amount = 200
+          elif previous.trasnsfer_type == 'commission_400':
+            transfer_amount = 400
           #
           line_ids.corresponding_commission = 0
           line_ids.remaining_commission = 0
