@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_contratos_pagados_wizard_view" model="ir.ui.view">
+		<field name="name">pabs.contratos.pagados.wizard.view</field>
+		<field name="model">pabs.contratos.pagados</field>
+		<field name="arch" type="xml">
+			<form string="Reporte de Contratos pagados">
+        <h3>Reporte de contratos pagados</h3>
+         <group>
+            <group>
+              <field name="start_date"/>
+            </group>
+            <group>
+              <field name="end_date"/>
+            </group>
+          </group>
+        <footer>
+          <button name='generate_xls_report' string='Exportar XLSX' type="object" icon="fa-windows"/>
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+			</form>
+		</field>
+	</record>
+
+  <record id="action_pabs_contratos_pagados_report_action" model="ir.actions.act_window">
+    <field name="name">Reporte de contratos pagados</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">pabs.contratos.pagados</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_contratos_pagados_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    action="action_pabs_contratos_pagados_report_action" 
+    id="contratos_pagados_menu"
+    name="Reporte de contratos pagados" 
+    parent="xmarts_funeraria.report_root_menu"
+    sequence="7"/>
+
+  <report
+    id="contratos_pagados_xlsx_report"
+    model="pabs.contratos.pagados"
+    string="Generar Reporte de Contratos pagados XLSX"
+    report_type="xlsx"
+    name="pabs_reports.contratos_pagados_xls"
+    file="pabs_reports.contratos_pagados_xls"
+    attachment_use="False"
+    />
+    
+</odoo>
