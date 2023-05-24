@@ -24,6 +24,7 @@
     'wizard/delinquent_customer_wizard.xml',
     'wizard/pabs_debt_collector_wizard.xml',
     'wizard/pabs_stock_push_and_pull_wizard_view.xml',
+    'wizard/pabs_contratos_pagados_wizard.xml',
     'reports/elaborated_contracts.xml',
     'reports/pabs_collector_report_template.xml',
     'reports/delinquent_customer_template.xml',
