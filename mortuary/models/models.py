@@ -638,6 +638,18 @@ class Mortuary(models.Model):
             journal_name = journal_id.id
         else:
             journal_name = False
+
+        ### Obtener partner de la factura
+        partner_id = False
+        facturas = self.env['account.move'].search([
+          ('type','=','out_invoice'),
+          ('state','=','posted'),
+          ('mortuary_id','=',self.id)
+        ])
+
+        for fac in facturas:
+            partner_id = fac.partner_id.id
+
         return {
             'name': 'Crear pagos',
             'type': 'ir.actions.act_window',
@@ -650,7 +662,7 @@ class Mortuary(models.Model):
                 'default_place_of_death' : self.ii_lugar_fallec,
                 'default_journal_id' : journal_name,
                 'default_binnacle' : self.id,
-                'default_partner_id' : self.partner_id.id,
+                'default_partner_id' : partner_id,
                 'default_reference' : 'payment_mortuary',
                 'default_payment_type': 'inbound',
             }
