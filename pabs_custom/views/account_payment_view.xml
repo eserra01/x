@@ -28,7 +28,8 @@
           <field name="date_receipt"/>
           <field name="reference"/>
           <field name="ecobro_receipt"/>
-          <field name="debt_collector_code" domain="[('job_id.name','=','COBRADOR')]"/>
+          <field name="partner_company_id" invisible="1"/>
+          <field name="debt_collector_code" domain="[('job_id.name','=','COBRADOR'), ('company_id', '=', partner_company_id)]"/>
         </xpath>
 
         <xpath expr="//field[@name='journal_id']" position="before">

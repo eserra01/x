@@ -65,6 +65,8 @@ class account_Payment(models.Model):
 
     destino_de_pago_funeraria =  fields.Selection(selection = DESTINO_DE_PAGO_FUNERARIA, string = 'Destino de pago funeraria')
 
+    company_id = fields.Many2one(comodel_name="res.company", related="partner_id.id", string="Compañia del partner")
+
     def ripcord_query(self, company_id, date_start, date_end):
       #
       cr = self._cr
