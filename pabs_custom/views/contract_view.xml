@@ -319,6 +319,7 @@
           <field name="contract_status" invisible="1"/>
           <field name="allow_edit" invisible="1"/>
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>        
+          <field name="company_id" invisible="1"/>
         </header>
         <sheet>
           <div class="oe_button_box" name="button_box">
@@ -363,7 +364,7 @@
             </group>
 
             <group string="Datos de cobranza">
-              <field name="debt_collector" domain="[('job_id','=','COBRADOR'), ('company_id.id', '=', company_id)]"/>
+              <field name="debt_collector" domain="[('job_id','=','COBRADOR'), ('company_id.id', '=', company_id.id)]"/>
               <field name="assign_collector_date" />              
               <field name="way_to_payment" />
               <field name="payment_amount" />
