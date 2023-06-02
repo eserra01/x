@@ -63,7 +63,6 @@ class PABSContracts(models.Model):
   _name = 'pabs.contract'
   _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
   _description = 'Pre-Contrato'
-  _check_company_auto = True
 
 #Datos del registro
   state = fields.Selection(selection=STATES,string='state',tracking=True,)
@@ -108,7 +107,7 @@ class PABSContracts(models.Model):
   investment_bond = fields.Float(tracking=True, string ='Bono por inversión')
   amount_received = fields.Float(tracking=True, string='Importe recibido', compute='_calc_amount_received')
 
-  debt_collector = fields.Many2one(tracking=True, comodel_name="hr.employee", string='Nombre del cobrador', check_company=True)
+  debt_collector = fields.Many2one(tracking=True, comodel_name="hr.employee", string='Nombre del cobrador', domain="[('job_id.name', '=', 'COBRADOR'), ('company_id.id', '=', company_id)]")
   payment_amount = fields.Float(tracking=True, string= 'Monto de pago')
   initial_investment_in_words = fields.Char(string="Inversion inicial en letras", compute="_amount_to_words")
   way_to_payment = fields.Selection(tracking=True, selection=WAY_TO_PAY,string = 'Forma de pago')
