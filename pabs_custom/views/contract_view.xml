@@ -364,7 +364,7 @@
             </group>
 
             <group string="Datos de cobranza">
-              <field name="debt_collector" domain="[('job_id','=','COBRADOR'), ('company_id', '=', company_id.id)]"/>
+              <field name="debt_collector" domain="[('job_id','=','COBRADOR'), ('company_id', '=', company_id)]"/>
               <field name="assign_collector_date" />              
               <field name="way_to_payment" />
               <field name="payment_amount" />
