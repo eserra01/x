@@ -59,6 +59,7 @@
     'wizard/output_payment_wizard_view.xml',
     'wizard/pabs_econtract_closing_transfer_wizard.xml',
     'wizard/pabs_econtract_wizard_view.xml',
+    'wizard/add_balance_wizard_view.xml',
     'security/security.xml',
     'security/groups.xml',
     'views/menu_views.xml',
