@@ -20,9 +20,9 @@ class AddBalanceWizard(models.TransientModel):
     contract_id = self.env['pabs.contract'].browse(self.env.context.get('active_id'))
     if contract_id:
       # 
-      product_id = self.env['product.product'].search([('name','=','PENALIZACION POR REACTIVACION'),('company_id','=',contract_id.company_id.id)])
+      product_id = self.env['product.product'].search([('name','=','ACTUALIZACION DE CONTRATOS'),('company_id','=',contract_id.company_id.id)])
       if not product_id:
-        raise ValidationError("No se encuentra el producto PENALIZACION POR REACTIVACION")
+        raise ValidationError("No se encuentra el producto ACTUALIZACION DE CONTRATOS")
       account_id = product_id.product_tmpl_id.property_account_income_id or product_id.product_tmpl_id.categ_id.property_account_income_categ_id
       if not account_id:
         raise ValidationError("No se encuentra la cuenta de ingresos en el producto o su categoría.")
