@@ -320,6 +320,7 @@
           <field name="allow_edit" invisible="1"/>
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>        
           <field name="company_id" invisible="1"/>
+          <button string="Aumentar saldo" name="add_balance_wizard_action" type="object" groups="pabs_custom.group_add_balance"/>
         </header>
         <sheet>
           <div class="oe_button_box" name="button_box">
@@ -920,6 +921,7 @@
           <field name="allow_edit" invisible="1"/>
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
           <field name="company_id" invisible="1"/>
+          <button string="Aumentar saldo" name="add_balance_wizard_action" type="object" groups="pabs_custom.group_add_balance"/>
         </header>
         <sheet>
           <div class="oe_button_box" name="button_box">
@@ -1539,6 +1541,7 @@
           <field name="allow_edit" invisible="1"/>
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>
           <field name="company_id" invisible="1"/>
+          <button string="Aumentar saldo" name="add_balance_wizard_action" type="object" groups="pabs_custom.group_add_balance"/>
         </header>
         <sheet>
           <div class="oe_button_box" name="button_box">

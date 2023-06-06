@@ -19,6 +19,7 @@
   'data': [
     'data/ir_sequence.xml',
     'data/data.xml',
+    'security/groups.xml',
     'reports/closing_transfer_report.xml',
     'reports/pabs_econtract_closing_transfer_report.xml',
     'reports/arching_report.xml',

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="add_balance_wizard_view" model="ir.ui.view">
+		<field name="name">add.balance.wizard.view</field>
+		<field name="model">add.balance.wizard</field>
+		<field name="arch" type="xml">
+			<form string="Aumentar saldo">
+        <group coslpan="2">
+          <group>
+            <field name="amount" />
+            <field name="reason" required="1"/>
+          </group>          
+        </group>                                
+        <footer>
+          <button name="add_balance_action" string="Aceptar" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+		</field>
+	</record>
+</odoo>

@@ -343,6 +343,18 @@ class PABSContracts(models.Model):
     for rec in self:
       text = self.numero_to_letras(rec.late_amount)
       rec.late_amount2text = text
+
+  def add_balance_wizard_action(self):
+    wizard_id = self.env['add.balance.wizard'].create({})
+    return {        
+        'name': ("Aumentar saldo"),                         
+        'view_type': 'form',        
+        'view_mode': 'form',        
+        'res_model': 'add.balance.wizard', 
+        'res_id': wizard_id.id,                  
+        'type': 'ir.actions.act_window',        
+        'target': 'new',    
+    }
   
   def action_payment_outputs(self):               
         # Se crea el wizard

@@ -8,3 +8,4 @@ from . import pabs_status_stock
 from . import output_payment_wizard
 from . import pabs_econtract_closing_transfer
 from . import pabs_econtract_wizard
+from . import add_balance_wizard
