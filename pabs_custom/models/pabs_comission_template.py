@@ -15,7 +15,7 @@ class ComissionTemplate(models.Model):
     #Al eliminar el empleado se eliminan sus plantillas de comisiones
     #employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, readonly=True, ondelete="cascade")
     employee_id = fields.Many2one(string="Asistente", comodel_name="hr.employee", required=True, ondelete="cascade", tracking=True)
-
+    code = fields.Char(string="Código", related='employee_id.barcode')
     #plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True, readonly=True)
     plan_id = fields.Many2one(string="Plan", comodel_name="product.pricelist.item", required=True, tracking=True)
 
@@ -42,20 +42,21 @@ class ComissionTemplate(models.Model):
         'No se puede crear el registro: ya existe una fila con los mismos datos -> [empleado, plan, cargo]')
     ]
 
-    ### 100%: Al crear el empleado se crean los registros en este modelo automáticamente. ver modelo de empleado
-    # Para cada plan se crean los siguientes registros: 1 Papeleria, 2 Recomendado, 3 Asistente, 4 Coordinador, 5 Gerente, 6 Fideicomiso
-    # Construye el diccionario para insertar un arbol por cada plan
+    # Construye el diccionario para insertar las plantillas que le faltan al asistente según los registros del modelo template_of_templates.
     # {'employee_id' : A, 'plan_id' : B, 'pay_order' : C, 'job_id' : D, 'comission_agent_id' : E, 'comission_amount' : F}
     def build_comission_dictionary(self, myEmployee_id):
-
-        comission_list = []
-
         company_id = self.env['hr.employee'].browse(myEmployee_id).company_id.id
 
-        #Obtener los registros que están activos en la tabla plantilla de plantillas
-        template = self.env['pabs.comission.template.of.templates'].search([('active','=',True),('company_id','=',company_id)])
+        ### Obtener planes sin plantilla
+        plantillas_por_crear = self.env['pabs.comission.template.of.templates'].search([('active','=',True),('company_id','=',company_id)])
+        plantillas_existentes = self.search([('employee_id', '=', myEmployee_id)])
 
-        for row in template:
+        if plantillas_existentes:
+            plantillas_existentes = plantillas_existentes.mapped('plan_id').ids
+            plantillas_por_crear = plantillas_por_crear.filtered(lambda x: x.plan_id.id not in plantillas_existentes)
+
+        comission_list = []
+        for row in plantillas_por_crear:
             #Obtener el nombre del cargo
             job_name = self.env['hr.job'].search([('id', '=', row['job_id'].id)]).name
 
@@ -90,13 +91,20 @@ class ComissionTemplate(models.Model):
                 #Asignar sin personal y con comision 0
                 new_comission = {'employee_id' : myEmployee_id, 'plan_id' : row['plan_id'].id, 'pay_order' : row['pay_order'], 'job_id' : row['job_id'].id, 'comission_agent_id' : '', 'comission_amount' : 0}
                 comission_list.append(new_comission)
-        _logger.warning("valores enviados: {}".format(comission_list))
+        # _logger.warning("valores enviados: {}".format(comission_list))
         return comission_list
 
     # Crea la plantilla de comisiones
     def create_comission_template(self, myEmployee_id):
+        _logger.info("Creando plantillas del id_empleado {}".format(myEmployee_id))
+
         comission_template_val = self.build_comission_dictionary(myEmployee_id)
-        self.create(comission_template_val)
+
+        if comission_template_val:
+            self.create(comission_template_val)
+            _logger.info("Plantillas creadas: {}".format(len(comission_template_val)))
+        else:
+            _logger.info("No se encontraron plantillas nuevas")
 
 
     #100% Al editar calcular el fideicomiso automaticamente
