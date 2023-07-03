@@ -2425,3 +2425,80 @@ class PABSContracts(models.Model):
       lot_id = contract_id.lot_id.id
       _logger.warning('Siguiente solicitud: {}'.format(lot_id))
       self.create_contract(vals={'lot_id' : lot_id})
+
+  ### Función utilizada en un sincronizador de eCobro para pasar un contrato a Suspensión temporal
+  @api.model
+  def Cambiar_estatus(self, company_id, contrato, motivo, fecha_reactivacion, comentario):
+    try:
+      ### Validar valores de entrada
+      if not company_id or not contrato or not motivo or not fecha_reactivacion:
+        return {'correcto': 0, 'msj': 'No se enviaron todos los parámetros'}
+      
+      try:
+        fecha = datetime.strptime(fecha_reactivacion, '%Y-%m-%d').date()
+
+        if fecha < datetime.today().date():
+          return {'correcto': 0, 'msj': 'La fecha de reactivación no puede ser menor al dia de hoy'.format(fecha_reactivacion)}
+      except Exception as ex:
+        return {'correcto': 0, 'msj': 'La fecha {} no es válida: {}'.format(fecha_reactivacion, ex)}
+
+      if len(comentario) > 1000:
+        comentario = comentario[0:999]
+
+      ### Buscar valores de Odoo
+      estatus_susp = self.env['pabs.contract.status'].search([('status', '=', 'SUSP. TEMPORAL')])
+      if not estatus_susp:
+        return {'correcto': 0, 'msj': 'No se encontró el estatus SUSP. TEMPORAL'}
+      
+      motivo_susp = self.env['pabs.contract.status.reason'].search([('reason', '=', motivo)])
+      if not motivo_susp:
+        return {'correcto': 0, 'msj': 'No se encontró el motivo {}'.format(motivo)}
+      
+      estatus_validos = self.env['pabs.contract.status'].search([('status', 'in', ('ACTIVO', 'SUSP. TEMPORAL'))])
+
+      con = self.search([
+        ('state', '=', 'contract'),
+        ('company_id', '=', company_id),
+        ('name', '=', contrato)
+      ])
+
+      if not con:
+        return {'correcto': 0, 'msj': 'No se encontró el contrato {}'.format(contrato)}
+      
+      if len(con) > 1:
+        return {'correcto': 0, 'msj': 'Existe mas de un contrato'.format(contrato)}
+      
+      if con.contract_status_item.id not in estatus_validos.ids:
+        return {'correcto': 0, 'msj': 'El contrato no está actualmente en estatus ACTIVO o SUSP. TEMPORAL'.format(contrato)}
+      
+      ### Actualizar datos en base
+      con.write({
+        'contract_status_item': estatus_susp.id,
+        'contract_status_reason': motivo_susp.id,
+        'reactivation_date': fecha_reactivacion
+      })
+
+      val = {
+        'user_id' : self.env.user.id,
+        'date' : fields.Datetime.now(),
+        'comment' : comentario,
+        'contract_id' : con.id
+      }
+
+      self.env['pabs.contract.comments'].create(val)
+
+      values = {
+        'body': "<p>" + comentario + "</p>",
+        'model': 'pabs.contract',
+        'message_type': 'comment',
+        'no_auto_thread': False,
+        'res_id': con.id
+      }
+      
+      self.env['mail.message'].create(values)
+
+      _logger.info("Suspension temporal generada: {}".format(contrato))
+      return {'correcto': 1, 'msj': ''}
+    
+    except Exception as ex:
+      return {'correcto': 0, 'msj': 'Error de Odoo {}'.format(ex)}
