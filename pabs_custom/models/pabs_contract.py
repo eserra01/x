@@ -1260,7 +1260,7 @@ class PABSContracts(models.Model):
       invoice_id = account_obj.create(data)
       if invoice_id:
         product_id = previous.name_service
-        account_id = product_id.property_account_income_id or product_id.categ_id.property_account_income_categ_id
+        account_id = product_id.product_tmpl_id.property_account_income_id or product_id.product_tmpl_id.categ_id.property_account_income_categ_id
 
         factor_iva = 0
         # FISCAL
