@@ -42,6 +42,16 @@ class AcccountMove(models.Model):
         comission_tree_obj.RevertirSalidas(
           IdPago=False,RefundID=self.id,NumeroContrato=NumeroContrato)
     return res
+  
+  def button_draft(self):
+    comission_tree_obj = self.env['pabs.comission.tree']
+    res = super(AcccountMove, self).button_draft()
+    if self.type in ('out_refund','entry'):
+      if self.contract_id:
+        NumeroContrato = self.contract_id.id,
+        comission_tree_obj.RevertirSalidas(
+          IdPago=False,RefundID=self.id,NumeroContrato=NumeroContrato)
+    return res
 
   def reconcille_pending_movs(self,company_id):      
     invoice_ids = self.env['account.move'].sudo().search([('type','=','out_invoice'),('state','=','posted'),('company_id','=',company_id)])
