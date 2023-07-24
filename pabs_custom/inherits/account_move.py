@@ -36,7 +36,7 @@ class AcccountMove(models.Model):
   def button_cancel(self):
     comission_tree_obj = self.env['pabs.comission.tree']
     res = super(AcccountMove, self).button_cancel()
-    if self.type in ('out_refund','entry'):
+    if self.type in ('out_refund','entry') and self.comission_output_ids:
       if self.contract_id:
         NumeroContrato = self.contract_id.id,
         comission_tree_obj.RevertirSalidas(
@@ -46,7 +46,7 @@ class AcccountMove(models.Model):
   def button_draft(self):
     comission_tree_obj = self.env['pabs.comission.tree']
     res = super(AcccountMove, self).button_draft()
-    if self.type in ('out_refund','entry'):
+    if self.type in ('out_refund','entry') and self.comission_output_ids:
       if self.contract_id:
         NumeroContrato = self.contract_id.id,
         comission_tree_obj.RevertirSalidas(
