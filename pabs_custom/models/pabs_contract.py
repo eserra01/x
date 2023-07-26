@@ -90,6 +90,7 @@ class PABSContracts(models.Model):
   ecobro_format_link = fields.Char(string='Formato ECOBRO', compute='get_link')  
   product_price = fields.Float(tracking=True, string='Costo', compute="calc_price")
   sale_employee_id = fields.Many2one(tracking=True, comodel_name='hr.employee', string='Asistente venta')
+  reaffiliation = fields.Boolean(string="Es una reafiliación")
 
   contract_status_item =  fields.Many2one(tracking=True, string="Estatus", comodel_name="pabs.contract.status")
   contract_status_name =  fields.Char(tracking=True, string="Nombre estatus", related="contract_status_item.status")
@@ -2450,7 +2451,11 @@ class PABSContracts(models.Model):
       if not estatus_susp:
         return {'correcto': 0, 'msj': 'No se encontró el estatus SUSP. TEMPORAL'}
       
-      motivo_susp = self.env['pabs.contract.status.reason'].search([('reason', '=', motivo)])
+      motivo_susp = self.env['pabs.contract.status.reason'].search([
+        ('status_id', '=', estatus_susp.id)
+        ('reason', '=', motivo)
+      ])
+      
       if not motivo_susp:
         return {'correcto': 0, 'msj': 'No se encontró el motivo {}'.format(motivo)}
       
