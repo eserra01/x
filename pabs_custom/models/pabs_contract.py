@@ -2452,7 +2452,7 @@ class PABSContracts(models.Model):
         return {'correcto': 0, 'msj': 'No se encontró el estatus SUSP. TEMPORAL'}
       
       motivo_susp = self.env['pabs.contract.status.reason'].search([
-        ('status_id', '=', estatus_susp.id)
+        ('status_id', '=', estatus_susp.id),
         ('reason', '=', motivo)
       ])
       
