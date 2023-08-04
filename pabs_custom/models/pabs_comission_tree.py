@@ -40,6 +40,21 @@ class ComissionTree(models.Model):
         # 'No se puede crear el registro: ya existe el orden a insertar en el árbol'),
     ]
 
+    def vista_form(self):
+        form_id = self.env.ref('pabs_custom.comission_tree_form_view')
+
+        return {
+                'type': 'ir.actions.act_window',
+                'name': 'title',
+                'res_model': 'pabs.comission.tree',
+                'res_id': self.id,
+                'view_type': 'form',
+                'view_mode': 'form',
+                'view_id': form_id.id,
+                'context': {},
+                'target': 'current'
+            }
+
     #Para papeleria, bono y traspasos
     def CrearSalidasEnganche(self, IdPago, NumeroContrato, MontoPago, TipoPago):
         # IdPago = 1

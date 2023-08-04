@@ -46,6 +46,7 @@
                 <field name="remaining_commission" sum="Comision restante"/>
                 <field name="commission_paid" sum="Comision pagada"/>
                 <field name="actual_commission_paid" sum="Comision real pagada"/>
+                <button name="vista_form" type="object" string="..." class="float-right btn-secondary"/>
             </tree>
         </field>
     </record>
