@@ -360,6 +360,8 @@ class HrEmployee(models.Model):
       comission_debt_collector_obj.create({
         'debt_collector_id' : newEmployee.id,
       })
+      
+      newEmployee.write({'ecobro_id': str(newEmployee.id)})
       return newEmployee
     else:
       return super(HrEmployee, self).create(vals)
