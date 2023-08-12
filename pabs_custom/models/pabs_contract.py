@@ -2027,6 +2027,10 @@ class PABSContracts(models.Model):
           contract_name = previous.name
         previous.partner_id.write({'name' : contract_name, 'company_id' : previous.company_id.id})
         self.reconcile_all(reconcile)
+        
+        # BONO PARA ASISTENTE
+        
+
     except Exception as e:
       self._cr.rollback()
       raise ValidationError(e)

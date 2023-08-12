@@ -15,6 +15,7 @@ from . import hr_employee_status
 from . import closing_transfer_registry
 from . import pabs_status_stock
 from . import pabs_bonus
+from . import pabs_bonus_as
 
 from . import pabs_comission_template
 from . import pabs_comission_tree

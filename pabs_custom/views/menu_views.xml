@@ -32,6 +32,9 @@
 
   <!-- Submenú de administración de bonos pabs -->
   <menuitem id="menu_bonus_pabs" name="Administración de bonos PABS" action="pabs_bonus_action" parent="sale.menu_sale_config" sequence="1"/>
+  
+  <!-- Submenú de administración de bonos AS -->
+  <menuitem id="menu_bonus_as" name="Administración de bonos AS" action="pabs_bonus_as_action" parent="sale.menu_sale_config" sequence="2"/>
 
   <!-- SubMenú Cortes -->
   <menuitem id="menu_closing" name="Corte" action="action_closing_transfers" parent="menu_action_request" sequence="1" groups="pabs_custom.admin_profile,pabs_custom.secretary_profile"/>
