@@ -41,6 +41,8 @@ access_pabs_comission_output_contract,pabs.comission_debt_collector.contract,pab
 access_pabs_comission_output_user,pabs.comission_debt_collector.user,pabs_custom.model_pabs_comission_output,base.group_user,1,1,0,0
 access_pabs_bonus_manager,pabs.bonus.manager,pabs_custom.model_pabs_bonus,admin_profile,1,1,1,1
 access_pabs_bonus_user,pabs.bonus.user,pabs_custom.model_pabs_bonus,base.group_user,1,0,0,0
+access_pabs_bonus_as_manager,pabs.bonus.as.manager,pabs_custom.model_pabs_bonus_as,admin_profile,1,1,1,1
+access_pabs_bonus_as_user,pabs.bonus.as.user,pabs_custom.model_pabs_bonus_as,base.group_user,1,0,0,0
 access_pabs_status_stock_manager,pabs_status_stock_manager,pabs_custom.model_pabs_status_stock,admin_profile,1,1,1,1
 access_pabs_contract_status_manager,pabs.contract.status.manager,pabs_custom.model_pabs_contract_status,admin_profile,1,1,1,1
 access_pabs_contract_status_user,pabs.contract.status.user,pabs_custom.model_pabs_contract_status,base.group_user,1,0,0,0
