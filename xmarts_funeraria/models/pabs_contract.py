@@ -140,7 +140,7 @@ class PabsContract(models.Model):
             saldo_a_plazos = total_facturado - rec.initial_investment - total_bono - total_traspasos
 
             #Obtener monto abonado
-            abonado = rec.paid_balance - rec.initial_investment - total_bono - total_traspasos
+            abonado = rec.paid_balance - rec.initial_investment - total_bono #- total_traspasos Se quita total de traspasos porque ya se aplica en rec.paid_balance
             
             ### Forma de pago: SEMANAL
             if rec.way_to_payment == 'weekly':
