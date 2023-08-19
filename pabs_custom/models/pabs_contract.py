@@ -1369,7 +1369,7 @@ class PABSContracts(models.Model):
         plus_amount_fide = sum(previous.commission_tree.filtered(lambda x: x.job_id.name not in ['PAPELERIA','FIDEICOMISO','ASISTENTE SOCIAL']).mapped('corresponding_commission'))
         fide_line_id = previous.commission_tree.filtered(lambda x: x.job_id.name in ['FIDEICOMISO'])
         as_line_id = previous.commission_tree.filtered(lambda x: x.job_id.name in ['ASISTENTE SOCIAL'])
-        line_ids = previous.commission_tree.filtered(lambda x: x.job_id.name not in ['PAPELERIA','FIDEICOMISO'])       
+        line_ids = previous.commission_tree.filtered(lambda x: x.job_id.name not in ['PAPELERIA','FIDEICOMISO','IVA'])       
         # Traspaso sin comisión
         if previous.trasnsfer_type == 'without_commission':        
           # 
