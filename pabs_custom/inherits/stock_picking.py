@@ -188,29 +188,29 @@ class StockPicking(models.Model):
     for picking in self:
       # Se itera sobre cada línea (solicitud)
       for line in picking.move_ids_without_package:
+        # Se busca el lote
+        lot_id = self.env['stock.production.lot'].search([('name','=',line.series),('company_id','=',self.env.company.id)], limit=1) 
         #
+        if not lot_id:
+          raise ValidationError("No se encuentra la solicitud {} como una solicitud activa".format(line.series))
+        # Se busca el registro del pre-contrato
+        contract_id = self.env['pabs.contract'].search([('lot_id','=',lot_id.id)])
+        if not contract_id:              
+          raise ValidationError("No se encuentra la solicitud {} como una solicitud activa".format(lot_id.name))
+        
+        # Reafiliación
         if line.origen_solicitud == 'reafiliacion':                                    
           #
           if day < 26 and line.inversion_inicial < 200:
             raise ValidationError("La inversión inicial debe ser por un mínimo de $200 en la solictud {}".format(line.series))
           if day > 25 and line.inversion_inicial < 300:
-            raise ValidationError("La inversión incial debe ser por un mínimo de $300 en la solicitud {}".format(line.series))
-          
-          # Se busca el registro del contrato para especificar que es una reafiliación
-          lot_id = self.env['stock.production.lot'].search(
-          [
-            ('name','=',line.series),
-            ('company_id','=',self.env.company.id)
-          ], limit=1) 
-          #
-          if not lot_id:
-            raise ValidationError("No se encuentra la solicitud {} como una solicitud activa".format(line.series))
-          # Se busca el registro del pre-contrato
-          contract_id = self.env['pabs.contract'].search([('lot_id','=',lot_id.id)])
-          if not contract_id:              
-            raise ValidationError("No se encuentra la solicitud {} como una solicitud activa".format(lot_id.name))
+            raise ValidationError("La inversión incial debe ser por un mínimo de $300 en la solicitud {}".format(line.series))                    
           # Se especifica que es una reafiliación 
           contract_id.reaffiliation = True
+        
+        # Toma comisión
+        if line.toma_comision > 0:
+          contract_id.toma_comision = True
 
       for line in picking.move_line_ids_without_package:
         lot_id = line.lot_id

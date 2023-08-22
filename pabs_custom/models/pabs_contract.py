@@ -91,6 +91,7 @@ class PABSContracts(models.Model):
   product_price = fields.Float(tracking=True, string='Costo', compute="calc_price")
   sale_employee_id = fields.Many2one(tracking=True, comodel_name='hr.employee', string='Asistente venta')
   reaffiliation = fields.Boolean(string="Es una reafiliación")
+  toma_comision = fields.Float(string="Toma comisión")
 
   contract_status_item =  fields.Many2one(tracking=True, string="Estatus", comodel_name="pabs.contract.status")
   contract_status_name =  fields.Char(tracking=True, string="Nombre estatus", related="contract_status_item.status")
