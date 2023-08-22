@@ -208,9 +208,8 @@ class StockPicking(models.Model):
           # Se especifica que es una reafiliación 
           contract_id.reaffiliation = True
         
-        # Toma comisión
-        if line.toma_comision > 0:
-          contract_id.toma_comision = True
+        # Toma comisión        
+        contract_id.toma_comision = line.toma_comision
 
       for line in picking.move_line_ids_without_package:
         lot_id = line.lot_id
