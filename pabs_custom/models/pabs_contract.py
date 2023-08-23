@@ -2030,8 +2030,8 @@ class PABSContracts(models.Model):
         self.reconcile_all(reconcile)
         
         # **************************** BONO PARA ASISTENTE ***********************
-        # Si no es reafiliación y la compañia usa bono de AS
-        if not previous.reaffiliation and previous.company_id.bonus_as:
+        # Si no es reafiliación y toma comisión no es mayor que 0 y la compañia usa bono de AS
+        if not previous.reaffiliation and previous.toma_comision <= 0 and previous.company_id.bonus_as:
           # Se busca el puesto BONO ASSITENTE
           job_bono_as_id = self.env['hr.job'].search([('name', '=', 'BONO ASISTENTE'),('company_id','=',previous.company_id.id,)])
           if job_bono_as_id:
