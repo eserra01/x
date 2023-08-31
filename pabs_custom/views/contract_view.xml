@@ -140,6 +140,7 @@
           <field name="allow_create" invisible="1"/>
           <field name="type_view" invisible="1"/>
           <field name="captured" invisible="1"/>
+<field name="company_id" invisible="1"/>
           <field name="contract_status" invisible="1"/>
           <button type="object" name="create_contract" string="Crear Contrato" class="btn-primary" attrs="{'invisible' : [('allow_create','=',False),('state','not in',('actived','precontract','cancel'))]}"/>
           <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1"/>
@@ -210,8 +211,8 @@
               <group string="Domicilio de casa">
                 <field name="street_name" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
                 <field name="street_number" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
-                <field name="municipality_id" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
-                <field name="neighborhood_id" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}" domain="[('municipality_id','=',municipality_id)]"/>
+                <field name="municipality_id" domain="[('company_id', '=', company_id)]" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
+                <field name="neighborhood_id" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]"/>
                 <field name="between_streets" attrs="{'readonly' : [('state','=','contract')]}"/>
                 <field name="phone" widget="phone" attrs="{'readonly' : [('state','=','contract')]}"/>
                 <field name="zip_code" attrs="{'readonly' : [('state','=','contract')]}"/>
@@ -220,8 +221,8 @@
               <group string='Domicilio de cobro'>
                 <field name="street_name_toll" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
                 <field name="street_number_toll" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
-                <field name="toll_municipallity_id" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
-                <field name="toll_colony_id"  attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}" domain="[('municipality_id','=',toll_municipallity_id)]"/>
+                <field name="toll_municipallity_id" domain="[('company_id', '=', company_id)]" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
+                <field name="toll_colony_id"  attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]"/>
                 <field name="between_streets_toll" attrs="{'readonly' : [('state','=','contract')]}" />
                 <field name="phone_toll" attrs="{'readonly' : [('state','=','contract')]}"/>
                 <field name="zip_code_toll" attrs="{'readonly' : [('state','=','contract')]}"/>
@@ -389,8 +390,8 @@
               <separator string="Domicilio de cobro"/>
               <field name="street_name_toll"/>
               <field name="street_number_toll"/>
-              <field name="toll_municipallity_id" />
-              <field name="toll_colony_id" />
+              <field name="toll_municipallity_id" domain="[('company_id', '=', company_id)]" />
+              <field name="toll_colony_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
               <field name="zip_code_toll" />
@@ -398,8 +399,8 @@
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
               <field name="street_number"/>
-              <field name="municipality_id" />
-              <field name="neighborhood_id" />
+              <field name="municipality_id" domain="[('company_id', '=', company_id)]" />
+              <field name="neighborhood_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]"/>
               <field name="between_streets" />
               <field name="phone" />
               <field name="zip_code" />
@@ -539,6 +540,7 @@
     <field name="arch" type="xml">
        <form create="0" edit="0" delete="false" duplicate="false" >
         <header>
+<field name="company_id" invisible="1"/>
           <field name="captured" invisible="1"/>
           <field name="contract_status" invisible="1"/>
           <field name="allow_edit" invisible="1"/>
@@ -595,8 +597,8 @@
               <separator string="Domicilio de cobro"/>
               <field name="street_name_toll"/>
               <field name="street_number_toll"/>
-              <field name="toll_municipallity_id" options="{'no_open': True,}"/>
-              <field name="toll_colony_id" options="{'no_open': True,}"/>
+              <field name="toll_municipallity_id" domain="[('company_id', '=', company_id)]"  options="{'no_open': True,}"/>
+              <field name="toll_colony_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
               <field name="zip_code_toll" />
@@ -604,8 +606,8 @@
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
               <field name="street_number"/>
-              <field name="municipality_id" options="{'no_open': True,}"/>
-              <field name="neighborhood_id" options="{'no_open': True,}"/>
+              <field name="municipality_id" domain="[('company_id', '=', company_id)]" options="{'no_open': True,}"/>
+              <field name="neighborhood_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
               <field name="zip_code" />
@@ -777,8 +779,8 @@
               <separator string="Domicilio de cobro"/>
               <field name="street_name_toll"/>
               <field name="street_number_toll"/>
-              <field name="toll_municipallity_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
-              <field name="toll_colony_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="toll_municipallity_id" domain="[('company_id', '=', company_id)]"  options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="toll_colony_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
               <field name="zip_code_toll" />
@@ -786,8 +788,8 @@
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
               <field name="street_number"/>
-              <field name="municipality_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
-              <field name="neighborhood_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="municipality_id" domain="[('company_id', '=', company_id)]"  options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="neighborhood_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
               <field name="zip_code" />
@@ -991,8 +993,8 @@
               <separator string="Domicilio de cobro"/>
               <field name="street_name_toll"/>
               <field name="street_number_toll"/>
-              <field name="toll_municipallity_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
-              <field name="toll_colony_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="toll_municipallity_id" domain="[('company_id', '=', company_id)]"  options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="toll_colony_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
               <field name="zip_code_toll" />
@@ -1000,8 +1002,8 @@
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
               <field name="street_number"/>
-              <field name="municipality_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
-              <field name="neighborhood_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="municipality_id" domain="[('company_id', '=', company_id)]"  options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="neighborhood_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
               <field name="zip_code" />
@@ -1194,8 +1196,8 @@
               <separator string="Domicilio de cobro"/>
               <field name="street_name_toll"/>
               <field name="street_number_toll"/>
-              <field name="toll_municipallity_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
-              <field name="toll_colony_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="toll_municipallity_id" domain="[('company_id', '=', company_id)]"  options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="toll_colony_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
               <field name="zip_code_toll" />
@@ -1203,8 +1205,8 @@
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
               <field name="street_number"/>
-              <field name="municipality_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
-              <field name="neighborhood_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="municipality_id" domain="[('company_id', '=', company_id)]"  options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="neighborhood_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
               <field name="zip_code" />
@@ -1397,8 +1399,8 @@
               <separator string="Domicilio de cobro"/>
               <field name="street_name_toll"/>
               <field name="street_number_toll"/>
-              <field name="toll_municipallity_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
-              <field name="toll_colony_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="toll_municipallity_id" domain="[('company_id', '=', company_id)]"  options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="toll_colony_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
               <field name="zip_code_toll" />
@@ -1406,8 +1408,8 @@
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
               <field name="street_number"/>
-              <field name="municipality_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
-              <field name="neighborhood_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="municipality_id" domain="[('company_id', '=', company_id)]"  options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="neighborhood_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
               <field name="zip_code" />
@@ -1610,8 +1612,8 @@
               <separator string="Domicilio de cobro"/>
               <field name="street_name_toll"/>
               <field name="street_number_toll"/>
-              <field name="toll_municipallity_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
-              <field name="toll_colony_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="toll_municipallity_id" domain="[('company_id', '=', company_id)]"  options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="toll_colony_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets_toll" />
               <field name="phone_toll" />
               <field name="zip_code_toll" />
@@ -1619,8 +1621,8 @@
               <separator string="Domicilio de casa"/>
               <field name="street_name"/>
               <field name="street_number"/>
-              <field name="municipality_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
-              <field name="neighborhood_id" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="municipality_id" domain="[('company_id', '=', company_id)]"  options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="neighborhood_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
               <field name="between_streets" />
               <field name="phone" />
               <field name="zip_code" />
