@@ -12,6 +12,7 @@ _logger = logging.getLogger(__name__)
 
 class IiServicio(models.Model):
     _name = 'ii.servicio'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('pendiente', 'PENDIENTE'),
@@ -21,6 +22,7 @@ class IiServicio(models.Model):
 
 class IiLlamada(models.Model):
     _name = 'ii.llamada'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('si', 'Si'),
@@ -29,6 +31,7 @@ class IiLlamada(models.Model):
 
 class IiCertificamos(models.Model):
     _name = 'ii.certificamos'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('si', 'Si'),
@@ -37,6 +40,7 @@ class IiCertificamos(models.Model):
 
 class IiVistaPersonal(models.Model):
     _name = 'ii.vista.personal'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('si', 'Si'),
@@ -45,6 +49,7 @@ class IiVistaPersonal(models.Model):
 
 class IiServicio2(models.Model):
     _name = 'ii.servicio2'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('cremacion', 'Cremacion')],
@@ -52,6 +57,7 @@ class IiServicio2(models.Model):
 
 class IiCausaFallecim(models.Model):
     _name = 'ii.causa.fallecim'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('insuficiencia_respiratoria', 'INSUFICIENCIA RESPIRATORIA')]
@@ -59,6 +65,7 @@ class IiCausaFallecim(models.Model):
 
 class CsServiConfirm(models.Model):
     _name = 'cs.servi.confirm'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -68,6 +75,7 @@ class CsServiConfirm(models.Model):
 
 class DsAtiendeServicio(models.Model):
     _name = 'ds.atiende.servicio'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -77,6 +85,7 @@ class DsAtiendeServicio(models.Model):
 
 class DsSucursalVelacion(models.Model):
     _name = 'ds.sucursal.velacion'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -86,6 +95,7 @@ class DsSucursalVelacion(models.Model):
 
 class DsTipoServicio(models.Model):
     _name = 'ds.tipo.servicio'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('0', 'PLAN')],
@@ -93,6 +103,7 @@ class DsTipoServicio(models.Model):
 
 class DsCapilla(models.Model):
     _name = 'ds.capilla'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -102,6 +113,7 @@ class DsCapilla(models.Model):
 
 class DsInterplaza(models.Model):
     _name = 'ds.interplaza'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('si', 'Si'),
@@ -110,6 +122,7 @@ class DsInterplaza(models.Model):
 
 class DsOrigen(models.Model):
     _name = 'ds.origen'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('0', 'JAL, PUERTO VALLARTA')],
@@ -117,6 +130,7 @@ class DsOrigen(models.Model):
 
 class DsSucursalQEntregCenizas(models.Model):
     _name = 'ds.sucursal.qentreg.cenizas'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -126,6 +140,7 @@ class DsSucursalQEntregCenizas(models.Model):
 
 class DsAplicaSeguro(models.Model):
     _name = 'ds.aplica.seguro'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('si', 'Si'),
@@ -134,6 +149,7 @@ class DsAplicaSeguro(models.Model):
 
 class DsAtaud(models.Model):
     _name = 'ds.ataud'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -143,6 +159,7 @@ class DsAtaud(models.Model):
 
 class DsUrna(models.Model):
     _name = 'ds.urna'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -152,6 +169,7 @@ class DsUrna(models.Model):
 
 class RelacionConfinad(models.Model):
     _name = 'relacion.confinad'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('0', 'HIJO')],
@@ -159,6 +177,7 @@ class RelacionConfinad(models.Model):
 
 class IvLugarVelacion(models.Model):
     _name = 'iv.lugar.velacion'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -168,6 +187,7 @@ class IvLugarVelacion(models.Model):
 
 class IvNombreDeCapilla(models.Model):
     _name = 'iv.nombre.capilla'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -177,6 +197,7 @@ class IvNombreDeCapilla(models.Model):
 
 class DcFormaPago(models.Model):
     _name = 'dc.forma.pago'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('0', 'SEMANAL')],
@@ -184,6 +205,7 @@ class DcFormaPago(models.Model):
 
 class IrOperativo(models.Model):
     _name = 'ir.operativo'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -193,6 +215,7 @@ class IrOperativo(models.Model):
 
 class Carroza(models.Model):
     _name = 'carroza'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -202,6 +225,7 @@ class Carroza(models.Model):
 
 class IgEntregoRopa(models.Model):
     _name = 'ig.entrego.ropa'
+    _description = ''
 
     name = fields.Char(string="Nombre")
     # [('si', 'Si'),
@@ -210,6 +234,7 @@ class IgEntregoRopa(models.Model):
 
 class IgProveedorEmbalsama(models.Model):
     _name = 'ig.proveedor.embalsama'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -220,6 +245,7 @@ class IgProveedorEmbalsama(models.Model):
 
 class IgTemplo(models.Model):
     _name = 'ig.templo'
+    _description = ''
 
     name = fields.Char(string="Nombre")
 
@@ -228,6 +254,7 @@ class IgTemplo(models.Model):
 
 class PlaceOfCremation(models.Model):
     _name = 'mortuary.cremation'
+    _description = ''
 
     name = fields.Char(string='Nombre')
 
@@ -237,175 +264,133 @@ class Mortuary(models.Model):
     _name = 'mortuary'
     _description = 'modulo de funeraria'
     _inherit = 'mail.thread'
+    
+    name = fields.Char(string="Bitácora", required=True, tracking=True)
+    partner_id = fields.Many2one(comodel_name='res.partner',string='contacto', tracking=True)
+    balance = fields.Float(string='Saldo',compute="_calc_balance", tracking=True)
+    total_invoiced = fields.Float(string='Total',compute="_calc_total_invoiced", tracking=True)
 
-    name = fields.Char(string="Bitácora", required=True)
-    partner_id = fields.Many2one(comodel_name='res.partner',
-        string='contacto')
-    balance = fields.Float(string='Saldo',
-        compute="_calc_balance")
-    total_invoiced = fields.Float(string='Total',
-        compute="_calc_total_invoiced")
+    birthdate = fields.Date(string='Fecha de nacimiento', tracking=True)
+    ii_servicio = fields.Many2one("ii.servicio", string="Estatus del servicio", tracking=True)
+    ii_finado = fields.Char(string="Finado", required=True, tracking=True)
+    ii_fecha_creacion = fields.Date(string="Fecha creacion", default=datetime.now(tz),copy=False, tracking=True)
+    ii_hora_creacion = fields.Char(string="Hora creacion", copy=False, tracking=True)
+    ii_llamada = fields.Many2one("ii.llamada", string="Llamada", tracking=True)
+    ii_certificamos = fields.Many2one("ii.certificamos", string="Certificamos", tracking=True)
+    ii_vista_personal = fields.Many2one("ii.vista.personal", string="Visita personal", tracking=True)
+    ii_folio_certificad = fields.Char(string="Folio certificado", tracking=True)
+    ii_servicio_2 = fields.Many2one("ii.servicio2", string="Modelo de servicio", tracking=True)
+    ii_causa_fallecim = fields.Many2one("ii.causa.fallecim", string="Causa de fallecimiento", tracking=True)
+    ii_lugar_fallec = fields.Char(string="Lugar de fallecimiento", tracking=True)
+    ii_direcc_fallecimiento = fields.Text(string="Direccion de fallecimiento", tracking=True)
 
-    birthdate = fields.Date(string='Fecha de nacimiento')
-    ii_servicio = fields.Many2one("ii.servicio", string="Servicio")
-    ii_finado = fields.Char(string="Finado", required=True)
-    ii_fecha_creacion = fields.Date(
-        string="Fecha creacion", default=datetime.now(tz),
-        copy=False)
-    ii_hora_creacion = fields.Char(
-        string="Hora creacion",
-        tracking=True,
-        copy=False)
-    ii_llamada = fields.Many2one("ii.llamada", string="Llamada")
-    ii_certificamos = fields.Many2one("ii.certificamos", string="Certificamos")
-    ii_vista_personal = fields.Many2one("ii.vista.personal", string="Vista personal")
-    ii_folio_certificad = fields.Char(string="Folio certificado")
-    ii_servicio_2 = fields.Many2one("ii.servicio2", string="Servicio")
-    ii_causa_fallecim = fields.Many2one(
-        "ii.causa.fallecim", string="Causa de fallecimiento")
-    ii_lugar_fallec = fields.Char(string="Lugar de fallecimiento")
-    ii_direcc_fallecimiento = fields.Text(string="Direccion de fallecimiento")
-
-    cs_servi_confirm = fields.Many2one("cs.servi.confirm", string="Servicio confirmado")
-    cs_agente_confir = fields.Char(string="Agente que confirma")
-    cs_cliente_confir = fields.Char(string="Cliente que confirma")
-    cs_tel = fields.Char(string="Telefono")
-    cs_fecha_confirm = fields.Date(string="Fecha de confirmacion")
+    cs_servi_confirm = fields.Many2one("cs.servi.confirm", string="Servicio confirmado", tracking=True)
+    cs_agente_confir = fields.Char(string="Agente que confirma", tracking=True)
+    cs_cliente_confir = fields.Char(string="Cliente que confirma", tracking=True)
+    cs_tel = fields.Char(string="Telefono", tracking=True)
+    cs_fecha_confirm = fields.Date(string="Fecha de confirmacion", tracking=True)
     cs_hora_confirm = fields.Float(string="Hora de confirmacion", tracking=True)
-    cs_observacions = fields.Text(string="Observaciones", compute="get_comentarios")
-    cs_nuevo_comentario = fields.Text(string="Nuevo comentario")
+    cs_observacions = fields.Text(string="Observaciones", compute="get_comentarios", tracking=True)
+    cs_nuevo_comentario = fields.Text(string="Nuevo comentario", tracking=True)
 
-    tc_no_contrato = fields.Char(string="Nùmero de contrato")
-    tc_nomb_titular = fields.Char(string="Nombre de titular")
+    tc_no_contrato = fields.Char(string="Número de contrato", tracking=True)
+    tc_nomb_titular = fields.Char(string="Nombre de titular", tracking=True)
 
-    ds_atiende_servicio = fields.Many2one(
-        "ds.atiende.servicio", string="Atiende servicio")
-    ds_sucursal_de_velacion = fields.Many2one(
-        "ds.sucursal.velacion", string="Sucursal de velacion")
-    ds_tipo_de_servicio = fields.Many2one("ds.tipo.servicio", string="Tipo de servicio")
-    ds_capilla = fields.Many2one("ds.capilla", string="Capilla")
-    ds_interplaza = fields.Many2one("ds.interplaza", string="Interplaza")
-    ds_origen = fields.Many2one("ds.origen", string="Origen")
-    ds_personas_autorizadas = fields.Char(string="Personas autorizadas")
-    ds_fecha_entrega_cenizas = fields.Date(string="Fecha entrega cenizas")
-    ds_sucursal_q_entreg_cenizas = fields.Many2one(
-        "ds.sucursal.qentreg.cenizas", string="Sucursal que entrega cenizas")
-    ds_aplica_seguro = fields.Many2one("ds.aplica.seguro", string="Aplica seguro")
-    ds_fecha_de_falleci = fields.Date(string="Fecha de fallecimiento")
-    ds_ataud = fields.Many2one("ds.ataud", string="Ataúd")
-    ds_urna = fields.Many2one("ds.urna", string="Urna")
+    ds_atiende_servicio = fields.Many2one("ds.atiende.servicio", string="Atiende servicio", tracking=True)
+    ds_sucursal_de_velacion = fields.Many2one("ds.sucursal.velacion", string="Sucursal de velacion", tracking=True)
+    ds_tipo_de_servicio = fields.Many2one("ds.tipo.servicio", string="Tipo de servicio", tracking=True)
+    ds_capilla = fields.Many2one("ds.capilla", string="Capilla", tracking=True)
+    ds_interplaza = fields.Many2one("ds.interplaza", string="Es interplaza", tracking=True)
+    ds_origen = fields.Many2one("ds.origen", string="Origen interplaza", tracking=True)
+    ds_personas_autorizadas = fields.Char(string="Personas autorizadas", tracking=True)
+    ds_fecha_entrega_cenizas = fields.Date(string="Fecha entrega cenizas", tracking=True)
+    ds_sucursal_q_entreg_cenizas = fields.Many2one("ds.sucursal.qentreg.cenizas", string="Sucursal que entrega cenizas", tracking=True)
+    ds_aplica_seguro = fields.Many2one("ds.aplica.seguro", string="Aplica seguro", tracking=True)
+    ds_fecha_de_falleci = fields.Date(string="Fecha de fallecimiento", tracking=True)
+    ds_ataud = fields.Many2one("ds.ataud", string="Ataúd", tracking=True)
+    ds_urna = fields.Many2one("ds.urna", string="Urna", tracking=True)
 
-    psa_servi_adicionals = fields.Char(string="Servicios adicionales")
-    psa_costo_paquete = fields.Float(string="Costo paquete")
-    psa_ataud_o_cambio = fields.Float(string="Ataud o cambio")
-    psa_cremacion = fields.Float(string="Cremación")
-    psa_capilla_recinto = fields.Float(string="Capilla recinto")
-    psa_traslado = fields.Float(string="Traslado ")
-    psa_camion = fields.Float(string="Camión")
-    psa_otros = fields.Float(string="Otros")
-    psa_saldo_PABS = fields.Float(string="Saldo PABS")
-    psa_embalsamado = fields.Float(string="Embalsamado")
-    psa_capilla_domicilio = fields.Float(string="Capilla domicilio")
-    psa_cafeteria = fields.Float(string="Cafetería")
-    psa_tramites = fields.Float(string="Trámites")
-    psa_certificado = fields.Float(string="Certificado")
+    psa_servi_adicionals = fields.Char(string="Servicios adicionales", tracking=True)
+    psa_costo_paquete = fields.Float(string="Costo paquete", tracking=True)
+    psa_ataud_o_cambio = fields.Float(string="Ataud o cambio", tracking=True)
+    psa_cremacion = fields.Float(string="Cremación", tracking=True)
+    psa_capilla_recinto = fields.Float(string="Capilla recinto", tracking=True)
+    psa_traslado = fields.Float(string="Traslado ", tracking=True)
+    psa_camion = fields.Float(string="Camión", tracking=True)
+    psa_otros = fields.Float(string="Otros", tracking=True)
+    psa_saldo_PABS = fields.Float(string="Saldo PABS", tracking=True)
+    psa_embalsamado = fields.Float(string="Embalsamado", tracking=True)
+    psa_capilla_domicilio = fields.Float(string="Capilla domicilio", tracking=True)
+    psa_cafeteria = fields.Float(string="Cafetería", tracking=True)
+    psa_tramites = fields.Float(string="Trámites", tracking=True)
+    psa_certificado = fields.Float(string="Certificado", tracking=True)
 
-    contact_1_nomb = fields.Char(string="Nombre")
-    contact_1_tel = fields.Char(string="Teléfono")
-    contact_1_relacion_confinad = fields.Many2one(
-        "relacion.confinad", string="Relación con finado")
-    contact_2_nomb = fields.Char(string="Nombre")
-    contact_2_tel = fields.Char(string="Teléfono")
-    contact_2_relacion_confinad = fields.Many2one(
-        "relacion.confinad", string="Relación con finado")
-    podp_nomb = fields.Char(string="Nombre")
+    contact_1_nomb = fields.Char(string="Nombre", tracking=True)
+    contact_1_tel = fields.Char(string="Teléfono", tracking=True)
+    contact_1_relacion_confinad = fields.Many2one("relacion.confinad", string="Relación con finado", tracking=True)
+    contact_2_nomb = fields.Char(string="Nombre", tracking=True)
+    contact_2_tel = fields.Char(string="Teléfono", tracking=True)
+    contact_2_relacion_confinad = fields.Many2one("relacion.confinad", string="Relación con finado", tracking=True)
+    podp_nomb = fields.Char(string="Nombre", tracking=True)
     # podp_municipio = fields.Char(string="municipio")
-    podp_municipio_id = fields.Many2one('res.locality', string="Municipio", ondelete='restrict')
+    podp_municipio_id = fields.Many2one('res.locality', string="Municipio", ondelete='restrict', tracking=True)
     # podp_colonia = fields.Many2one("colonias", string="Colonia")
-    podp_colonia_id = fields.Many2one(
-        'colonias',
-        string="Colonia",
-        ondelete='restrict',
-        domain="[('municipality_id', '=', podp_municipio_id)]"
-    )
-    podp_calle_y_number = fields.Char(string="Calle y #")
-    podp_tel = fields.Char(string="Teléfono")
-    podp_relacion_confinad = fields.Many2one(
-        "relacion.confinad", string="Relación con finado")
+    podp_colonia_id = fields.Many2one('colonias',string="Colonia",ondelete='restrict',domain="[('municipality_id', '=', podp_municipio_id)]", tracking=True)
+    podp_calle_y_number = fields.Char(string="Calle y #", tracking=True)
+    podp_tel = fields.Char(string="Teléfono", tracking=True)
+    podp_relacion_confinad = fields.Many2one("relacion.confinad", string="Relación con finado", tracking=True)
 
-    iv_lugar_de_velacion = fields.Many2one(
-        "iv.lugar.velacion", string="Lugar de velación")
-    iv_nombre_de_capilla = fields.Many2one(
-        "iv.nombre.capilla", string="Nombre de capilla")
-    iv_fecha_de_inicio = fields.Date(string="Fecha de inicio")
-    iv_hora_de_inicio = fields.Float(string="Hora de inicio")
-    iv_direccion = fields.Text(string="Dirección")
+    iv_lugar_de_velacion = fields.Many2one("iv.lugar.velacion", string="Lugar de velación", tracking=True)
+    iv_nombre_de_capilla = fields.Many2one("iv.nombre.capilla", string="Nombre de capilla", tracking=True)
+    iv_fecha_de_inicio = fields.Date(string="Fecha de inicio", tracking=True)
+    iv_hora_de_inicio = fields.Float(string="Hora de inicio", tracking=True)
+    iv_direccion = fields.Text(string="Dirección", tracking=True)
 
-    dc_saldo_conveniado = fields.Float(string="Saldo conveniado")
-    dc_fecha_de_inicio = fields.Date(string="Fecha de inicio")
-    dc_realiza_convenio = fields.Many2one(
-        "ds.atiende.servicio", string="Realiza convenio")
-    dc_cantidad_de_pagos = fields.Integer(string="Cantidad de pagos")
-    dc_forma_de_pago = fields.Many2one("dc.forma.pago", string="Forma de pago")
+    dc_saldo_conveniado = fields.Float(string="Saldo conveniado", tracking=True)
+    dc_fecha_de_inicio = fields.Date(string="Fecha de inicio", tracking=True)
+    dc_realiza_convenio = fields.Many2one("ds.atiende.servicio", string="Realiza convenio", tracking=True)
+    dc_cantidad_de_pagos = fields.Integer(string="Cantidad de pagos", tracking=True)
+    dc_forma_de_pago = fields.Many2one("dc.forma.pago", string="Forma de pago", tracking=True)
 
-    ir_operativo_1 = fields.Many2one("ir.operativo", string="Operativo 1")
-    ir_operativo_2 = fields.Many2one("ir.operativo", string="Operativo 2")
-    ir_carroza = fields.Many2one("carroza", string="Carroza")
-    ir_fecha_de_inicio = fields.Date(string="Fecha de inicio")
-    ir_hora_de_inicio = fields.Float(string="Hora de inicio")
-    ir_fecha_de_fin = fields.Date(string="Fecha de fin")
-    ir_hora_de_fin = fields.Float(string="Hora de fin")
+    ir_operativo_1 = fields.Many2one("ir.operativo", string="Operativo 1", tracking=True)
+    ir_operativo_2 = fields.Many2one("ir.operativo", string="Operativo 2", tracking=True)
+    ir_carroza = fields.Many2one("carroza", string="Carroza", tracking=True)
+    ir_fecha_de_inicio = fields.Date(string="Fecha de inicio", tracking=True)
+    ir_hora_de_inicio = fields.Float(string="Hora de inicio", tracking=True)
+    ir_fecha_de_fin = fields.Date(string="Fecha de fin", tracking=True)
+    ir_hora_de_fin = fields.Float(string="Hora de fin", tracking=True)
 
-    ic_operativo_1 = fields.Many2one("ir.operativo", string="Operativo 1")
-    ic_operativo_2 = fields.Many2one("ir.operativo", string="Operativo 2")
-    ic_carroza = fields.Many2one("carroza", string="Carroza")
-    ic_fecha_de_inicio = fields.Date(string="Fecha de inicio")
-    ic_hora_de_inicio = fields.Float(string="Hora de inicio")
-    ic_fecha_de_fin = fields.Date(string="Fecha de fin")
-    ic_hora_de_fin = fields.Float(string="Hora de fin")
+    ic_operativo_1 = fields.Many2one("ir.operativo", string="Operativo 1", tracking=True)
+    ic_operativo_2 = fields.Many2one("ir.operativo", string="Operativo 2", tracking=True)
+    ic_carroza = fields.Many2one("carroza", string="Carroza", tracking=True)
+    ic_fecha_de_inicio = fields.Date(string="Fecha de inicio", tracking=True)
+    ic_hora_de_inicio = fields.Float(string="Hora de inicio", tracking=True)
+    ic_fecha_de_fin = fields.Date(string="Fecha de fin", tracking=True)
+    ic_hora_de_fin = fields.Float(string="Hora de fin", tracking=True)
 
-    ii_operativo_1 = fields.Many2one("ir.operativo", string="Operativo 1")
-    ii_operativo_2 = fields.Many2one("ir.operativo", string="Operativo 2")
-    ii_carroza = fields.Many2one("carroza", string="Carroza")
-    ii_fecha_de_inicio = fields.Date(string="Fecha de inicio")
-    ii_hora_de_inicio = fields.Float(string="Hora de inicio")
-    ii_fecha_de_fin = fields.Date(string="Fecha de fin")
-    ii_hora_de_fin = fields.Float(string="Hora de fin")
+    ii_operativo_1 = fields.Many2one("ir.operativo", string="Operativo 1", tracking=True)
+    ii_operativo_2 = fields.Many2one("ir.operativo", string="Operativo 2", tracking=True)
+    ii_carroza = fields.Many2one("carroza", string="Carroza", tracking=True)
+    ii_fecha_de_inicio = fields.Date(string="Fecha de inicio", tracking=True)
+    ii_hora_de_inicio = fields.Float(string="Hora de inicio", tracking=True)
+    ii_fecha_de_fin = fields.Date(string="Fecha de fin", tracking=True)
+    ii_hora_de_fin = fields.Float(string="Hora de fin", tracking=True)
 
-    ig_entrego_ropa = fields.Many2one("ig.entrego.ropa", string="Entregó ropa")
-    ig_proveedor_embalsama = fields.Many2one(
-        "ig.proveedor.embalsama", string="Proveedor embalsama")
-    ig_templo = fields.Many2one("ig.templo", string="Templo")
-    ig_hora_de_misa = fields.Float(string="Hora de misa")
-    ig_acta_de_defuncion = fields.Char(string="Acta de defunción")
-    ig_panteon = fields.Char(string="Panteón")
+    ig_entrego_ropa = fields.Many2one("ig.entrego.ropa", string="Entregó ropa", tracking=True)
+    ig_proveedor_embalsama = fields.Many2one("ig.proveedor.embalsama", string="Proveedor embalsama", tracking=True)
+    ig_templo = fields.Many2one("ig.templo", string="Templo", tracking=True)
+    ig_hora_de_misa = fields.Float(string="Hora de misa", tracking=True)
+    ig_acta_de_defuncion = fields.Char(string="Acta de defunción", tracking=True)
+    ig_panteon = fields.Char(string="Panteón", tracking=True)
 
-    cremation_id = fields.Many2one(comodel_name='mortuary.cremation',
-        string='Lugar de Cremación')
-
+    cremation_id = fields.Many2one(comodel_name='mortuary.cremation',string='Lugar de Cremación', tracking=True)
     company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)
-    revisado = fields.Many2one("ii.llamada", string="Llamada")
+    revisado = fields.Many2one("ii.llamada", string="Llamada", tracking=True)
+    revisado_admin = fields.Selection([('si', 'SI'),('no', 'NO'),],string='Revisado por administración',default='no', tracking=True)
+    employee_id = fields.Many2one('hr.employee',string='Cobrador',domain=[('job_id.name', '=ilike', 'cobrador'),], tracking=True)
+    currency_id = fields.Many2one(string='Moneda', readonly=True,related='company_id.currency_id', tracking=True)
 
-    revisado_admin = fields.Selection([
-        ('si', 'SI'),
-        ('no', 'NO'),
-    ],
-        string='Revisado por administración',
-    )
-
-    employee_id = fields.Many2one(
-        'hr.employee',
-        string='Cobrador',
-        domain=[
-            ('job_id.name', '=ilike', 'cobrador'),
-        ]
-    )
-
-    currency_id = fields.Many2one(string='Moneda', 
-        readonly=True,
-        related='company_id.currency_id')
-
-    id_contrato = fields.Many2one(comodel_name="pabs.contract", string="Contrato PABS")
+    id_contrato = fields.Many2one(comodel_name="pabs.contract", string="Contrato PABS", tracking=True)
 
     # Al seleccionar un contrato por ID actualiza los campos "numero de contrato" y "nombre de titular"
     @api.onchange('id_contrato')

@@ -22,7 +22,7 @@
           <field name="contact_1_nomb" />
           <field name="tc_nomb_titular" />
           <field name="contact_1_tel" />
-          <field name="cs_observacions" />
+          <field name="cs_observacions" optional="hide"/>
         </tree>
       </field>
     </record>
@@ -83,648 +83,294 @@
               <field name="ii_servicio_2" options="{'no_quick_create':True}"/>
             </group>
 
-            <group>
-              <group string="Información inicial" priority="1">
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="name" class="o_form_label" style="font-weight:bold;" />
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="name"/>
-                  </div>
+            <group string="Información inicial" priority="1">
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="name" class="o_form_label" style="font-weight:bold;" />
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_servicio" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_servicio"/>
-                  </div>
+                <div class="o_setting_right_pane">
+                    <field name="name"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_finado" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_finado"/>
-                  </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_servicio" class="o_form_label" style="font-weight:bold;"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_fecha_creacion" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_fecha_creacion"/>
-                  </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_servicio"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_hora_creacion" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_hora_creacion"/>
-                  </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_finado" class="o_form_label" style="font-weight:bold;"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_llamada" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_llamada"/>
-                  </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_finado"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_certificamos" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_certificamos"/>
-                  </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_fecha_creacion" class="o_form_label" style="font-weight:bold;"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_vista_personal" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_vista_personal"/>
-                  </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_fecha_creacion"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_folio_certificad" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_folio_certificad"/>
-                  </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_hora_creacion" class="o_form_label" style="font-weight:bold;"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_servicio_2" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_servicio_2"/>
-                  </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_hora_creacion"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_causa_fallecim" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_causa_fallecim"/>
-                  </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_llamada" class="o_form_label" style="font-weight:bold;"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_lugar_fallec" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_lugar_fallec"/>
-                  </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_llamada"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="ii_direcc_fallecimiento" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="ii_direcc_fallecimiento"/>
-                  </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_certificamos" class="o_form_label" style="font-weight:bold;"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="revisado_admin" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="revisado_admin"/>
-                  </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_certificamos"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                    <label for="employee_id" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                    <field name="employee_id"/>
-                  </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_vista_personal" class="o_form_label" style="font-weight:bold;"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                    <label for="birthdate" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                    <field name="birthdate"/>
-                  </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_vista_personal"/>
                 </div>
-              </group>
-              <group string="Confirmacion de servicio" priority="2">
-                <field name="cs_servi_confirm" />
-                <field name="cs_agente_confir" />
-                <field name="cs_cliente_confir" />
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="cs_tel" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="cs_tel"/>
-                  </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_folio_certificad" class="o_form_label" style="font-weight:bold;"/>
                 </div>
-                <div class="o_row">
-                  <div class="o_setting_left_pane">
-                      <label for="cs_fecha_confirm" class="o_form_label" style="font-weight:bold;"/>
-                  </div>
-                  <div class="o_setting_right_pane">
-                      <field name="cs_fecha_confirm"/>
-                  </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_folio_certificad"/>
                 </div>
-                <field name="cs_hora_confirm" widget="float_time"/>
-                <field name="cs_observacions" />
-                <field name="cs_nuevo_comentario" />
-                <button
-                  name='btn_add_nuev_coment'
-                  string='AGREGAR'
-                  class="oe_link"
-                  type="object"
-                  />
-              </group>
-              <group string="Titular de contrato" priority="5">
-                <field name="id_contrato" attrs="{'required' : [('ds_tipo_de_servicio', '=', 1)]}" options="{'no_quick_create':True}"/>
-                <field name="tc_no_contrato" invisible="1"/>
-                <field name="tc_nomb_titular" />
-              </group>
-              </group>
-              <notebook>
-                <page name="Condiciones generales del servicio" string="Condiciones generales del servicio"
-                 >
-                  <group>
-                    <group string="Detalle de servicio">
-                      <field name="ds_atiende_servicio" />
-                      <field name="ds_sucursal_de_velacion" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ds_tipo_de_servicio" class="o_form_label" style="font-weight:bold;" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ds_tipo_de_servicio"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ds_capilla" class="o_form_label" style="font-weight:bold;" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ds_capilla"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ds_interplaza" class="o_form_label" style="font-weight:bold;" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ds_interplaza"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ds_origen" class="o_form_label" style="font-weight:bold;" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ds_origen"/>
-                        </div>
-                      </div>
-                      <field name="ds_personas_autorizadas" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ds_fecha_entrega_cenizas" class="o_form_label" style="font-weight:bold;" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ds_fecha_entrega_cenizas"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ds_sucursal_q_entreg_cenizas" class="o_form_label" style="font-weight:bold;" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ds_sucursal_q_entreg_cenizas"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ds_aplica_seguro" class="o_form_label" style="font-weight:bold;" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ds_aplica_seguro"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ds_fecha_de_falleci" class="o_form_label" style="font-weight:bold;" />
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ds_fecha_de_falleci"/>
-                        </div>
-                      </div>
-                      <field name="ds_ataud" />
-                      <field name="ds_urna" />
-                    </group>
-                    <div>
-                      <div>
-                        <group string="Contacto 1">
-                          <field name="contact_1_nomb" />
-                          <div class="o_row">
-                            <div class="o_setting_left_pane">
-                                <label for="contact_1_tel" class="o_form_label" style="font-weight:bold;" />
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <field name="contact_1_tel"/>
-                            </div>
-                          </div>
-                          <div class="o_row">
-                            <div class="o_setting_left_pane">
-                                <label for="contact_1_relacion_confinad" class="o_form_label" style="font-weight:bold;" />
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <field name="contact_1_relacion_confinad"/>
-                            </div>
-                          </div>
-                        </group>
-                      </div>
-                      <div>
-                        <group string="Contacto 2">
-                          <field name="contact_2_nomb" />
-                          <div class="o_row">
-                            <div class="o_setting_left_pane">
-                                <label for="contact_2_tel" class="o_form_label" style="font-weight:bold;"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <field name="contact_2_tel"/>
-                            </div>
-                          </div>
-                          <div class="o_row">
-                            <div class="o_setting_left_pane">
-                                <label for="contact_2_relacion_confinad" class="o_form_label" style="font-weight:bold;"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <field name="contact_2_relacion_confinad"/>
-                            </div>
-                          </div>
-                        </group>
-                      </div>
-                      <div>
-                        <group string="Primer obligado de pago">
-                          <field name="podp_nomb" />
-                          <field name="podp_municipio_id" />
-                          <field name="podp_colonia_id"  context="{'municipality_id': podp_municipio_id}"/>
-                          <field name="podp_calle_y_number" />
-                          <div class="o_row">
-                            <div class="o_setting_left_pane">
-                                <label for="podp_tel" class="o_form_label" style="font-weight:bold;"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <field name="podp_tel"/>
-                            </div>
-                          </div>
-                          <div class="o_row">
-                            <div class="o_setting_left_pane">
-                                <label for="podp_relacion_confinad" class="o_form_label" style="font-weight:bold;"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <field name="podp_relacion_confinad"/>
-                            </div>
-                          </div>
-                        </group>
-                      </div>
-                    </div>
-                    <group string="Precio de servicios adicionales">
-                      <field name="psa_servi_adicionals" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_costo_paquete" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_costo_paquete"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_saldo_PABS" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_saldo_PABS"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_ataud_o_cambio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_ataud_o_cambio"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_embalsamado" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_embalsamado"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_cremacion" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_cremacion"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_capilla_domicilio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_capilla_domicilio"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_capilla_recinto" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_capilla_recinto"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_cafeteria" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_cafeteria"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_traslado" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_traslado"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_tramites" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_tramites"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_camion" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_camion"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_certificado" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_certificado"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="psa_otros" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="psa_otros"/>
-                        </div>
-                      </div>
-                    </group>
-                    <group string="Información de velación">
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="iv_lugar_de_velacion" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="iv_lugar_de_velacion"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="iv_nombre_de_capilla" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="iv_nombre_de_capilla"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="iv_fecha_de_inicio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="iv_fecha_de_inicio"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="iv_hora_de_inicio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="iv_hora_de_inicio" widget="float_time"/>
-                        </div>
-                      </div>
-                      <field name="iv_direccion" />
-                    </group>
-                    <group string="Detalle de convenio">
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="dc_saldo_conveniado" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="dc_saldo_conveniado"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="dc_fecha_de_inicio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="dc_fecha_de_inicio"/>
-                        </div>
-                      </div>
-                      <field name="dc_realiza_convenio" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="dc_cantidad_de_pagos" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="dc_cantidad_de_pagos"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="dc_forma_de_pago" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="dc_forma_de_pago"/>
-                        </div>
-                      </div>
-                    </group>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_servicio_2" class="o_form_label" style="font-weight:bold;"/>
+                </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_servicio_2"/>
+                </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_causa_fallecim" class="o_form_label" style="font-weight:bold;"/>
+                </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_causa_fallecim"/>
+                </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_lugar_fallec" class="o_form_label" style="font-weight:bold;"/>
+                </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_lugar_fallec"/>
+                </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                  <label for="employee_id" class="o_form_label" style="font-weight:bold;"/>
+                </div>
+                <div class="o_setting_right_pane">
+                  <field name="employee_id"/>
+                </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                  <label for="birthdate" class="o_form_label" style="font-weight:bold;"/>
+                </div>
+                <div class="o_setting_right_pane">
+                  <field name="birthdate"/>
+                </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="ii_direcc_fallecimiento" class="o_form_label" style="font-weight:bold;"/>
+                </div>
+                <div class="o_setting_right_pane">
+                    <field name="ii_direcc_fallecimiento"/>
+                </div>
+              </div>
+              <div class="o_row">
+                <div class="o_setting_left_pane">
+                    <label for="revisado_admin" class="o_form_label" style="font-weight:bold;"/>
+                </div>
+                <div class="o_setting_right_pane">
+                    <field name="revisado_admin"/>
+                </div>
+              </div>
+            </group>
+            
+            <group string="Confirmacion de servicio">
+              <field name="cs_servi_confirm" />
+              <field name="cs_agente_confir" />
+              <field name="cs_cliente_confir" />
+              <field name="cs_tel"/>
+              <field name="cs_fecha_confirm"/>
+              <field name="cs_hora_confirm" widget="float_time"/>
+            </group>
+            
+            <group string="Observaciones">
+              <field name="cs_nuevo_comentario" nolabel="1"/>
+              <button name='btn_add_nuev_coment' string='AGREGAR' class="oe_link" type="object"/>
+              <field name="cs_observacions" nolabel="1" colspan="2"/>
+            </group>
+
+            <group string="Titular de contrato" priority="5">
+              <field name="id_contrato" attrs="{'required' : [('ds_tipo_de_servicio', '=', 1)]}" options="{'no_quick_create':True}"/>
+              <field name="tc_no_contrato" invisible="1"/>
+              <field name="tc_nomb_titular" />
+            </group>
+            
+            <notebook>
+              <page name="Condiciones generales del servicio" string="Condiciones generales del servicio">
+                <group string="Primer obligado de pago">
+                  <field name="podp_nomb" />
+                  <field name="podp_municipio_id" />
+                  <field name="podp_colonia_id"  context="{'municipality_id': podp_municipio_id}"/>
+                  <field name="podp_calle_y_number" />
+                  <field name="podp_tel"/>
+                  <field name="podp_relacion_confinad"/>
+                </group>
+
+                <group>
+                  <group string="Contacto 1">
+                    <field name="contact_1_nomb" />
+                    <field name="contact_1_tel"/>
+                    <field name="contact_1_relacion_confinad"/>
                   </group>
-                </page>
-                <page name="Logística" string="Logística">
-                  <group>
-                    <group string="Información de recolección">
-                      <field name="ir_operativo_1" />
-                      <field name="ir_operativo_2" />
-                      <field name="ir_carroza" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ir_fecha_de_inicio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ir_fecha_de_inicio"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ir_hora_de_inicio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ir_hora_de_inicio" widget="float_time"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ir_fecha_de_fin" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ir_fecha_de_fin"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ir_hora_de_fin" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ir_hora_de_fin" widget="float_time"/>
-                        </div>
-                      </div>
-                    </group>
-                    <group string="Información de instalación">
-                      <field name="ii_operativo_1" />
-                      <field name="ii_operativo_2" />
-                      <field name="ii_carroza" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ii_fecha_de_inicio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ii_fecha_de_inicio"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ii_hora_de_inicio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ii_hora_de_inicio" widget="float_time"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ii_fecha_de_fin" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ii_fecha_de_fin"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ii_hora_de_fin" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ii_hora_de_fin" widget="float_time"/>
-                        </div>
-                      </div>
-                    </group>
-                    <group string="Información de cortejo">
-                      <field name="ic_operativo_1" />
-                      <field name="ic_operativo_2" />
-                      <field name="ic_carroza" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ic_fecha_de_inicio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ic_fecha_de_inicio"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ic_hora_de_inicio" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ic_hora_de_inicio" widget="float_time"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ic_fecha_de_fin" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ic_fecha_de_fin"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ic_hora_de_fin" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ic_hora_de_fin" widget="float_time"/>
-                        </div>
-                      </div>
-                    </group>
-                    <group string="Información de general">
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ig_entrego_ropa" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ig_entrego_ropa"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ig_proveedor_embalsama" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ig_proveedor_embalsama"/>
-                        </div>
-                      </div>
-                      <field name="ig_templo" />
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ig_hora_de_misa" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ig_hora_de_misa" widget="float_time"/>
-                        </div>
-                      </div>
-                      <div class="o_row">
-                        <div class="o_setting_left_pane">
-                            <label for="ig_acta_de_defuncion" class="o_form_label" style="font-weight:bold;"/>
-                        </div>
-                        <div class="o_setting_right_pane">
-                            <field name="ig_acta_de_defuncion"/>
-                        </div>
-                      </div>
-                      <field name="ig_panteon" />
-                      <field name="cremation_id"/>
-                    </group>
+
+                  <group string="Contacto 2">
+                    <field name="contact_2_nomb" />
+                    <field name="contact_2_tel"/>
+                    <field name="contact_2_relacion_confinad"/>
                   </group>
-                </page>
-              </notebook>
+                </group>
+
+                <group string="Detalle de servicio">
+                  <group>
+                    <field name="ds_atiende_servicio" />
+                    <field name="ds_fecha_de_falleci"/>
+                    <field name="ds_capilla"/>
+                    <field name="ds_sucursal_de_velacion"/>
+                    <field name="ds_aplica_seguro"/>
+                    <field name="ds_personas_autorizadas" />
+                  </group>
+
+                  <group>
+                    <field name="ds_tipo_de_servicio"/>
+                    <field name="ds_ataud" />
+                    <field name="ds_urna" />
+                    <field name="ds_fecha_entrega_cenizas"/>
+                    <field name="ds_sucursal_q_entreg_cenizas"/>
+                    <field name="ds_interplaza"/>
+                    <field name="ds_origen"/>
+                  </group>
+                </group>
+
+                <group string="Información de velación">
+                  <field name="iv_lugar_de_velacion" options="{'no_open':True, 'no_create':True}"/>
+                  <field name="iv_nombre_de_capilla" options="{'no_open':True, 'no_create':True}"/>
+                  <field name="iv_fecha_de_inicio"/>
+                  <field name="iv_hora_de_inicio" widget="float_time"/>
+                  <field name="iv_direccion"/>
+                </group>
+
+
+                <group string="Precio de servicios adicionales">
+                  <field name="psa_servi_adicionals"/>
+                </group>
+                <group>
+                  <!-- Columna izquierda -->
+                  <group>
+                    <field name="psa_costo_paquete"/>
+                    <field name="psa_ataud_o_cambio"/>
+                    <field name="psa_cremacion"/>
+                    <field name="psa_capilla_recinto"/>
+                    <field name="psa_traslado"/>
+                    <field name="psa_camion"/>
+                    <field name="psa_otros"/>
+                  </group>
+
+                  <!-- Columna derecha -->
+                  <group>
+                    <field name="psa_saldo_PABS"/>
+                    <field name="psa_embalsamado"/>
+                    <field name="psa_capilla_domicilio"/>
+                    <field name="psa_cafeteria"/>
+                    <field name="psa_tramites"/>
+                    <field name="psa_certificado"/>
+                  </group>
+                </group>
+
+                <group string="Detalle de convenio">
+                  <field name="dc_saldo_conveniado"/>
+                  <field name="dc_realiza_convenio" />
+                  <field name="dc_fecha_de_inicio"/>
+                  <field name="dc_cantidad_de_pagos"/>
+                  <field name="dc_forma_de_pago"/>
+                </group>
+
+              </page>
+
+              <page name="Logística" string="Logística">
+
+                <group string="Información de general">
+                  <field name="ig_entrego_ropa"/>
+                  <field name="ig_proveedor_embalsama"/>
+                  <field name="ig_templo" />
+                  <field name="ig_hora_de_misa" widget="float_time"/>
+                  <field name="ig_acta_de_defuncion"/>
+                  <field name="ig_panteon" />
+                  <field name="cremation_id"/>
+                </group>
+
+                <group string="Información de recolección">
+                  <field name="ir_operativo_1" />
+                  <field name="ir_operativo_2" />
+                  <field name="ir_carroza" />
+                  <field name="ir_fecha_de_inicio"/>
+                  <field name="ir_hora_de_inicio" widget="float_time"/>
+                  <field name="ir_fecha_de_fin"/>
+                  <field name="ir_hora_de_fin" widget="float_time"/>
+                </group>
+
+                <group string="Información de instalación">
+                  <field name="ii_operativo_1" />
+                  <field name="ii_operativo_2" />
+                  <field name="ii_carroza" />
+                  <field name="ii_fecha_de_inicio"/>
+                  <field name="ii_hora_de_inicio" widget="float_time"/>
+                  <field name="ii_fecha_de_fin"/>
+                  <field name="ii_hora_de_fin" widget="float_time"/>
+                </group>
+
+                <group string="Información de cortejo">
+                  <field name="ic_operativo_1" />
+                  <field name="ic_operativo_2" />
+                  <field name="ic_carroza" />
+                  <field name="ic_fecha_de_inicio"/>
+                  <field name="ic_hora_de_inicio" widget="float_time"/>
+                  <field name="ic_fecha_de_fin"/>
+                  <field name="ic_hora_de_fin" widget="float_time"/>
+                </group>
+                
+              </page>
+
+            </notebook>
            </sheet>
            <div class="oe_chatter">
               <field name="message_follower_ids" widget="mail_followers"/>
