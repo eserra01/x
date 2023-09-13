@@ -10,9 +10,10 @@
             <group>
 
               <group>
-                <field name="name" />
-                <field name="municipality_id" />
-                <field name="zip_code" />
+                <field name="name"/>
+                <field name="municipality_id" domain="[('company_id', '=', company_id)]" options="{'no_create':True}"/>
+                <field name="zip_code"/>
+                <field name="company_id"/>
               </group>
 
             </group>
