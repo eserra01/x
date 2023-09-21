@@ -3,135 +3,87 @@
 	<data>
     <template id="xmarts_funeraria.estado_cuenta">
       <t t-call="web.html_container">
-      <t t-call="web.basic_layout">
-        <t t-foreach="docs" t-as="doc">
-          
-          <!-- LOGO Y TITULO -->
-          <div class="header">
-            <table width="100%" cellspacing="0" cellpadding="0">
-              <tr>
-                <td width="20%" rowspan="2" aling="top">
-                  <img src="xmarts_funeraria/static/description/image.png" style="width:250px;"/>
-                </td>
-                <td class="text-center" aling="top">
-                  <h3><strong>PABS - Programa de Apoyo De Beneficio Social <br/><br/>ESTADO DE CUENTA</strong></h3>
-                </td>
-                <td width="20%" rowspan="2" aling="top">
-                </td>
-              </tr>
-            </table>
-          </div>
-          
-          <div class="page">
-
-            <!-- INFORMACIÓN DE ENCABEZADO -->
-            <table width="100%">
-              <tr>
-                <td width="7%"><ins><strong>Contrato:</strong></ins></td>
-                <td><t t-esc="doc.name"/></td>
-                <td class="text-right" width="20%"><ins><strong>Fecha contrato:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                <td><t t-esc="doc.invoice_date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></td>
-                <td class="text-right" width="20%"><ins><strong>Solicitud:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                <td><t t-esc="doc.lot_id.name"/></td>
-                <td class="text-right" width="20%"><ins><strong>Costo:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                <td><t t-esc="doc.product_price"/></td>
-                <td class="text-right" width="20%"><ins><strong>Saldo:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                <td><t t-esc="doc.balance"/></td>
-              </tr>
-            </table>
-
-            <table width="100%">
-              <tr>
-                <td width="7%"><ins><strong>Cliente:</strong></ins></td>
-                <td width="30%"><t t-esc="doc.full_name"/></td>
-                <td width="7%"><ins><strong>Telefono:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                <td width="15%"><t t-esc="doc.phone"/></td>
-              </tr>
-              <tr>
-                <td><ins><strong>Colonia:</strong></ins></td>
-                <td><t t-esc="doc.neighborhood_id.name"/></td>
-                <td><ins><strong>Localidad:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                <td><t t-esc="doc.municipality_id.name"/></td>
-              </tr>
-              <tr>
-                <td><ins><strong>Domicilio:</strong></ins></td>
-                <td><t t-esc="doc.street_name"/>&amp;nbsp;<t t-esc="doc.street_number"/></td>
-                <td colspan="2"><ins><strong>Importe de Pago Actual:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                <td><t t-esc="doc.payment_amount"/></td>
-              </tr>
-              <tr>
-                <td><ins><strong>Fecha de impresión:</strong></ins></td>
-                <td><span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/></td>
-                <td colspan="2"><ins><strong>Código Activación:</strong></ins><span>&amp;nbsp;&amp;nbsp;</span></td>
-                <td><t t-esc="doc.activation_code"/></td>
-              </tr>
-            </table><br/>
-
-            <!-- Encabezado de tabla de recibos -->
-            <table width="100%">
+        <t t-call="web.basic_layout">
+          <t t-foreach="docs" t-as="o">
+            <!-- HEADER -->            
+            <div class="header" style="height: 160px; border-bottom: 1px solid black;">
+              <div style="width: 20%; float:left;">
+                <img src="xmarts_funeraria/static/description/image.png" style="width:250px;"/>
+              </div>
+              <div style="width: 80%; float:left; text-align:center;">
+                <p style="font-size: 30px; font-weight: 800; color: #004d80;">PABS - Programa de Apoyo De Beneficio Social</p>
+                <p style="font-size: 30px; font-weight: 800;">ESTADO DE CUENTA</p>                                                                   
+                <div style="width: 55%; float:left; text-align:center; font-size: 1.2em;"><strong>Titular:&amp;nbsp;</strong> <span t-field="o.full_name"/></div>
+                <div style="width: 25%; float:left; text-align:center; font-size: 1.2em; background-color: #ff944d; color: white;"><strong>Contrato:&amp;nbsp;</strong><span t-field="o.name"/></div>
+                <div style="width: 20%; float:left; text-align:right; font-size: 1.2em;"><strong>Página:&amp;nbsp;</strong><span class="page"/> de <span class="topage"/></div>                      
+              </div>                    
+            </div>
+            <!-- BODY -->
+            <div class="page" >
+              <div style="width: 100%; float:left;">                      
+                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Servicio:&amp;nbsp;</strong><span t-field="o.name_service.name"/></div>
+                <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Fecha impresión:&amp;nbsp;</strong><span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/></div>
+                <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>&amp;nbsp;</strong></div>                      
+              </div>
+              <div style="width: 100%; float:left;">                      
+                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Fecha contrato:&amp;nbsp;</strong><span t-field="o.invoice_date"/></div>
+                <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Solicitud:&amp;nbsp;</strong><span t-field="o.lot_id.name"/></div>
+                <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Costo:&amp;nbsp;</strong>$<span t-field="o.product_price"/></div>                      
+              </div>
+              <div style="width: 100%; float:left;">                      
+                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Domicilio:&amp;nbsp;</strong><span t-field="o.street_name"/>&amp;nbsp;#<span t-field="o.street_number"/>&amp;nbsp;</div>
+                <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Código activación:&amp;nbsp;</strong><span t-field="o.activation_code"/></div>
+                <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Importe de pago:&amp;nbsp;</strong>
+                  $<span t-field="o.payment_amount"/>&amp;nbsp;<t t-esc="dict(o.fields_get(allfields=['way_to_payment'])['way_to_payment']['selection'])[o.way_to_payment]"/>
+                </div>
+              </div>
+              <div style="width: 100%; float:left;">                      
+                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Colonia:&amp;nbsp;</strong><span t-field="o.neighborhood_id.name"/></div>
+                <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Estatus:&amp;nbsp;</strong><span t-field="o.contract_status_name"/></div>
+                <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Saldo:&amp;nbsp;</strong>$<span t-field="o.balance"/></div>
+                                    
+              </div> 
+              <div style="width: 100%; float:left;">                      
+                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Localidad:&amp;nbsp;</strong><span t-field="o.municipality_id.name"/></div>
+                <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Motivo:&amp;nbsp;</strong><span t-field="o.contract_status_reason.reason"/></div>                      
+                <div style="width: 30%; float:left; text-align:left; font-size:  1.2em;"><strong>Monto atrasado:&amp;nbsp;</strong>$<span t-field="o.late_amount"/></div>
+              </div>    
+              <div style="width: 100%; float:left;">                      
+                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Teléfono:&amp;nbsp;</strong><span t-field="o.phone"/></div>                      
+                <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Días sin abonar:&amp;nbsp;</strong><span t-field="o.days_without_payment"/></div>                      
+                <div style="width: 30%; float:left; text-align:left; font-size:  1.2em;"><strong>Monto abonado:&amp;nbsp;</strong>$<span t-field="o.paid_balance"/></div>
+              </div>      
+              <!-- RECIBOS -->
+              <div style="width: 100%; float:left; margin-top: 15px; border-bottom: 1px solid black;">                      
+                <div style="width: 12%; float:left; text-align:center; font-size: 1.2em; background-color: #004d80; color: white;">Fecha recibo</div>
+                <div style="width: 12%; float:left; text-align:center; font-size: 1.2em; background-color: #004d80; color: white;">Recibo</div>
+                <div style="width: 12%; float:left; text-align:center; font-size: 1.2em; background-color: #004d80; color: white;">Importe</div>
+                <div style="width: 36%; float:left; text-align:center; font-size: 1.2em; background-color: #004d80; color: white;">Cobrador</div>
+                <div style="width: 28%; float:left; text-align:center; font-size: 1.2em; background-color: #004d80; color: white;">Movimiento</div>                      
+              </div>
+            </div>
             <t t-set="total" t-value="0"/>
-              <thead>
-                <tr>
-                  <th class="text-center" style="width: 20%; border: none; border-bottom: 1px solid black;">Fecha de recibo</th>
-                  <th class="text-center" style="width: 15%; border: none; border-bottom: 1px solid black;">Recibo</th>
-                  <th class="text-center" style="width: 20%; border: none; border-bottom: 1px solid black;">Importe</th>
-                  <th class="text-center" style="width: 25%; border: none; border-bottom: 1px solid black;">Cobrador</th>
-                  <th class="text-center" style="width: 20%; border: none; border-bottom: 1px solid black;">Movimiento</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <!-- PAPELERIA -->
-                <t t-set="credits" t-value="doc.get_credits()"/>
-                <t t-foreach="credits" t-as="recibo">
-                  <tr>
-                    <td class="text-center"><span/><t t-esc="recibo['date']"/></td>
-                    <td class="text-center"><span/><t t-esc="recibo['name']"/></td>
-                    <td class="text-center"><span><t t-esc="'${:,.2f}'.format(recibo['amount'])"/></span></td>
-                    <td class="text-center"><span/><t t-esc="recibo['collector']"/></td>
-                    <td><t t-esc="recibo['description']"/></td>
-                    <!-- Acumular a total -->
-                    <t t-set="total" t-value="total + recibo['amount']"/>
-                  </tr>
-                </t>
-
-                <!-- TOTAL -->
-                <tr>
-                  <td/>
-                  <td/>
-                  <td class="text-center"><strong>TOTAL: <span t-esc="'${:,.2f}'.format(total)"/></strong></td>
-                  <td/>
-                  <td/>
-                </tr>
-              </tbody>
-            </table><br/>
-
-
-            <!-- INFORMACIÓN DE PIE DE PAGINA -->
-            <table width="60%">
-              <tr>
-                <td width="20%"><strong>Días sin Abonar:</strong></td>
-                <td><span t-esc="doc.days_without_payment"/></td>
-                <td><strong>Estatus:</strong></td>
-                <td><span t-esc="doc.contract_status_name"/></td>
-              </tr>
-              <tr>
-                <td><strong>Monto Atrasado:</strong></td>
-                <td><span t-esc="doc.late_amount"/></td>
-                <td><strong>Motivo:</strong></td>
-                <td><span t-esc="doc.contract_status_reason.reason"/></td>
-              </tr>
-            </table>
-
-            <table width="60%">
-              <tr>
-                <td width="10%"><strong>Servicio:</strong></td>
-                <td><span t-esc="doc.name_service.name"/></td>
-              </tr>
-            </table>
-          </div>
+            <t t-set="credits" t-value="o.get_credits()"/>                              
+            <t t-foreach="credits" t-as="recibo">
+              <t t-set="total" t-value="total + recibo['amount']"/>
+              <div style="width: 100%; float:left; margin-top: 15px; border-bottom: .1em solid #f0f0f5;">   
+                <div style="width: 12%; float:left; text-align:center; font-size: 1em;"><t t-esc="recibo['date']"/>&amp;nbsp;</div>
+                <div style="width: 12%; float:left; text-align:center; font-size: 1em;"><t t-esc="recibo['name']"/>&amp;nbsp;</div>
+                <div style="width: 12%; float:left; text-align:center; font-size: 1em;"><t t-esc="'${:,.2f}'.format(recibo['amount'])"/>&amp;nbsp;</div>
+                <div style="width: 36%; float:left; text-align:center; font-size: 1em;"><t t-esc="recibo['collector']"/>&amp;nbsp;</div>
+                <div style="width: 28%; float:left; text-align:center; font-size: 1em;"><t t-esc="recibo['description']"/>&amp;nbsp;</div>
+              </div>
+            </t>
+            <!-- TOTAL -->
+            <div style="width: 100%; float:left; margin-top: 15px; border-bottom: 1px solid black;">                      
+              <div style="width: 12%; float:left; text-align:center; font-size: 1.2em; background-color: #004d80; color: white;">&amp;nbsp;</div>
+              <div style="width: 12%; float:left; text-align:center; font-size: 1.2em; background-color: #004d80; color: white;">Total</div>
+              <div style="width: 12%; float:left; text-align:center; font-size: 1.2em; background-color: #004d80; color: white;"><span t-esc="'${:,.2f}'.format(o.paid_balance)"/></div>
+              <div style="width: 36%; float:left; text-align:center; font-size: 1.2em; background-color: #004d80; color: white;">&amp;nbsp;</div>
+              <div style="width: 28%; float:left; text-align:center; font-size: 1.2em; background-color: #004d80; color: white;">&amp;nbsp;</div>                      
+            </div>                  
+          </t>
         </t>
-      </t>
       </t>
     </template>
 
