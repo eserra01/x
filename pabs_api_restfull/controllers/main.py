@@ -1404,7 +1404,8 @@ class APIREST(http.Controller):
       Abonos, 
       ImporteNeto,
       Project, 
-      Comments
+      Comments,
+      EtiquetaAnalitica
     FROM
     (
 
@@ -1538,7 +1539,8 @@ class APIREST(http.Controller):
         (mov.Debit - mov.Credit) as ImporteNeto,
         
         '' as Project,
-        mov.name as comments
+        mov.name as comments,
+        tag.name as EtiquetaAnalitica
 
       FROM "public".account_move AS enc
       INNER JOIN "public".account_move_line as mov on enc.id = mov.move_id
@@ -1549,6 +1551,8 @@ class APIREST(http.Controller):
       LEFT JOIN "public".account_account as acc on mov.account_id = acc.id
       LEFT JOIN "public".account_analytic_account as ana on mov.analytic_account_id = ana.id
       left join public.mortuary ON enc.mortuary_id = mortuary.id
+      LEFT JOIN account_analytic_tag_account_move_line_rel idmov ON account_move_line_id = mov.id
+      left join account_analytic_tag tag ON idmov.account_analytic_tag_id = tag.id 
         WHERE enc.state = 'posted'
         AND COALESCE(enc.ref, '') NOT IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND NOT (enc.type = 'out_invoice' AND enc.contract_id IS NOT NULL)
@@ -1682,7 +1686,8 @@ class APIREST(http.Controller):
         SUM(mov.Debit) - SUM(mov.Credit) as ImporteNeto,
         
         '' as Project,
-        '' as comments
+        '' as comments,
+        tag.name as EtiquetaAnalitica
 
       FROM "public".account_move AS enc
       INNER JOIN "public".account_move_line as mov on enc.id = mov.move_id
@@ -1693,6 +1698,8 @@ class APIREST(http.Controller):
       LEFT JOIN "public".account_account as acc on mov.account_id = acc.id
       LEFT JOIN "public".account_analytic_account as ana on mov.analytic_account_id = ana.id      
       left join public.mortuary ON enc.mortuary_id = mortuary.id
+      LEFT JOIN account_analytic_tag_account_move_line_rel idmov ON account_move_line_id = mov.id
+      left join account_analytic_tag tag ON idmov.account_analytic_tag_id = tag.id 
         WHERE enc.state = 'posted'
         AND COALESCE(enc.ref, '') IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND enc.company_id = {}
@@ -1825,7 +1832,8 @@ class APIREST(http.Controller):
         SUM(mov.Debit) - SUM(mov.Credit) as ImporteNeto,
 
         '' as Project,
-        '' as comments
+        '' as comments,
+        tag.name as EtiquetaAnalitica
 
       FROM "public".account_move AS enc
       INNER JOIN "public".account_move_line as mov on enc.id = mov.move_id
@@ -1836,6 +1844,8 @@ class APIREST(http.Controller):
       LEFT JOIN "public".account_account as acc on mov.account_id = acc.id
       LEFT JOIN "public".account_analytic_account as ana on mov.analytic_account_id = ana.id
       left join public.mortuary ON enc.mortuary_id = mortuary.id
+      LEFT JOIN account_analytic_tag_account_move_line_rel idmov ON account_move_line_id = mov.id
+      left join account_analytic_tag tag ON idmov.account_analytic_tag_id = tag.id 
         WHERE enc.state = 'posted'
         AND COALESCE(enc.ref, '') NOT IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND enc.type = 'out_invoice'
