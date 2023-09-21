@@ -31,20 +31,20 @@
                 <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Costo:&amp;nbsp;</strong>$<span t-field="o.product_price"/></div>                      
               </div>
               <div style="width: 100%; float:left;">                      
-                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Domicilio:&amp;nbsp;</strong><span t-field="o.street_name"/>&amp;nbsp;#<span t-field="o.street_number"/>&amp;nbsp;</div>
+                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Domicilio:&amp;nbsp;</strong><span t-field="o.street_name_toll"/>&amp;nbsp;#<span t-field="o.street_number_toll"/>&amp;nbsp;</div>
                 <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Código activación:&amp;nbsp;</strong><span t-field="o.activation_code"/></div>
                 <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Importe de pago:&amp;nbsp;</strong>
                   $<span t-field="o.payment_amount"/>&amp;nbsp;<t t-esc="dict(o.fields_get(allfields=['way_to_payment'])['way_to_payment']['selection'])[o.way_to_payment]"/>
                 </div>
               </div>
               <div style="width: 100%; float:left;">                      
-                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Colonia:&amp;nbsp;</strong><span t-field="o.neighborhood_id.name"/></div>
+                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Colonia:&amp;nbsp;</strong><span t-field="o.toll_colony_id.name"/></div>
                 <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Estatus:&amp;nbsp;</strong><span t-field="o.contract_status_name"/></div>
                 <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Saldo:&amp;nbsp;</strong>$<span t-field="o.balance"/></div>
                                     
               </div> 
               <div style="width: 100%; float:left;">                      
-                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Localidad:&amp;nbsp;</strong><span t-field="o.municipality_id.name"/></div>
+                <div style="width: 40%; float:left; text-align:left; font-size: 1.2em;"><strong>Localidad:&amp;nbsp;</strong><span t-field="o.toll_municipallity_id.name"/></div>
                 <div style="width: 30%; float:left; text-align:left; font-size: 1.2em;"><strong>Motivo:&amp;nbsp;</strong><span t-field="o.contract_status_reason.reason"/></div>                      
                 <div style="width: 30%; float:left; text-align:left; font-size:  1.2em;"><strong>Monto atrasado:&amp;nbsp;</strong>$<span t-field="o.late_amount"/></div>
               </div>    
