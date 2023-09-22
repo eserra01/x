@@ -180,81 +180,111 @@ class PabsEmployeeEffectiveness(models.TransientModel):
     company_id = self.env.company.id
 
     consulta = """
-    SELECT 
-      emp.barcode as codigo,
-      COALESCE(emp.name, '') as nombre,
-      emp.date_of_admission as fecha_ingreso,
-      COALESCE(esq.name, '') as esquema,
-      COALESCE(est.name, '') as estatus,
-      COALESCE(ofi.name, '') as oficina,
-      COALESCE(efe.activos, 0) as activos_y_suspendidos,
-      COALESCE(efe.pagados, 0) as pagados,
-      COALESCE(efe.realizados, 0) as realizados,
-      COALESCE(efe.otros_activos, 0) as otros_activos,
-      COALESCE(efe.cancelados, 0) as cancelados,
-      COALESCE(efe.suspendidos, 0) as suspendidos,
-      COALESCE(efe.traspasos, 0) as traspasos,
-      COALESCE(efe.verificaciones_sc, 0) as verificaciones_cancelar,
-      COALESCE(efe.cancelaciones, 0) as cancelaciones,
-      COALESCE(efe.cantidad_contratos, 0) as afiliacion_total,
-      COALESCE(efe.efectividad, 0) as efectividad,
-      CASE
-        WHEN COALESCE(efe.efectividad, 0) > .90 THEN 1
-        WHEN COALESCE(efe.efectividad, 0) > .80 THEN .85
-        WHEN COALESCE(efe.efectividad, 0) > .70 THEN .75
-        ELSE 0
-      END AS porcentaje_bono
-    FROM hr_employee AS emp
-    INNER JOIN stock_warehouse AS ofi ON emp.warehouse_id = ofi.id
-    LEFT JOIN pabs_payment_scheme AS esq ON emp.payment_scheme = esq.id
-    LEFT JOIN hr_employee_status AS est ON emp.employee_status = est.id
-    INNER JOIN
-    (
-      /*Calculo de efectividad por asistente*/
+    WITH empleados AS (
       SELECT 
-        x.id_empleado,
-        x.cantidad_contratos,
-        /*Activos*/
-        x.activos,
-        x.pagados,
-        x.realizados,
-        x.otros_activos,
-        /*Cancelados*/
-        x.suspendidos,
-        x.cancelados,
-        x.traspasos,
-        x.verificaciones_sc,
-        x.suspendidos + x.cancelados + x.traspasos + x.verificaciones_sc as cancelaciones,
-
-        CAST( 
-          CAST(1 AS NUMERIC(10,2)) - CAST(x.suspendidos + x.cancelados + x.traspasos + x.verificaciones_sc AS NUMERIC(10,2)) / CAST(x.cantidad_contratos AS NUMERIC(10,2))
-        AS NUMERIC (10,2)) as efectividad 
-      FROM
+        emp.barcode as codigo,
+        COALESCE(emp.name, '') as nombre,
+        emp.date_of_admission as fecha_ingreso,
+        COALESCE(esq.name, '') as esquema,
+        COALESCE(est.name, '') as estatus,
+        COALESCE(ofi.name, '') as oficina,
+        COALESCE(efe.activos, 0) as activos_y_suspendidos,
+        COALESCE(efe.pagados, 0) as pagados,
+        COALESCE(efe.realizados, 0) as realizados,
+        COALESCE(efe.otros_activos, 0) as otros_activos,
+        COALESCE(efe.cancelados, 0) as cancelados,
+        COALESCE(efe.suspendidos, 0) as suspendidos,
+        COALESCE(efe.traspasos, 0) as traspasos,
+        COALESCE(efe.verificaciones_sc, 0) as verificaciones_cancelar,
+        COALESCE(efe.cancelaciones, 0) as cancelaciones,
+        COALESCE(efe.cantidad_contratos, 0) as afiliacion_total,
+        COALESCE(efe.efectividad, 0) as efectividad,
+        CASE
+          WHEN COALESCE(efe.efectividad, 0) > .90 THEN 1
+          WHEN COALESCE(efe.efectividad, 0) > .80 THEN .85
+          WHEN COALESCE(efe.efectividad, 0) > .70 THEN .75
+          ELSE 0
+        END AS porcentaje_bono
+      FROM hr_employee AS emp
+      INNER JOIN stock_warehouse AS ofi ON emp.warehouse_id = ofi.id
+      LEFT JOIN pabs_payment_scheme AS esq ON emp.payment_scheme = esq.id
+      LEFT JOIN hr_employee_status AS est ON emp.employee_status = est.id
+      INNER JOIN
       (
-        /*Cantidad de contratos activos, suspendidos y cancelados por asistente*/
+        /*Calculo de efectividad por asistente*/
         SELECT 
-          con.sale_employee_id as id_empleado,
-          COUNT(*) as cantidad_contratos,
-          SUM(CASE WHEN est.id IN ({act}, {temp}) THEN 1 ELSE 0 END) as activos,
-          SUM(CASE WHEN est.id = {pag} THEN 1 ELSE 0 END) as pagados,
-          SUM(CASE WHEN est.id = {rea} THEN 1 ELSE 0 END) as realizados,
-          SUM(CASE WHEN est.id IN {otros_act} THEN 1 ELSE 0 END) as otros_activos,
-          
-          SUM(CASE WHEN est.id = {sus} THEN 1 ELSE 0 END) as suspendidos,
-          SUM(CASE WHEN est.id IN ({can}, {queb}) THEN 1 ELSE 0 END) as cancelados,
-          SUM(CASE WHEN est.id = {tra} THEN 1 ELSE 0 END) as traspasos,
-          SUM(CASE WHEN est.id = {ver} THEN 1 ELSE 0 END) as verificaciones_sc
-        FROM pabs_contract AS con
-        INNER JOIN pabs_contract_status as est ON con.contract_status_item = est.id
-          WHERE con.state = 'contract'
-          AND con.company_id IN ({com1})
-          AND con.invoice_date BETWEEN '{ini}' AND '{fin}'
-            GROUP BY sale_employee_id HAVING COUNT(*) > 0
-              ORDER BY sale_employee_id
-      ) AS x
-    ) AS efe ON emp.id = efe.id_empleado
-      WHERE emp.company_id IN ({com2})
-        ORDER BY emp.barcode
+          x.id_empleado,
+          x.cantidad_contratos,
+          /*Activos*/
+          x.activos,
+          x.pagados,
+          x.realizados,
+          x.otros_activos,
+          /*Cancelados*/
+          x.suspendidos,
+          x.cancelados,
+          x.traspasos,
+          x.verificaciones_sc,
+          x.suspendidos + x.cancelados + x.traspasos + x.verificaciones_sc as cancelaciones,
+          CAST( 
+            CAST(1 AS NUMERIC(10,2)) - CAST(x.suspendidos + x.cancelados + x.traspasos + x.verificaciones_sc AS NUMERIC(10,2)) / CAST(x.cantidad_contratos AS NUMERIC(10,2))
+          AS NUMERIC (10,2)) as efectividad 
+        FROM
+        (
+          /*Cantidad de contratos activos, suspendidos y cancelados por asistente*/
+          SELECT 
+            con.sale_employee_id as id_empleado,
+            COUNT(*) as cantidad_contratos,
+            SUM(CASE WHEN est.id IN ({act}, {temp}) THEN 1 ELSE 0 END) as activos,
+            SUM(CASE WHEN est.id = {pag} THEN 1 ELSE 0 END) as pagados,
+            SUM(CASE WHEN est.id = {rea} THEN 1 ELSE 0 END) as realizados,
+            SUM(CASE WHEN est.id IN {otros_act} THEN 1 ELSE 0 END) as otros_activos,
+            
+            SUM(CASE WHEN est.id = {sus} THEN 1 ELSE 0 END) as suspendidos,
+            SUM(CASE WHEN est.id IN ({can}, {queb}) THEN 1 ELSE 0 END) as cancelados,
+            SUM(CASE WHEN est.id = {tra} THEN 1 ELSE 0 END) as traspasos,
+            SUM(CASE WHEN est.id = {ver} THEN 1 ELSE 0 END) as verificaciones_sc
+          FROM pabs_contract AS con
+          INNER JOIN pabs_contract_status as est ON con.contract_status_item = est.id
+            WHERE con.state = 'contract'
+            AND con.company_id IN ({com1})
+            AND con.invoice_date BETWEEN '{ini}' AND '{fin}'
+              GROUP BY sale_employee_id HAVING COUNT(*) > 0
+                ORDER BY sale_employee_id
+        ) AS x
+      ) AS efe ON emp.id = efe.id_empleado
+        WHERE emp.company_id IN ({com2})
+          ORDER BY emp.barcode
+    )
+      SELECT 
+        *
+      FROM empleados
+    UNION SELECT 
+        'Z_Total' as codigo,
+        'Total' as nombre,
+        '1900-01-01' as fecha_ingreso,
+        '' as esquema,
+        '' as estatus,
+        '' as oficina,
+        SUM(activos_y_suspendidos) as activos_y_suspendidos,
+        SUM(pagados) as pagados,
+        SUM(realizados) as realizados,
+        SUM(otros_activos) as otros_activos,
+        SUM(cancelados) as cancelados,
+        SUM(suspendidos) as suspendidos,
+        SUM(traspasos) as traspasos,
+        SUM(verificaciones_cancelar) as verificaciones_cancelar,
+        SUM(cancelaciones) as cancelaciones,
+        SUM(afiliacion_total) as afiliacion_total,
+        ROUND(AVG(efectividad), 2) as efectividad,
+        CASE
+          WHEN AVG(efectividad) > .90 THEN 1
+          WHEN AVG(efectividad) > .80 THEN .85
+          WHEN AVG(efectividad) > .70 THEN .75
+          ELSE 0
+        END AS porcentaje_bono
+      FROM empleados
+        ORDER BY codigo
     """.format(
       act = est_act.id,
       temp = est_temp.id,
