@@ -1,0 +1,130 @@
+<odoo>
+  <data>
+
+    <template id="pabs_employee_effectiveness_report_template">
+      <t t-call="web.html_container">
+      <t t-call="web.basic_layout">
+        <div class="page">
+          <style>
+            th {
+              border: 1px solid black;
+              text-align: center;
+              font-weight:bold;
+            }
+
+            td {
+              border: 1px solid black;
+            }
+
+            .centrado {
+              text-align: center;
+            }
+          </style>
+
+          <div>
+            <table width="100%" cellspacing="0" cellpadding="0">
+              <tr>
+                <td width="30%" rowspan="2" align="top" style="border: none; text-align: right;">
+                  <img src="pabs_reports/static/description/icon.png" style="width:80px;"/>
+                </td>
+
+                <td width="40%" class="text-center" align="top" style="border: none;">
+                  <span style="font-size:14pt; font-weight:bold">PROGRAMA DE APOYO DE BENEFICIO SOCIAL</span> 
+                  <br/>
+                  <span style="font-size:14pt; font-weight:bold;">Reporte de efectividad de asistentes <span t-esc="tipo"></span></span> 
+                  <br/>
+                  <span style="font-size:14pt; font-weight:bold;">Ventas del <span t-esc="fecha_inicial"></span> al <span t-esc="fecha_final"></span></span> 
+                  <br/>
+                </td>
+
+                <td width="30%" style="border: none;"/>
+              </tr>
+            </table>
+          </div>
+
+          <br/>
+
+          <table style="border-collapse: collapse; width: 100%;">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th style="width: 30%">Nombre</th>
+                <th>Act y ST</th>
+                <th>Pag</th>
+                <th>Rea</th>
+                <th>Otros</th>
+                <th>Canc</th>
+                <th>SxC</th>
+                <th>Tras</th>
+                <th>V_SC</th>
+                <th>∑ Canc</th>
+                <th>∑ Ventas</th>
+                <th>% efe</th>
+                <th>% bono</th>
+                <!-- <th style="-webkit-transform:rotate(-90deg);">Activos y susp temp</th> -->
+              </tr>
+            </thead>
+
+            <tbody>
+              <t t-foreach="registros" t-as="emp">
+                <tr>
+                  <td><span t-esc="emp['codigo']"/></td>
+                  <td style="text-overflow: clip;"><span t-esc="emp['nombre']"/></td>
+                  <td class="centrado"> <span t-esc="emp['activos_y_suspendidos']"/></td>
+                  <td class="centrado"> <span t-esc="emp['pagados']"/></td>
+                  <td class="centrado"> <span t-esc="emp['realizados']"/></td>
+                  <td class="centrado"> <span t-esc="emp['otros_activos']"/></td>
+                  <td class="centrado"> <span t-esc="emp['cancelados']"/></td>
+                  <td class="centrado"> <span t-esc="emp['suspendidos']"/></td>
+                  <td class="centrado"> <span t-esc="emp['traspasos']"/></td>
+                  <td class="centrado"> <span t-esc="emp['verificaciones_cancelar']"/></td>
+                  <td class="centrado"> <span t-esc="emp['cancelaciones']"/></td>
+                  <td class="centrado"> <span t-esc="emp['afiliacion_total']"/></td>
+                  <td class="centrado"> <span t-esc="'{:.0f}%'.format(emp['efectividad'] * 100)"/></td>
+                  <td class="centrado"> <span t-esc="'{:.0f}%'.format(emp['porcentaje_bono'] * 100)"/></td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+
+          <!-- Conteo de páginas -->
+          <div class="footer">
+            <div style="font-size:12pt;">
+              <center>
+                <small>
+                  <span class="page"/> de <span class="topage"/>
+                  <span>. Generado el </span>
+                  <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/>
+                </small>
+              </center>
+            </div>
+          </div>
+
+        </div>
+      </t>
+      </t>
+    </template>
+
+    <record id="pabs_employee_effectiveness_paperformat" model="report.paperformat">
+      <field name="name">Formato Efectividad</field>
+      <field name="format">Letter</field>
+      <field name="orientation">Landscape</field>
+      <field name="margin_top">10</field>
+      <field name="margin_bottom">10</field>
+      <field name="margin_left">10</field>
+      <field name="margin_right">10</field>
+      <!-- <field name="dpi">100</field> -->
+    </record>
+
+    <report 
+      id="employee_effectiveness_pdf" 
+      string="Reporte de efectividad" 
+      model="pabs.employee.effectiveness" 
+      report_type="qweb-pdf" 
+      name="pabs_reports.pabs_employee_effectiveness_report_template"
+      file="pabs_reports.pabs_employee_effectiveness_report_template"
+      paperformat="pabs_employee_effectiveness_paperformat"
+    />
+
+  </data>
+</odoo>
