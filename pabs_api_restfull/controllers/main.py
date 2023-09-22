@@ -1703,7 +1703,7 @@ class APIREST(http.Controller):
         WHERE enc.state = 'posted'
         AND COALESCE(enc.ref, '') IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND enc.company_id = {}
-          GROUP BY enc.date, jou.name, enc.type , enc.ref, ana.name, acc.code, acc.name, aaa.name, mortuary.name
+          GROUP BY enc.date, jou.name, enc.type , enc.ref, ana.name, acc.code, acc.name, aaa.name, mortuary.name, tag.name
     UNION
 
     SELECT mortuary.name as Cliente,
@@ -1851,7 +1851,7 @@ class APIREST(http.Controller):
         AND enc.type = 'out_invoice'
         AND enc.contract_id IS NOT NULL
         AND enc.company_id = {}
-          GROUP BY enc.date, jou.name, enc.type , ana.name, acc.code, acc.name, aaa.name, mortuary.name
+          GROUP BY enc.date, jou.name, enc.type , ana.name, acc.code, acc.name, aaa.name, mortuary.name, tag.name
     ) as financieros;
     """.format(company_id,company_id,company_id)
     try:
