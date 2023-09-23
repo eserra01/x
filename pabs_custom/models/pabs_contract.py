@@ -2045,17 +2045,19 @@ class PABSContracts(models.Model):
               if bono:
                 # Se recorre el árbol para determinar el punto de insercción
                 order = 0
-                comission_agent_id = False
+                comission_agent_id = previous.sale_employee_id.id
                 for nodo in previous.commission_tree:
                   if nodo.job_id.name == 'PAPELERIA':
                     order = nodo.pay_order
+                  if nodo.job_id.name == 'RECOMENDADO':
+                    order = nodo.pay_order  
                   if nodo.job_id.name == 'ASISTENTE SOCIAL':
                     order = nodo.pay_order
                     break
-                  if nodo.job_id.name == 'RECOMENDADO':
-                    order = nodo.pay_order                  
-                    comission_agent_id = nodo.comission_agent_id
-                
+                #                                    
+                if order == 0:
+                  raise ValidationError("No se puede determinar un orden para el BONO AS")  
+               
                 # Se actualiza el pay_order a partir del punto de insercción
                 update = False            
                 for nodo in previous.commission_tree:
@@ -2067,7 +2069,7 @@ class PABSContracts(models.Model):
                 valores = {
                   'pay_order':order + 1,
                   'job_id': job_bono_as_id.id,
-                  'comission_agent_id': comission_agent_id.id if comission_agent_id else previous.sale_employee_id.id,
+                  'comission_agent_id': comission_agent_id,
                   'corresponding_commission': bono,
                   'remaining_commission': bono,
                   'commission_paid': 0,
