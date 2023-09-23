@@ -361,7 +361,7 @@ class PabsEmployeeEffectivenessXLSX(models.AbstractModel):
   _name = 'report.pabs_reports.employee_effectiveness_xlsx'
   _inherit = 'report.report_xlsx.abstract'
 
-  def generate_xlsx_report(self, workbook, data, lines):
+  def generate_xlsx_report(self, workbook, data, recs):
       
     sheet = workbook.add_worksheet('Efectividad')
 
