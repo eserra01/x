@@ -32,7 +32,38 @@
       </xpath>
       <xpath expr="//field[@name='payment_mode']" position="attributes">
         <attribute name="groups">pabs_hr_expense_custom.hr_expense_payment_mode</attribute>
-      </xpath>      
+      </xpath>
+      <!-- READONLY -->
+      <xpath expr="//field[@name='name']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='product_id']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='unit_amount']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='quantity']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='reference']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='date']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='employee_id']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='tax_ids']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='analytic_account_id']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='analytic_tag_ids']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
+      </xpath>       
     </field>
   </record>
 
@@ -73,6 +104,16 @@
             <field name="payments_number" widget="statinfo" string="Pagos"/>
         </button>    
       </xpath>
+      <!-- READONLY -->
+      <xpath expr="//field[@name='name']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('cancel','post','approve','done'))]}</attribute>
+      </xpath>  
+      <xpath expr="//field[@name='expense_line_ids']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('cancel','post','approve','done'))]}</attribute>
+      </xpath>      
+      <xpath expr="//field[@name='accounting_date']" position="attributes">
+        <attribute name="attrs">{'readonly':[('state','in',('cancel','post','approve','done'))]}</attribute>
+      </xpath>    
     </field>
   </record>
 
