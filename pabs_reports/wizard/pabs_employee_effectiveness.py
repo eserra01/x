@@ -347,7 +347,7 @@ class PabsEmployeeEffectiveness(models.TransientModel):
     return self.env.ref("pabs_reports.employee_effectiveness_pdf").report_action(self, data=data)
   
   ### Generar reporte en excel
-  def print_xls_report(self):
+  def print_xlsx_report(self):
 
     empleados = self.consultar_efectividad()    
 
@@ -355,10 +355,10 @@ class PabsEmployeeEffectiveness(models.TransientModel):
       'registros': empleados
     }
 
-    return self.env.ref("pabs_reports.employee_effectiveness_xlsx").report_action(self, data=data)
+    return self.env.ref("pabs_reports.employee_effectiveness_xlsx_report").report_action(self, data=data)
 
-class PabsEmployeeEffectivenessXLSX(models.AbstractModel):
-  _name = 'report.pabs_reports.employee_effectiveness_xlsx'
+class PabsEmployeeEffectivenessXLSXReport(models.AbstractModel):
+  _name = 'report.pabs_reports.employee_effectiveness_xlsx_report'
   _inherit = 'report.report_xlsx.abstract'
 
   def generate_xlsx_report(self, workbook, data, recs):

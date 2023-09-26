@@ -23,7 +23,7 @@
 
         <footer>
           <button name="print_pdf_report" string="Generar PDF" type="object" class="btn-primary"/>
-          <button name="print_xls_report" string="Generar XLS" type="object" class="btn-primary"/>
+          <button name="print_xlsx_report" string="Generar XLS" type="object" class="btn-primary"/>
           ó
           <button string="Cancelar" class="btn-secondary" special="cancel" />
         </footer>
@@ -48,12 +48,12 @@
     sequence="23"/>
 
   <report
-    id="employee_effectiveness_xlsx"
+    id="employee_effectiveness_xlsx_report"
     model="pabs.employee.effectiveness"
     string="Efectividad de asistentes XLSX"
     report_type="xlsx"
-    name="pabs_reports.employee_effectiveness_xlsx"
-    file="pabs_reports.employee_effectiveness_xlsx"
+    name="pabs_reports.employee_effectiveness_xlsx_report"
+    file="pabs_reports.employee_effectiveness_xlsx_report"
     attachment_use="False"
     />
     
