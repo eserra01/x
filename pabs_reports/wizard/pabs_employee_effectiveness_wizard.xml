@@ -48,12 +48,12 @@
     sequence="23"/>
 
   <report
-    id="employee_effectiveness_xlsx_report"
+    id="employee_effectiveness_xlsx_id"
     model="pabs.employee.effectiveness"
     string="Efectividad de asistentes XLSX"
     report_type="xlsx"
     name="pabs_reports.employee_effectiveness_xlsx_report"
-    file="pabs_reports.employee_effectiveness_xlsx_report"
+    file="Reporte de efectividad"
     attachment_use="False"
     />
     

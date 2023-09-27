@@ -355,7 +355,7 @@ class PabsEmployeeEffectiveness(models.TransientModel):
       'registros': empleados
     }
 
-    return self.env.ref("pabs_reports.employee_effectiveness_xlsx_report").report_action(self, data=data)
+    return self.env.ref("pabs_reports.employee_effectiveness_xlsx_id").report_action(self, data=data)
 
 class PabsEmployeeEffectivenessXLSXReport(models.AbstractModel):
   _name = 'report.pabs_reports.employee_effectiveness_xlsx_report'
