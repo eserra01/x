@@ -124,7 +124,7 @@ class PabsEmployeeEffectiveness(models.TransientModel):
       self.end_date = fecha_final_efectividad
 
   ### Consultar
-  def consultar_efectividad(self):
+  def consultar_efectividad(self, fecha_inicial, fecha_final):
     ### Validar estatus
     estatus = self.env['pabs.contract.status'].search([])
 
@@ -296,8 +296,8 @@ class PabsEmployeeEffectiveness(models.TransientModel):
       queb = est_queb_id,
       tra = est_tra.id,
       ver = est_ver.id,
-      ini = self.start_date,
-      fin = self.end_date,
+      ini = fecha_inicial,
+      fin = fecha_final,
       com1 = company_id,
       com2 = company_id
     )
@@ -335,7 +335,7 @@ class PabsEmployeeEffectiveness(models.TransientModel):
   ### Generar reporte en pdf
   def print_pdf_report(self):
 
-    empleados = self.consultar_efectividad()    
+    empleados = self.consultar_efectividad(self.start_date, self.end_date)    
 
     data = {
       'fecha_inicial': self.start_date,
@@ -347,12 +347,11 @@ class PabsEmployeeEffectiveness(models.TransientModel):
     return self.env.ref("pabs_reports.employee_effectiveness_pdf").report_action(self, data=data)
   
   ### Generar reporte en excel
-  def print_xlsx_report(self):
-
-    empleados = self.consultar_efectividad()    
+  def print_xlsx_report(self): 
 
     data = {
-      'registros': empleados
+      'fecha_inicial': self.start_date,
+      'fecha_final': self.end_date
     }
 
     return self.env.ref("pabs_reports.employee_effectiveness_xlsx_id").report_action(self, data=data)
@@ -362,6 +361,8 @@ class PabsEmployeeEffectivenessXLSXReport(models.AbstractModel):
   _inherit = 'report.report_xlsx.abstract'
 
   def generate_xlsx_report(self, workbook, data, recs):
+
+    empleados = self.env['pabs.employee.effectiveness'].consultar_efectividad(data['fecha_inicial'], data['fecha_final'])
       
     sheet = workbook.add_worksheet('Efectividad')
 
@@ -373,7 +374,7 @@ class PabsEmployeeEffectivenessXLSXReport(models.AbstractModel):
     for index, val in enumerate(HEADERS):
       sheet.write(fila,index,val,bold_format)
 
-    for emp in data['registros']:
+    for emp in empleados:
       fila = fila + 1
       
       sheet.write(fila, 0, emp['codigo'])
