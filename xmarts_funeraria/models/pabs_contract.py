@@ -111,12 +111,17 @@ class PabsContract(models.Model):
 
         #Obtener cantidad por traspasos
         traspasos = self.transfer_balance_ids.filtered(lambda x: x.move_id.state == 'posted')
+        
         total_traspasos = 0
-        if len(traspasos) > 0:
-            total_traspasos = sum(traspasos.mapped('debit'))
+        for trasp in traspasos:
+            if trasp.debit > 0: # Envia traspaso = aumenta saldo
+                total_traspasos = total_traspasos + trasp.debit
+            
+            if trasp.credit > 0: # Recibe traspaso = disminuye saldo
+                total_traspasos = total_traspasos - trasp.credit
 
         #Cantidad a programar (no se toma en cuenta traspasos ni recibos de enganche: inversion, excedente y bono)
-        saldo_a_plazos = total_facturado - self.initial_investment - total_bono - total_traspasos
+        saldo_a_plazos = total_facturado - self.initial_investment - total_bono + total_traspasos
 
         return saldo_a_plazos
             
@@ -132,12 +137,17 @@ class PabsContract(models.Model):
 
             #Obtener cantidad por traspasos
             traspasos = rec.transfer_balance_ids.filtered(lambda x: x.move_id.state == 'posted')
+
             total_traspasos = 0
-            if len(traspasos) > 0:
-                total_traspasos = sum(traspasos.mapped('debit'))
+            for trasp in traspasos:
+                if trasp.debit > 0: # Envia traspaso = aumenta saldo
+                    total_traspasos = total_traspasos + trasp.debit
+                
+                if trasp.credit > 0: # Recibe traspaso = disminuye saldo
+                    total_traspasos = total_traspasos - trasp.credit
 
             #Cantidad a programar (no se toma en cuenta traspasos ni recibos de enganche: inversion, excedente y bono)
-            saldo_a_plazos = total_facturado - rec.initial_investment - total_bono - total_traspasos
+            saldo_a_plazos = total_facturado - rec.initial_investment - total_bono + total_traspasos
 
             #Obtener monto abonado
             abonado = rec.paid_balance - rec.initial_investment - total_bono #- total_traspasos Se quita total de traspasos porque ya se aplica en rec.paid_balance

@@ -163,7 +163,7 @@
                       <t t-set="last_payment" t-value="doc.payment_ids.filtered(lambda r: r.reference == 'payment').sorted(key=lambda r: r.payment_date)"/>
                       <tbody>
                         <t t-if="last_payment">
-                          <tr>
+                          <tr t-if="initial_investment">
                             <td style="border: 1px solid black;"><t t-esc="initial_investment.mapped('payment_date')[0]"/></td>
                             <td style="border: 1px solid black;" class="text-center"/>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(sum(initial_investment.mapped('amount')))"/></td>
@@ -179,7 +179,7 @@
                           </tr>
                         </t>
                         <t t-else="">
-                          <tr>
+                          <tr t-if="initial_investment">
                             <td style="border: 1px solid black;"><t t-esc="initial_investment.mapped('payment_date')[0]"/></td>
                             <td style="border: 1px solid black;" class="text-center"/>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(sum(initial_investment.mapped('amount')))"/></td>
