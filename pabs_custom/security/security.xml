@@ -115,6 +115,13 @@
       <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
+    <record model="ir.rule" id="pabs_bonus_as_rule">
+      <field name="name">bonus asistente multi-company</field>
+      <field name="model_id" search="[('model','=','pabs.bonus.as')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
     <record model="ir.rule" id="pabs_comission_debt_collector_rule">
       <field name="name">Comisiones de Cobrador multi-company</field>
       <field name="model_id" search="[('model','=','pabs.comission.debt.collector')]" model="ir.model"/>
