@@ -18,5 +18,70 @@ class BonusPabsAs(models.Model):
     if max_value < min_value:
       raise ValidationError((
         "{} es menor que {} favor de verificar la información".format(max_value, min_value)))
-    return super(BonusPabsAs, self).create(vals)
     
+    self.env['pabs.bonus.log'].create({
+      'bonus_type': 'as',
+      'action': 'create',
+      'plan_id': vals['plan_id'],
+      'min_value': vals['min_value'],
+      'max_value': vals['max_value'],
+      'bonus': vals['bonus'],
+      'company_id': self.env.company.id
+    })
+
+    return super(BonusPabsAs, self).create(vals)
+
+  def unlink(self):
+    for rec in self:
+      self.env['pabs.bonus.log'].create({
+        'bonus_type': 'as',
+        'action': 'delete',
+        'plan_id': rec.plan_id.id,
+        'min_value': rec.min_value,
+        'max_value': rec.max_value,
+        'bonus': rec.bonus,
+        'company_id': rec.company_id.id
+      })
+
+    return super(BonusPabsAs, self).unlink()
+  
+  def write(self, vals):
+    self.env['pabs.bonus.log'].create({
+        'bonus_type': 'as',
+        'action': 'edit_old',
+        'plan_id': self.plan_id.id,
+        'min_value': self.min_value,
+        'max_value': self.max_value,
+        'bonus': self.bonus,
+        'company_id': self.company_id.id
+      })
+
+    log_dict = {
+      'bonus_type': 'as',
+      'action': 'edit_new',
+      'company_id': self.env.company.id
+    }
+
+    if vals.get('plan_id'):
+      log_dict.update({'plan_id': vals['plan_id']})
+    elif self.plan_id:
+      log_dict.update({'plan_id': self.plan_id.id})
+
+    if 'min_value' in vals.keys():
+      log_dict.update({'min_value': vals['min_value']})
+    else:
+      log_dict.update({'min_value': self.min_value})
+
+    if 'max_value' in vals.keys():
+      log_dict.update({'max_value': vals['max_value']})
+    else:
+      log_dict.update({'max_value': self.max_value})
+    
+    if 'bonus' in vals.keys():
+      log_dict.update({'bonus': vals['bonus']})
+    else:
+      log_dict.update({'bonus': self.bonus})
+
+    self.env['pabs.bonus.log'].create(log_dict)
+
+    return super(BonusPabsAs, self).write(vals)

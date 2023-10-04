@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="pabs_bonus_log_view" model="ir.ui.view">
+    <field name="name">pabs.bonus.log.view</field>
+    <field name="model">pabs.bonus.log</field>
+    <field name="arch" type="xml">
+      <tree create="0" edit="0" delete="0" default_order="company_id, bonus_type, plan_id, create_date" 
+        decoration-danger="action=='delete'" decoration-muted="action=='edit_old'" decoration-success="action=='edit_new'">
+        <field name="bonus_type" invisible="1"/>
+        <field name="create_date" string="Fecha"/>
+        <field name="action"/>
+        <field name="plan_id" options="{'no_open': True, 'no_create':True}"/>
+        <field name="min_value"/>
+        <field name="max_value"/>
+        <field name="bonus" string="Bono"/>
+        <field name="company_id" optional="hide"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="pabs_bonus_log_search" model="ir.ui.view" >
+    <field name="name">pabs.bonus.log.search</field>
+    <field name="model">pabs.bonus.log</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="plan_id"/>
+
+        <!-- <group expand="0" string="Group By">
+          <filter string="Plan" name="plan" context="{'group_by':'plan_id'}"/>
+        </group> -->
+      </search>
+    </field>
+  </record>
+
+  <record id="pabs_bonus_log_action" model="ir.actions.act_window">
+    <field name="name">Log de cambios en bonos</field>
+    <field name="res_model">pabs.bonus.log</field>
+    <field name="view_mode">tree</field>
+    <field name="context">{'group_by':['bonus_type', 'plan_id']}</field>
+  </record>
+  
+</odoo>

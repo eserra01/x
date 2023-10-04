@@ -122,6 +122,13 @@
       <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
+    <record model="ir.rule" id="pabs_bonus_log_rule">
+      <field name="name">bonus log multi-company</field>
+      <field name="model_id" ref="model_pabs_bonus_log"/>
+      <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+      <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
     <record model="ir.rule" id="pabs_comission_debt_collector_rule">
       <field name="name">Comisiones de Cobrador multi-company</field>
       <field name="model_id" search="[('model','=','pabs.comission.debt.collector')]" model="ir.model"/>
