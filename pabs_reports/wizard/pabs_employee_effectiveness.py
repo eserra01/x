@@ -200,9 +200,9 @@ class PabsEmployeeEffectiveness(models.TransientModel):
         COALESCE(efe.cantidad_contratos, 0) as afiliacion_total,
         COALESCE(efe.efectividad, 0) as efectividad,
         CASE
-          WHEN COALESCE(efe.efectividad, 0) > .90 THEN 1
-          WHEN COALESCE(efe.efectividad, 0) > .80 THEN .85
-          WHEN COALESCE(efe.efectividad, 0) > .70 THEN .75
+          WHEN COALESCE(efe.efectividad, 0) >= .90 THEN 1
+          WHEN COALESCE(efe.efectividad, 0) >= .80 THEN .85
+          WHEN COALESCE(efe.efectividad, 0) >= .70 THEN .75
           ELSE 0
         END AS porcentaje_bono
       FROM hr_employee AS emp
