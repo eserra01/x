@@ -143,23 +143,23 @@ class PabsAccountMove(models.TransientModel):
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
     def CrearPoliza(self, company_id, journal_id, id_cuenta_transito, id_cuenta_electronicos, con):
-        ### Buscar si ya existe una poliza ###
-        existe_poliza = self.env['account.move'].search([
-            ('company_id', '=', company_id),
-            ('ref', '=', con['contrato']),
-            ('line_ids.account_id', '=', id_cuenta_electronicos),
-            ('line_ids.debit', '>', 0)
-        ])
+        # ### Buscar si ya existe una poliza ###
+        # existe_poliza = self.env['account.move'].search([
+        #     ('company_id', '=', company_id),
+        #     ('ref', '=', con['contrato']),
+        #     ('line_ids.account_id', '=', id_cuenta_electronicos),
+        #     ('line_ids.debit', '>', 0)
+        # ])
 
-        if len(existe_poliza) > 1:
-            mensaje = "Existe mas de una póliza para el contrato {}".format(con['contrato'])
-            _logger.warning(mensaje)
-            raise ValidationError(mensaje)
+        # if len(existe_poliza) > 1:
+        #     mensaje = "Existe mas de una póliza para el contrato {}".format(con['contrato'])
+        #     _logger.warning(mensaje)
+        #     raise ValidationError(mensaje)
 
-        if existe_poliza:
-            mensaje = "Ya existe la poliza para el contrato {}".format(existe_poliza.name)
-            _logger.warning(mensaje)
-            raise ValidationError(mensaje)
+        # if existe_poliza:
+        #     mensaje = "Ya existe la poliza para el contrato {}".format(existe_poliza.name)
+        #     _logger.warning(mensaje)
+        #     raise ValidationError(mensaje)
 
         ### Lineas del asiento ###
         apuntes = []
