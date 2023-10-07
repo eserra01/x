@@ -1826,6 +1826,60 @@ class PABSContracts(models.Model):
           previous.write(vals)
 
           invoice_id = self.create_invoice(previous)
+
+          # **************************** BONO PARA ASISTENTE ***********************
+          # Si no es reafiliación y toma comisión no es mayor que 0 y la compañia usa bono de AS
+          if not previous.reaffiliation and previous.toma_comision <= 0 and previous.company_id.bonus_as:
+            # Se busca el puesto BONO ASSITENTE
+            job_bono_as_id = self.env['hr.job'].search([('name', '=', 'BONO ASISTENTE'),('company_id','=',previous.company_id.id,)])
+            if job_bono_as_id:
+                # Se busca el bono del AS
+                bono_as_ids = self.env['pabs.bonus.as'].search([('plan_id','=',previous.name_service.id)], order="min_value")
+                bono = 0
+                for bon_rec in bono_as_ids:
+                  if previous.initial_investment >= bon_rec.min_value and previous.initial_investment <= bon_rec.max_value:
+                    bono = bon_rec.bonus
+                # Si le corresponde bono
+                if bono:
+                  # Se recorre el árbol para determinar el punto de insercción
+                  order = 0
+                  comission_agent_id = previous.sale_employee_id.id
+                  for nodo in previous.commission_tree:
+                    if nodo.job_id.name == 'PAPELERIA':
+                      order = nodo.pay_order
+                    if nodo.job_id.name == 'RECOMENDADO':
+                      order = nodo.pay_order  
+                    if nodo.job_id.name == 'ASISTENTE SOCIAL':
+                      order = nodo.pay_order
+                      break
+                  #                                    
+                  if order == 0:
+                    raise ValidationError("No se puede determinar un orden para el BONO AS")  
+                
+                  # Se actualiza el pay_order a partir del punto de insercción
+                  update = False            
+                  for nodo in previous.commission_tree:
+                    if update:
+                      nodo.pay_order += 1
+                    elif nodo.pay_order == order:
+                      update = True
+                  # Se inserta el registro en el árbol
+                  valores = {
+                    'pay_order':order + 1,
+                    'job_id': job_bono_as_id.id,
+                    'comission_agent_id': comission_agent_id,
+                    'corresponding_commission': bono,
+                    'remaining_commission': bono,
+                    'commission_paid': 0,
+                    'actual_commission_paid': 0,
+                    'contract_id': previous.id
+                  }
+                  self.env['pabs.comission.tree'].create(valores)
+            else:
+              raise ValidationError("No existe el puesto BONO ASISTENTE")
+            pass
+          # ************************************************************************
+
           account_id = invoice_id.partner_id.property_account_receivable_id.id
           journal_id = account_obj.with_context(
             default_type='out_invoice')._get_default_journal()
@@ -2028,59 +2082,7 @@ class PABSContracts(models.Model):
           contract_name = previous.name
         previous.partner_id.write({'name' : contract_name, 'company_id' : previous.company_id.id})
         self.reconcile_all(reconcile)
-        
-        # **************************** BONO PARA ASISTENTE ***********************
-        # Si no es reafiliación y toma comisión no es mayor que 0 y la compañia usa bono de AS
-        if not previous.reaffiliation and previous.toma_comision <= 0 and previous.company_id.bonus_as:
-          # Se busca el puesto BONO ASSITENTE
-          job_bono_as_id = self.env['hr.job'].search([('name', '=', 'BONO ASISTENTE'),('company_id','=',previous.company_id.id,)])
-          if job_bono_as_id:
-              # Se busca el bono del AS
-              bono_as_ids = self.env['pabs.bonus.as'].search([('plan_id','=',previous.name_service.id)], order="min_value")
-              bono = 0
-              for bon_rec in bono_as_ids:
-                if previous.initial_investment >= bon_rec.min_value and previous.initial_investment <= bon_rec.max_value:
-                  bono = bon_rec.bonus
-              # Si le corresponde bono
-              if bono:
-                # Se recorre el árbol para determinar el punto de insercción
-                order = 0
-                comission_agent_id = previous.sale_employee_id.id
-                for nodo in previous.commission_tree:
-                  if nodo.job_id.name == 'PAPELERIA':
-                    order = nodo.pay_order
-                  if nodo.job_id.name == 'RECOMENDADO':
-                    order = nodo.pay_order  
-                  if nodo.job_id.name == 'ASISTENTE SOCIAL':
-                    order = nodo.pay_order
-                    break
-                #                                    
-                if order == 0:
-                  raise ValidationError("No se puede determinar un orden para el BONO AS")  
-               
-                # Se actualiza el pay_order a partir del punto de insercción
-                update = False            
-                for nodo in previous.commission_tree:
-                  if update:
-                    nodo.pay_order += 1
-                  elif nodo.pay_order == order:
-                    update = True
-                # Se inserta el registro en el árbol
-                valores = {
-                  'pay_order':order + 1,
-                  'job_id': job_bono_as_id.id,
-                  'comission_agent_id': comission_agent_id,
-                  'corresponding_commission': bono,
-                  'remaining_commission': bono,
-                  'commission_paid': 0,
-                  'actual_commission_paid': 0,
-                  'contract_id': previous.id
-                }
-                self.env['pabs.comission.tree'].create(valores)
-          else:
-            raise ValidationError("No existe el puesto BONO ASISTENTE")
-          pass
-        # ************************************************************************
+
     except Exception as e:
       self._cr.rollback()
       raise ValidationError(e)
