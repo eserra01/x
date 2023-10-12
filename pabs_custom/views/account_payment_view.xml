@@ -8,6 +8,14 @@
       <field name="inherit_id" ref="account.view_account_payment_form"/>
       <field name="arch" type="xml">
 
+      <xpath expr="//button[@name='action_draft']" position="attributes">
+        <attribute name="groups">pabs_custom.group_cancel_account_move</attribute>
+      </xpath>
+
+      <xpath expr="//button[@name='cancel']" position="attributes">
+        <attribute name="groups">pabs_custom.group_cancel_account_move</attribute>
+      </xpath>
+
       <xpath expr="//field[@name='communication']" position="attributes">
         <attribute name="invisible">True</attribute>
       </xpath>
