@@ -56,11 +56,13 @@
                         <!-- ENCABEZADO 1 -->
                         <table style="width: 100%;">
                             <tr>
-                                <td style="width: 90%;"></td>
+                                <td style="width: 50%;"></td>
+                                <td style="width: 40%; font-size: 8pt;">REALICE SU PAGO Y PIDA SU TICKET</td>
                                 <td style="width: 10%;" class="dato" ><div class="dato_corto_rec" t-esc="doc['contrato']"></div></td>
                             </tr>
                             <tr>
                                 <td></td>
+                                <td style="font-size: 8pt;">ES SU COMPROBANTE OFICIAL</td>
                                 <td style="font-size: 8pt;" class="dato"><div class="dato_corto_rec" t-esc="doc['solicitud']"></div></td>
                             </tr>
                         </table>

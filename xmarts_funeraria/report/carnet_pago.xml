@@ -365,20 +365,19 @@
 
       <template id="header_carnet_pago">
         <div class="header">
-          
-          <table class='table table-borderless'>
-            <thead>
-              <tr>
-                <th><span>Forma de pago: <t t-esc="dict(doc._fields['way_to_payment'].selection).get(doc.way_to_payment)"/> $<t t-esc="doc.payment_amount"/> &amp;nbsp;&amp;nbsp; Recuperador: <span t-esc="doc.debt_collector.name"></span></span></th>
-              </tr>
-            </thead>
-          </table>
 
           <table width="100%" cellspacing="0" cellpadding="0">
+            <tr style="font-size: 10px"><th>&amp;nbsp;</th></tr>
+            <tr>
+              <th colspan="4"><span>Forma de pago: <t t-esc="dict(doc._fields['way_to_payment'].selection).get(doc.way_to_payment)"/> $<t t-esc="doc.payment_amount"/> &amp;nbsp;&amp;nbsp; Recuperador: <span t-esc="doc.debt_collector.name"></span></span></th>
+            </tr>
+            <tr>
+              <th colspan="4" style="text-align:center">REALICE SU PAGO Y PIDA SU TICKET, ES SU COMPROBANTE OFICIAL</th>
+            </tr>
             <tr>
               <td style="width: 30%;" rowspan="4">
                 <!-- <img src="xmarts_funeraria/static/description/image2.jpg" style="width:300px;" height="70px"/> -->
-                <img class="img" src="xmarts_funeraria/static/description/image2.jpg" style="width:300px;" height="70px" alt="Logo"/>
+                <img class="img" src="xmarts_funeraria/static/description/image2.jpg" height="60px" alt="Logo"/>
               </td>
               <td style="width: 40%;"><strong>CARNET DE APORTACIONES</strong></td>
               <td class="text-right" style="width: 10%;"><strong>Contrato N°:</strong><span>&amp;nbsp;&amp;nbsp;</span></td>
