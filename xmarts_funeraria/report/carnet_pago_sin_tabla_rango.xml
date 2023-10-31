@@ -141,7 +141,9 @@
                 <!-- MONCLOVA -->
                 <t t-if="doc['company_id'] in [13,19]">
                     <!-- Margen superior -->
-                    <div style="float: left; width: 100%; text-align:center; margin-top: 5mm;"><span t-esc="doc['cobrador_contrato']" /></div>                    
+                    <div style="float: left; width: 100%; text-align:center; margin-top: 5mm;"><span t-esc="doc['cobrador_contrato']" />
+                        <span style="font-size: 9pt">&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;REALICE SU PAGO Y PIDA SU TICKET, ES SU COMPROBANTE OFICIAL</span>
+                    </div>                    
                     <div style="height: 20mm;"> </div> 
                                       
                     <!-- ENCABEZADO 1 -->                  
