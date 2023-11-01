@@ -128,6 +128,14 @@ class ActivationWeb(http.Controller):
     if quant_id.location_id.consignment_location:
       response = {'result' : result}
       return Response(json.dumps(response),headers=response_header)
+    elif quant_id.location_id.office_location or quant_id.location_id.central_location:
+      message =  message + "La solicitud no puede ser activada. No ha sido asignada a ningún asistente.\n"
+      response = {'result' : {'message' : message}}
+      return Response(json.dumps(response),headers=response_header)
+    elif quant_id.location_id.received_location or quant_id.location_id.contract_location:
+      message =  message + "La solicitud no puede ser activada. Ya fue entregada a la secretaria.\n"
+      response = {'result' : {'message' : message}}
+      return Response(json.dumps(response),headers=response_header)
     else:
       message =  message + "La solicitud no puede ser activada por que se encuentra cancelada\n"
       response = {'result' : {'message' : message}}
