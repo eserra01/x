@@ -23,7 +23,7 @@
       <xpath expr="//button[@name='button_draft']" position="attributes">
         <attribute name="groups">pabs_custom.group_cancel_account_move</attribute>
       </xpath>
-
+     
       <xpath expr="//button[@name='button_cancel']" position="attributes">
         <attribute name="groups">pabs_custom.group_cancel_account_move</attribute>
       </xpath>
@@ -33,7 +33,8 @@
       </xpath>
       
       <xpath expr="//field[@name='partner_id']" position="after">
-        <field name="contract_id" />
+        <field name="contract_id" options="{'no_create': True, 'no_open':True}" groups="pabs_custom.show_contract_in_account_move"/>
+        <field name="ref" string="Referencia del cliente" />
       </xpath>
 
     </field>

@@ -87,6 +87,11 @@
       <field name="category_id" ref="pabs_custom.pabs_category"/>
     </record>
 
+    <record id="show_contract_in_account_move" model="res.groups">
+      <field name="name">Ver contrato en Facturas y NC</field>
+      <field name="category_id" ref="pabs_custom.pabs_category"/>      
+    </record>
+
     <record model="ir.rule" id="closing_transfer_registry_rule">
       <field name="name">Cortes multi-company</field>
       <field name="model_id" search="[('model','=','closing.transfer.registry')]" model="ir.model"/>
