@@ -33,8 +33,7 @@
       </xpath>
       
       <xpath expr="//field[@name='partner_id']" position="after">
-        <field name="contract_id" options="{'no_create': True, 'no_open':True}" groups="pabs_custom.show_contract_in_account_move"/>
-        <field name="ref" string="Referencia del cliente" />
+        <field name="contract_id" options="{'no_create': True, 'no_open':True}" groups="pabs_custom.show_contract_in_account_move"/>        
       </xpath>
 
     </field>
