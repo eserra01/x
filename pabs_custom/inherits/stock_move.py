@@ -334,7 +334,7 @@ class StockMove(models.Model):
   @api.onchange('origen_solicitud')
   def onchange_origen_solicitud(self):
     pricelist_item_obj = self.env['product.pricelist.item']
-    if self.origen_solicitud in ('cancelada', 'sobrantes', 'extravio'):
+    if self.origen_solicitud in ('cancelada', 'sobrantes', 'extravio', 'buenfin'):
       self.papeleria = 0
       self.invercion_inicial = 0
       self.toma_comision = 0
