@@ -334,7 +334,7 @@ class StockMove(models.Model):
   @api.onchange('origen_solicitud')
   def onchange_origen_solicitud(self):
     pricelist_item_obj = self.env['product.pricelist.item']
-    if self.origen_solicitud in ('cancelada', 'sobrantes', 'extravio', 'buenfin'):
+    if self.origen_solicitud in ('cancelada', 'sobrantes', 'extravio'):
       self.papeleria = 0
       self.invercion_inicial = 0
       self.toma_comision = 0
@@ -347,7 +347,11 @@ class StockMove(models.Model):
             self.papeleria = item_id.stationery
           # Si Seleccionaron Buen fin
           if self.origen_solicitud == 'buenfin':
-            # Buscamos la ubicación del asistente social            
+            self.papeleria = 0
+            self.invercion_inicial = 0
+            self.toma_comision = 0
+            
+            # Buscamos la ubicación del asistente social
             nm = '%' + str(self.picking_id.picking_type_id.name.split('->')[1]).strip() + '%'
             location_ids = self.env['stock.location'].search([('usage','=','internal'),('name','=like',nm),('company_id','=',self.env.company.id)], limit=1)
             if location_ids:
