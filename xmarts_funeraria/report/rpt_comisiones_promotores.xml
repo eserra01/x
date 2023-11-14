@@ -87,7 +87,7 @@
                                                 <td class="dato_centrado"><div t-esc="pago.get('fecha_oficina')"></div></td>
                                                 <td class="dato_centrado"><div t-esc="pago.get('contrato')"></div></td>
                                                 <td class="dato_centrado"><div t-esc="pago.get('recibo')"></div></td>
-                                                <td><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%" 
+                                                <td><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 8cm;" 
                                                         t-esc="pago.get('cliente')"></div></td>
                                                 <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('importe'))"></span></td>
                                                 <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_cobrador'))"></span></td>
