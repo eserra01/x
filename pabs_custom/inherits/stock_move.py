@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from re import findall as regex_findall, split as regex_split
 
 REASONS = [
@@ -457,7 +457,7 @@ class StockMove(models.Model):
         if product_id.tracking == 'serial':
           item_id = pricelist_item_obj.search([('product_id','=',product_id.id),('company_id','=',vals.get('company_id'))],
             order="create_date desc",limit=1)
-          if item_id:
+          if item_id and vals['origen_solicitud'] != 'buenfin':
             vals['papeleria'] = item_id.stationery
     res = super(StockMove, self).create(vals)
     if vals.get('picking_id'):
@@ -679,6 +679,7 @@ class StockMove(models.Model):
     if self.consumption_warehouse:
       debit_line_vals.update({'analytic_account_id': self.consumption_warehouse.id})
       credit_line_vals.update({'analytic_account_id': self.consumption_warehouse.id})
+
 
     rslt = {'credit_line_vals': credit_line_vals, 'debit_line_vals': debit_line_vals}
     if credit_value != debit_value:
