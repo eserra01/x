@@ -13,7 +13,11 @@
 
       <xpath expr="//field[@name='contract_id']" position="after">
         <field name="recibo" attrs="{'invisible': [('type','!=','out_refund')]}"/>
-       </xpath>
+      </xpath>
+
+      <xpath expr="//field[@name='ref']" position="after">
+        <field name="create_person_id" required="1" options="{'no_create':True, 'no_open':True}"/>
+      </xpath>
 
     </field>
   </record>

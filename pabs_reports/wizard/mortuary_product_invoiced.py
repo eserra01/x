@@ -116,6 +116,7 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
           'producto': linea.product_id.name,
           'cantidad': linea.quantity,
           'subtotal': linea.price_subtotal,
+          'crea_factura': factura.create_person_id.name or ""
         }
 
         lista_lineas_factura.append(nueva_linea)
@@ -191,6 +192,7 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
           'producto': linea.product_id.name,
           'cantidad': linea.quantity,
           'subtotal': linea.price_total,
+          'crea_factura': factura.create_person_id.name or ""
         }
 
         lista_lineas_factura.append(nueva_linea)
@@ -207,6 +209,7 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
     sheet.write(4,5, "Descripción", formato_header)
     sheet.write(4,6, "Cantidad", formato_header)
     sheet.write(4,7, "Subtotal", formato_header)
+    sheet.write(4,8, "Crea factura", formato_header)
 
     #Escribir detalles
     formato_fecha = workbook.add_format({'num_format': 'dd/mm/yyyy'})
@@ -221,6 +224,8 @@ class MortuaryProductInvoicedPDFReport(models.AbstractModel):
       sheet.write(fila, 5, linea.get('producto'))
       sheet.write(fila, 6, linea.get('cantidad'))
       sheet.write(fila, 7, linea.get('subtotal'), money_format)
+      sheet.write(fila, 8, linea.get('crea_factura'))
+      
 
       fila = fila + 1
 

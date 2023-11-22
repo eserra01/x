@@ -168,6 +168,14 @@
     />
 
     <menuitem
+      id="submenu_24"
+      parent="models_menu_main"
+      name="Persona que crea facturas"
+      sequence="24"
+      action="invoice_create_person_action"
+    />
+
+    <menuitem
       id="menu_reports"
       name="Informes"
       parent="mortuary.mortuary"

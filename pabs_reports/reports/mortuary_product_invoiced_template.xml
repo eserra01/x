@@ -37,6 +37,7 @@
                   <th>Descripción</th>
                   <th>Cantidad</th>
                   <th>Subtotal</th>
+                  <th>Crea factura</th>
                 </tr>
                 
                 <tr t-foreach="lineas_de_facturas" t-as="linea">
@@ -48,6 +49,7 @@
                   <td><t t-esc="linea.get('producto')"/></td>
                   <td><t t-esc="linea.get('cantidad')"/></td>
                   <td>$<t t-esc="linea.get('subtotal')"/></td>
+                  <td><t t-esc="linea.get('crea_factura')"/></td>
                 </tr>
 
                 <tr>

@@ -1078,3 +1078,11 @@ class ResCompany(models.Model):
 
     mortuary_account_id = fields.Many2one(comodel_name='account.account',
         string='Cuenta de bitacoras')
+    
+class InvoiceCreatePerson(models.Model):
+    _name = 'invoice.create.person'
+    _description = 'Persona que crea factura'
+    _inherit = 'mail.thread'
+    
+    name = fields.Char(string='Nombre',required=True,)
+    company_id = fields.Many2one('res.company', 'Company', required=True, index=True, default=lambda self: self.env.company)

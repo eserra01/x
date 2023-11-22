@@ -188,3 +188,5 @@ access_cremation_supervisor_call_center,cremation.supervisor.call.center,model_m
 access_cremation,cremation,model_mortuary_cremation,,1,1,1,1
 ,,,,,,,
 access_mortuary_cutting_payments,mortuary.cutting.payments,model_mortuary_cutting_payments,base.group_user,1,1,1,1
+
+access_invoice_create_person_all,access.invoice.create.person.all,model_invoice_create_person,,1,1,1,1

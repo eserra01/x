@@ -54,6 +54,7 @@
         'views/account_payment_view.xml',
         'report/mortuary_payment_report.xml',
         'wizard/mortuary_cutting_payments_wizzard.xml',
+        'views/invoice_create_person_view.xml',
         'views/menus.xml',
         'data/data.xml',
         'report/report_bsf.xml',

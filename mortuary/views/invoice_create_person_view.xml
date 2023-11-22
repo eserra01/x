@@ -1,0 +1,21 @@
+<odoo>
+  <data>
+    <record id="invoice_create_person_tree_view" model="ir.ui.view">
+      <field name="name">invoice.create.person.tree.view</field>
+      <field name="model">invoice.create.person</field>
+      <field name="arch" type="xml">
+        <tree editable="top">
+          <field name="name" />
+        </tree>
+      </field>
+    </record>
+
+    <record id="invoice_create_person_action" model="ir.actions.act_window">
+      <field name="name">Perosna que crea factura</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">invoice.create.person</field>
+      <field name="view_mode">tree</field>
+    </record>
+
+  </data>
+</odoo>
