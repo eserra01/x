@@ -100,5 +100,12 @@
       <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
+    <record model="ir.rule" id="mortuary_invoice_create_person">
+      <field name="name">Persona que crea facturas</field>
+      <field name="model_id" search="[('model','=','invoice.create.person')]" model="ir.model"/>
+      <field name="global" eval="True"/>
+      <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
   </data>
 </odoo>
