@@ -16,8 +16,7 @@
       </xpath>
 
       <xpath expr="//field[@name='ref']" position="after">        
-        <!-- <field name="create_person_id" options="{'no_create':True, 'no_open':True}" attrs="{'required':[('move_type','=','out_invoice')]}"/> -->
-        <field name="create_person_id" required="0" invisible="1" options="{'no_create':True, 'no_open':True}" />
+        <field name="create_person_id" options="{'no_create':True, 'no_open':True}" attrs="{'required':[('type','=','out_invoice')]}"/>        
       </xpath>
 
     </field>
