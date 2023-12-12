@@ -69,7 +69,7 @@
         <field name="forma_pago"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>
         <field name="origen_solicitud"
-          attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>
+          attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}" required="1"/>
 
         <field name="asistente_social_bf" 
           attrs="{'invisible':[('origen_solicitud','!=','buenfin')], 'required':[('origen_solicitud','=','buenfin')]}" 
