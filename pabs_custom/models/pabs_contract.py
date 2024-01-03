@@ -1820,7 +1820,9 @@ class PABSContracts(models.Model):
           ning_id = self.env['hr.employee'].search([('barcode','=','NING'),('company_id','=',previous.company_id.id)])
           if not ning_id:
             raise ValidationError(("No se puede encontrar el cobrador NINGUNO para asignar al pre-contrato."))
-          vals['debt_collector'] = ning_id.id
+          
+          if not previous.debt_collector:
+            vals['debt_collector'] = ning_id.id
 
           #Actualizar campos asignados hasta el momento
           previous.write(vals)

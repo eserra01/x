@@ -1123,6 +1123,208 @@
   </record>
 
 <!-- ####################################### -->
+<!-- Formulario de contratos (PERCAPITA) -->
+<!-- ####################################### -->
+  <record id="contract_form_view_contratos_percapita" model="ir.ui.view">
+    <field name="name">contract.form.percapita.view</field>
+    <field name="type">form</field>
+    <field name="model">pabs.contract</field>
+    <field name="arch" type="xml">
+      <form create="0" delete="false" duplicate="false">
+        <header>
+          <field name="captured" invisible="1"/>
+          <field name="contract_status" invisible="1"/>
+          <field name="allow_edit" invisible="1"/>
+          <field name="state" widget="statusbar" statusbar_visible="reqactive,precontract,contract" readonly="1" invisible ="1"/>          
+          <field name="company_id" invisible="1"/>
+        </header>
+        <sheet>
+          <div class="oe_button_box" name="button_box">
+            <button class="oe_stat_button" name="button_comments" type="object" icon="fa-bars">
+              <field name="count_comments"/>
+                <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
+                <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
+              </button>
+          </div>
+          <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
+            <group string="Datos del contrato" >
+              <field name="name" class="oe_inline" readonly="1"/>
+              <!-- attrs="{'readonly': [('allow_edit','=',False)]}" -->
+
+              <!-- Estatus -->
+              <field name="contract_status_item" required="1" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}" domain="[('status','in',['PAGADO','REALIZADO PERCAPITA'])]"/>
+              <field name="contract_status_reason" domain="[('status_id', '=', contract_status_item)]" required="1" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,}"/>
+              <field name="contract_status_name" invisible="1"/>
+              <field name="reactivation_date" attrs="{'invisible': [('contract_status_name','!=','SUSP. TEMPORAL')], 'required': [('contract_status_name','=','SUSP. TEMPORAL')]}"/>
+              <field name="date_of_last_status" readonly="1"/>
+              <!-- Fin Estatus -->
+              
+              <!-- Nombre -->
+              <field name="full_name" string="Titular"/>
+              <field name="birthdate" readonly="1"/>
+              <field name="marital_status"/>
+              <!-- Fin nombre -->
+              
+              <field name="invoice_date" readonly="1"/>
+              <field name="name_service" string="Nombre del plan" readonly="1" options="{'no_open': True,}"/>
+              <field name="service_detail" readonly="1"/>              
+            </group>
+
+            <group string="Datos de cobranza">
+              <field name="debt_collector" options="{'no_open': True,}" domain="[('job_id','=','COBRADOR'), ('company_id', '=', company_id), ('employee_status','=', 1)]" readonly="1"/>
+              <field name="assign_collector_date" readonly="1"/> 
+              <field name="way_to_payment" readonly="1" />
+              <field name="payment_amount" readonly="1" />
+              <field name="days_without_payment" readonly="1"/>
+              <field name="late_amount"  readonly="1"/>
+              <field name="date_first_payment" readonly="1"/>
+              <field name="contract_expires" readonly="1"/>
+              <field name="product_price" readonly="1"/> 
+              <field name="balance" readonly="1"/>
+              <field name="paid_balance" readonly="1"/>
+
+              
+              <!-- Nuevo comentario -->
+              <label for="new_comment" class="oe_edit_only" /> 
+              <field name= "new_comment" class="oe_edit_only" nolabel="1"/>
+              <button name="save_comment" string="Agregar" type="object" class="btn btn-primary oe_edit_only" style="margin-rigth: 10px"/>
+            </group>
+          </group>
+        
+          <group attrs="{'invisible' : [('lot_id','=',False)]}">
+            <group>
+              <separator string="Domicilio de cobro"/>
+              <field name="street_name_toll" readonly="1"/>
+              <field name="street_number_toll" readonly="1"/>
+              <field name="toll_municipallity_id" domain="[('company_id', '=', company_id)]" options="{'no_open': True, 'no_create': True}" readonly="1"/>
+              <field name="toll_colony_id"  domain="[('company_id', '=', company_id), ('municipality_id','=',toll_municipallity_id)]" options="{'no_open': True, 'no_create': True}" readonly="1"/>
+              <field name="between_streets_toll" readonly="1"/>
+              <field name="phone_toll" readonly="1"/>
+              <field name="zip_code_toll" readonly="1"/>
+
+              <separator string="Domicilio de casa"/>
+              <field name="street_name" readonly="1"/>
+              <field name="street_number" readonly="1"/>
+              <field name="municipality_id" domain="[('company_id', '=', company_id)]" options="{'no_open': True, 'no_create': True}" readonly="1"/>
+              <field name="neighborhood_id" domain="[('company_id', '=', company_id), ('municipality_id','=',municipality_id)]" options="{'no_open': True, 'no_create': True}" readonly="1"/>
+              <field name="between_streets" readonly="1"/>
+              <field name="phone" readonly="1"/>
+              <field name="zip_code" readonly="1"/>
+            </group>
+
+            <group string="Datos de activación">
+              <field name="sale_employee_id" options="{'no_open': True,}" readonly="1"/>
+              <field name="payment_scheme_id" options="{'no_open': True,}" readonly="1"/>
+              <field name="lot_id" readonly="1" options="{'no_open': True,}"/>
+              <field name="activation_code" readonly="1"/>
+              <field name="employee_id" readonly="1" options="{'no_open': True,}"/>
+              <field name="create_date" string="Fecha de activación" readonly="1"/>
+              <field name="agent_id" string="Agente que activó" readonly="1"/>
+              <field name="initial_investment" readonly="1"/>
+              <field name="investment_bond" readonly="1"/>
+              <field name="comments" readonly="1"/>
+            </group>
+          </group>
+          
+          <group string="Abonos" attrs="{'invisible' : [('lot_id','=',False)]}">
+              <field name="payment_ids" nolabel="1" readonly="1">
+                <tree default_order="date_receipt, payment_date" create="0" edit="0" delete="0" duplicate="0">
+                  <field name="state" invisible="1"/>
+                  <field name="date_receipt" string="Fecha recibo"/>
+                  <field name="payment_date" string="Fecha oficina"/>
+                  <field name="amount"/>
+                  <field name="ecobro_receipt"/>
+                  <field name="debt_collector_code"/>
+                  <field name="reference"/>
+                  <field name="state"/>
+                </tree>
+              </field>
+          </group>
+
+          <!-- <group string="Notas y Facturas" attrs="{'invisible' : [('lot_id','=',False)]}">
+                <field name="refund_ids" nolabel="1" readonly="1">
+                  <tree create="0" edit="0" delete="0" duplicate="0">
+                    <field name="state" invisible="1"/>
+                    <field name="invoice_date" string="Fecha oficina"/>
+                    <field name="amount_total" string="Importe"/>
+                    <field name="name" string="Recibo"/>
+                    <field name="ref"/>
+                    <field name="type"/>
+                    <field name="state"/>
+                  </tree>
+                </field>
+          </group>
+
+          <group string="Traspasos" attrs="{'invisible' : [('transfer_balance_ids','=',[])]}">
+            <field name="transfer_balance_ids" nolabel="1" readonly="1">
+              <tree create="0" edit="0" delete="0" duplicate="0">
+                <field name="date" string="Fecha de traspaso"/>
+                <field name="balance_signed" string="Importe"/>
+                <field name="name"/>
+                <field name="parent_state" string="Estado"/>
+              </tree>
+            </field>
+          </group>
+
+          <group string="Árbol de comisiones" attrs="{'invisible' : [('lot_id','=',False)]}">
+              <field name="commission_tree" nolabel="1" readonly="1"/>
+          </group> -->
+        </sheet>
+
+        <!-- Comentarios del contrato -->
+        <div class="oe_chatter">
+          <field name="message_follower_ids" widget="mail_followers"/>
+          <field name="activity_ids" widget="mail_activity"/>
+          <field name="message_ids" widget="mail_thread"/>
+        </div>
+      </form>
+    </field>
+  </record>
+
+  <!-- Vista de lista para Contratos percapita-->
+  <record id="contract_tree_view_contratos_percapita" model="ir.ui.view">
+    <field name="name">contract.tree.percapita.view</field> 
+    <field name="type">tree</field>
+    <field name="model">pabs.contract</field>
+    <field name="arch" type="xml">          
+      <tree create="0" delete="0" >
+        <field name="invoice_date"/>
+        <field name="name"/>
+        <field name="full_name"/>
+        <field name="lot_id"/>
+        <field name="street_name_toll"/>
+        <field name="street_number_toll"/>
+        <field name="balance"/>
+        <field name="contract_status_item"/>
+        <field name="contract_status_reason"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- Action de menú -->
+  <record id="action_contract_contratos_percapita" model="ir.actions.act_window">
+    <field name="name">Contratos (Percapita)</field>
+    <field name="res_model">pabs.contract</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[('state','=','contract')]</field>
+    <field name="target">current</field>
+  </record>
+
+  <record id="contract_tree_contratos_percapita" model="ir.actions.act_window.view">
+    <field name="sequence" eval="1"/>
+    <field name="view_mode">tree</field>
+    <field name="view_id" ref="pabs_custom.contract_tree_view_contratos_percapita"/>
+    <field name="act_window_id" ref="action_contract_contratos_percapita"/>
+  </record>
+
+  <record id="contract_form_contratos_percapita" model="ir.actions.act_window.view">
+    <field name="sequence" eval="2"/>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="pabs_custom.contract_form_view_contratos_percapita"/>
+    <field name="act_window_id" ref="action_contract_contratos_percapita"/>
+  </record>
+
+<!-- ####################################### -->
 <!-- Formulario de contratos (Cobranza) -->
 <!-- ####################################### -->
   <record id="contract_form_view_cobranza" model="ir.ui.view">

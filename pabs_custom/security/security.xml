@@ -71,6 +71,12 @@
         <field name="menu_access" eval="[(4, ref('account.menu_action_move_out_refund_type')),(4, ref('stock.all_picking')),(4,ref('account_accountant.menu_accounting')),(4, ref('account.menu_action_account_payments_receivable')),(4,ref('stock.menu_stock_root')),(4,ref('hr.menu_hr_root'))]"/>
     </record>
 
+    <record id="contract_percapita_profile" model="res.groups">
+        <field name="name">Contratos percapita</field>
+        <field name="category_id" ref="pabs_custom.pabs_category"/>
+        <field name="menu_access" eval="[(4, ref('account.menu_action_move_out_refund_type')),(4, ref('stock.all_picking')),(4,ref('account_accountant.menu_accounting')),(4, ref('account.menu_action_account_payments_receivable')),(4,ref('stock.menu_stock_root')),(4,ref('hr.menu_hr_root'))]"/>
+    </record>
+
     <record id="secretary_profile" model="res.groups">
         <field name="name">Secretarías</field>
         <field name="category_id" ref="pabs_custom.pabs_category"/>
