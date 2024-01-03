@@ -1162,7 +1162,7 @@
               <!-- Nombre -->
               <field name="full_name" string="Titular"/>
               <field name="birthdate" readonly="1"/>
-              <field name="marital_status"/>
+              <field name="marital_status" readonly="1"/>
               <!-- Fin nombre -->
               
               <field name="invoice_date" readonly="1"/>
