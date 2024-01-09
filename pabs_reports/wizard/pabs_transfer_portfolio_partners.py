@@ -57,6 +57,7 @@ class TransferPortfolioPartners(models.Model):
       pabs_log += f"<p>Cambio de cobrador: {cobrador_origen}->{cobrador_destino}</p>"
       pabs_log += "<p>Contratos:</p>"
       cantidad_contratos = len(lista_contratos)
+      i = 0
       for index, con in enumerate(lista_contratos, 1):
         _logger.info("{} de {}. Transfiriendo cartera completa: {} -> {}".format(index, cantidad_contratos, con.name, cobrador_destino))
 
