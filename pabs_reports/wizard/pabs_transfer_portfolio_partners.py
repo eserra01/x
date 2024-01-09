@@ -31,6 +31,8 @@ class TransferPortfolioPartners(models.Model):
   def transfer_parnters(self):
     con_obj = self.env['pabs.contract']
     id_compania = self.env.company.id
+    pabs_log_obj = self.env['pabs.log']
+    pabs_log = "" 
 
     ###############     TRANSFERENCIA COMPLETA     ###############
     if self.tipo == 'complete':
@@ -51,6 +53,9 @@ class TransferPortfolioPartners(models.Model):
       cobrador_origen = "{} {}".format(self.collector_origin_id.barcode, self.collector_origin_id.name)
       cobrador_destino = "{} {}".format(self.collector_dest_id.barcode, self.collector_dest_id.name)
 
+      #
+      pabs_log += f"<p>Cambio de cobrador: {cobrador_origen}->{cobrador_destino}</p>"
+      pabs_log += "<p>Contratos:</p>"
       cantidad_contratos = len(lista_contratos)
       for index, con in enumerate(lista_contratos, 1):
         _logger.info("{} de {}. Transfiriendo cartera completa: {} -> {}".format(index, cantidad_contratos, con.name, cobrador_destino))
@@ -64,6 +69,14 @@ class TransferPortfolioPartners(models.Model):
         }
         
         mail_obj.create(values)
+        #        
+        if i >= 20:
+          i = 0
+          pabs_log += "<br/>"
+        i += 1
+        pabs_log += f"{con.name}, "
+      #
+      pabs_log_obj.create({'detail': pabs_log, 'user_id': self.env.user.id,'topic_id': 'tdc'})
 
       ### Actualizar por sql
       ids = str(lista_contratos.ids)
@@ -106,6 +119,7 @@ class TransferPortfolioPartners(models.Model):
       ### En esta iteración se crean los comentarios en los contratos y se construye una cadena sql de actualizacion
       query = ""
       for fila in records:
+        pabs_log = ""
         numero_contrato = fila[0]
         codigo_cobrador = fila[10]
 
@@ -142,6 +156,9 @@ class TransferPortfolioPartners(models.Model):
             }
             
             mail_obj.create(values)
+            pabs_log += f"<p>Cambio de cobrador: {con.debt_collector.barcode} {con.debt_collector.name} -> {cob['codigo']} {cob['nombre']}</p>"
+            pabs_log += f"<p>Contrato: {con.name}</p>"
+            pabs_log_obj.create({'detail': pabs_log, 'user_id': self.env.user.id,'topic_id': 'tdc'})
 
       ### Actualizar por sql
       if query:

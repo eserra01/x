@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Recode Rules -->   
+    <record model="ir.rule" id="pabs_logs_by_company_rule">
+        <field name="name">Logs PABS por compañia</field>
+        <field name="model_id" ref="model_pabs_log"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>   
+    
+</odoo>
