@@ -1580,7 +1580,13 @@ class PABSContracts(models.Model):
                 break
             if comission_template.comission_amount <= 0 and not bf:
               raise ValidationError(("El A.S {} tiene asignado ${} en su plantilla de comisiones. Debe asignarle un monto mayor a cero".format(comission_template.comission_agent_id.name, comission_template.comission_amount)))
+            
+            ### Regresar pricelist_id a valor original
+            if previous.company_id.id == 7 and 'DIGITAL' in previous.name_service.name:
+              pricelist_id = pricelist_obj.search([('product_id','=',previous.name_service.id)])
+              
           ### TERMINA VALIDACION COMISIONES
+            
 
           if not previous.payment_scheme_id and not vals.get('payment_scheme_id'):
             raise ValidationError("El contrato no tiene asignado un esquema de pago")
