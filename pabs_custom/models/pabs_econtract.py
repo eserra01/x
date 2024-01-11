@@ -1167,8 +1167,6 @@ class PABSElectronicContracts(models.TransientModel):
                 
                 contrato = contrato_obj.browse(corte.id_contrato.id)
 
-                self.ActualizarCuentaContacto(contrato.partner_id)
-
                 ### Obtener tiempo local ###
                 local = pytz.timezone("Mexico/General")
                 local_dt = local.localize(fields.Datetime.to_datetime(cor['fecha_cierre_periodo']), is_dst=None)
