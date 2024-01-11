@@ -1294,7 +1294,7 @@ class PABSContracts(models.Model):
         account_id = product_id.product_tmpl_id.property_account_income_id or product_id.product_tmpl_id.categ_id.property_account_income_categ_id
 
         if not account_id:
-          category = self.env['product_category'].search([
+          category = self.env['product.category'].search([
             ('company_id', '=', previous.company_id.id),
             ('name', '=', 'PLANES DE PREVISION')
           ])
