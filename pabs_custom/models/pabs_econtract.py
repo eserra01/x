@@ -29,6 +29,8 @@ _logger = logging.getLogger(__name__)
 # 3. Sincronizador de cobradores asignados
 # 4. Sincronizador de direcciones
 
+CUENTA_AFILIACIONES = "110.01.002"
+
 CUENTA_TRANSITO = "101.01.005"
 NOMBRE_CUENTA = "Caja transito"
 
@@ -128,57 +130,6 @@ class PABSElectronicContracts(models.TransientModel):
         array_solicitudes = []
 
         if solicitud:
-            # TEST
-            # solicitud = {
-            #     "qr_string": "202205231256513DJ000183MC340568525.3852089-101.0111063",
-            #     "contrato_id": "999999",
-            #     "serie": "PCD",
-            #     "contrato": "000006",
-            #     "solicitud_codigoActivacion": "MC0000006",
-            #     "inversion_inicial": "500",
-            #     "fecha_contrato": "2022-09-28 12:56:51",
-            #     "timestamp": "1653332211",
-            #     "fecha_primer_abono": "2022-11-01",
-            #     "monto_abono": "400",
-            #     "forma_pago": "Mensuales",
-            #     "promotor_id": "260",
-            #     "promotor_nombre": "FELIPE ANGELES RAMOS ALMANZA1",
-            #     "promotor_codigo": "P0251",
-            #     "plan_id": "2076",
-            #     "plan": "IMPERIAL PREMIUM",
-            #     "solicitud_latitud": "25.3852089",
-            #     "solicitud_longitud": "-101.0111063",
-            #     "afiliado_nombre": "MARÍA DEL ROBLE",
-            #     "afiliado_apellidoPaterno": "JUAREZ",
-            #     "afiliado_apellidoMaterno": "RAMIREZ",
-            #     "afiliado_fechaNacimiento": "1973-03-10",
-            #     "afiliado_estadoCivil": "",
-            #     "afiliado_ocupacion": "",
-            #     "afiliado_telefono": "8442568280",
-            #     "afiliado_RFC": " ",
-            #     "afiliado_email": "roblejr73@gmail.com",
-            #     "tipo_domicilio": "Casa",
-            #     "domCasa_codigoPostal": "25086",
-            #     "domCasa_Calle": "ABEL BARRAGAN",
-            #     "domCasa_numExt": "251",
-            #     "domCasa_numInt": "",
-            #     "domCasa_EntreCalles": "FRANCISCO H GARZA Y BOULEVARD CID GONZALEZ",
-            #     "domCasa_Colonia": "BUROCRATAS MUNICIPALES",
-            #     "domCasa_Municipio": "SALTILLO",
-            #     "domCasa_LocalidadID": "99998",
-            #     "domCasa_ColoniaID": "99998",
-            #     "domCobro_tipoDomicilio": "Cobranza",
-            #     "domCobro_codigoPostal": "25086",
-            #     "domCobro_Calle": "ABEL BARRAGAN",
-            #     "domCobro_numExt": "251",
-            #     "domCobro_numInt": "",
-            #     "domCobro_entreClles": "FRANCISCO H GARZA Y BOULEVARD CID GONZALEZ",
-            #     "domCobro_Colonia": "BUROCRATAS MUNICIPALES",
-            #     "domCobro_Municipio": "SALTILLO",
-            #     "domCobro_LocalidadID": "99998",
-            #     "domCobro_ColoniaID": "99998",
-            #     "generar_contrato": "0"
-            # }
 
             array_solicitudes.append(solicitud)
         else:
@@ -205,12 +156,6 @@ class PABSElectronicContracts(models.TransientModel):
 
         cantidad_afiliaciones = len(array_solicitudes)
         _logger.info("{} >>> Afiliaciones electrónicas a sincronizar: {}".format(company_id, cantidad_afiliaciones))
-
-        # TEST
-        # for i in range(1, cantidad_afiliaciones): # Tomar solo X elementos de la lista
-        #     array_solicitudes.pop(1)
-        # cantidad_afiliaciones = len(array_solicitudes)
-        # _logger.info("PRUEBA -> Se recorta a {} afilaciones".format(cantidad_afiliaciones))
 
         ###################################
         ### Sincronizar cada afiliación ### Si ocurre error al crear una afiliación pasar a la siguiente
@@ -588,11 +533,11 @@ class PABSElectronicContracts(models.TransientModel):
             raise ValidationError("No se asignó un id de compañia")
 
         ### Buscar cuentas contables ###
-        cuenta_a_cobrar = account_obj.search([('company_id','=',company_id), ('code','=','110.01.002')]) #Afiliaciones plan previsión electrónicos
+        cuenta_a_cobrar = account_obj.search([('company_id','=',company_id), ('code','=',CUENTA_AFILIACIONES)]) #Afiliaciones plan previsión electrónicos
         cuenta_a_pagar = account_obj.search([('company_id','=',company_id), ('code','=','201.01.001')]) #Proveedores nacionales
 
         if not cuenta_a_cobrar:
-            raise ValidationError("No se encontró la cuenta 110.01.002 - Afiliaciones plan previsión electronicos")
+            raise ValidationError("No se encontró la cuenta {} - Afiliaciones plan previsión electronicos".format(CUENTA_AFILIACIONES))
 
         if not cuenta_a_pagar:
             raise ValidationError("No se encontró la cuenta 201.01.001 - Proveedores nacionales")
@@ -633,10 +578,10 @@ class PABSElectronicContracts(models.TransientModel):
             raise ValidationError("No se encontró un partner")
 
         ### Buscar cuentas contables ###
-        cuenta_a_cobrar = self.env['account.account'].search([('company_id','=', partner.company_id.id), ('code','=','110.01.002')]) #Afiliaciones plan previsión electrónicos
+        cuenta_a_cobrar = self.env['account.account'].search([('company_id','=', partner.company_id.id), ('code','=', CUENTA_AFILIACIONES)]) #Afiliaciones plan previsión electrónicos
 
         if not cuenta_a_cobrar:
-            raise ValidationError("No se encontró la cuenta 110.01.002 - Afiliaciones plan previsión electronicos")
+            raise ValidationError("No se encontró la cuenta {} - Afiliaciones plan previsión electronicos".format(CUENTA_AFILIACIONES))
 
         partner.write({'property_account_receivable_id': cuenta_a_cobrar.id})
 
@@ -1157,26 +1102,6 @@ class PABSElectronicContracts(models.TransientModel):
             except Exception as ex:
                 _logger.error("Error al consultar los cortes de afiliaciones electrónicas {}".format(ex))
                 return
-            
-            # TEST
-            # array_cortes = [
-            #     { 
-            #         "id": "245",
-            #         "promotor_id": "260",
-            #         "codigo_promotor": "P0251",
-            #         "contrato": "PCD000004",
-            #         "periodo": "10",
-            #         "fecha_cierre_periodo": "2022-09-28 07:01:47"
-            #     },
-            #     { 
-            #         "id": "246",
-            #         "promotor_id": "260",
-            #         "codigo_promotor": "P0251",
-            #         "contrato": "3NJ003036",
-            #         "periodo": "10",
-            #         "fecha_cierre_periodo": "2022-09-28 07:01:47"
-            #     }
-            # ]
 
         cantidad_cortes = len(array_cortes)
         _logger.info("Cortes obtenidos: {}".format(cantidad_cortes))
@@ -1254,7 +1179,7 @@ class PABSElectronicContracts(models.TransientModel):
                 if actually_day and last_day:
                     fecha_creacion = last_day
 
-                actualizar.update({'invoice_date': fecha_creacion, 'date_of_last_status': datetime.today()})
+                actualizar.update({'invoice_date': fecha_creacion, 'date_of_last_status': fields.Datetime.now()})
 
                 ### Si es precontrato actualizar nombre a "Nuevo contrato" (para que genere el número de contrato siguiente en el metodo create_contract) ###
                 if contrato.state in ('actived', 'precontract'):
