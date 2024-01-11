@@ -1137,11 +1137,11 @@ class PABSContracts(models.Model):
         ])
 
         if not product_template:
-          raise ValidationError('No se encontró el producto con referencia interna {}'.format(physical_default_code))
+          raise ValidationError('Arbol: No se encontró el producto con referencia interna {}'.format(physical_default_code))
 
         pricelist_id = pricelist_obj.search([('product_tmpl_id','=', product_template.id)])
         if not pricelist_id:
-          raise ValidationError(("No se encontró la tarifa del plan físico {}".format(self.product_id.name)))
+          raise ValidationError(("Arbol: No se encontró la tarifa del plan físico {}".format(self.product_id.name)))
         
       comission_template_id = comission_template_obj.search([
         ('employee_id','=',self.employee_id.id),
@@ -1294,7 +1294,7 @@ class PABSContracts(models.Model):
         account_id = product_id.product_tmpl_id.property_account_income_id or product_id.product_tmpl_id.categ_id.property_account_income_categ_id
 
         if not account_id:
-          category = self.env['product.category'].search([
+          category = self.env['product.category'].sudo().search([
             ('company_id', '=', previous.company_id.id),
             ('name', '=', 'PLANES DE PREVISION')
           ])
