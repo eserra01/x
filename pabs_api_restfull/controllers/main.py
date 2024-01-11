@@ -890,488 +890,7 @@ class APIREST(http.Controller):
       company = request.env['res.company'].browse(company_id)
     response_header = {'Content-Type': 'application/json'}
     cr = request.cr
-    # query = """
-    # SELECT 
-    #   Grupo, 
-    #   Plaza, 
-    #   TipoDato,
-    #   Fecha, 
-    #   Diario, 
-    #   TipoPoliza, 
-    #   Folio, 
-    #   ConceptoPoliza,
-    #   NumMovto, 
-    #   AreaDeNegocio, 
-    #   CentroCosto, 
-    #   CodSegNegocio, 
-    #   SegmentoNegocio, 
-    #   CodCtaMayor, 
-    #   NomCtaMayor, 
-    #   CodSubCta, 
-    #   NomSubCta, 
-    #   CodSubSubCta, 
-    #   NomSubSubCta, 
-    #   CodSubSubSubCta, 
-    #   NomSubSubSubCta, 
-    #   CodigoCuenta, 
-    #   NombreCuenta,
-    #   Referencia, 
-    #   ConceptoMovimiento,
-    #   CuentaAnalitica,
-    #   Cargos, 
-    #   Abonos, 
-    #   ImporteNeto,
-    #   SaldoSemanal, 
-    #   SaldoMensual, 
-    #   SaldoAnual, 
-    #   Project, 
-    #   Comments
-    # FROM
-    # (
-    #   
-    #   SELECT 
-    #     'Occidente' as Grupo,     
-    #       '{}' as Plaza,
-    #       'Financieros' as TipoDato,
-    #     DATE_PART('year', enc.date) as año, 
-    #     DATE_PART('month', enc.date) as mes,
-    #     DATE_PART('week', enc.date) as Semana,
-    #     enc.date as Fecha,
-    #     part.name as Usuario,
-    #     jou.name as Diario,
-    #     CASE 
-    #       WHEN enc.type = 'entry' THEN 'Asiento contable'
-    #       WHEN enc.type = 'out_invoice' THEN 'Factura de cliente'
-    #       WHEN enc.type = 'out_refund' THEN 'Nota de crédito de cliente'
-    #       WHEN enc.type = 'in_invoice' THEN 'Factura de proveedor'
-    #       WHEN enc.type = 'in_refund' THEN 'Nota de crédito de proveedor'
-    #       WHEN enc.type = 'out_receipt' THEN 'Recibo de ventas'
-    #       WHEN enc.type = 'in_receipt' THEN 'Recibo de compra'
-    #       ELSE enc.type
-    #     END AS TipoPoliza,
-    #     enc.id as Folio,
-    #     CASE
-    #        WHEN enc.ref = 'Sync Ecobro' THEN 'Abono'
-    #        ELSE enc.ref
-    #     END as ConceptoPoliza,
-    #     ROW_NUMBER() OVER (PARTITION BY enc.name) as NumMovto,
-
-    #     /*Falta definir las cuentas analiticas (una por movimiento) y las etiquetas analiticas (una o más por movimiento)*/
-    #     CASE
-    #       WHEN substring(ana.name, 1,1) = '1' THEN 'PABS'
-    #       WHEN substring(ana.name, 1,1) = '2' THEN 'Funeraria'
-    #       WHEN substring(ana.name, 1,1) = '3' THEN 'Panteon'
-    #       WHEN substring(ana.name, 1,2) = '98' THEN 'Apoyos'
-    #       WHEN substring(ana.name, 1,2) = '99' THEN 'Personales'
-    #       ELSE substring(ana.name, 1,2)
-    #     END as AreaDeNegocio,
-
-    #     CASE
-    #       WHEN substring(ana.name, 1,4) = '1001' THEN 'Administración'
-    #       WHEN substring(ana.name, 1,4) = '1002' THEN 'Cobranza'
-    #       WHEN substring(ana.name, 1,2) = '11' THEN 'Ventas'
-    #       WHEN substring(ana.name, 1,1) = '2' THEN 'Funerarias'
-    #       WHEN substring(ana.name, 1,2) = '98' THEN 'Apoyos'
-    #       WHEN substring(ana.name, 1,2) = '99' THEN 'Gastos personales'
-    #       ELSE substring(ana.name, 1,2)
-    #     END as CentroCosto,
-    #     substring(ana.name, 6, 99) as SegmentoNegocio,
-    #     substring(ana.name, 1,4) as CodSegNegocio,
-
-    #     /*CodCtaMayor*/
-    #     substring(acc.code,1,3) as CodCtaMayor,
-    #     CASE
-    #       WHEN substring(acc.name,1,3) = '601' THEN CASE
-    #                             WHEN substring(acc.code,5,2) = '01' THEN 'Caja'
-    #                             WHEN substring(acc.code,5,2) = '02' THEN 'Bancos'
-    #                             WHEN substring(acc.code,5,2) = '03' THEN 'RIF'
-    #                             WHEN substring(acc.code,5,2) = '00' THEN 'Programa de beneficio pabs'
-    #                             WHEN substring(acc.code,5,2) = '10' THEN 'Cooperativa de desarrollo'
-    #                             ELSE substring(acc.code,5,2)
-    #                           END
-    #       ELSE acc.name
-    #     END as NomCtaMayor,
-
-    #     /*CodSubCta*/
-    #     substring(acc.code,5,2) as CodSubCta,
-    #     CASE 
-    #       WHEN substring(acc.name,1,3) = '601' THEN acc.name
-    #       ELSE ''
-    #     END as NomSubCta,
-
-    #     /*CodSubSubCta*/
-    #     '' as CodSubSubCta,
-    #     '' as NomSubSubCta,
-
-    #     /*CodSubSubSubCta*/
-    #     '' as CodSubSubSubCta,
-    #     CASE
-    #       WHEN substring(acc.name,1,3) = '601' THEN acc.name
-    #       ELSE ''
-    #     END as NomSubSubSubCta,
-
-    #     substring(acc.code,1,3) as CodCtaMayorX,
-    #     CASE
-    #       WHEN substring(acc.code,1,3) = '004' THEN 'INGRESOS'
-    #       WHEN substring(acc.code,1,3) = '005' THEN 'COSTO DE VENTA'
-    #       WHEN substring(acc.code,1,3) = '006' THEN 'GASTOS DE OPERACIÓN'
-    #       WHEN substring(acc.code,1,3) = '007' THEN 'PRODUCTOS FINANCIEROS'
-    #       WHEN substring(acc.code,1,3) = '010' THEN 'ACTIVO CIRCULANTE'
-    #       WHEN substring(acc.code,1,3) = '015' THEN 'ACTIVO FIJO'
-    #       WHEN substring(acc.code,1,3) = '018' THEN 'ACTIVO DIFERIDO'
-    #       WHEN substring(acc.code,1,3) = '020' THEN 'PASIVO EXIGIBLE'
-    #       WHEN substring(acc.code,1,3) = '025' THEN 'PASIVO A LARGO PLAZO'
-    #       WHEN substring(acc.code,1,3) = '027' THEN 'INGRESOS POR REALIZAR Y COMPROMISOS DIFERIDOS'
-    #       WHEN substring(acc.code,1,3) = '028' THEN 'ANTICIPOS CLIENTES'
-    #       WHEN substring(acc.code,1,3) = '085' THEN 'OTROS INGRESOS Y OTROS GASTOS'
-    #       WHEN substring(acc.code,1,3) = '088' THEN 'IMPUESTOS CAUSADOS'
-    #       WHEN substring(acc.code,1,3) = '089' THEN 'RESERVAS Y RETIROS DE UTILIDADES'
-    #       WHEN substring(acc.code,1,4) = '1012' THEN 'Cajas en Tesorería'
-    #       ELSE substring(acc.code,1,3)
-    #     END as NomCtaMayorX,
-
-    #     substring(acc.code,5,2) as CodSubCtaX,
-    #     CASE
-    #       WHEN substring(acc.code,5,2) = '01' THEN 'Caja'
-    #       WHEN substring(acc.code,5,2) = '02' THEN 'Bancos'
-    #       WHEN substring(acc.code,5,2) = '03' THEN 'RIF'
-    #       WHEN substring(acc.code,5,2) = '00' THEN 'Programa de beneficio pabs'
-    #       WHEN substring(acc.code,5,2) = '10' THEN 'Cooperativa de desarrollo'
-    #       ELSE substring(acc.code,5,2)
-    #     END as NomSubCtaX,
-
-    #     substring(acc.code,8,99) as CodSubSubCtaX,
-    #     acc.name as NomSubSubCtaX,
-
-    #     '' as CodSubSubSubCtaX,
-    #     '' as NomSubSubSubCtaX,
-
-    #     acc.code as CodigoCuenta,
-    #     acc.name as NombreCuenta,
-    #     acc.name as NombreCuentaSAP,
-    #     /*Fin cuentas*/
-
-    #     mov.ref as Referencia,
-    #     COALESCE(mov.name,'Sin concepto') AS ConceptoMovimiento,
-    #     aaa.name AS CuentaAnalitica,
-    #     mov.Debit AS Cargos,
-    #     mov.Credit AS Abonos,
-    #     (mov.Debit - mov.Credit) as ImporteNeto,
-    #     0 as SaldoSemanal,
-    #     0 as SaldoMensual,
-    #     0 as SaldoAnual,
-    #     '' as Project,
-    #     mov.name as comments
-
-    #   FROM account_move AS enc
-    #   INNER JOIN account_move_line as mov on enc.id = mov.move_id
-    #   INNER JOIN res_users AS usr ON enc.create_uid = usr.id
-    #   INNER JOIN res_partner AS part ON usr.partner_id = part.id
-    #   LEFT JOIN account_analytic_account AS aaa ON mov.analytic_account_id = aaa.id
-    #   LEFT JOIN account_journal AS jou ON enc.journal_id = jou.id
-    #   LEFT JOIN account_account as acc on mov.account_id = acc.id
-    #   LEFT JOIN account_analytic_account as ana on mov.analytic_account_id = ana.id
-    #     WHERE enc.state = 'posted'
-    #     AND COALESCE(enc.ref, '') NOT IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
-    #     AND NOT (enc.type = 'out_invoice' AND enc.contract_id IS NOT NULL)
-    #     AND enc.company_id = {}
-    # UNION
-    # /*PAGOS AGRUPADOS*/
-    # SELECT 
-    #     'Occidente' as Grupo,     
-    #     '{}' as Plaza,
-    #     'Financieros' as TipoDato,
-    #     DATE_PART('year', enc.date) as año, 
-    #     DATE_PART('month', enc.date) as mes,
-    #     DATE_PART('week', enc.date) as Semana,
-    #     enc.date as Fecha,
-    #     '' as Usuario,
-    #     jou.name as Diario,
-    #     CASE 
-    #       WHEN enc.type = 'entry' THEN 'Asiento contable'
-    #       WHEN enc.type = 'out_invoice' THEN 'Factura de cliente'
-    #       WHEN enc.type = 'out_refund' THEN 'Nota de crédito de cliente'
-    #       WHEN enc.type = 'in_invoice' THEN 'Factura de proveedor'
-    #       WHEN enc.type = 'in_refund' THEN 'Nota de crédito de proveedor'
-    #       WHEN enc.type = 'out_receipt' THEN 'Recibo de ventas'
-    #       WHEN enc.type = 'in_receipt' THEN 'Recibo de compra'
-    #       ELSE enc.type
-    #     END AS TipoPoliza,
-    #     0 as Folio,
-    #     CASE
-    #        WHEN enc.ref = 'Sync Ecobro' THEN 'Abono'
-    #        ELSE enc.ref
-    #     END as ConceptoPoliza,
-    #     ROW_NUMBER() OVER () as NumMovto,
-
-    #     /*Falta definir las cuentas analiticas (una por movimiento) y las etiquetas analiticas (una o más por movimiento)*/
-    #     CASE
-    #       WHEN substring(ana.name, 1,1) = '1' THEN 'PABS'
-    #       WHEN substring(ana.name, 1,1) = '2' THEN 'Funeraria'
-    #       WHEN substring(ana.name, 1,1) = '3' THEN 'Panteon'
-    #       WHEN substring(ana.name, 1,2) = '98' THEN 'Apoyos'
-    #       WHEN substring(ana.name, 1,2) = '99' THEN 'Personales'
-    #       ELSE substring(ana.name, 1,2)
-    #     END as AreaDeNegocio,
-
-    #     CASE
-    #       WHEN substring(ana.name, 1,4) = '1001' THEN 'Administración'
-    #       WHEN substring(ana.name, 1,4) = '1002' THEN 'Cobranza'
-    #       WHEN substring(ana.name, 1,2) = '11' THEN 'Ventas'
-    #       WHEN substring(ana.name, 1,1) = '2' THEN 'Funerarias'
-    #       WHEN substring(ana.name, 1,2) = '98' THEN 'Apoyos'
-    #       WHEN substring(ana.name, 1,2) = '99' THEN 'Gastos personales'
-    #       ELSE substring(ana.name, 1,2)
-    #     END as CentroCosto,
-    #     substring(ana.name, 6, 99) as SegmentoNegocio,
-    #     substring(ana.name, 1,4) as CodSegNegocio,
-
-    #     /*CodCtaMayor*/
-    #     substring(acc.code,1,3) as CodCtaMayor,
-    #     CASE
-    #       WHEN substring(acc.name,1,3) = '601' THEN CASE
-    #                             WHEN substring(acc.code,5,2) = '01' THEN 'Caja'
-    #                             WHEN substring(acc.code,5,2) = '02' THEN 'Bancos'
-    #                             WHEN substring(acc.code,5,2) = '03' THEN 'RIF'
-    #                             WHEN substring(acc.code,5,2) = '00' THEN 'Programa de beneficio pabs'
-    #                             WHEN substring(acc.code,5,2) = '10' THEN 'Cooperativa de desarrollo'
-    #                             ELSE substring(acc.code,5,2)
-    #                           END
-    #       ELSE acc.name
-    #     END as NomCtaMayor,
-
-    #     /*CodSubCta*/
-    #     substring(acc.code,5,2) as CodSubCta,
-    #     CASE 
-    #       WHEN substring(acc.name,1,3) = '601' THEN acc.name
-    #       ELSE ''
-    #     END as NomSubCta,
-
-    #     /*CodSubSubCta*/
-    #     '' as CodSubSubCta,
-    #     '' as NomSubSubCta,
-
-    #     /*CodSubSubSubCta*/
-    #     '' as CodSubSubSubCta,
-    #     CASE
-    #       WHEN substring(acc.name,1,3) = '601' THEN acc.name
-    #       ELSE ''
-    #     END as NomSubSubSubCta,
-
-    #     substring(acc.code,1,3) as CodCtaMayorX,
-    #     CASE
-    #       WHEN substring(acc.code,1,3) = '004' THEN 'INGRESOS'
-    #       WHEN substring(acc.code,1,3) = '005' THEN 'COSTO DE VENTA'
-    #       WHEN substring(acc.code,1,3) = '006' THEN 'GASTOS DE OPERACIÓN'
-    #       WHEN substring(acc.code,1,3) = '007' THEN 'PRODUCTOS FINANCIEROS'
-    #       WHEN substring(acc.code,1,3) = '010' THEN 'ACTIVO CIRCULANTE'
-    #       WHEN substring(acc.code,1,3) = '015' THEN 'ACTIVO FIJO'
-    #       WHEN substring(acc.code,1,3) = '018' THEN 'ACTIVO DIFERIDO'
-    #       WHEN substring(acc.code,1,3) = '020' THEN 'PASIVO EXIGIBLE'
-    #       WHEN substring(acc.code,1,3) = '025' THEN 'PASIVO A LARGO PLAZO'
-    #       WHEN substring(acc.code,1,3) = '027' THEN 'INGRESOS POR REALIZAR Y COMPROMISOS DIFERIDOS'
-    #       WHEN substring(acc.code,1,3) = '028' THEN 'ANTICIPOS CLIENTES'
-    #       WHEN substring(acc.code,1,3) = '085' THEN 'OTROS INGRESOS Y OTROS GASTOS'
-    #       WHEN substring(acc.code,1,3) = '088' THEN 'IMPUESTOS CAUSADOS'
-    #       WHEN substring(acc.code,1,3) = '089' THEN 'RESERVAS Y RETIROS DE UTILIDADES'
-    #       WHEN substring(acc.code,1,4) = '1012' THEN 'Cajas en Tesorería'
-    #       ELSE substring(acc.code,1,3)
-    #     END as NomCtaMayorX,
-
-    #     substring(acc.code,5,2) as CodSubCtaX,
-    #     CASE
-    #       WHEN substring(acc.code,5,2) = '01' THEN 'Caja'
-    #       WHEN substring(acc.code,5,2) = '02' THEN 'Bancos'
-    #       WHEN substring(acc.code,5,2) = '03' THEN 'RIF'
-    #       WHEN substring(acc.code,5,2) = '00' THEN 'Programa de beneficio pabs'
-    #       WHEN substring(acc.code,5,2) = '10' THEN 'Cooperativa de desarrollo'
-    #       ELSE substring(acc.code,5,2)
-    #     END as NomSubCtaX,
-
-    #     substring(acc.code,8,99) as CodSubSubCtaX,
-    #     acc.name as NomSubSubCtaX,
-
-    #     '' as CodSubSubSubCtaX,
-    #     '' as NomSubSubSubCtaX,
-
-    #     acc.code as CodigoCuenta,
-    #     acc.name as NombreCuenta,
-    #     acc.name as NombreCuentaSAP,
-    #     /*Fin cuentas*/
-
-    #     enc.ref as Referencia,
-    #     enc.ref AS ConceptoMovimiento,
-    #     aaa.name AS CuentaAnalitica,
-    #     SUM(mov.Debit) AS Cargos,
-    #     SUM(mov.Credit) AS Abonos,
-    #     SUM(mov.Debit) - SUM(mov.Credit) as ImporteNeto,
-    #     0 as SaldoSemanal,
-    #     0 as SaldoMensual,
-    #     0 as SaldoAnual,
-    #     '' as Project,
-    #     '' as comments
-
-    #   FROM account_move AS enc
-    #   INNER JOIN account_move_line as mov on enc.id = mov.move_id
-    #   INNER JOIN res_users AS usr ON enc.create_uid = usr.id
-    #   INNER JOIN res_partner AS part ON usr.partner_id = part.id
-    #   LEFT JOIN account_analytic_account AS aaa ON mov.analytic_account_id = aaa.id
-    #   LEFT JOIN account_journal AS jou ON enc.journal_id = jou.id
-    #   LEFT JOIN account_account as acc on mov.account_id = acc.id
-    #   LEFT JOIN account_analytic_account as ana on mov.analytic_account_id = ana.id
-    #     WHERE enc.state = 'posted'
-    #     AND COALESCE(enc.ref, '') IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
-    #     AND enc.company_id = {}
-    #       GROUP BY enc.date, jou.name, enc.type, enc.ref, ana.name, acc.code, acc.name, aaa.name
-    # UNION
-    # /*FACTURAS AGRUPADAS*/
-    # SELECT 
-    #     'Occidente' as Grupo,     
-    #     '{}' as Plaza,
-    #     'Financieros' as TipoDato,
-    #     DATE_PART('year', enc.date) as año, 
-    #     DATE_PART('month', enc.date) as mes,
-    #     DATE_PART('week', enc.date) as Semana,
-    #     enc.date as Fecha,
-    #     '' as Usuario,
-    #     jou.name as Diario,
-    #     CASE 
-    #       WHEN enc.type = 'entry' THEN 'Asiento contable'
-    #       WHEN enc.type = 'out_invoice' THEN 'Factura de cliente'
-    #       WHEN enc.type = 'out_refund' THEN 'Nota de crédito de cliente'
-    #       WHEN enc.type = 'in_invoice' THEN 'Factura de proveedor'
-    #       WHEN enc.type = 'in_refund' THEN 'Nota de crédito de proveedor'
-    #       WHEN enc.type = 'out_receipt' THEN 'Recibo de ventas'
-    #       WHEN enc.type = 'in_receipt' THEN 'Recibo de compra'
-    #       ELSE enc.type
-    #     END AS TipoPoliza,
-    #     0 as Folio,
-    #     'Factura de contratos' as ConceptoPoliza,
-    #     ROW_NUMBER() OVER () as NumMovto,
-
-    #     /*Falta definir las cuentas analiticas (una por movimiento) y las etiquetas analiticas (una o más por movimiento)*/
-    #     CASE
-    #       WHEN substring(ana.name, 1,1) = '1' THEN 'PABS'
-    #       WHEN substring(ana.name, 1,1) = '2' THEN 'Funeraria'
-    #       WHEN substring(ana.name, 1,1) = '3' THEN 'Panteon'
-    #       WHEN substring(ana.name, 1,2) = '98' THEN 'Apoyos'
-    #       WHEN substring(ana.name, 1,2) = '99' THEN 'Personales'
-    #       ELSE substring(ana.name, 1,2)
-    #     END as AreaDeNegocio,
-
-    #     CASE
-    #       WHEN substring(ana.name, 1,4) = '1001' THEN 'Administración'
-    #       WHEN substring(ana.name, 1,4) = '1002' THEN 'Cobranza'
-    #       WHEN substring(ana.name, 1,2) = '11' THEN 'Ventas'
-    #       WHEN substring(ana.name, 1,1) = '2' THEN 'Funerarias'
-    #       WHEN substring(ana.name, 1,2) = '98' THEN 'Apoyos'
-    #       WHEN substring(ana.name, 1,2) = '99' THEN 'Gastos personales'
-    #       ELSE substring(ana.name, 1,2)
-    #     END as CentroCosto,
-    #     substring(ana.name, 6, 99) as SegmentoNegocio,
-    #     substring(ana.name, 1,4) as CodSegNegocio,
-
-    #     /*CodCtaMayor*/
-    #     substring(acc.code,1,3) as CodCtaMayor,
-    #     CASE
-    #       WHEN substring(acc.name,1,3) = '601' THEN CASE
-    #                             WHEN substring(acc.code,5,2) = '01' THEN 'Caja'
-    #                             WHEN substring(acc.code,5,2) = '02' THEN 'Bancos'
-    #                             WHEN substring(acc.code,5,2) = '03' THEN 'RIF'
-    #                             WHEN substring(acc.code,5,2) = '00' THEN 'Programa de beneficio pabs'
-    #                             WHEN substring(acc.code,5,2) = '10' THEN 'Cooperativa de desarrollo'
-    #                             ELSE substring(acc.code,5,2)
-    #                           END
-    #       ELSE acc.name
-    #     END as NomCtaMayor,
-
-    #     /*CodSubCta*/
-    #     substring(acc.code,5,2) as CodSubCta,
-    #     CASE 
-    #       WHEN substring(acc.name,1,3) = '601' THEN acc.name
-    #       ELSE ''
-    #     END as NomSubCta,
-
-    #     /*CodSubSubCta*/
-    #     '' as CodSubSubCta,
-    #     '' as NomSubSubCta,
-
-    #     /*CodSubSubSubCta*/
-    #     '' as CodSubSubSubCta,
-    #     CASE
-    #       WHEN substring(acc.name,1,3) = '601' THEN acc.name
-    #       ELSE ''
-    #     END as NomSubSubSubCta,
-
-    #     substring(acc.code,1,3) as CodCtaMayorX,
-    #     CASE
-    #       WHEN substring(acc.code,1,3) = '004' THEN 'INGRESOS'
-    #       WHEN substring(acc.code,1,3) = '005' THEN 'COSTO DE VENTA'
-    #       WHEN substring(acc.code,1,3) = '006' THEN 'GASTOS DE OPERACIÓN'
-    #       WHEN substring(acc.code,1,3) = '007' THEN 'PRODUCTOS FINANCIEROS'
-    #       WHEN substring(acc.code,1,3) = '010' THEN 'ACTIVO CIRCULANTE'
-    #       WHEN substring(acc.code,1,3) = '015' THEN 'ACTIVO FIJO'
-    #       WHEN substring(acc.code,1,3) = '018' THEN 'ACTIVO DIFERIDO'
-    #       WHEN substring(acc.code,1,3) = '020' THEN 'PASIVO EXIGIBLE'
-    #       WHEN substring(acc.code,1,3) = '025' THEN 'PASIVO A LARGO PLAZO'
-    #       WHEN substring(acc.code,1,3) = '027' THEN 'INGRESOS POR REALIZAR Y COMPROMISOS DIFERIDOS'
-    #       WHEN substring(acc.code,1,3) = '028' THEN 'ANTICIPOS CLIENTES'
-    #       WHEN substring(acc.code,1,3) = '085' THEN 'OTROS INGRESOS Y OTROS GASTOS'
-    #       WHEN substring(acc.code,1,3) = '088' THEN 'IMPUESTOS CAUSADOS'
-    #       WHEN substring(acc.code,1,3) = '089' THEN 'RESERVAS Y RETIROS DE UTILIDADES'
-    #       WHEN substring(acc.code,1,4) = '1012' THEN 'Cajas en Tesorería'
-    #       ELSE substring(acc.code,1,3)
-    #     END as NomCtaMayorX,
-
-    #     substring(acc.code,5,2) as CodSubCtaX,
-    #     CASE
-    #       WHEN substring(acc.code,5,2) = '01' THEN 'Caja'
-    #       WHEN substring(acc.code,5,2) = '02' THEN 'Bancos'
-    #       WHEN substring(acc.code,5,2) = '03' THEN 'RIF'
-    #       WHEN substring(acc.code,5,2) = '00' THEN 'Programa de beneficio pabs'
-    #       WHEN substring(acc.code,5,2) = '10' THEN 'Cooperativa de desarrollo'
-    #       ELSE substring(acc.code,5,2)
-    #     END as NomSubCtaX,
-
-    #     substring(acc.code,8,99) as CodSubSubCtaX,
-    #     acc.name as NomSubSubCtaX,
-
-    #     '' as CodSubSubSubCtaX,
-    #     '' as NomSubSubSubCtaX,
-
-    #     acc.code as CodigoCuenta,
-    #     acc.name as NombreCuenta,
-    #     acc.name as NombreCuentaSAP,
-    #     /*Fin cuentas*/
-
-    #     'Factura de contratos' as Referencia,
-    #     'Factura de contratos' AS ConceptoMovimiento,
-    #     aaa.name AS CuentaAnalitica,
-    #     SUM(mov.Debit) AS Cargos,
-    #     SUM(mov.Credit) AS Abonos,
-    #     SUM(mov.Debit) - SUM(mov.Credit) as ImporteNeto,
-    #     0 as SaldoSemanal,
-    #     0 as SaldoMensual,
-    #     0 as SaldoAnual,
-    #     '' as Project,
-    #     '' as comments
-
-    #   FROM account_move AS enc
-    #   INNER JOIN account_move_line as mov on enc.id = mov.move_id
-    #   INNER JOIN res_users AS usr ON enc.create_uid = usr.id
-    #   INNER JOIN res_partner AS part ON usr.partner_id = part.id
-    #   LEFT JOIN account_analytic_account AS aaa ON mov.analytic_account_id = aaa.id
-    #   LEFT JOIN account_journal AS jou ON enc.journal_id = jou.id
-    #   LEFT JOIN account_account as acc on mov.account_id = acc.id
-    #   LEFT JOIN account_analytic_account as ana on mov.analytic_account_id = ana.id
-    #     WHERE enc.state = 'posted'
-    #     AND COALESCE(enc.ref, '') NOT IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
-    #     AND enc.type = 'out_invoice'
-    #     AND enc.contract_id IS NOT NULL
-    #     AND enc.company_id = {}
-    #       GROUP BY enc.date, jou.name, enc.type, ana.name, acc.code, acc.name, aaa.name
-    # ) as financieros
-    # """.format(company.name, company_id, company.name, company_id, company.name, company_id)
+    #
     query = """
     SELECT Cliente,
       Grupo, 
@@ -1405,10 +924,10 @@ class APIREST(http.Controller):
       ImporteNeto,
       Project, 
       Comments,
-      EtiquetaAnalitica
+      EtiquetaAnalitica,
+      move_name
     FROM
     (
-
       SELECT mortuary.name as Cliente,
         'Occidente' as Grupo,     
           'Mérida' as Plaza,
@@ -1435,8 +954,6 @@ class APIREST(http.Controller):
            ELSE enc.ref
         END as ConceptoPoliza,
         ROW_NUMBER() OVER (PARTITION BY enc.name) as NumMovto,
-
-
         CASE
           WHEN substring(ana.name, 1,1) = '1' THEN 'PABS'
           WHEN substring(ana.name, 1,1) = '2' THEN 'Funeraria'
@@ -1457,8 +974,6 @@ class APIREST(http.Controller):
         END as CentroCosto,
         substring(ana.name, 6, 99) as SegmentoNegocio,
         substring(ana.name, 1,4) as CodSegNegocio,
-
-
         substring(acc.code,1,3) as CodCtaMayor,
         CASE
           WHEN substring(acc.name,1,3) = '601' THEN CASE
@@ -1471,25 +986,18 @@ class APIREST(http.Controller):
                               END
           ELSE acc.name
         END as NomCtaMayor,
-
-
         substring(acc.code,5,2) as CodSubCta,
         CASE 
           WHEN substring(acc.name,1,3) = '601' THEN acc.name
           ELSE ''
         END as NomSubCta,
-
-
         '' as CodSubSubCta,
         '' as NomSubSubCta,
-
-
         '' as CodSubSubSubCta,
         CASE
           WHEN substring(acc.name,1,3) = '601' THEN acc.name
           ELSE ''
         END as NomSubSubSubCta,
-
         substring(acc.code,1,3) as CodCtaMayorX,
         CASE
           WHEN substring(acc.code,1,3) = '004' THEN 'INGRESOS'
@@ -1509,7 +1017,6 @@ class APIREST(http.Controller):
           WHEN substring(acc.code,1,4) = '1012' THEN 'Cajas en Tesorería'
           ELSE substring(acc.code,1,3)
         END as NomCtaMayorX,
-
         substring(acc.code,5,2) as CodSubCtaX,
         CASE
           WHEN substring(acc.code,5,2) = '01' THEN 'Caja'
@@ -1519,29 +1026,23 @@ class APIREST(http.Controller):
           WHEN substring(acc.code,5,2) = '10' THEN 'Cooperativa de desarrollo'
           ELSE substring(acc.code,5,2)
         END as NomSubCtaX,
-
         substring(acc.code,8,99) as CodSubSubCtaX,
         acc.name as NomSubSubCtaX,
-
         '' as CodSubSubSubCtaX,
         '' as NomSubSubSubCtaX,
-
         acc.code as CodigoCuenta,
         acc.name as NombreCuenta,
         acc.name as NombreCuentaSAP,
-
-
         mov.ref as Referencia,
         COALESCE(mov.name,'Sin concepto') AS ConceptoMovimiento,
         aaa.name AS CuentaAnalitica,
         mov.Debit AS Cargos,
         mov.Credit AS Abonos,
         (mov.Debit - mov.Credit) as ImporteNeto,
-        
         '' as Project,
         mov.name as comments,
-        tag.name as EtiquetaAnalitica
-
+        tag.name as EtiquetaAnalitica,
+        icp.name as move_name
       FROM "public".account_move AS enc
       INNER JOIN "public".account_move_line as mov on enc.id = mov.move_id
       INNER JOIN "public".res_users AS usr ON enc.create_uid = usr.id
@@ -1552,13 +1053,13 @@ class APIREST(http.Controller):
       LEFT JOIN "public".account_analytic_account as ana on mov.analytic_account_id = ana.id
       left join public.mortuary ON enc.mortuary_id = mortuary.id
       LEFT JOIN account_analytic_tag_account_move_line_rel idmov ON account_move_line_id = mov.id
-      left join account_analytic_tag tag ON idmov.account_analytic_tag_id = tag.id 
+      left join account_analytic_tag tag ON idmov.account_analytic_tag_id = tag.id
+      left join invoice_create_person icp ON enc.create_person_id = icp.id 
         WHERE enc.state = 'posted'
         AND COALESCE(enc.ref, '') NOT IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND NOT (enc.type = 'out_invoice' AND enc.contract_id IS NOT NULL)
         AND enc.company_id = {}
     UNION
-
     SELECT mortuary.name as Cliente,
         'Occidente' as Grupo,     
         'Mérida' as Plaza,
@@ -1585,8 +1086,6 @@ class APIREST(http.Controller):
            ELSE enc.ref
         END as ConceptoPoliza,
         ROW_NUMBER() OVER () as NumMovto,
-
-
         CASE
           WHEN substring(ana.name, 1,1) = '1' THEN 'PABS'
           WHEN substring(ana.name, 1,1) = '2' THEN 'Funeraria'
@@ -1595,7 +1094,6 @@ class APIREST(http.Controller):
           WHEN substring(ana.name, 1,2) = '99' THEN 'Personales'
           ELSE substring(ana.name, 1,2)
         END as AreaDeNegocio,
-
         CASE
           WHEN substring(ana.name, 1,4) = '1001' THEN 'Administración'
           WHEN substring(ana.name, 1,4) = '1002' THEN 'Cobranza'
@@ -1607,8 +1105,6 @@ class APIREST(http.Controller):
         END as CentroCosto,
         substring(ana.name, 6, 99) as SegmentoNegocio,
         substring(ana.name, 1,4) as CodSegNegocio,
-
-
         substring(acc.code,1,3) as CodCtaMayor,
         CASE
           WHEN substring(acc.name,1,3) = '601' THEN CASE
@@ -1621,22 +1117,18 @@ class APIREST(http.Controller):
                               END
           ELSE acc.name
         END as NomCtaMayor,
-
         substring(acc.code,5,2) as CodSubCta,
         CASE 
           WHEN substring(acc.name,1,3) = '601' THEN acc.name
           ELSE ''
         END as NomSubCta,
-
         '' as CodSubSubCta,
         '' as NomSubSubCta,
-
         '' as CodSubSubSubCta,
         CASE
           WHEN substring(acc.name,1,3) = '601' THEN acc.name
           ELSE ''
         END as NomSubSubSubCta,
-
         substring(acc.code,1,3) as CodCtaMayorX,
         CASE
           WHEN substring(acc.code,1,3) = '004' THEN 'INGRESOS'
@@ -1656,7 +1148,6 @@ class APIREST(http.Controller):
           WHEN substring(acc.code,1,4) = '1012' THEN 'Cajas en Tesorería'
           ELSE substring(acc.code,1,3)
         END as NomCtaMayorX,
-
         substring(acc.code,5,2) as CodSubCtaX,
         CASE
           WHEN substring(acc.code,5,2) = '01' THEN 'Caja'
@@ -1666,29 +1157,23 @@ class APIREST(http.Controller):
           WHEN substring(acc.code,5,2) = '10' THEN 'Cooperativa de desarrollo'
           ELSE substring(acc.code,5,2)
         END as NomSubCtaX,
-
         substring(acc.code,8,99) as CodSubSubCtaX,
         acc.name as NomSubSubCtaX,
-
         '' as CodSubSubSubCtaX,
         '' as NomSubSubSubCtaX,
-
         acc.code as CodigoCuenta,
         acc.name as NombreCuenta,
         acc.name as NombreCuentaSAP,
-
-
         enc.ref as Referencia,
         enc.ref AS ConceptoMovimiento,
         aaa.name AS CuentaAnalitica,
         SUM(mov.Debit) AS Cargos,
         SUM(mov.Credit) AS Abonos,
         SUM(mov.Debit) - SUM(mov.Credit) as ImporteNeto,
-        
         '' as Project,
         '' as comments,
-        tag.name as EtiquetaAnalitica
-
+        tag.name as EtiquetaAnalitica,
+        icp.name as move_name
       FROM "public".account_move AS enc
       INNER JOIN "public".account_move_line as mov on enc.id = mov.move_id
       INNER JOIN "public".res_users AS usr ON enc.create_uid = usr.id
@@ -1700,12 +1185,12 @@ class APIREST(http.Controller):
       left join public.mortuary ON enc.mortuary_id = mortuary.id
       LEFT JOIN account_analytic_tag_account_move_line_rel idmov ON account_move_line_id = mov.id
       left join account_analytic_tag tag ON idmov.account_analytic_tag_id = tag.id 
+      left join invoice_create_person icp ON enc.create_person_id = icp.id
         WHERE enc.state = 'posted'
         AND COALESCE(enc.ref, '') IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND enc.company_id = {}
-          GROUP BY enc.date, jou.name, enc.type , enc.ref, ana.name, acc.code, acc.name, aaa.name, mortuary.name, tag.name
+          GROUP BY enc.date, jou.name, enc.type , enc.ref, ana.name, acc.code, acc.name, aaa.name, mortuary.name, tag.name, icp.name
     UNION
-
     SELECT mortuary.name as Cliente,
         'Occidente' as Grupo,     
         'Mérida' as Plaza,
@@ -1729,8 +1214,6 @@ class APIREST(http.Controller):
         0 as Folio,
         'Factura de contratos' as ConceptoPoliza,
         ROW_NUMBER() OVER () as NumMovto,
-
-
         CASE
           WHEN substring(ana.name, 1,1) = '1' THEN 'PABS'
           WHEN substring(ana.name, 1,1) = '2' THEN 'Funeraria'
@@ -1739,7 +1222,6 @@ class APIREST(http.Controller):
           WHEN substring(ana.name, 1,2) = '99' THEN 'Personales'
           ELSE substring(ana.name, 1,2)
         END as AreaDeNegocio,
-
         CASE
           WHEN substring(ana.name, 1,4) = '1001' THEN 'Administración'
           WHEN substring(ana.name, 1,4) = '1002' THEN 'Cobranza'
@@ -1751,8 +1233,6 @@ class APIREST(http.Controller):
         END as CentroCosto,
         substring(ana.name, 6, 99) as SegmentoNegocio,
         substring(ana.name, 1,4) as CodSegNegocio,
-
-
         substring(acc.code,1,3) as CodCtaMayor,
         CASE
           WHEN substring(acc.name,1,3) = '601' THEN CASE
@@ -1765,24 +1245,18 @@ class APIREST(http.Controller):
                               END
           ELSE acc.name
         END as NomCtaMayor,
-
         substring(acc.code,5,2) as CodSubCta,
         CASE 
           WHEN substring(acc.name,1,3) = '601' THEN acc.name
           ELSE ''
         END as NomSubCta,
-
-
         '' as CodSubSubCta,
         '' as NomSubSubCta,
-
-
         '' as CodSubSubSubCta,
         CASE
           WHEN substring(acc.name,1,3) = '601' THEN acc.name
           ELSE ''
         END as NomSubSubSubCta,
-
         substring(acc.code,1,3) as CodCtaMayorX,
         CASE
           WHEN substring(acc.code,1,3) = '004' THEN 'INGRESOS'
@@ -1802,7 +1276,6 @@ class APIREST(http.Controller):
           WHEN substring(acc.code,1,4) = '1012' THEN 'Cajas en Tesorería'
           ELSE substring(acc.code,1,3)
         END as NomCtaMayorX,
-
         substring(acc.code,5,2) as CodSubCtaX,
         CASE
           WHEN substring(acc.code,5,2) = '01' THEN 'Caja'
@@ -1812,29 +1285,23 @@ class APIREST(http.Controller):
           WHEN substring(acc.code,5,2) = '10' THEN 'Cooperativa de desarrollo'
           ELSE substring(acc.code,5,2)
         END as NomSubCtaX,
-
         substring(acc.code,8,99) as CodSubSubCtaX,
         acc.name as NomSubSubCtaX,
-
         '' as CodSubSubSubCtaX,
         '' as NomSubSubSubCtaX,
-
         acc.code as CodigoCuenta,
         acc.name as NombreCuenta,
         acc.name as NombreCuentaSAP,
-
-
         'Factura de contratos' as Referencia,
         'Factura de contratos' AS ConceptoMovimiento,
         aaa.name AS CuentaAnalitica,
         SUM(mov.Debit) AS Cargos,
         SUM(mov.Credit) AS Abonos,
         SUM(mov.Debit) - SUM(mov.Credit) as ImporteNeto,
-
         '' as Project,
         '' as comments,
-        tag.name as EtiquetaAnalitica
-
+        tag.name as EtiquetaAnalitica,
+        icp.name as move_name
       FROM "public".account_move AS enc
       INNER JOIN "public".account_move_line as mov on enc.id = mov.move_id
       INNER JOIN "public".res_users AS usr ON enc.create_uid = usr.id
@@ -1846,12 +1313,13 @@ class APIREST(http.Controller):
       left join public.mortuary ON enc.mortuary_id = mortuary.id
       LEFT JOIN account_analytic_tag_account_move_line_rel idmov ON account_move_line_id = mov.id
       left join account_analytic_tag tag ON idmov.account_analytic_tag_id = tag.id 
+      left join invoice_create_person icp ON enc.create_person_id = icp.id
         WHERE enc.state = 'posted'
         AND COALESCE(enc.ref, '') NOT IN ('Inversión inicial', 'Excedente Inversión Inicial', 'Bono por inversión inicial', 'Sync Ecobro')
         AND enc.type = 'out_invoice'
         AND enc.contract_id IS NOT NULL
         AND enc.company_id = {}
-          GROUP BY enc.date, jou.name, enc.type , ana.name, acc.code, acc.name, aaa.name, mortuary.name, tag.name
+          GROUP BY enc.date, jou.name, enc.type , ana.name, acc.code, acc.name, aaa.name, mortuary.name, tag.name, icp.name
     ) as financieros;
     """.format(company_id,company_id,company_id)
     try:
