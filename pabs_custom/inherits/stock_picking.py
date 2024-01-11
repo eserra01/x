@@ -189,7 +189,11 @@ class StockPicking(models.Model):
       # Si es una recepción en Oficina
       if self.type_transfer == 'as-ov':
         # Se itera sobre cada línea (solicitud)
-        for line in picking.move_ids_without_package:
+        for line in picking.move_ids_without_package:           
+          # Se valida la forma de pago 
+          if not line.forma_pago:
+              raise ValidationError("Especifique una forma de pago.")
+          
           # Si el origen de la solicitud no está en: cancelada, sobrantes o extravío
           if line.origen_solicitud not in ['cancelada','sobrantes','extravio']:
             # Se busca el lote

@@ -67,7 +67,7 @@
         <field name="toma_comision"
           attrs="{'column_invisible': ['|', ('parent.type_transfer','!=','as-ov'), ('parent.aplica_iva','=',True)]}" widget="monetary"/>
         <field name="forma_pago"
-          attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')], 'required':[('parent.type_transfer','=','as-ov')]}"/>
+          attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')]}"/>
         <field name="origen_solicitud"
           attrs="{'column_invisible': [('parent.type_transfer','!=','as-ov')], 'required': [('parent.type_transfer','=','as-ov')]}"/>
 
