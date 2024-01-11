@@ -1293,6 +1293,17 @@ class PABSContracts(models.Model):
         product_id = previous.name_service
         account_id = product_id.product_tmpl_id.property_account_income_id or product_id.product_tmpl_id.categ_id.property_account_income_categ_id
 
+        if not account_id:
+          category = self.env['product_category'].search([
+            ('company_id', '=', previous.company_id.id),
+            ('name', '=', 'PLANES DE PREVISION')
+          ])
+
+          if not category.property_account_income_categ_id:
+            raise ValidationError("No se encontró la cuenta de la linea de crédito de la factura: 271.01.001 Planes a previsión por realizar")
+          
+          account_id = category.property_account_income_categ_id
+
         factor_iva = 0
         # FISCAL
         if previous.company_id.apply_taxes:
