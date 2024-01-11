@@ -582,8 +582,9 @@ class PABSElectronicContracts(models.TransientModel):
 
         if not cuenta_a_cobrar:
             raise ValidationError("No se encontró la cuenta {} - Afiliaciones plan previsión electronicos".format(CUENTA_AFILIACIONES))
-
-        partner.write({'property_account_receivable_id': cuenta_a_cobrar.id})
+        
+        if partner.property_account_receivable_id.id != cuenta_a_cobrar.id:
+            partner.write({'property_account_receivable_id': cuenta_a_cobrar.id})
 
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 
@@ -1165,6 +1166,8 @@ class PABSElectronicContracts(models.TransientModel):
                         continue
                 
                 contrato = contrato_obj.browse(corte.id_contrato.id)
+
+                self.ActualizarCuentaContacto(contrato.partner_id)
 
                 ### Obtener tiempo local ###
                 local = pytz.timezone("Mexico/General")
