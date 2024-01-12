@@ -402,10 +402,10 @@ class PABSElectronicContracts(models.TransientModel):
                 
                 # 6. Esquema de pago
                 esquemas = self.env['pabs.payment.scheme'].search([])
-                esquema_pago = esquemas.filter(lambda x: x.name == "COMISION")
+                esquema_pago = esquemas.filtered(lambda x: x.name == "COMISION")
 
                 if sol.get('esquema_pago'):
-                    esquema_pago = esquemas.filter(lambda x: x.name == sol['esquema_pago'])
+                    esquema_pago = esquemas.filtered(lambda x: x.name == sol['esquema_pago'])
 
                 if not esquema_pago:
                     raise ValidationError("No se encontró el esquema de pago")
