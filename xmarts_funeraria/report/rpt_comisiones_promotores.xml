@@ -5,13 +5,13 @@
         <t t-call="web.html_container">
         <t t-call="web.basic_layout">
             <div class="page">
-                                <!-- ENCABEZADO -->
+                <!-- ENCABEZADO -->
                 <table width="100%" cellspacing="0" cellpadding="0">
                     <thead>
                         <th width="20%" rowspan="3" aling="top">
                                 <img src="xmarts_funeraria/static/description/image.png" style="width:100%; display: block; margin-left: auto; margin-right: auto;" height="auto"/>
                         </th>
-                        <th width="60%" class="text-center" aling="top" colspan="5">
+                        <th width="60%" style="text-align: center;" aling="top" colspan="5">
                             <h4><strong>
                                 PABS - Programa de Apoyo De Beneficio Social <br/>
                                 DETALLE DE EGRESOS

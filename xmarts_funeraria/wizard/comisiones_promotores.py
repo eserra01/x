@@ -174,7 +174,8 @@ class ReportComisionesPromotores(models.AbstractModel):
                                 'cliente': pago.payment_id.contract.full_name,
                                 'importe': pago.payment_id.amount,
                                 'comision_cobrador': pago.commission_paid - pago.actual_commission_paid,
-                                'comision_asistente': pago.actual_commission_paid
+                                'comision_asistente': pago.actual_commission_paid,
+                                'cargo': pago.job_id.name[0:6]
                             })
 
                             subtotal_asistente_ninguno = subtotal_asistente_ninguno + pago.actual_commission_paid
