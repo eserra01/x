@@ -5,29 +5,11 @@
         <t t-call="web.html_container">
         <t t-call="web.basic_layout">
             <div class="page">
-                <style type="text/css">
-                    .border_btn_abj {border-bottom: 1px solid black;}
-
-                    .dato_bold{
-                        text-align: center; 
-                        font-weight: bold;
-                    }
-
-                    .dato_centrado{
-                        text-align: center
-                    }
-
-                    <!-- table, th, td {
-                        border: 1px solid black;
-                    } -->
-                </style>
-
-                <!-- ENCABEZADO -->
+                                <!-- ENCABEZADO -->
                 <table width="100%" cellspacing="0" cellpadding="0">
                     <thead>
                         <th width="20%" rowspan="3" aling="top">
-                                <img src="xmarts_funeraria/static/description/image.png" 
-                                    style="width:100%; display: block; margin-left: auto; margin-right: auto;" height="auto"/>
+                                <img src="xmarts_funeraria/static/description/image.png" style="width:100%; display: block; margin-left: auto; margin-right: auto;" height="auto"/>
                         </th>
                         <th width="60%" class="text-center" aling="top" colspan="5">
                             <h4><strong>
@@ -36,11 +18,11 @@
                             </strong></h4>
                         </th>
                         <tr>
-                            <th width="7%" height="70px"></th>
-                            <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>PERIODO DE: <div t-esc="fecha_inicio"></div></strong></th>
-                            <th width="5%" height="70px"></th>
-                            <th width="20%" height="70px" class="border_btn_abj text-center" style="vertical-align:bottom;"><strong>HASTA: <div t-esc="fecha_final"></div></strong></th>
-                            <th width="18%" height="70px"></th>
+                            <th width="7%" height="70px"/>
+                            <th width="20%" height="70px" style="vertical-align:bottom; border-bottom: 1px solid black; text-align: center;"><strong>PERIODO DE: <div t-esc="fecha_inicio"/></strong></th>
+                            <th width="5%" height="70px"/>
+                            <th width="20%" height="70px" style="vertical-align:bottom; border-bottom: 1px solid black; text-align: center;"><strong>HASTA: <div t-esc="fecha_final"/></strong></th>
+                            <th width="18%" height="70px"/>
                         </tr>
                     </thead>
                 </table>
@@ -50,21 +32,21 @@
                 <table width="100%">
                     <thead>
                         <tr>
-                            <th style="width: 10%; border: none;"  class="dato_bold">Fecha<br/>Recibo</th>
-                            <th style="width: 10%; border: none;"  class="dato_bold">Fecha<br/>Oficina</th>
-                            <th style="width: 10%; border: none;"  class="dato_bold">Contrato</th>
-                            <th style="width: 10%; border: none;"  class="dato_bold">Recibo</th>
-                            <th style="width: 24%; border: none;" class="dato_bold">Cliente</th>
-                            <th style="width: 12%; border: none;" class="dato_bold">Importe</th>
-                            <th style="width: 12%; border: none;" class="dato_bold">Comisión<br/>Cobrador</th>
-                            <th style="width: 12%; border: none;" class="dato_bold">Comisión</th>
+                            <th style="width: 10%; border: none; text-align: center; font-weight: bold;">Fecha<br/>Recibo</th>
+                            <th style="width: 10%; border: none; text-align: center; font-weight: bold;">Fecha<br/>Oficina</th>
+                            <th style="width: 9%; border: none; text-align: center; font-weight: bold;">Contrato</th>
+                            <th style="width: 8%; border: none; text-align: center; font-weight: bold;">Recibo</th>
+                            <th style="width: 8%; border: none; text-align: center; font-weight: bold;">Cargo</th>
+                            <th style="width: 26%; border: none; text-align: center; font-weight: bold;">Cliente</th>
+                            <th style="width: 10%; border: none; text-align: center; font-weight: bold;">Importe</th>
+                            <th style="width: 9%; border: none; text-align: center; font-weight: bold;">Comisión<br/>Cobrador</th>
+                            <th style="width: 9%; border: none; text-align: center; font-weight: bold;">Comisión</th>
                         </tr>
                     </thead>
-
                     <tbody>
                         <!-- OFICINAS -->
                         <t t-foreach="oficinas" t-as="oficina">
-                            <td colspan="8"><center><h2 t-esc="oficina.get('nombre_oficina')"></h2></center></td>
+                            <td colspan="9"><center><h2 t-esc="oficina.get('nombre_oficina')"/></center></td>
 
                             <!-- CODIGO -->
                             <t t-foreach="oficina.get('codigos')" t-as="codigo">
@@ -72,7 +54,7 @@
                                 <!-- PLAN - ASISTENTE -->
                                 <t t-foreach="codigo.get('planes')" t-as="plan">
                                     <tr>
-                                        <td colspan="8" style="border-bottom: 1px solid black; font-weight: bold;">Promotor: <span t-esc="plan.get('asistente_plan')" /></td>
+                                        <td colspan="9" style="border-bottom: 1px solid black; font-weight: bold;">Promotor: <span t-esc="plan.get('asistente_plan')"/></td>
                                     </tr>
 
                                     <!-- <tr><td colspan="8"><hr style="border: 1px solid black;"/></td></tr> -->
@@ -83,51 +65,52 @@
                                         <!-- PAGOS -->
                                         <t t-foreach="cobrador.get('pagos')" t-as="pago">
                                             <tr>
-                                                <td class="dato_centrado"><div t-esc="pago.get('fecha_recibo')"></div></td>
-                                                <td class="dato_centrado"><div t-esc="pago.get('fecha_oficina')"></div></td>
-                                                <td class="dato_centrado"><div t-esc="pago.get('contrato')"></div></td>
-                                                <td class="dato_centrado"><div t-esc="pago.get('recibo')"></div></td>
+                                                <td style="text-align: center;"><div t-esc="pago.get('fecha_recibo')"/></td>
+                                                <td style="text-align: center;"><div t-esc="pago.get('fecha_oficina')"/></td>
+                                                <td style="text-align: center;"><div t-esc="pago.get('contrato')"/></td>
+                                                <td style="text-align: center;"><div t-esc="pago.get('recibo')"/></td>
+                                                <td style="text-align: center;"><div t-esc="pago.get('cargo')"/></td>
                                                 <td><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 8cm;" 
                                                         t-esc="pago.get('cliente')"></div></td>
-                                                <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('importe'))"></span></td>
-                                                <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_cobrador'))"></span></td>
-                                                <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_asistente'))"></span></td>
+                                                <td style="text-align: center;">$<span t-esc="'{0:,.2f}'.format(pago.get('importe'))"/></td>
+                                                <td style="text-align: center;">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_cobrador'))"/></td>
+                                                <td style="text-align: center;">$<span t-esc="'{0:,.2f}'.format(pago.get('comision_asistente'))"/></td>
                                             </tr>
                                         </t>
                                         <!-- FIN PAGOS -->
 
                                         <!-- subtotales por cobrador -->
                                         <tr>
-                                            <td></td>
+                                            <td/>
                                             <td colspan="2" style="font-weight: bold;">Comisión cobrador:</td>
-                                            <td colspan="3" style="font-weight: bold; "><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%" 
+                                            <td colspan="4" style="font-weight: bold; "><div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%" 
                                                     t-esc="cobrador.get('cobrador')"></div></td>
-                                            <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(cobrador.get('subtotal_cobrador'))"></span></td>
-                                            <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(cobrador.get('subtotal_asistente'))"></span></td>
+                                            <td style="text-align: center; font-weight: bold;">$<span t-esc="'{0:,.2f}'.format(cobrador.get('subtotal_cobrador'))"/></td>
+                                            <td style="text-align: center; font-weight: bold;">$<span t-esc="'{0:,.2f}'.format(cobrador.get('subtotal_asistente'))"/></td>
                                         </tr>
                                     </t>
                                     <!-- FIN COBRADORES -->
 
                                     <!-- Subtotales por plan -->
                                     <tr>
-                                        <td colspan="6">&amp;nbsp;&amp;nbsp;</td>
-                                        <td class="dato_centrado">$<span t-esc="'{0:,.2f}'.format(plan.get('subtotal_plan_cobrador'))"></span></td>
-                                        <td class="dato_centrado" style="border-top-style: solid;">$<span t-esc="'{0:,.2f}'.format(plan.get('subtotal_plan_asistente'))"></span></td>
+                                        <td colspan="7">&amp;nbsp;&amp;nbsp;</td>
+                                        <td style="text-align: center;">$<span t-esc="'{0:,.2f}'.format(plan.get('subtotal_plan_cobrador'))"/></td>
+                                        <td style="border-top-style: solid; text-align: center;">$<span t-esc="'{0:,.2f}'.format(plan.get('subtotal_plan_asistente'))"/></td>
                                     </tr>
                                 </t>
                                 <!-- FIN PLANES -->
                                 
-                                <tr><td colspan="8">&amp;nbsp;&amp;nbsp;</td></tr>
+                                <tr><td colspan="9">&amp;nbsp;&amp;nbsp;</td></tr>
 
                                 <!-- total código -->
                                 <tr>
-                                    <td colspan="6"></td>
-                                    <td class="dato_bold">Total:</td>
-                                    <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(codigo.get('total_codigo'))"></span></td>
+                                    <td colspan="7"/>
+                                    <td style="text-align: center; font-weight: bold;">Total:</td>
+                                    <td style="text-align: center; font-weight: bold;">$<span t-esc="'{0:,.2f}'.format(codigo.get('total_codigo'))"/></td>
                                 </tr>
 
-                                <tr><td colspan="8"><hr style="border: 1px dashed black;"/></td></tr>
-                                <tr><td colspan="8">&amp;nbsp;&amp;nbsp;</td></tr>
+                                <tr><td colspan="9"><hr style="border: 1px dashed black;"/></td></tr>
+                                <tr><td colspan="9">&amp;nbsp;</td></tr>
                             </t>
                             <!-- FIN CODIGOS -->
                         </t>
@@ -135,18 +118,18 @@
 
                         <!-- TOTAL COMISIONES -->
                         <tr>
-                            <td colspan="6"></td>
-                            <td class="dato_bold" style="text-align: center">Total:</td>
-                            <td class="dato_bold">$<span t-esc="'{0:,.2f}'.format(total_asistentes)"></span></td>
+                            <td colspan="7"/>
+                            <td style="text-align: center;">Total:</td>
+                            <td style="text-align: center;">$<span t-esc="'{0:,.2f}'.format(total_asistentes)"/></td>
                         </tr>
 
                     </tbody>
-                </table><br/><br/><br/>
+                </table>
+                        <br/>
             </div>
         </t>
         </t>
     	</template>
-
   </data>
 
 	<record id="paperformat_comisiones_promotores" model="report.paperformat">

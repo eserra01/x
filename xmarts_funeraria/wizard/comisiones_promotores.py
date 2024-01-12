@@ -213,10 +213,11 @@ class ReportComisionesPromotores(models.AbstractModel):
                                     'fecha_oficina': fields.Date.to_string(pago.payment_id.payment_date),
                                     'contrato': pago.payment_id.contract.name,
                                     'recibo': pago.payment_id.ecobro_receipt,
-                                    'cliente': pago.payment_id.contract.full_name,
+                                    'cliente': pago.payment_id.contract.full_name[0:26],
                                     'importe': pago.payment_id.amount,
                                     'comision_cobrador': pago.commission_paid - pago.actual_commission_paid,
-                                    'comision_asistente': pago.actual_commission_paid
+                                    'comision_asistente': pago.actual_commission_paid,
+                                    'cargo': pago.job_id.name[0:6]
                                 })
 
                                 subtotal_asistente = subtotal_asistente + pago.actual_commission_paid
