@@ -399,6 +399,16 @@ class PABSElectronicContracts(models.TransientModel):
 
                 if id_colonia_cobro == 0:
                     raise ValidationError("No se pudo obtener la colonia de cobro")
+                
+                # 6. Esquema de pago
+                esquemas = self.env['pabs.payment.scheme'].search([])
+                esquema_pago = esquemas.filter(lambda x: x.name == "COMISION")
+
+                if sol.get('esquema_pago'):
+                    esquema_pago = esquemas.filter(lambda x: x.name == sol['esquema_pago'])
+
+                if not esquema_pago:
+                    raise ValidationError("No se encontró el esquema de pago")
 
                 ### Crear registros de los que depende el contrato ###
                 # 1. Crear solicitud. Primero se busca la oficina del empleado
@@ -447,7 +457,7 @@ class PABSElectronicContracts(models.TransientModel):
                     'type_view': 'precontract',
                     'captured': True,
                     'activation_code': sol['solicitud_codigoActivacion'],
-                    'payment_scheme_id': 2, # Constante: comision
+                    'payment_scheme_id': esquema_pago.id,
                     'name': pre_numero_contrato,
                     'sale_employee_id': employee.id,
                     'contract_status_item': 21, # Constante: activo
