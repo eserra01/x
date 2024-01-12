@@ -490,7 +490,7 @@ class PABSElectronicContracts(models.TransientModel):
                 }
 
                 ### Crear contrato con información básica ###
-                contrato = contract_obj.sudo().with_context(force_company=company_id).create(datos_afiliacion)
+                contrato = contract_obj.create(datos_afiliacion)
                 _logger.info("Se creó el precontrato con id: {}".format(contrato.id))
 
                 ### Actualizar cuenta por cobrar del contacto. No sabemos por qué al crear el contrato se actualiza a una cuenta distinta.
@@ -1166,6 +1166,8 @@ class PABSElectronicContracts(models.TransientModel):
                         continue
                 
                 contrato = contrato_obj.browse(corte.id_contrato.id)
+
+                self.ActualizarCuentaContacto(contrato.partner_id.id)
 
                 ### Obtener tiempo local ###
                 local = pytz.timezone("Mexico/General")
