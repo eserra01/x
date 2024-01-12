@@ -193,7 +193,9 @@ class StockPicking(models.Model):
           # Se valida la forma de pago 
           if not line.forma_pago:
               raise ValidationError("Especifique una forma de pago.")
-          
+          # Se valida el origen 
+          if not line.origen_solicitud:
+              raise ValidationError("Especifique el origen de la solicitud.")
           # Si el origen de la solicitud no está en: cancelada, sobrantes o extravío
           if line.origen_solicitud not in ['cancelada','sobrantes','extravio']:
             # Se busca el lote
