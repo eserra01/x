@@ -424,7 +424,7 @@ class PABSElectronicContracts(models.TransientModel):
                     raise ValidationError("No se pudo crear la solicitud")
 
                 # 2. Crear partner
-                partner_id = self.sudo().with_context(force_company=company_id).crear_contacto(pre_numero_contrato, company_id)
+                partner_id = self.crear_contacto(pre_numero_contrato, company_id)
 
                 if not partner_id:
                     raise ValidationError("No se pudo crear el partner")
@@ -1190,7 +1190,7 @@ class PABSElectronicContracts(models.TransientModel):
 
                 ### Complementar creación del contrato usando el método pabs_contract.create_contract() ###
                 _logger.info("Comienza metodo create_contract()")
-                contrato_obj.sudo().with_context(force_company=company_id).create_contract(vals={'lot_id' : contrato.lot_id.id})
+                contrato_obj.create_contract(vals={'lot_id' : contrato.lot_id.id})
                 _logger.info("Se creó el contrato {}: ".format(contrato.name))
 
                 ### Generar póliza de inversiones y excedentes ###
