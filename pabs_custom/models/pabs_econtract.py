@@ -424,7 +424,7 @@ class PABSElectronicContracts(models.TransientModel):
                     raise ValidationError("No se pudo crear la solicitud")
 
                 # 2. Crear partner
-                partner_id = self.crear_contacto(pre_numero_contrato, company_id)
+                partner_id = self.sudo().with_context(force_company=company_id).crear_contacto(pre_numero_contrato, company_id)
 
                 if not partner_id:
                     raise ValidationError("No se pudo crear el partner")
@@ -1166,8 +1166,6 @@ class PABSElectronicContracts(models.TransientModel):
                         continue
                 
                 contrato = contrato_obj.browse(corte.id_contrato.id)
-
-                self.ActualizarCuentaContacto(contrato.partner_id.id)
 
                 ### Obtener tiempo local ###
                 local = pytz.timezone("Mexico/General")
