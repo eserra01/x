@@ -189,15 +189,17 @@ class StockPicking(models.Model):
       # Si es una recepción en Oficina
       if self.type_transfer == 'as-ov':
         # Se itera sobre cada línea (solicitud)
-        for line in picking.move_ids_without_package:           
-          # Se valida la forma de pago 
-          if not line.forma_pago:
-              raise ValidationError("Especifique una forma de pago.")
-          # Se valida el origen 
-          if not line.origen_solicitud:
-              raise ValidationError("Especifique el origen de la solicitud.")
+        for line in picking.move_ids_without_package:
           # Si el origen de la solicitud no está en: cancelada, sobrantes o extravío
           if line.origen_solicitud not in ['cancelada','sobrantes','extravio']:
+
+            # Se valida la forma de pago 
+            if not line.forma_pago:
+                raise ValidationError("Especifique una forma de pago.")
+            # Se valida el origen 
+            if not line.origen_solicitud:
+                raise ValidationError("Especifique el origen de la solicitud.")
+            
             # Se busca el lote
             lot_id = self.env['stock.production.lot'].search([('name','=',line.series),('company_id','=',self.env.company.id)], limit=1) 
             #
