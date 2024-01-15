@@ -53,16 +53,28 @@ class ContractsElaboratedW1zard(models.TransientModel):
     else:
       titulo = "CORTE DE AFILIACIONES ELECTRÓNICAS"
 
-      closing_ids = self.env['pabs.econtract.move'].search([
+      cierres_digitales = self.env['pabs.econtract.move'].search([
         ('company_id', '=', self.env.company.id),
         ('fecha_hora_cierre', '>=', start_date),
         ('fecha_hora_cierre', '<=', end_date),
-        ('estatus', 'in', ('cerrado','confirmado') )
+        ('estatus', 'in', ('cerrado','confirmado')),
+        ('id_contrato.state', '=', 'contract'),
+        ('id_contrato.sale_type', '=', 'digital')
       ])
-      
+
+      cierres_reafiliaciones_digitales = self.env['pabs.econtract.move'].search([
+        ('company_id', '=', self.env.company.id),
+        ('id_contrato.invoice_date', '>=', self.date_contract),
+        ('id_contrato.invoice_date', '<=', self.date_end),
+        ('estatus', 'in', ('cerrado','confirmado')),
+        ('id_contrato.state', '=', 'contract'),
+        ('id_contrato.sale_type', '=', 'digital_reafiliation')
+      ])
+
+      closing_ids = cierres_digitales | cierres_reafiliaciones_digitales
+    
       ids = closing_ids.mapped('id_contrato').mapped('id')
       contract_ids = contract_obj.browse(ids).sorted(key=lambda r: r.name)
-      #contract_ids = contract_ids.filtered(lambda x: x.contract_status_item.status != "CANCELADO")
 
     if not contract_ids:
       raise ValidationError("No hay contratos")

@@ -1962,7 +1962,7 @@ class PABSContracts(models.Model):
               refund_id.with_context(investment_bond=True).action_post()
 
         _logger.info("Se creó la factura del contrato")
-        if previous.name == 'Nuevo Contrato' or previous.sale_type == 'digital_reaffiliation':
+        if previous.name == 'Nuevo Contrato' or previous.sale_type == 'digital_reafiliation':
           contract_name = pricelist_id.sequence_id._next()
           previous.name = contract_name
         else:

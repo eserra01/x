@@ -57,14 +57,29 @@ class PabsAccountMove(models.TransientModel):
             raise ValidationError("No está asignada una compañia")
 
         ### Buscar contratos de la oficina en el cierre que no tenga la póliza generada ###
-        lista_contratos = self.env['pabs.econtract.move'].search([
+        cierres_digitales = self.env['pabs.econtract.move'].search([
             ('company_id', '=', id_compania),
             ('fecha_hora_cierre', '>=', '{} 00:00:00'.format(self.fecha_inicio) ),
             ('fecha_hora_cierre', '<=', '{} 23:59:59'.format(self.fecha_fin) ),
             ('estatus', '=', 'cerrado'),
             ('id_poliza_caja_transito', '!=', False),
-            ('id_poliza_caja_electronicos', '=', False)
+            ('id_poliza_caja_electronicos', '=', False),
+            ('id_contrato.sale_type', '=', 'digital'),
+            ('id_contrato.state', '=', 'contract')
         ])
+
+        cierres_reafiliaciones_digitales = self.env['pabs.econtract.move'].search([
+            ('company_id', '=', id_compania),
+            ('id_contrato.invoice_date', '>=', self.fecha_inicio),
+            ('id_contrato.invoice_date', '<=', self.fecha_fin),
+            ('estatus', '=', 'cerrado'),
+            ('id_poliza_caja_transito', '!=', False),
+            ('id_poliza_caja_electronicos', '=', False),
+            ('id_contrato.sale_type', '=', 'digital_reafiliation'),
+            ('id_contrato.state', '=', 'contract')
+        ])
+
+        lista_contratos = cierres_digitales | cierres_reafiliaciones_digitales
 
         if not lista_contratos:
             self.cantidad_contratos = 0
