@@ -172,6 +172,7 @@
               <field name="invoice_date" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" required="True"/>
               <field name="employee_id" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" readonly="True"/>
               <field name="payment_scheme_id" options="{'no_open': True, 'no_create':True}" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" required="True"/>
+              <field name="sale_type" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('sale_type','=','physical')]}"/>
 
               <field name="trasnsfer_type" required="True" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" invisible="0"/>
               <field name="commission_rest_amount" attrs="{'invisible' : ['|',('lot_id','=',False),('trasnsfer_type','!=','commission_rest')], 'readonly' : [('state','=','contract')]}" />
@@ -364,6 +365,7 @@
               <field name="invoice_date" readonly="1"/>
               <field name="name_service" string="Nombre del plan" readonly="1"/>
               <field name="service_detail"/>
+              <field name="sale_type" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}"/>
             </group>
 
             <group string="Datos de cobranza">
@@ -576,6 +578,7 @@
               <field name="invoice_date" readonly="1"/>
               <field name="name_service" string="Nombre del plan" readonly="1" options="{'no_open': True,}"/>
               <field name="service_detail"/>
+              <field name="sale_type" readonly="1"/>
             </group>
 
             <group string="Datos de cobranza">
@@ -752,6 +755,7 @@
               <field name="invoice_date" readonly="1"/>
               <field name="name_service" string="Nombre del plan" readonly="1" options="{'no_open': True,}"/>
               <field name="service_detail" readonly="1"/>
+              <field name="sale_type" readonly="1"/>
             </group>
 
             <group string="Datos de cobranza">
@@ -967,6 +971,7 @@
               <field name="invoice_date" readonly="1"/>
               <field name="name_service" string="Nombre del plan" readonly="1" options="{'no_open': True,}"/>
               <field name="service_detail" readonly="1"/>
+              <field name="sale_type" readonly="1"/>
             </group>
 
             <group string="Datos de cobranza">
@@ -1169,7 +1174,8 @@
               
               <field name="invoice_date" readonly="1"/>
               <field name="name_service" string="Nombre del plan" readonly="1" options="{'no_open': True,}"/>
-              <field name="service_detail" readonly="1"/>              
+              <field name="service_detail" readonly="1"/>
+              <field name="sale_type" readonly="1"/>              
             </group>
 
             <group string="Datos de cobranza">
@@ -1372,6 +1378,7 @@
               <field name="invoice_date" readonly="1"/>
               <field name="name_service" string="Nombre del plan" readonly="1" options="{'no_open': True,}"/>
               <field name="service_detail" readonly="1"/>
+              <field name="sale_type" readonly="1"/>
             </group>
 
             <group string="Datos de cobranza">
@@ -1575,6 +1582,7 @@
               <field name="invoice_date" readonly="1"/>
               <field name="name_service" string="Nombre del plan" readonly="1" options="{'no_open': True,}"/>
               <field name="service_detail" readonly="1"/>
+              <field name="sale_type" readonly="1"/>
             </group>
 
             <group string="Datos de cobranza">
@@ -1789,6 +1797,7 @@
               <field name="invoice_date" readonly="1"/>
               <field name="name_service" string="Nombre del plan" readonly="1" options="{'no_open': True,}"/>
               <field name="service_detail" readonly="1"/>
+              <field name="sale_type" readonly="1"/>
             </group>
 
             <group string="Datos de cobranza">
