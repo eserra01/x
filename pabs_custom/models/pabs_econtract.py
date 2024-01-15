@@ -531,6 +531,7 @@ class PABSElectronicContracts(models.TransientModel):
 
                 ### Crear contrato con información básica ###
                 contrato = contract_obj.create(datos_afiliacion)
+                contrato.write({'state': 'precontract', 'type_view': 'precontract'})
                 _logger.info("Se creó el precontrato con id: {}".format(contrato.id))
 
                 ### Actualizar cuenta por cobrar del contacto. No sabemos por qué al crear el contrato se actualiza a una cuenta distinta.
