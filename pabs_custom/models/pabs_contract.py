@@ -140,6 +140,8 @@ class PABSContracts(models.Model):
 
   debt_collector = fields.Many2one(tracking=True, comodel_name="hr.employee", string='Nombre del cobrador')
   payment_amount = fields.Float(tracking=True, string= 'Monto de pago')
+  payment_amount2text = fields.Char(string="Monto de pago", compute='_get_payment_amount2text')
+  initial_investment2text = fields.Char(string="Inversión inicial", compute='_get_initial_investment2text')
   initial_investment_in_words = fields.Char(string="Inversion inicial en letras", compute="_amount_to_words")
   way_to_payment = fields.Selection(tracking=True, selection=WAY_TO_PAY,string = 'Forma de pago')
   date_first_payment = fields.Date(tracking=True, string='Fecha primer abono')
