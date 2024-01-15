@@ -7,7 +7,8 @@ from datetime import datetime, timedelta, date
 ESTATUS = [
     ('sin_cierre','Sin cierre'),    #Se acaba de generar el contrato y no tiene cierre
     ('cerrado', 'Con cierre'),      #El contrato ya tiene un cierre. Ya se muestra en el reporte
-    ('confirmado', 'Confirmado')    #Se confirma que ya se tiene el dinero del contrato
+    ('confirmado', 'Confirmado'),   #Se confirma que ya se tiene el dinero del contrato
+    ('cancel', 'Cancelado')         #Venta cancelada
 ]
 
 class PabsAccountMove(models.Model):

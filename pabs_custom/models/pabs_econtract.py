@@ -208,6 +208,14 @@ class PABSElectronicContracts(models.TransientModel):
                         else:
                             self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, contrato.name[0:3], contrato.name[3:], 1, msj)
                     else:
+                        # En reafiliaciones no se permite crear contrato
+                        if contrato.sale_type == "digital_reafiliation":
+                            msj = "No está permitido crear el contrato de una reafiliacion"
+                            if solicitud:
+                                return {"resultado": 0, "msj": "{} - {}".format(msj, pre_numero_contrato)}
+                            else:
+                                self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, sol['serie'], sol['contrato'], 0, msj)
+
                         # Se busca la tarifa porque esta ligada a la secuencia
                         tarifa = self.env['product.pricelist.item'].search([('product_id', '=', contrato.name_service.id)])
                         if not tarifa:
@@ -409,6 +417,18 @@ class PABSElectronicContracts(models.TransientModel):
 
                 if not esquema_pago:
                     raise ValidationError("No se encontró el esquema de pago")
+                
+                # 7. Es reafiliacion
+                sale_type = "digital"
+                if sol.get('isReafiliacion') and sol['isReafiliacion'] == "1":
+                    sale_type = "digital_reafiliation"
+
+                # 8. Es homónimo
+                observaciones = ""
+                if sol.get('observaciones'):
+                    observaciones = sol['observaciones']
+                    if sol.get('isHomonimo') and sol['isHomonimo'] == "1":
+                        observaciones = "HOMONIMO. {}".format(observaciones)
 
                 ### Crear registros de los que depende el contrato ###
                 # 1. Crear solicitud. Primero se busca la oficina del empleado
@@ -451,12 +471,14 @@ class PABSElectronicContracts(models.TransientModel):
                     'partner_id': partner_id,
                     'lot_id': lot_id,
 
+                    'sale_type': sale_type,
                     'invoice_date': fecha_contrato,
                     'qr_string': sol['qr_string'],
                     'state': 'precontract',
                     'type_view': 'precontract',
                     'captured': True,
                     'activation_code': sol['solicitud_codigoActivacion'],
+                    'comments': observaciones,
                     'payment_scheme_id': esquema_pago.id,
                     'name': pre_numero_contrato,
                     'sale_employee_id': employee.id,
@@ -498,6 +520,14 @@ class PABSElectronicContracts(models.TransientModel):
                     'longitude': sol['solicitud_longitud'],
                     'client_email': sol['afiliado_email']
                 }
+
+                if sol.get('url_ine') or sol.get('url_comprobante_domicilio') or sol.get('url_fachada_domicilio' or sol.get('url_contrato_reafiliacion')):
+                    datos_afiliacion.update({
+                        'url_ine': sol['url_ine'],
+                        'url_comprobante_domicilio': sol['url_comprobante_domicilio'],
+                        'url_fachada_domicilio': sol['url_fachada_domicilio'],
+                        'url_contrato_reafiliacion': sol['url_contrato_reafiliacion']
+                    })
 
                 ### Crear contrato con información básica ###
                 contrato = contract_obj.create(datos_afiliacion)
@@ -1130,6 +1160,11 @@ class PABSElectronicContracts(models.TransientModel):
             try:
                 _logger.info("{} de {}. {}".format(index + 1, cantidad_cortes, cor['contrato']))
 
+                ### Calcular tiempo UTC
+                local = pytz.timezone("Mexico/General")
+                local_dt = local.localize(fields.Datetime.to_datetime(cor['fecha_cierre_periodo']), is_dst=None)
+                fecha_hora_cierre_utc = local_dt.astimezone(pytz.utc)
+
                 ### Buscar registro de corte
                 corte = corte_obj.search([
                     ('company_id', '=', company_id),
@@ -1174,59 +1209,86 @@ class PABSElectronicContracts(models.TransientModel):
                         _logger.warning(msj)
                         self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
                         continue
+
+                if corte.estatus == 'cancel':
+                    msj = "El registro de corte ya fue previamente cancelado"
+
+                    if solicitud:
+                        return {"error": msj}
+                    else:
+                        _logger.warning(msj)
+                        self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
+                        continue
                 
                 contrato = contrato_obj.browse(corte.id_contrato.id)
 
-                ### Obtener tiempo local ###
-                local = pytz.timezone("Mexico/General")
-                local_dt = local.localize(fields.Datetime.to_datetime(cor['fecha_cierre_periodo']), is_dst=None)
-                fecha_hora_cierre_utc = local_dt.astimezone(pytz.utc)
+                ### Cuando es una afiliacion cancelada
+                if cor.get('estatus') and cor['estatus'] == '7':
+                    if contrato.state == 'contract':
+                        msj = "No se puede cancelar porque se encuentra en estatus contrato"
 
-                ### Actualizar fecha de contrato (Si se fijó una fecha para los contratos tomar esa fecha) ###
-                actualizar = {}
+                        if solicitud:
+                            return {"error": msj}
+                        else:
+                            _logger.warning(msj)
+                            self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
+                            continue
+                    else:
+                        contrato.write({'state': 'cancel'})
 
-                fecha_creacion = fields.Date.to_date(cor['fecha_cierre_periodo'])
+                        corte.write({
+                            'fecha_hora_cierre': fecha_hora_cierre_utc.strftime("%Y-%m-%d %H:%M:%S"),
+                            'estatus': 'cancel',
+                            'periodo': cor['periodo']
+                        })
 
-                if actually_day and last_day:
-                    fecha_creacion = last_day
-
-                actualizar.update({'invoice_date': fecha_creacion, 'date_of_last_status': fields.Datetime.now()})
-
-                ### Si es precontrato actualizar nombre a "Nuevo contrato" (para que genere el número de contrato siguiente en el metodo create_contract) ###
-                if contrato.state in ('actived', 'precontract'):
-                    actualizar.update({'name': 'Nuevo Contrato', 'state': 'contract'})
-
-                contrato.write(actualizar)
-
-                ### Complementar creación del contrato usando el método pabs_contract.create_contract() ###
-                _logger.info("Comienza metodo create_contract()")
-                contrato_obj.create_contract(vals={'lot_id' : contrato.lot_id.id})
-                _logger.info("Se creó el contrato {}: ".format(contrato.name))
-
-                ### Generar póliza de inversiones y excedentes ###
-                id_poliza = self.CrearPoliza(company_id, contrato.invoice_date, contrato.name, contrato.stationery, contrato.initial_investment - contrato.stationery, contrato.sale_employee_id.warehouse_id.analytic_account_id.id, info_de_cuentas)
-                
-                ### Actualizar registro de cierre en odoo ###
-                local = pytz.timezone("Mexico/General")
-
-                local_dt = local.localize(fields.Datetime.to_datetime(cor['fecha_cierre_periodo']), is_dst=None)
-
-                fecha_hora_cierre_utc = local_dt.astimezone(pytz.utc)
-
-                corte.write({
-                    'fecha_hora_cierre': fecha_hora_cierre_utc.strftime("%Y-%m-%d %H:%M:%S"),
-                    'estatus': 'cerrado',
-                    'periodo': cor['periodo'],
-                    'id_poliza_caja_transito': id_poliza
-                })
-
-                _logger.info("Actualizado en odoo")
-
-                ### Actualizar en eCobro ###
-                if solicitud:
-                    return {"correcto": contrato.name}
+                        if solicitud:
+                            return {"correcto": contrato.name}
+                        else:
+                            _logger.warning(msj)
+                            self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
+                            continue
+                ### Cuando es una afiliacion activa
                 else:
-                    self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
+                    ### Si es reafiliacion no asignar número de contrato ni estatus
+                    if contrato.sale_type == 'digital':
+                        actualizar = {}
+                        fecha_creacion = fields.Date.to_date(cor['fecha_cierre_periodo'])
+
+                        if actually_day and last_day:
+                            fecha_creacion = last_day
+
+                        actualizar.update({'invoice_date': fecha_creacion, 'date_of_last_status': fields.Datetime.now()})
+
+                        ### Si es precontrato actualizar nombre a "Nuevo contrato" (para que genere el número de contrato siguiente en el metodo create_contract) ###
+                        if contrato.state in ('actived', 'precontract'):
+                            actualizar.update({'name': 'Nuevo Contrato', 'state': 'contract'})
+
+                        contrato.write(actualizar)
+
+                        ### Complementar creación del contrato usando el método pabs_contract.create_contract() ###
+                        _logger.info("Comienza metodo create_contract()")
+                        contrato_obj.create_contract(vals={'lot_id' : contrato.lot_id.id})
+                        _logger.info("Se creó el contrato {}: ".format(contrato.name))
+
+                        ### DESCONTINUADO: Generar póliza de inversiones y excedentes ###
+                        # (Se genera en el método create_contract)
+                        #id_poliza = self.CrearPoliza(company_id, contrato.invoice_date, contrato.name, contrato.stationery, contrato.initial_investment - contrato.stationery, contrato.sale_employee_id.warehouse_id.analytic_account_id.id, info_de_cuentas)
+                        
+                    ### Actualizar registro de cierre ###
+                    corte.write({
+                        'fecha_hora_cierre': fecha_hora_cierre_utc.strftime("%Y-%m-%d %H:%M:%S"),
+                        'estatus': 'cerrado',
+                        'periodo': cor['periodo']
+                    })
+
+                    _logger.info("Actualizado en odoo")
+
+                    ### Actualizar en eCobro ###
+                    if solicitud:
+                        return {"correcto": contrato.name}
+                    else:
+                        self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
 
             except Exception as ex:
                 msj = "Error en el proceso de corte: {}".format(ex)
@@ -1297,7 +1359,7 @@ class PABSElectronicContracts(models.TransientModel):
             return {}
 
 #  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-    
+    ### Crea la póliza de tránsito
     def CrearPoliza(self, company_id, fecha, numero_contrato, papeleria, excedente, id_cuenta_analitica_almacen, info_de_cuentas):
         _logger.info("Comienza creación de póliza")
         

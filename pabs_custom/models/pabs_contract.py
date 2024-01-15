@@ -58,6 +58,12 @@ MARITAL_STATUS = [
   ('sin_definir', 'SIN DEFINIR')
 ]
 
+SALE_TYPE = [
+  ('physical', 'Física'),
+  ('digital', 'Digital'),
+  ('digital_reafiliation', 'Reafiliación digital')
+]
+
 #limit-time-real=2000
 class PABSContracts(models.Model):
   _name = 'pabs.contract'
@@ -108,6 +114,13 @@ class PABSContracts(models.Model):
   comission = fields.Float(tracking=True, string ='Comisión tomada')
   investment_bond = fields.Float(tracking=True, string ='Bono por inversión')
   amount_received = fields.Float(tracking=True, string='Importe recibido', compute='_calc_amount_received')
+
+  # Afiliación electrónica
+  sale_type = fields.Selection(tracking=True, selection=SALE_TYPE, string='Tipo de venta', required=True, default="physical")
+  url_ine = fields.Char(string="INE")
+  url_comprobante_domicilio = fields.Char(string="Comprobante domicilio")
+  url_fachada_domicilio = fields.Char(string="Fachada domicilio")
+  url_contrato_reafiliacion = fields.Char(string="Contrato reafiliación")
 
   debt_collector = fields.Many2one(tracking=True, comodel_name="hr.employee", string='Nombre del cobrador')
   payment_amount = fields.Float(tracking=True, string= 'Monto de pago')
@@ -219,31 +232,79 @@ class PABSContracts(models.Model):
       os.remove(absolute_path + '/' + filename)
     return True
   
+  ### Crea el formato del contrato en pdf y lo regresa en base 64
   def action_get_contract_report(self, activation_code=False, company_id=False):
-    #
-    vals = {
-        'contract': '',
-        'b64_data': '',
-        'msg': 'Defina los parámetros de búsqueda'
-      }
-    #
-    if activation_code and company_id:
-      contract_id = self.env['pabs.contract'].sudo().search([('activation_code','=',activation_code),('company_id','=',company_id)], limit=1)         
-      if contract_id:
-        pdf = self.env.ref('merge_docx.id_econtrato').render([contract_id.id])[0]       
-        vals = {
-          'contract': contract_id.name,
-          'b64_data': base64.b64encode(pdf).decode('utf-8'),
-          'msg': ''
-        }
-      else:
-        vals = {
+    try:
+      vals = {
           'contract': '',
           'b64_data': '',
-          'msg': 'No existe un contrato con los parámetros enviados'
+          'msg': 'Defina los parámetros de búsqueda'
         }
-    #   
-    return json.dumps(vals)
+      
+      if activation_code and company_id:
+        contract_id = self.env['pabs.contract'].sudo().search([
+          ('activation_code','=',activation_code),
+          ('company_id','=',company_id)
+        ], limit=1)
+
+        if contract_id:
+          if not contract_id.name_service.product_tmpl_id.contract_xml_id:
+            vals = {
+              'contract': '',
+              'b64_data': '',
+              'msg': 'No se ha configurado el xml_id en el producto'
+            }
+          
+          xml_id = contract_id.name_service.product_tmpl_id.contract_xml_id
+          pdf = self.env.ref(xml_id).render([contract_id.id])[0]
+          
+          vals = {
+            'contract': contract_id.name,
+            'b64_data': base64.b64encode(pdf).decode('utf-8'),
+            'msg': ''
+          }
+        else:
+          vals = {
+            'contract': '',
+            'b64_data': '',
+            'msg': 'No existe un contrato con los parámetros enviados'
+          }
+
+        return json.dumps(vals)
+      
+    except Exception as ex:
+      vals = {
+        'contract': '',
+        'b64_data': '',
+        'msg': "{}{}".format('Error: ', ex)
+      }
+
+      return json.dumps(vals)
+    
+    # #
+    # vals = {
+    #     'contract': '',
+    #     'b64_data': '',
+    #     'msg': 'Defina los parámetros de búsqueda'
+    #   }
+    # #
+    # if activation_code and company_id:
+    #   contract_id = self.env['pabs.contract'].sudo().search([('activation_code','=',activation_code),('company_id','=',company_id)], limit=1)         
+    #   if contract_id:
+    #     pdf = self.env.ref('merge_docx.id_econtrato').render([contract_id.id])[0]       
+    #     vals = {
+    #       'contract': contract_id.name,
+    #       'b64_data': base64.b64encode(pdf).decode('utf-8'),
+    #       'msg': ''
+    #     }
+    #   else:
+    #     vals = {
+    #       'contract': '',
+    #       'b64_data': '',
+    #       'msg': 'No existe un contrato con los parámetros enviados'
+    #     }
+    # #   
+    # return json.dumps(vals)
   
   def get_link(self):    
     for rec in self:
@@ -251,6 +312,26 @@ class PABSContracts(models.Model):
         rec.ecobro_format_link = 'http://35.167.149.196/ecobroSAP/application/contratos/%s.pdf'%(rec.activation_code)
       else:
         rec.ecobro_format_link = False
+
+  def action_get_images_digital(self):
+    vals = {
+      'url_ine': self.url_ine,
+      'url_comprobante_domicilio': self.url_comprobante_domicilio,
+      'url_fachada_domicilio': self.url_fachada_domicilio,
+      'url_contrato_reafiliacion': self.url_contrato_reafiliacion,
+    }
+    wizard_id = self.env['show.digital.images.wizard'].create(vals)
+
+    return {        
+      'name': (""),                        
+      'view_type': 'form',        
+      'view_mode': 'form',        
+      'res_model': 'show.digital.images.wizard', 
+      'res_id': wizard_id.id,
+      'views': [(False, 'form')],        
+      'type': 'ir.actions.act_window',        
+      'target': 'new',    
+    }
 
   def numero_to_letras(self,numero):
     indicador = [("",""),("MIL","MIL"),("MILLON","MILLONES"),("MIL","MIL"),("BILLON","BILLONES")]
@@ -1881,13 +1962,38 @@ class PABSContracts(models.Model):
               refund_id.with_context(investment_bond=True).action_post()
 
         _logger.info("Se creó la factura del contrato")
-        if previous.name == 'Nuevo Contrato':
+        if previous.name == 'Nuevo Contrato' or previous.sale_type == 'digital_reaffiliation':
           contract_name = pricelist_id.sequence_id._next()
           previous.name = contract_name
         else:
           contract_name = previous.name
         previous.partner_id.write({'name' : contract_name, 'company_id' : previous.company_id.id})
         self.reconcile_all(reconcile)
+
+        ### Proceso extra de Afiliacion electrónica (Crear poliza de caja transito) ###
+        if previous.sale_type in ('digital', 'digital_reafiliation'):
+          econ_obj = self.env['pabs.electronic.contract']
+
+          ### Buscar registro de corte
+          corte = self.env['pabs.econtract.move'].search([
+            ('id_contrato', '=', previous.id)
+          ])
+
+          if not corte:
+            raise ValidationError("No se encontró el registro de corte")
+
+          ### Validar cuentas para creación de póliza
+          info_de_cuentas = {}
+          info_de_cuentas = econ_obj.ValidarCuentas(previous.company_id.id, info_de_cuentas)
+
+          if not info_de_cuentas:
+            raise ValidationError("No se encontraron las cuentas para la poliza de transito")
+          
+          ### Generar póliza de transito
+          id_poliza_transito = econ_obj.CrearPoliza(previous.company_id.id, previous.invoice_date, previous.name, previous.stationery, previous.initial_investment - previous.stationery, previous.sale_employee_id.warehouse_id.analytic_account_id.id, info_de_cuentas)
+
+          ### Ligar póliza al registro de cierre
+          corte.write({'id_poliza_caja_transito': id_poliza_transito})
 
     except Exception as e:
       self._cr.rollback()

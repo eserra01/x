@@ -17,3 +17,4 @@ from . import res_partner
 from . import product_category
 from . import report
 from . import res_company
+from . import product_template
