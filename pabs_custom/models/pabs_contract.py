@@ -187,6 +187,7 @@ class PABSContracts(models.Model):
 
   latitude = fields.Char(tracking=False, string = 'Latitud')
   longitude = fields.Char(tracking=False, string = 'Longitud')
+  coordinates = fields.Char(string = 'Coordenadas', compute="_compute_coordinates")
 
 #Datos contables
   balance = fields.Float(tracking=True, string="Saldo", compute="_calc_balance")
@@ -220,6 +221,13 @@ class PABSContracts(models.Model):
     ('unique_activation_lot',
       'UNIQUE(lot_id)',
       'No se puede crear el registro: ya existe un registro referenciado al número de solicitud')]
+  
+  def _compute_coordinates(self):
+    for rec in self:
+      if rec.latitude and rec.longitude:
+        rec.coordinates = "{},{}".format(rec.latitude, rec.longitude)
+      else:
+        rec.coordinates = ''
 
   def action_get_contract_report_sftp(self):       
     # Se genera el reporte

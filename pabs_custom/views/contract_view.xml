@@ -205,6 +205,8 @@
               <field name="payment_amount" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
               <field name="date_first_payment" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
               <field name="comments"/>
+              <field name="coordinates" readonly="1"/>
+              <field name="origen_solicitud" readonly="1" attrs="{'invisible' : [('sale_type','=','physical')]}"/>
             </group>
           </group>
           
@@ -422,6 +424,8 @@
               <field name="initial_investment" readonly="1"/>
               <field name="investment_bond" readonly="1"/>
               <field name="comments" readonly="1"/>
+              <field name="coordinates" readonly="1"/>
+              <field name="origen_solicitud" readonly="1" attrs="{'invisible' : [('sale_type','=','physical')]}"/>
             </group>
           </group>
           
@@ -627,6 +631,8 @@
               <field name="agent_id" string="Agente que activó" readonly="1"/>
               <field name="initial_investment" readonly="1"/>
               <field name="investment_bond" readonly="1"/>
+              <field name="coordinates" readonly="1"/>
+              <field name="origen_solicitud" readonly="1" attrs="{'invisible' : [('sale_type','=','physical')]}"/>
             </group>
           </group>
           
@@ -811,6 +817,8 @@
               <field name="initial_investment" readonly="1"/>
               <field name="investment_bond" readonly="1"/>
               <field name="comments" readonly="1"/>
+              <field name="coordinates" readonly="1"/>
+              <field name="origen_solicitud" readonly="1" attrs="{'invisible' : [('sale_type','=','physical')]}"/>
             </group>
           </group>
           
@@ -1027,6 +1035,8 @@
               <field name="initial_investment" readonly="1"/>
               <field name="investment_bond" readonly="1"/>
               <field name="comments" readonly="1"/>
+              <field name="coordinates" readonly="1"/>
+              <field name="origen_solicitud" readonly="1" attrs="{'invisible' : [('sale_type','=','physical')]}"/>
             </group>
           </group>
           
@@ -1231,6 +1241,8 @@
               <field name="initial_investment" readonly="1"/>
               <field name="investment_bond" readonly="1"/>
               <field name="comments" readonly="1"/>
+              <field name="coordinates" readonly="1"/>
+              <field name="origen_solicitud" readonly="1" attrs="{'invisible' : [('sale_type','=','physical')]}"/>
             </group>
           </group>
           
@@ -1434,6 +1446,8 @@
               <field name="initial_investment" readonly="1"/>
               <field name="investment_bond" readonly="1"/>
               <field name="comments" readonly="1"/>
+              <field name="coordinates" readonly="1"/>
+              <field name="origen_solicitud" readonly="1" attrs="{'invisible' : [('sale_type','=','physical')]}"/>
             </group>
           </group>
           
@@ -1638,6 +1652,8 @@
               <field name="initial_investment" readonly="1"/>
               <field name="investment_bond" readonly="1"/>
               <field name="comments" readonly="1"/>
+              <field name="coordinates" readonly="1"/>
+              <field name="origen_solicitud" readonly="1" attrs="{'invisible' : [('sale_type','=','physical')]}"/>
             </group>
           </group>
           
@@ -1853,6 +1869,8 @@
               <field name="initial_investment" readonly="1"/>
               <field name="investment_bond" readonly="1"/>
               <field name="comments" readonly="1"/>
+              <field name="coordinates" readonly="1"/>
+              <field name="origen_solicitud" readonly="1" attrs="{'invisible' : [('sale_type','=','physical')]}"/>
             </group>
           </group>
           
