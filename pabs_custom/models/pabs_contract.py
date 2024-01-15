@@ -272,21 +272,22 @@ class PABSContracts(models.Model):
         ], limit=1)
 
         if contract_id:
-          if not contract_id.name_service.product_tmpl_id.contract_xml_id:
+          if contract_id.name_service.product_tmpl_id.contract_xml_id:
+            xml_id = contract_id.name_service.product_tmpl_id.contract_xml_id
+            pdf = self.env.ref(xml_id).render([contract_id.id])[0]
+            
+            vals = {
+              'contract': contract_id.name,
+              'b64_data': base64.b64encode(pdf).decode('utf-8'),
+              'msg': ''
+            }
+          else:
             vals = {
               'contract': '',
               'b64_data': '',
               'msg': 'No se ha configurado el xml_id en el producto'
             }
           
-          xml_id = contract_id.name_service.product_tmpl_id.contract_xml_id
-          pdf = self.env.ref(xml_id).render([contract_id.id])[0]
-          
-          vals = {
-            'contract': contract_id.name,
-            'b64_data': base64.b64encode(pdf).decode('utf-8'),
-            'msg': ''
-          }
         else:
           vals = {
             'contract': '',

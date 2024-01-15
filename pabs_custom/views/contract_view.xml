@@ -204,7 +204,7 @@
               <field name="way_to_payment" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
               <field name="payment_amount" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
               <field name="date_first_payment" attrs="{'required' : [('state','=','precontract')], 'readonly' : [('state','=','contract')]}"/>
-              <field name="comments"/>
+              <field name="comments" attrs="{'readonly' : [('state','=','contract')]}"/>
               <field name="coordinates" readonly="1"/>
               <field name="origen_solicitud" readonly="1" attrs="{'invisible' : [('sale_type','=','physical')]}"/>
             </group>
