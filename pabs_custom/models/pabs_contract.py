@@ -64,6 +64,21 @@ SALE_TYPE = [
   ('digital_reafiliation', 'Reafiliación digital')
 ]
 
+ORIGENES = [
+  ('cambaceo', 'Cambaceo'),
+  ('servicio', 'Servicio'),
+  ('referido', 'Referido'),
+  ('reafiliacion', 'Reafiliacion'),
+  ('medios_electronicos', 'Medios electrónicos'),
+  ('directo', 'Directo'),
+  ('sobrantes', 'Sobrantes'),
+  ('extravio', 'Extravio'),
+  ('buenfin', 'Buen fin'),
+  ('tipventa','Tip de venta'),
+  ('resguardo','Resguardo'),
+  ('evento','Evento')
+]
+
 #limit-time-real=2000
 class PABSContracts(models.Model):
   _name = 'pabs.contract'
@@ -117,6 +132,7 @@ class PABSContracts(models.Model):
 
   # Afiliación electrónica
   sale_type = fields.Selection(tracking=True, selection=SALE_TYPE, string='Tipo de venta', required=True, default="physical")
+  origen_solicitud = fields.Selection(tracking=True, selection=ORIGENES, string="Origen de solicitud")
   url_ine = fields.Char(string="INE")
   url_comprobante_domicilio = fields.Char(string="Comprobante domicilio")
   url_fachada_domicilio = fields.Char(string="Fachada domicilio")

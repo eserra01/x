@@ -430,6 +430,11 @@ class PABSElectronicContracts(models.TransientModel):
                     if sol.get('isHomonimo') and sol['isHomonimo'] == "1":
                         observaciones = "HOMONIMO. {}".format(observaciones)
 
+                # 9. Origen solicitud
+                origen = ""
+                if sol.get('origen_venta'):
+                    origen = sol['origen_venta']
+
                 ### Crear registros de los que depende el contrato ###
                 # 1. Crear solicitud. Primero se busca la oficina del empleado
                 
@@ -497,6 +502,7 @@ class PABSElectronicContracts(models.TransientModel):
                     'birthdate': sol['afiliado_fechaNacimiento'],
                     'service_detail': 'unrealized',
                     'marital_status': estado_civil,
+                    'origen_solicitud': sol['origen_venta'],
                     
                     # Domicilio de casa
                     'street_name': sol['domCasa_Calle'],
@@ -731,7 +737,7 @@ class PABSElectronicContracts(models.TransientModel):
 
             try:
                 respuesta = requests.post(url_consultar_actualizaciones)
-                json_afiliaciones = json.loads(respuesta.text) # NO ES TEST
+                json_afiliaciones = json.loads(respuesta.text)
                 array_afiliaciones = json_afiliaciones.get('solicitudes')
             except Exception as ex:
                 _logger.error("Error al consultar las afiliaciones por actualizar {}".format(ex))
@@ -740,65 +746,6 @@ class PABSElectronicContracts(models.TransientModel):
             if not array_afiliaciones:
                 _logger.info("No hay afiliaciones por actualizar")
                 return
-            
-            #TEST#
-            # json_afiliaciones = {
-            #     "solicitudes": [
-            #         {
-            #             "serie": "3NJ",
-            #             "contrato": "000019",
-                        
-            #             "afiliado_nombre": "HUGO",
-            #             "afiliado_apellidoPaterno": "JURADO",
-            #             "afiliado_apellidoMaterno": "MUSTANG",
-            #             "afiliado_fechaNacimiento": "1957-11-17",
-            #             "afiliado_telefono": "2580963741",
-            #             "afiliado_email": "corre@correo.com",
-
-            #             "tipo_domicilio": "Casa",
-            #             "domCasa_codigoPostal": "25204",
-            #             "domCasa_Calle": "Casonas",
-            #             "domCasa_numExt": "123",
-            #             "domCasa_numInt": "",
-            #             "domCasa_EntreCalles": "Entre calles casa",
-            #             "domCasa_Colonia": "ALBAREDA RESIDENCIAL 3",
-            #             "domCasa_Municipio": "SALTILLO",
-            #             "domCasa_LocalidadID": "37151",
-            #             "domCasa_ColoniaID": "37151",
-
-            #             "domCobro_tipoDomicilio": "Cobranza",
-            #             "domCobro_codigoPostal": "25204",
-            #             "domCobro_Calle": "Cobronas",
-            #             "domCobro_numExt": "456",
-            #             "domCobro_numInt": "",
-            #             "domCobro_entreClles": "Entre calles cobro",
-            #             "domCobro_Colonia": "BONANZA",
-            #             "domCobro_Municipio": "SALTILLO",
-            #             "domCobro_LocalidadID": "37151",
-            #             "domCobro_ColoniaID": "37151",
-
-            #             "qr_string": "20220714144639ASD000073MC761158820.6823975-103.3816011",
-            #             "contrato_id": "531",
-            #             "solicitud_codigoActivacion": "MC7611588",
-            #             "inversion_inicial": "500",
-            #             "fecha_contrato": "2022-07-14 14:46:39",
-            #             "timestamp": "1657827999",
-            #             "fecha_primer_abono": "2022-07-21",
-            #             "monto_abono": "300",
-            #             "forma_pago": "Mensuales",
-            #             "promotor_id": "712",
-            #             "promotor_nombre": "VENTAS OFICINA X",
-            #             "promotor_codigo": "P9999",
-            #             "plan_id": "2076",
-            #             "plan": "IMPERIAL PREMIUM",
-            #             "solicitud_latitud": "20.6823975",
-            #             "solicitud_longitud": "-103.3816011",
-            #             "afiliado_estadoCivil": "",
-            #             "afiliado_ocupacion": "",
-            #             "afiliado_RFC": " "
-            #         }
-            #     ]
-            # }
 
         ### Iterar en cada afiliacion ###
         cantidad_afiliaciones = len(array_afiliaciones)
@@ -823,7 +770,7 @@ class PABSElectronicContracts(models.TransientModel):
                         continue
 
                 ### Construir diccionario con datos a actualizar ###
-                actualizar = {}
+                actualizar = {}      
 
                 if afi['afiliado_nombre'] != contrato.partner_name:
                     actualizar.update({'partner_name': afi['afiliado_nombre']})
@@ -842,6 +789,36 @@ class PABSElectronicContracts(models.TransientModel):
 
                 if afi['afiliado_email'] != contrato.client_email:
                     actualizar.update({'client_email': afi['afiliado_email']})
+                
+                ### Version Cuernavaca
+                if afi.get('forma_pago'):
+                    forma_de_pago = "weekly"
+                    if afi['forma_pago'][0] in ("S","s"):
+                        forma_de_pago = "weekly"
+                    elif afi['forma_pago'][0] in ("Q","q"):
+                        forma_de_pago = "biweekly"
+                    elif afi['forma_pago'][0] in ("M","m"):
+                        forma_de_pago = "monthly"
+
+                    if forma_de_pago != contrato.way_to_payment:
+                        actualizar.update({'way_to_payment': forma_de_pago})
+
+                if afi.get('monto_abono'):
+                    if float(afi['monto_abono']) != contrato.payment_amount:
+                        actualizar.update({'payment_amount': float(afi['monto_abono'])})
+                
+                if afi.get('inversion_inicial'):
+                    if float(afi['inversion_inicial']) != contrato.initial_investment:
+                        actualizar.update({'initial_investment': float(afi['inversion_inicial'])})
+                    
+                if afi.get('observaciones'):
+                    if afi['observaciones'] != contrato.comments:
+                        actualizar.update({'comments': afi['observaciones']})
+
+                if afi.get('origen_venta'):
+                    if afi['origen_venta'] != contrato.origen_solicitud:
+                        actualizar.update({'origen_solicitud': afi['origen_venta']})
+                #
 
                 ### Domicilio de casa ###
                 if afi['domCasa_Calle'] != contrato.street_name:
