@@ -1168,20 +1168,24 @@ class PABSContracts(models.Model):
               }
     elif self.type_view == 'precontract':
       if self.lot_id:
-        quant_id = stock_quant_obj.search([
-          ('inventory_quantity','>',0),
-          ('lot_id','=',self.lot_id.id)])
-        if quant_id:
-          location_id = quant_id.location_id
-        received_contract = location_obj.search([
-          ('contract_location','=',True),
-          ('received_location','=',True)],limit=1)
-        if not received_contract:
-          raise ValidationError((
-            "No se encuentra la ubicación de contratos"))
-        if location_id and received_contract.id not in location_id.ids:
-          raise ValidationError((
-            "la solicitud {} no se encontró en la ubicación de contratos, se encuentra en {}".format(self.lot_id.name, location_id.name_get()[0][1])))
+        
+        ### Validar que la solicitud se encuentre en el inventario y que exista la ubicación de contratos
+        if self.sale_type == 'physical':
+          quant_id = stock_quant_obj.search([
+            ('inventory_quantity','>',0),
+            ('lot_id','=',self.lot_id.id)])
+          if quant_id:
+            location_id = quant_id.location_id
+          received_contract = location_obj.search([
+            ('contract_location','=',True),
+            ('received_location','=',True)],limit=1)
+          if not received_contract:
+            raise ValidationError((
+              "No se encuentra la ubicación de contratos"))
+          if received_contract.id not in location_id.ids:
+            raise ValidationError((
+              "la solicitud {} no se encontró en la ubicación de contratos, se encuentra en {}".format(self.lot_id.name, location_id.name_get()[0][1])))
+          
         contract = self.search([
           ('partner_name','=',self.partner_name),
           ('partner_fname','=',self.partner_fname),
