@@ -425,7 +425,7 @@ class PABSElectronicContracts(models.TransientModel):
 
                 # 8. Es homónimo
                 observaciones = ""
-                if sol.get('observaciones'):
+                if 'observaciones' in solicitud.keys():
                     observaciones = sol['observaciones']
                     if sol.get('isHomonimo') and sol['isHomonimo'] == "1":
                         observaciones = "HOMONIMO. {}".format(observaciones)
@@ -811,7 +811,7 @@ class PABSElectronicContracts(models.TransientModel):
                     if float(afi['inversion_inicial']) != contrato.initial_investment:
                         actualizar.update({'initial_investment': float(afi['inversion_inicial'])})
                     
-                if afi.get('observaciones'):
+                if 'observaciones' in afi.keys():
                     if afi['observaciones'] != contrato.comments:
                         actualizar.update({'comments': afi['observaciones']})
 
