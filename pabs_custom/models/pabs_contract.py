@@ -193,6 +193,7 @@ class PABSContracts(models.Model):
   balance = fields.Float(tracking=True, string="Saldo", compute="_calc_balance")
   paid_balance = fields.Float(tracking=True, string="Abonado", compute="_calc_paid_balance")
   invoice_date = fields.Date(tracking=True, string='Fecha de creación', default=lambda r: r.calc_invoice_date())
+  invoice_date_month2text = fields.Char(string="Mes", compute= '_get_invoice_date_month2text')
   qr_string = fields.Char(string='QR')
   invoice_date_month_name = fields.Char(string="Nombre del mes", compute="_calc_month_name")
 
@@ -287,7 +288,6 @@ class PABSContracts(models.Model):
               'b64_data': '',
               'msg': 'No se ha configurado el xml_id en el producto'
             }
-          
         else:
           vals = {
             'contract': '',
@@ -305,31 +305,6 @@ class PABSContracts(models.Model):
       }
 
       return json.dumps(vals)
-    
-    # #
-    # vals = {
-    #     'contract': '',
-    #     'b64_data': '',
-    #     'msg': 'Defina los parámetros de búsqueda'
-    #   }
-    # #
-    # if activation_code and company_id:
-    #   contract_id = self.env['pabs.contract'].sudo().search([('activation_code','=',activation_code),('company_id','=',company_id)], limit=1)         
-    #   if contract_id:
-    #     pdf = self.env.ref('merge_docx.id_econtrato').render([contract_id.id])[0]       
-    #     vals = {
-    #       'contract': contract_id.name,
-    #       'b64_data': base64.b64encode(pdf).decode('utf-8'),
-    #       'msg': ''
-    #     }
-    #   else:
-    #     vals = {
-    #       'contract': '',
-    #       'b64_data': '',
-    #       'msg': 'No existe un contrato con los parámetros enviados'
-    #     }
-    # #   
-    # return json.dumps(vals)
   
   def get_link(self):    
     for rec in self:
@@ -446,6 +421,16 @@ class PABSContracts(models.Model):
         rec.invoice_date_month2text = months.get(rec.invoice_date.month)
       else:
         rec.invoice_date_month2text = ""
+
+  def _get_initial_investment2text(self):
+     for rec in self:
+      text = self.numero_to_letras(rec.initial_investment)
+      rec.initial_investment2text = text
+  
+  def _get_payment_amount2text(self):
+    for rec in self:
+      text = self.numero_to_letras(rec.payment_amount)
+      rec.payment_amount2text = text
 
   def _get_late_amount2text(self):
     for rec in self:
