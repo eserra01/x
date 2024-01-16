@@ -1361,7 +1361,7 @@ class PABSElectronicContracts(models.TransientModel):
         ])
 
         if existe_poliza:
-            raise ValidationError("Ya existe la poliza")
+            raise ValidationError("Ya existe la poliza de transito del contrato {}".format(numero_contrato))
 
         apuntes = []
 
