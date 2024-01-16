@@ -770,7 +770,7 @@ class PABSElectronicContracts(models.TransientModel):
                         continue
 
                 ### Construir diccionario con datos a actualizar ###
-                actualizar = {}      
+                actualizar = {}
 
                 if afi['afiliado_nombre'] != contrato.partner_name:
                     actualizar.update({'partner_name': afi['afiliado_nombre']})
@@ -818,6 +818,14 @@ class PABSElectronicContracts(models.TransientModel):
                 if afi.get('origen_venta'):
                     if afi['origen_venta'] != contrato.origen_solicitud:
                         actualizar.update({'origen_solicitud': afi['origen_venta']})
+
+                if afi.get('fecha_primer_abono'):
+                    if fields.Date.to_date(afi['fecha_primer_abono']) != contrato.date_first_payment:
+                        actualizar.update({'date_first_payment': afi['fecha_primer_abono']})
+
+                if afi.get('afiliado_estadoCivil'):
+                    if afi['afiliado_estadoCivil'] != contrato.marital_status:
+                        actualizar.update({'marital_status': afi['afiliado_estadoCivil']})
                 #
 
                 ### Domicilio de casa ###
