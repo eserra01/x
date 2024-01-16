@@ -307,6 +307,15 @@ class PABSContracts(models.Model):
       }
 
       return json.dumps(vals)
+    
+  def get_contract_pdf(self):
+    if not self.name_service.product_tmpl_id.contract_xml_id:
+      raise ValidationError('No se ha configurado el xml_id en el producto')
+    
+    xml_id = self.name_service.product_tmpl_id.contract_xml_id
+    
+    #self.env.ref(xml_id).render([self.id])[0]
+    return self.env.ref(xml_id).report_action(self)
   
   def get_link(self):    
     for rec in self:

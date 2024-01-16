@@ -172,7 +172,7 @@
               <field name="invoice_date" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" required="True"/>
               <field name="employee_id" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" readonly="True"/>
               <field name="payment_scheme_id" options="{'no_open': True, 'no_create':True}" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" required="True"/>
-              <field name="sale_type" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('sale_type','=','physical')]}"/>
+              <field name="sale_type" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : ['|', ('sale_type','=','physical'), ('state','=','contract')]}"/>
 
               <field name="trasnsfer_type" required="True" attrs="{'invisible' : [('lot_id','=',False)], 'readonly' : [('state','=','contract')]}" invisible="0"/>
               <field name="commission_rest_amount" attrs="{'invisible' : ['|',('lot_id','=',False),('trasnsfer_type','!=','commission_rest')], 'readonly' : [('state','=','contract')]}" />
@@ -333,6 +333,7 @@
                 <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
                 <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
               </button>
+              <button class="oe_stat_button" name="get_contract_pdf" string="Imprimir contrato" type="object" icon="fa-file-text-o" />
               <button class="oe_stat_button" name="action_get_images_digital" string="Imágenes digital" type="object" icon="fa-file-image-o" />
           </div>
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 

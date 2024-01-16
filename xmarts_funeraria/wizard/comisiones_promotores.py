@@ -157,7 +157,7 @@ class ReportComisionesPromotores(models.AbstractModel):
                         aux_salidas_por_plan = aux_salidas_por_empleado.filtered(lambda salida: salida.payment_id.contract.name_service.id == plan.id) #<<< PLAN 1CJ FORZADO = 62
 
                         ### Primero: Anexar las salidas de los pagos sin cobrador
-                        # Filtrar las salidas que no tiene cobrador
+                        # Filtrar las salidas que no tienen cobrador
                         aux_salidas_sin_cobrador = aux_salidas_por_plan.filtered(lambda salida: salida.payment_id.debt_collector_code.id == False)
 
                         subtotal_asistente_ninguno = 0

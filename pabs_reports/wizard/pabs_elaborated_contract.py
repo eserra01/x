@@ -44,12 +44,11 @@ class ContractsElaboratedW1zard(models.TransientModel):
       titulo = "CORTE DE CONTRATOS ELABORADOS"
 
       contract_ids = contract_obj.search([
-          ('state','=','contract'),
-          ('invoice_date', '>=', start_date),
-          ('invoice_date', '<=', end_date)
+        ('state','=','contract'),
+        ('invoice_date', '>=', start_date),
+        ('invoice_date', '<=', end_date),
+        ('sale_type', '=', 'physical')
       ]).sorted(key=lambda r: r.name)
-      
-      contract_ids = contract_ids.filtered(lambda x: 'PCD' not in x.lot_id.name) # Quitar afiliaciones de contratos digitales
     else:
       titulo = "CORTE DE AFILIACIONES ELECTRÓNICAS"
 
