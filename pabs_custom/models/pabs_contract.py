@@ -1057,6 +1057,7 @@ class PABSContracts(models.Model):
       self.activation_code = contract_id.activation_code
       self.new_entry = contract_id.new_entry
       self.payment_scheme_id = contract_id.payment_scheme_id
+      self.sale_type = contract_id.sale_type
 
       #Datos del contrato
       self.name = contract_id.name
