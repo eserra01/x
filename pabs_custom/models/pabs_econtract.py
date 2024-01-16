@@ -502,7 +502,7 @@ class PABSElectronicContracts(models.TransientModel):
                     'birthdate': sol['afiliado_fechaNacimiento'],
                     'service_detail': 'unrealized',
                     'marital_status': estado_civil,
-                    'origen_solicitud': sol['origen_venta'],
+                    'origen_solicitud': origen,
                     
                     # Domicilio de casa
                     'street_name': sol['domCasa_Calle'],
