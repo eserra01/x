@@ -946,6 +946,7 @@
                 <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
                 <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
               </button>
+            <button class="oe_stat_button" name="get_contract_pdf" string="Imprimir contrato" type="object" icon="fa-file-text-o" />
             <button class="oe_stat_button" name="action_get_images_digital" string="Imágenes digital" type="object" icon="fa-file-image-o"/>
           </div>
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
@@ -1781,6 +1782,7 @@
                 <span attrs="{'invisible':[('count_comments','&gt;',1)]}">Comentario</span>
                 <span attrs="{'invisible':[('count_comments','&lt;=',1)]}">Comentarios</span>
               </button>
+            <button class="oe_stat_button" name="get_contract_pdf" string="Imprimir contrato" type="object" icon="fa-file-text-o" />
             <button class="oe_stat_button" name="action_get_images_digital" string="Imágenes digital" type="object" icon="fa-file-image-o" />
           </div>
           <group attrs="{'invisible' : [('lot_id','=',False)]}"> 
