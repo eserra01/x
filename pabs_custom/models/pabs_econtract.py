@@ -1355,6 +1355,7 @@ class PABSElectronicContracts(models.TransientModel):
 
         ### Validar que no exista una poliza anterior ###
         existe_poliza = move_obj.search([
+            ('type', '=', 'entry'),
             ('company_id', '=', company.id),
             ('ref', '=', numero_contrato)
         ])
