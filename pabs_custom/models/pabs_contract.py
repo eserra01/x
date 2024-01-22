@@ -315,7 +315,7 @@ class PABSContracts(models.Model):
     xml_id = self.name_service.product_tmpl_id.contract_xml_id
     
     #self.env.ref(xml_id).render([self.id])[0]
-    return self.with_user(2).env.ref(xml_id).report_action(self)
+    return self.env.ref(xml_id).report_action(self)
   
   def get_link(self):    
     for rec in self:
@@ -1235,7 +1235,7 @@ class PABSContracts(models.Model):
       
       ### Para planes digitales de Cuernavaca se utilizará la plantilla del plan físico.
       # Se buscará la coincidencia de acuerdo a la referencia interna: Fisico = PL-00006, Digital PL-00096
-      if self.company_id.id == 7 and 'DIGITAL' in self.name_service.name:
+      if 'DIGITAL' in self.name_service.name:
         physical_default_code = self.name_service.default_code.replace('9', '0', 1)
         product_template = self.env['product.template'].search([
           ('company_id', '=', self.company_id.id),
@@ -1652,7 +1652,7 @@ class PABSContracts(models.Model):
             
             ### Para planes digitales de Cuernavaca se utilizará la plantilla del plan físico.
             # Se buscará la coincidencia de acuerdo a la referencia interna: Fisico = PL-00006, Digital PL-00096
-            if previous.company_id.id == 7 and 'DIGITAL' in previous.name_service.name:
+            if 'DIGITAL' in previous.name_service.name:
               physical_default_code = previous.name_service.default_code.replace('9', '0', 1)
               product_template = self.env['product.template'].search([
                 ('company_id', '=', previous.company_id.id),
@@ -1688,7 +1688,7 @@ class PABSContracts(models.Model):
               raise ValidationError(("El A.S {} tiene asignado ${} en su plantilla de comisiones. Debe asignarle un monto mayor a cero".format(comission_template.comission_agent_id.name, comission_template.comission_amount)))
             
             ### Regresar pricelist_id a valor original
-            if previous.company_id.id == 7 and 'DIGITAL' in previous.name_service.name:
+            if 'DIGITAL' in previous.name_service.name:
               pricelist_id = pricelist_obj.search([('product_id','=',previous.name_service.id)])
               
           ### TERMINA VALIDACION COMISIONES
