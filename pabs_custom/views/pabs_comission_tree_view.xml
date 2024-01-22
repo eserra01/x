@@ -35,9 +35,7 @@
         <field name="model">pabs.comission.tree</field>
         <field name="type">tree</field>
         <field name="arch" type="xml">
-            <tree string="Comission Tree" editable="bottom" default_order="contract_id, pay_order" expand="True">
-                <!-- <button string="Generar salidas Enganche" type="object" name="CrearSalidasEnganche"/> -->
-                <!-- <button string="Generar salidas" type="object" name="CrearSalidas"/> -->
+            <tree string="Comission Tree" editable="bottom" default_order="contract_id, pay_order" expand="0">
                 <field name="contract_id" invisible="1"/>
                 <field name="pay_order" />
                 <field name="job_id" />
