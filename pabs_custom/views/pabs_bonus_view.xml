@@ -4,7 +4,7 @@
     <field name="name">pabs.bonus.tree.view</field>
     <field name="model">pabs.bonus</field>
     <field name="arch" type="xml">
-      <tree editable="top">
+      <tree editable="bottom" default_order="min_value">
         <field name="plan_id"/>
         <field name="min_value"/>
         <field name="max_value"/>
