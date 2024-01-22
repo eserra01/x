@@ -92,7 +92,7 @@
         <field name="name">Plantillas</field>
         <field name="res_model">pabs.comission.template</field>
         <field name="view_mode">tree,form,pivot</field>
-        <field name="context">{'group_by': ('employee_id','plan_id')}</field>
+        <field name="context">{'search_default_group_by_employee_id': True, 'search_default_group_by_plan_id': True}</field>
     </record>
 
 </odoo>

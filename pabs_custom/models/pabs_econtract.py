@@ -248,7 +248,7 @@ class PABSElectronicContracts(models.TransientModel):
                 if not plan:
                     raise ValidationError("No se encontró el plan {}".format(sol['plan']))
                 if len(plan) > 1:
-                    raise ValidationError("No se encontró el plan {}".format(sol['plan']))
+                    raise ValidationError("Se encontró mas de un plan {}".format(sol['plan']))
 
                 # 2. Calcular bono
                 bonos = self.env['pabs.bonus'].search([
