@@ -315,7 +315,7 @@ class PABSContracts(models.Model):
     xml_id = self.name_service.product_tmpl_id.contract_xml_id
     
     #self.env.ref(xml_id).render([self.id])[0]
-    return self.sudo().env.ref(xml_id).report_action(self)
+    return self.with_user(2).env.ref(xml_id).report_action(self)
   
   def get_link(self):    
     for rec in self:
