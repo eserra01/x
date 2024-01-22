@@ -5,7 +5,24 @@
     <field name="model">product.pricelist</field>
     <field name="inherit_id" ref="product.product_pricelist_view"/>
     <field name="arch" type="xml">
+
+      <xpath expr="//field[@name='item_ids']/tree" position="attributes">
+        <attribute name="editable">top</attribute>
+      </xpath>
+      
       <xpath expr="//field[@name='min_quantity']" position="replace">
+        <field name="prefix_request"/>
+        <field name="prefix_contract"/>
+        <field name="stationery" widget="monetary"/>
+        <field name="payment_amount" widget="monetary"/>
+        <field name="fixed_price"/>
+        <field name="product_id"/>
+        <field name="type_company"/>
+        
+        <field name="sequence_id" invisible="1"/>
+        <field name="company_id" invisible="1"/>
+      </xpath>
+      <!-- <xpath expr="//field[@name='min_quantity']" position="replace">
         <field name="prefix_request"/>
         <field name="prefix_contract"/>
         <field name="stationery" widget="monetary"/>
@@ -23,7 +40,7 @@
 
       <xpath expr="//field[@name='fixed_price']" position="attributes">
         <attribute name="widget">monetary</attribute>
-      </xpath>
+      </xpath> -->
 
     </field>
   </record>
