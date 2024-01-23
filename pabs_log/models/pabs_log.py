@@ -3,8 +3,9 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError,UserError
 
 TOPICS = [
-        ('tdc','Transferencia de cartera'),
-    ]
+    ('tdc','Transferencia de cartera'),
+    ('pay', 'Sincronización de pagos')
+]
 
 class PabsLog(models.Model):
     _name = 'pabs.log'
