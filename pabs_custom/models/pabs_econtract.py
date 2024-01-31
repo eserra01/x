@@ -1209,7 +1209,7 @@ class PABSElectronicContracts(models.TransientModel):
                 contrato = contrato_obj.browse(corte.id_contrato.id)
 
                 ### Cuando es una afiliacion cancelada
-                if cor.get('estatus') and cor['estatus'] == '7':
+                if int(cor['estatus']) == 7:
                     if contrato.state == 'contract':
                         msj = "No se puede cancelar porque se encuentra en estatus contrato"
 
