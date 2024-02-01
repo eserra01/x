@@ -1524,22 +1524,19 @@ class PABSElectronicContracts(models.TransientModel):
 
         cantidad_contratos = len(array_contratos)
         _logger.info("Contratos obtenidos: {}".format(cantidad_contratos))
-
-        ### Llenar lista de cobradores ###
-        lista_cobradores = []
-        cobradores = self.env['hr.employee'].search([
+        
+        cargo_cobrador = self.env['hr.job'].search([
             ('company_id', '=', company_id),
-            ('job_id.name', 'ilike', 'COBRA')
+            ('name', '=', 'COBRADOR')
         ])
 
-        for cob in cobradores:
-            lista_cobradores.append({
-                'id_cobrador': cob.id,
-                'codigo': cob.barcode
-            })
+        if not cargo_cobrador:
+            raise ValidationError("No existe el cargo COBRADOR")
 
-        if not lista_cobradores:
-            raise ValidationError("No hay empleados con el cargo COBRADOR")
+        cobradores = self.env['hr.employee'].search([
+            ('company_id', '=', company_id),
+            ('job_id', '=', cargo_cobrador.id)
+        ])
 
         # TEST
         # for i in range(1, cantidad_contratos): # Tomar solo X elementos de la lista
@@ -1556,10 +1553,11 @@ class PABSElectronicContracts(models.TransientModel):
                 _logger.info("{} de {}. {} -> {}".format(indice, cantidad_contratos, con['contrato'], con['codigo']))
 
                 ### Buscar cobrador en lista de cobradores
-                cobrador = list(filter(lambda x: x['codigo'] == con['codigo'], lista_cobradores))
+                cobrador = cobradores.filtered(lambda x: x.barcode == con['codigo'])
 
                 if not cobrador:
-                    raise ValidationError("No se encontró al cobrador")
+                    _logger.info("No se encontró al cobrador")
+                    continue
 
                 ### Actualizar contrato ###
                 contrato = contract_obj.search([
@@ -1568,7 +1566,8 @@ class PABSElectronicContracts(models.TransientModel):
                 ])
 
                 if not contrato:
-                    raise ValidationError("No se encontró el contrato")
+                    _logger.info("No se encontró el contrato")
+                    continue
 
                 contrato.write({
                     'debt_collector': cobrador[0]['id_cobrador'],
