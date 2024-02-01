@@ -1108,7 +1108,7 @@ class PABSElectronicContracts(models.TransientModel):
                 "contrato": solicitud['contrato'],
                 "periodo": solicitud['periodo'],
                 "fecha_cierre_periodo": solicitud['fecha_cierre_periodo'],
-                "corte": solicitud['estatus']
+                "estatus": solicitud['estatus']
             })
         else:
             ### Por web service ###
