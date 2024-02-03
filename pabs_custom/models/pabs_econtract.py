@@ -1571,7 +1571,7 @@ class PABSElectronicContracts(models.TransientModel):
                     continue
 
                 contrato.write({
-                    'debt_collector': cobrador[0]['id_cobrador'],
+                    'debt_collector': cobrador.id,
                     'assign_collector_date': fields.Date.today()
                 })
 
