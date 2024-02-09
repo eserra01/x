@@ -74,6 +74,13 @@ class PABSElectronicContracts(models.TransientModel):
                     plaza_ecobro = ""
                 else:
                     plaza_ecobro = ""
+
+            if company_id == 13:                
+                plaza_ecobro = "ecobroSAP_MVA"
+            
+            if company_id == 7:                
+                plaza_ecobro = "ecobroSAP_CUE"
+               
                     
             if not plaza_ecobro:
                 ValidationError("No se ha definido la plaza de ecobro")
@@ -551,7 +558,7 @@ class PABSElectronicContracts(models.TransientModel):
                 _logger.info(msj)
 
                 if solicitud:
-                    return {"resultado": 1, "msj": "{} - {}".format(msj, pre_numero_contrato)}
+                    return {"resultado": 1, "msj": "{} - {}".format(msj, pre_numero_contrato),"bono":bono_por_inversion}
                 else:
                     self.ActualizarAfiliacionEnEcobro(url_actualizar_afiliaciones, sol['contrato_id'], generar_contrato, "", "", 1, msj)
 

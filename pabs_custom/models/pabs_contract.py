@@ -498,7 +498,7 @@ class PABSContracts(models.Model):
     # Se obtienen los contratos 
     contract_ids = []
     for lot in lot_ids:
-      contract_id = self.search([('lot_id','=',lot.id),('has_bf_bonus','=',False)],limit=1)
+      contract_id = self.search([('lot_id','=',lot.id),('has_bf_bonus','=',False),('company_id','=',company_id)],limit=1)
       if contract_id:
         if contract_id not in contract_ids:
           contract_ids.append(contract_id) 
