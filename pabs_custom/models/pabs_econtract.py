@@ -80,8 +80,7 @@ class PABSElectronicContracts(models.TransientModel):
             
             if company_id == 7:                
                 plaza_ecobro = "ecobroSAP_CUE"
-               
-                    
+                                   
             if not plaza_ecobro:
                 ValidationError("No se ha definido la plaza de ecobro")
                 return ""
