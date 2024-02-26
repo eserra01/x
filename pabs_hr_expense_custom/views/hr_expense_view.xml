@@ -8,6 +8,10 @@
       <xpath expr="//field[@name='product_id']" position="before">
         <field name="number" />
       </xpath>
+      <xpath expr="//field[@name='product_id']" position="after">
+        <field name="requires_plate" invisible="1" />
+        <field name="plate" attrs="{'invisible':[('requires_plate','=',False)],'required':[('requires_plate','=',True)]}" />
+      </xpath>
       <xpath expr="//field[@name='product_id']" position="attributes">
         <attribute name="options">{'no_create':True,'no_open':True}</attribute>
       </xpath>     

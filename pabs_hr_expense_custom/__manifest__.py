@@ -17,6 +17,7 @@
     'views/hr_expense_view.xml',
     'views/hr_employee_view.xml',
     'views/user_product_expense_view.xml',
+    'views/product_product_view.xml',
     'views/report_expense_sheet.xml',
     'security/security.xml',
     'security/ir.model.access.csv',

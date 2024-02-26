@@ -13,6 +13,8 @@ class HrExpense(models.Model):
   _inherit = 'hr.expense'    
 
   number = fields.Char(string=u"Número", default='/', required=True, readonly=True, copy=False)
+  requires_plate = fields.Boolean(string="Requiere placa", related='product_id.requires_plate') 
+  plate = fields.Char(string=u"Placas", )
 
   @api.model
   def create(self, vals):
