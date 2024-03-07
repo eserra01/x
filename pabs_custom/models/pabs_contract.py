@@ -259,6 +259,47 @@ class PABSContracts(models.Model):
       os.remove(absolute_path + '/' + filename)
     return True
   
+  ### Regresa el estado de cuenta en base 64
+  def get_statement_report_64(self,  contract = False, company_id = False):
+    vals = {
+      'b64_data': '',
+      'msg': ""
+    }
+    
+    try:
+      if not company_id or not contract:
+        vals = {
+          'b64_data': '',
+          'msg': 'No se envió alguno de los parámetros: company_id, contract'
+        }
+      else:
+        con = self.search([
+          ('company_id', '=', company_id),
+          ('name', '=', contract)
+        ])
+
+        if not con:
+          return {
+            'b64_data': '',
+            'msg': 'No se envio alguno de los parametros: company_id, contract'
+          }
+        
+        pdf = self.env.ref('xmarts_funeraria.estado_cuenta')._render(con.id)[0]
+            
+        vals = {
+          'b64_data': base64.b64encode(pdf).decode('utf-8'),
+          'msg': ''
+        }
+
+        return json.dumps(vals)
+    except Exception as ex:
+      vals = {
+        'b64_data': '',
+        'msg': "Error: {}".format(ex)
+      }
+
+      return json.dumps(vals)
+  
   ### Crea el formato del contrato en pdf y lo regresa en base 64
   def action_get_contract_report(self, activation_code=False, company_id=False):
     try:
