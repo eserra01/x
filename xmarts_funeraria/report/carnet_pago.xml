@@ -57,40 +57,40 @@
 
                 <div class="row">
 
-                <div class="col-4">
-                  <table width="100%">
-                    <tr>
-                      <td>
-                        Tel. oficina: <span t-esc="doc.company_id.phone"/>
-                      </td>
-                    </tr>
-                  </table>
+                  <div class="col-4">
+                    <table width="100%">
+                      <tr>
+                        <td>
+                          Tel. oficina: <span t-esc="doc.company_id.phone"/>
+                        </td>
+                      </tr>
+                    </table>
+                    </div>
+
+                    <div class="col-4">
+                    <table width="100%">
+                      <tr>
+                        <th>
+                          Código de Activación:<span>&amp;nbsp;&amp;nbsp;</span>
+                        </th>
+                        <td style="width: 50%; border-bottom: 1px solid black;"><t t-esc="doc.activation_code"/></td>
+                      </tr>
+                    </table>
                   </div>
 
                   <div class="col-4">
-                  <table width="100%">
-                    <tr>
-                      <th>
-                        Código de Activación:<span>&amp;nbsp;&amp;nbsp;</span>
-                      </th>
-                      <td style="width: 50%; border-bottom: 1px solid black;"><t t-esc="doc.activation_code"/></td>
-                    </tr>
-                  </table>
-                </div>
-
-                <div class="col-4">
-                  <table width="100%">
-                    <tr>
-                      <th class="text-right" style="width: 60%;">
-                        Teléfono:<span>&amp;nbsp;&amp;nbsp;</span>
-                      </th>
-                      <td style="width: 40%; border-bottom: 1px solid black;"><t t-esc="doc.phone"/></td>
-                    </tr>
-                  </table>
-                </div>
+                    <table width="100%">
+                      <tr>
+                        <th style="width: 25%;">
+                          Teléfono:<span>&amp;nbsp;&amp;nbsp;</span>
+                        </th>
+                        <td style="width: 75%; border-bottom: 1px solid black;"><t t-esc="doc.phone"/></td>
+                      </tr>
+                    </table>
+                  </div>
 
                 </div>
-                <br/>
+                <!-- <br/> -->
 
 
                 <!-- <table class="tg"  width="100%">
@@ -144,7 +144,8 @@
                       <td style="width: 43%; border-bottom: 1px solid black;"><t t-esc="doc.full_name"/></td>
                     </tr>
                   </thead>
-                </table><br/>
+                </table>
+                <br/>
 
                 <div class="row">
 
@@ -167,14 +168,14 @@
                             <td style="border: 1px solid black;"><t t-esc="initial_investment.mapped('payment_date')[0]"/></td>
                             <td style="border: 1px solid black;" class="text-center"/>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(sum(initial_investment.mapped('amount')))"/></td>
-                            <td style="border: 1px solid black; font-size:11px; line-height: 1;"><t t-esc="doc.employee_id.name"/></td>
+                            <td style="border: 1px solid black; font-size:11px; line-height: 1; max-width: 2cm; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><t t-esc="doc.employee_id.name"/></td>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(doc.product_price)"/></td>
                           </tr>
                           <tr>
                             <td style="border: 1px solid black;"><t t-esc="last_payment[-1].payment_date"/></td>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="last_payment[-1].ecobro_receipt"/></td>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(last_payment[-1].amount)"/></td>
-                            <td style="border: 1px solid black; font-size:11px; line-height: 1;"><t t-esc="last_payment[-1].debt_collector_code.name"/></td>
+                            <td style="border: 1px solid black; font-size:11px; line-height: 1; max-width: 2cm; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><t t-esc="last_payment[-1].debt_collector_code.name"/></td>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(doc.balance)"/></td>
                           </tr>
                         </t>
@@ -183,14 +184,14 @@
                             <td style="border: 1px solid black;"><t t-esc="initial_investment.mapped('payment_date')[0]"/></td>
                             <td style="border: 1px solid black;" class="text-center"/>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(sum(initial_investment.mapped('amount')))"/></td>
-                            <td style="border: 1px solid black; font-size:11px; line-height: 1;"/>
+                            <td style="border: 1px solid black; font-size:11px; line-height: 1; max-width: 2cm; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"/>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(doc.product_price)"/></td>
                           </tr>
                           <tr>
                             <td style="border: 1px solid black;">&amp;nbsp;&amp;nbsp;</td>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="doc.lot_id.name"/></td>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(sum(initial_investment.mapped('amount')))"/></td>
-                            <td style="border: 1px solid black; font-size:11px; line-height: 1;"><t t-esc="doc.employee_id.name"/></td>
+                            <td style="border: 1px solid black; font-size:11px; line-height: 1; max-width: 2cm; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><t t-esc="doc.employee_id.name"/></td>
                             <td style="border: 1px solid black;" class="text-center"><t t-esc="'${:,.2f}'.format(doc.balance)"/></td>
                           </tr>
                         </t>

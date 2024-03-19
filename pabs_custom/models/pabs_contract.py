@@ -284,7 +284,7 @@ class PABSContracts(models.Model):
             'msg': 'No se envio alguno de los parametros: company_id, contract'
           }
         
-        pdf = self.env.ref('xmarts_funeraria.id_estado_cuenta')._render(con.id)[0]
+        pdf = self.env.ref('xmarts_funeraria.id_estado_cuenta').render(con.id)[0]
             
         vals = {
           'b64_data': base64.b64encode(pdf).decode('utf-8'),
