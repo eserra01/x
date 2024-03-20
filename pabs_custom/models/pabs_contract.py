@@ -259,7 +259,7 @@ class PABSContracts(models.Model):
       os.remove(absolute_path + '/' + filename)
     return True
   
-  ### Regresa el estado de cuenta en base 64
+  ### Regresa el estado de cuenta en base 64.
   def get_statement_report_64(self,  contract = False, company_id = False):
     vals = {
       'b64_data': '',
