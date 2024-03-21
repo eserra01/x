@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="set_lots_wizard_view" model="ir.ui.view">
+		<field name="name">set.lots.wizard.view</field>
+		<field name="model">set.lots.wizard</field>
+		<field name="arch" type="xml">
+			<form string="Especificar series">
+        <group>
+          <group>
+            <field name="product_id" options="{'no_create':True, 'no_open':True}" readonly="1" force_save="1"/> 
+            <field name="start_serie" options="{'no_create':True, 'no_open':True}" domain="[('id', 'in', context.get('domain_start'))]" required="1" /> 
+            <field name="end_serie" options="{'no_create':True, 'no_open':True}" domain="[('id', 'in', context.get('domain_start'))]" required="1" />            
+            <field name="qty" readonly="1" force_save="1"/> 
+          </group>              
+        </group>
+        <field name="msg" readonly="1" style="color: red;"/>                          
+        <footer>
+          <button name="set_lots" string="Especificar series" type="object" class="btn-primary" groups="pabs_stock.pabs_stock_transfer" />
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+      </form>
+		</field>
+	</record>
+
+  <record id="set_lots_action" model="ir.actions.act_window">
+    <field name="name">Especificar series solicitudes</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">set.lots.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="set_lots_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+
+</odoo>
+
+ 

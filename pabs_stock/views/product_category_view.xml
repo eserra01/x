@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="pabs_stock_product_category_form_view_inh">
+            <field name="name">pabs_stock_product_category_form_view_inh</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='property_account_expense_categ_id']" position="after">                   
+                    <field name="consumble_account_stock_id" options="{'no_create':True, 'no_open':True}" />                                         
+                </xpath>                                  
+            </field>
+        </record>
+    </data>
+</odoo>

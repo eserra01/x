@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pabs_stock_config,access_pabs_stock_config,model_pabs_stock_config,,1,1,1,1
+access_pabs_stock_picking,access_pabs_stock_picking,model_pabs_stock_picking,,1,1,1,1
+access_pabs_stock_picking_line,access_pabs_stock_picking_line,model_pabs_stock_picking_line,,1,1,1,1
+access_pabs_product_kit,access_pabs_product_kit,model_pabs_product_kit,,1,1,1,1
+access_pabs_picking_type_user,access_pabs_picking_type_user,model_pabs_picking_type_user,,1,1,1,1
+access_set_lots_wizard,access_set_lots_wizard,model_set_lots_wizard,,1,1,1,1
+update_stock_wizard,access_update_stock_wizard,model_update_stock_wizard,,1,1,1,1
+update_stock_wizard_line,access_update_stock_wizard_line,model_update_stock_wizard_line,,1,1,1,1
+access_create_move_ebita_wizard,access_create_move_ebita_wizard,model_create_move_ebita_wizard,,1,1,1,1
+access_create_move_ebita_wizard_line,access_create_move_ebita_wizard_line,model_create_move_ebita_wizard_line,,1,1,1,1
+access_pabs_history_cost,access_pabs_history_cost,model_pabs_history_cost,,1,1,1,1

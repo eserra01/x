@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="pabs_stock_picking_tree_view">
+        <field name="name">pabs_stock_picking_tree_view</field>
+        <field name="model">pabs.stock.picking</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="create_uid" string="Creado por"/>
+                <field name="origin_location_id"/>
+                <field name="dest_location_id"/>                                
+                <field name="state"/>
+                <field name="picking_type"/>
+                <field name="standard_price"/>
+                <field name="date_done"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="pabs_stock_form_view">
+        <field name="name">pabs_stock_picking_form_view</field>
+        <field name="model">pabs.stock.picking</field>
+        <field name="arch" type="xml">
+        <form string="Movimiento de almacén">
+            <header>    
+                <button name="action_cancel" type="object" string="Cancelar" class="oe_highlight" 
+                attrs="{'invisible': [('state','in',['done','cancel','transit'])]}" groups="pabs_stock.pabs_stock_transfer" 
+                confirm="Esta acción cancelará la solicitud. ¿Desea continuar?"/>
+                <button name="action_done" type="object" string="Transferir" class="oe_highlight" 
+                attrs="{'invisible': [('state','in',['done','cancel','transit'])]}" groups="pabs_stock.pabs_stock_transfer"/>
+                <button name="action_done" type="object" string="Recibir" class="oe_highlight" context="{'receipt':True}" 
+                attrs="{'invisible': [('state','in',['done','cancel','draft'])]}" groups="pabs_stock.pabs_stock_transfer"/>
+                <field name="state" widget="statusbar" statusbar_visible="draft,cancel,transit,done"/>       
+            </header>
+            <sheet>
+                <group>
+                    <group>
+                        <field name="name"/>                     
+                        <field name="picking_type"/>  
+                        <!-- <field name="origin_location_id" force_save="1" options="{'no_open': True, 'no_create':True}" 
+                            attrs="
+                            {
+                                'readonly':['|',('picking_type','in',['going','request']),('state','in',['done'])], 
+                                'required': [('picking_type','in',['consumption','mortuary','ret','adjust','adjust2'])],                                
+                            }"
+                        />       -->
+                         <field name="origin_location_id" force_save="1" options="{'no_open': True, 'no_create':True}" 
+                            attrs="
+                            {                                
+                                'required': [('picking_type','in',['consumption','mortuary','ret','adjust','adjust2'])],                                
+                            }"
+                        />       
+                        <field name="dest_location_id" force_save="1" options="{'no_open': True, 'no_create':True}" 
+                            attrs="
+                            {
+                                'readonly':['|',('picking_type','in',['ret','consumption','mortuary']),('state','in',['done'])], 
+                                'invisible': [('picking_type','in',['consumption','adjust','adjust2','mortuary'])],
+                                'required': [('picking_type','in',['going','request'])],
+                            }"
+                        />                      
+                        <field name="date_done" force_save="1" attrs="{'invisible':[('state','!=','done')]}"/>       
+                    </group>
+                    <group>                                             
+                        <field name="origin_inventory_id" force_save="1" readonly="1" invisible="1"/> 
+                        <field name="transit_inventory_id" force_save="1" readonly="1" invisible="1"/>                         
+                        <field name="dest_inventory_id" force_save="1" readonly="1" invisible="1"/> 
+                        <field name="standard_price"/>                       
+                        <field name="company_id" force_save="1" invisible="1"/>                          
+                    </group>                                   
+                </group>
+                <notebook>
+                    <page string="Productos a transferir">  
+                        <field name="line_ids">
+                            <tree editable="bottom">
+                                <field name="product_id" options="{'no_open': True, 'no_create':True}"/>
+                                <field name="qty_available" readonly="1" force_save="1"/>                                
+                                <field name="qty" 
+                                    attrs="{
+                                        'readonly': [('product_tracking', '=', 'serial'),('parent.picking_type', '!=', 'request')]}" force_save="1"/>
+                                <field name="qty_done" readonly="1" force_save="1"/>
+                                <field name="product_tracking" invisible="1"/>
+                                <field name="prod_lot_id" 
+                                    attrs="{
+                                        'required': [('product_tracking', '!=', 'none'),('parent.picking_type','!=','request')],
+                                        'readonly': ['|',('product_tracking', '=', 'none'),('parent.picking_type','=','request')]}" 
+                                        options="{'no_open': True, 'no_create':True}"/>
+                                <field name="start_serie" readonly="1" force_save="1" options="{'no_open': True, 'no_create':True}"/>
+                                <field name="end_serie" readonly="1" force_save="1" options="{'no_open': True, 'no_create':True}"/>                                
+                                <field name="mortuary_id" options="{'no_open': True, 'no_create':True}" attrs="{'readonly': [('parent.picking_type', 'not in', ['going','ret','adjust2'])]}"/>                              
+                                <field name="pabs_picking_id" invisible="1"/>
+                                <field name="company_id" invisible="1"/>  
+                                <button class="btn btn-primary" name="set_lots" type="object" string="Especificar series" groups="pabs_stock.pabs_stock_transfer" /> 
+                            </tree>
+                            <form>                                
+                                <group>
+                                    <field name="qty_available" readonly="1" />                                
+                                    <field name="qty" readonly="1" />
+                                    <field name="qty_done" readonly="1" />
+                                    <field name="start_serie" readonly="1" />
+                                    <field name="end_serie" readonly="1" />    
+                                </group>                                
+                            </form>
+                        </field>                    
+                    </page>
+                    <page string="Notas">
+                        <field name="notes" string="Notas" placeholder="Agregue una nota interna respecto a este movimiento."/>
+                    </page>
+                    <page string="Contabilidad" groups="account.group_account_manager">
+                        <group>
+                            <field name="move_id" readonly="1"/>
+                        </group>
+                    </page>
+                </notebook>
+            </sheet>
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="activity_ids" widget="mail_activity"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+        </form>
+        </field>
+    </record>
+
+    <record id="pabs_stock_picking_action" model="ir.actions.act_window">
+        <field name="name">Movimientos de almacén</field>
+        <field name="res_model">pabs.stock.picking</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Main Menu -->
+    <menuitem id="pabs_stock_main_menu" 
+    name="Control de almacén" 
+    web_icon="pabs_stock,static/description/icon.png" groups="pabs_stock.pabs_stock_user,pabs_stock.pabs_stock_admin"/> 
+
+    <menuitem id="pabs_stock_picking_menu" 
+    name="Movimientos de almacén" 
+    parent="pabs_stock_main_menu" 
+    action="pabs_stock_picking_action" 
+    sequence="100" groups="pabs_stock.pabs_stock_user,pabs_stock.pabs_stock_admin"/>
+
+</odoo>

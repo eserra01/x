@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Recode Rules -->   
+    <record model="ir.rule" id="pabs_stock_by_company_rule">
+        <field name="name">Movimientos de stock por compañia</field>
+        <field name="model_id" ref="model_pabs_stock_picking"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>   
+</odoo>

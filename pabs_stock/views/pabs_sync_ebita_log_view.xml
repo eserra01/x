@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="pabs_stock_sync_ebita_log_tree_inherit_view">
+        <field name="name">pabs_stock_sync_ebita_log_tree_inherit_view</field>
+        <field name="model">sync.ebita.log</field>
+        <field name="arch" type="xml">
+            <tree create="0" delete="0">
+                <field name="create_date" string="Fecha" />            
+                <field name="description" />                
+                <field name="company_id" invisible="1"/>              
+            </tree>
+        </field>
+    </record>
+
+    <record id="pabs_stock_sync_ebita_log_action" model="ir.actions.act_window">
+        <field name="name">Logs de baja de urna y ataudes</field>
+        <field name="res_model">sync.ebita.log</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="pabs_stock_reports_menu" 
+    name="Reportes" 
+    parent="pabs_stock_main_menu"    
+    sequence="195" groups="pabs_stock.pabs_stock_admin"/>
+
+    <menuitem id="pabs_stock_sync_ebita_log_menu" 
+    name="Logs de baja de urna y ataudes" 
+    parent="pabs_stock_reports_menu" 
+    action="pabs_stock_sync_ebita_log_action" 
+    sequence="10" groups="pabs_stock.pabs_stock_admin"/>
+
+</odoo>

@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="pabs_stock_product_form_view_inh">
+            <field name="name">pabs_stock_product_form_view_inh</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='type']" position="after">                   
+                    <field name="pabs_stock_product" />                                         
+                </xpath>   
+                <xpath expr="//div[@name='options']" position="inside">                   
+                    <div>
+                        <field name="is_kit"/>
+                        <label for="is_kit"/>
+                    </div>                                     
+                </xpath>   
+                <xpath expr="//page[@name='inventory']" position="after">                 
+                    <page name="product_kit" string="Productos del kit" attrs="{'invisible':[('is_kit','=',False)]}">
+                        <group>
+                            <group>
+                                <field name="virtual_stock" />
+                                <field name="virtual_stock_qty" attrs="{'invisible': [('virtual_stock', '=', 0)]}"/>
+                            </group>
+                            <group>
+                                <button name="virtual2stock" string="Virtual a stock" class="btn-primary" type="object" 
+                                 attrs="{'invisible': [('virtual_stock', '=', 0)]}"/>                               
+                            </group>                            
+                        </group>                       
+                        <field name="kit_line_ids">
+                        <tree string="Productos" editable="bottom">                           
+                            <field name="product_id" />
+                            <field name="qty" />                   
+                            <field name="product_product_id" invisible="1" />         
+                        </tree>
+                    </field>
+                    </page>
+                </xpath> 
+                <xpath expr="//page[@name='inventory']" position="after">                 
+                    <page name="history_cost" string="Historial de costo">                            
+                        <field name="history_cost_ids">
+                        <tree string="Productos" editable="bottom" create="0" delete="0">                                                       
+                            <field name="create_date" string="Fecha"/>   
+                            <field name="cost" />                                                    
+                            <field name="write_uid" string="Usuario"/>         
+                            <field name="product_id" invisible="1"/>
+                        </tree>
+                    </field>
+                    </page>
+                </xpath>               
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="pabs_stock_product_search_view_inh">
+            <field name="name">pabs.stock.product.search.inh</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='consumable']" position="after">
+                    <filter string="Kit de productos" name="kits" domain="[('is_kit','=',True)]"/>
+                    <separator/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

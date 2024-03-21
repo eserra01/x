@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="pabs_stock_config_tree_view">
+        <field name="name">pabs_stock_config_tree_view</field>
+        <field name="model">pabs.stock.config</field>
+        <field name="arch" type="xml">
+            <tree editable='top'>                
+                <field name="company_id" options="{'no_open': True, 'no_create':True}"/>
+                <field name="config_type" />
+                <field name="central_location_id" options="{'no_open': True, 'no_create':True}" attrs="{'required':[('config_type','in',['primary','secondary'])]}"/>
+                <field name="request_location_id" options="{'no_open': True, 'no_create':True}" attrs="{'required':[('config_type','in',['primary'])]}"/>
+                <field name="scrap_location_id" options="{'no_open': True, 'no_create':True}" attrs="{'required':[('config_type','in',['primary'])]}"/>
+                <field name="transit_location_id" options="{'no_open': True, 'no_create':True}" attrs="{'required':[('config_type','in',['primary'])]}"/>                
+                <field name="consumable_journal_id" options="{'no_open': True, 'no_create':True}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="pabs_stock_config_action" model="ir.actions.act_window">
+        <field name="name">Configuración</field>
+        <field name="res_model">pabs.stock.config</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="pabs_stock_config_menu" 
+    name="Configuración" 
+    parent="pabs_stock_main_menu"    
+    sequence="200" groups="pabs_stock.pabs_stock_admin"/>
+
+    <menuitem id="pabs_stock_configsub_menu" 
+    name="Configuración" 
+    parent="pabs_stock_config_menu" 
+    action="pabs_stock_config_action" 
+    sequence="100" groups="pabs_stock.pabs_stock_admin"/>
+
+</odoo>

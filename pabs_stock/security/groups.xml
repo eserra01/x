@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1"> 
+        <!-- Categoría  -->
+        <record id="pabs_stock_category" model="ir.module.category">
+            <field name="name">Control de almacén PABS</field>
+        </record>
+
+        <record id="pabs_stock_user" model="res.groups">
+            <field name="name">Usuario de almacén PABS</field>
+            <field name="category_id" ref="pabs_stock_category"/>
+        </record>
+
+        <record id="pabs_stock_admin" model="res.groups">
+            <field name="name">Administrador de almacén PABS</field>
+            <field name="category_id" ref="pabs_stock_category"/>
+        </record>
+
+        <record id="pabs_stock_transfer" model="res.groups">
+            <field name="name">Transferir movimientos PABS</field>
+            <field name="category_id" ref="pabs_stock_category"/>
+        </record>
+    </data>
+</odoo>

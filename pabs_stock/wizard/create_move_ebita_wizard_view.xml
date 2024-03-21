@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <record id="create_move_ebita_wizard_form" model="ir.ui.view">
+            <field name="name">create.move.ebita.wizard.form</field>
+            <field name="model">create.move.ebita.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Generar póliza de baja de urnas y atáudes" >
+                    <group>                       
+                        <group colspan="2">
+                            <field name="flag" invisible="1" />
+                            <field name="sync_date" required="1" />                           
+                        </group>
+                        <field name="info" widget="html" readonly="1" nolabel="1" attrs="{'invisible': [('info','=','')]}" style="color: blue;"/>                           
+                    </group>                                 
+                    <newline/>
+                    <field name="line_ids">
+                        <tree editable="top" create = "0" delete="0">                           
+                            <field name="id_doc" readonly="1"/>
+                            <field name="bitacora" readonly="1"/>
+                            <field name="codigo" readonly="1"/>
+                            <field name="serie" readonly="1"/>
+                            <field name="fecha" readonly="1"/>
+                            <field name="cod_almacen" readonly="1"/>
+                            <field name="servicio" readonly="1"/>
+                            <field name="wizard_id" invisible="1" readonly="1"/>
+                        </tree>
+                    </field>                               
+                    <footer>                                                
+                        <button string="Consultar" class="oe_highlight" name="get_lines" type="object"  />                        
+                        <button string="Generar póliza" class="oe_highlight" name="create_move" type="object" attrs="{'invisible': [('flag','=',False)]}"/>                        
+                        <button string="Cerrar" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="create_move_ebita_wizard_action" model="ir.actions.act_window">
+            <field name="name">Generar póliza de baja de urnas y atáudes</field>
+            <field name="res_model">create.move.ebita.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="create_move_ebita_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem 
+            id="create_move_ebita_wizard_menu" 
+            name="Generar póliza de baja de urnas y atáudes" 
+            parent="pabs_stock_reports_menu" 
+            action="create_move_ebita_wizard_action" 
+            sequence="20"         
+        />
+
+    </data>
+
+</odoo>
