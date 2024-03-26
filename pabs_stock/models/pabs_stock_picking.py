@@ -656,7 +656,8 @@ class PabsStockPickingLine(models.Model):
                             [
                                 ('product_id','=',rec.product_id.id),
                                 ('location_id','=',rec.pabs_picking_id.origin_location_id.id),
-                                ('available_quantity','=',1)
+                                ('quantity','=',1),
+                                ('reserved_quantity','=',0)
                             ])
                         # Se obtienen los lotes de los quants
                         lot_ids = quant_ids.mapped('lot_id')                        
@@ -692,7 +693,8 @@ class PabsStockPickingLine(models.Model):
                             [
                                 ('product_id','=',rec.product_id.id),
                                 ('location_id','=',rec.pabs_picking_id.origin_location_id.id),
-                                ('available_quantity','=',1)
+                                ('quantity','=',1),
+                                ('reserved_quantity','=',0)
                             ])
                         # Se obtienen los lotes de los quants
                         lot_ids = quant_ids.mapped('lot_id')                        
