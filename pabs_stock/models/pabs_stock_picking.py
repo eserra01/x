@@ -648,7 +648,11 @@ class PabsStockPickingLine(models.Model):
                 # Si seleccionan un producto
                 if rec.product_id:                    
                     # Se obtiene la cantidad disponible en la ubicación origen           
-                    rec.qty_available = rec.product_id.with_context({'location': rec.pabs_picking_id.origin_location_id.id}).qty_available
+                    rec.qty_available = rec.product_id.with_context(
+                    {
+                            'location': rec.pabs_picking_id.origin_location_id.id,
+                            'company_owned':rec.pabs_picking_id.origin_location_id.company_id.id
+                    }).qty_available
                     # Si el tipo de operación es de SOLCITUDES
                     if rec.pabs_picking_id.picking_type == 'request':                   
                         # Se obtienen los quants del producto y ubicación correspondientes
