@@ -748,8 +748,10 @@ class PabsStockPickingLine(models.Model):
         quant_ids = self.env['stock.quant'].search(
             [
                 ('product_id','=',self.product_id.id),
-                ('location_id','=',self.pabs_picking_id.origin_location_id.id),
-                ('available_quantity','=',1)
+                ('location_id','=',self.pabs_picking_id.origin_location_id.id),              
+                ('quantity','=',1),
+                ('reserved_quantity','=',0),
+                ('company_id','=',self.env.company.id),
             ])
         # Se obtienen los lotes de los quants
         lot_ids = quant_ids.mapped('lot_id')
