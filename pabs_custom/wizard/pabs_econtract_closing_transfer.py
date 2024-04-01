@@ -39,7 +39,8 @@ class PabsEcontractClosingTransfer(models.TransientModel):
         'asistente': con.id_asistente.name,
         'plan': con.id_contrato.name_service.name,
         'contrato': con.id_contrato.name,
-        'inversion_inicial': con.id_contrato.initial_investment
+        'inversion_inicial': con.id_contrato.initial_investment,
+        'tipo_digital': dict(con.id_contrato._fields['digital_type'].selection).get(con.id_contrato.digital_type),
       })
 
       total_inversiones = total_inversiones + con.id_contrato.initial_investment

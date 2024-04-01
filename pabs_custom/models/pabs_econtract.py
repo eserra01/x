@@ -428,6 +428,8 @@ class PABSElectronicContracts(models.TransientModel):
                 sale_type = "digital"
                 if sol.get('isReafiliacion') and sol['isReafiliacion'] == "1":
                     sale_type = "digital_reafiliation"
+                
+                digital_type = sol['digitalType'] or False
 
                 # 8. Es homónimo
                 observaciones = ""
@@ -483,6 +485,7 @@ class PABSElectronicContracts(models.TransientModel):
                     'lot_id': lot_id,
 
                     'sale_type': sale_type,
+                    'digital_type': digital_type,
                     'invoice_date': fecha_contrato,
                     'qr_string': sol['qr_string'],
                     'state': 'precontract',
