@@ -301,7 +301,7 @@ class PABSContracts(models.Model):
       return json.dumps(vals)
   
   ### Crea el formato del contrato en pdf y lo regresa en base 64
-  def action_get_contract_report(self, activation_code=False, company_id=False):
+  def action_get_contract_report(self, contract=False, company_id=False):
     try:
       vals = {
           'contract': '',
@@ -309,10 +309,10 @@ class PABSContracts(models.Model):
           'msg': 'Defina los parámetros de búsqueda'
         }
       
-      if activation_code and company_id:
+      if contract and company_id:
         contract_id = self.env['pabs.contract'].sudo().search([
-          ('activation_code','=',activation_code),
-          ('company_id','=',company_id)
+          ('name', '=', contract),
+          ('company_id', '=', company_id)
         ], limit=1)
 
         if contract_id:
