@@ -309,7 +309,7 @@ class PABSContracts(models.Model):
       return json.dumps(vals)
   
   ### Crea el formato del contrato en pdf y lo regresa en base 64
-  def action_get_contract_report(self, contract=False, company_id=False):
+  def action_get_contract_report(self, activation_code=False, company_id=False):
     try:
       vals = {
           'contract': '',
@@ -317,9 +317,57 @@ class PABSContracts(models.Model):
           'msg': 'Defina los parámetros de búsqueda'
         }
       
-      if contract and company_id:
+      if activation_code and company_id:
         contract_id = self.env['pabs.contract'].sudo().search([
-          ('name', '=', contract),
+          ('activation_code', '=', activation_code),
+          ('company_id', '=', company_id)
+        ], limit=1)
+
+        if contract_id:
+          if contract_id.name_service.product_tmpl_id.contract_xml_id:
+            xml_id = contract_id.name_service.product_tmpl_id.contract_xml_id
+            pdf = self.env.ref(xml_id).render([contract_id.id])[0]
+            
+            vals = {
+              'contract': contract_id.name,
+              'b64_data': base64.b64encode(pdf).decode('utf-8'),
+              'msg': ''
+            }
+          else:
+            vals = {
+              'contract': '',
+              'b64_data': '',
+              'msg': 'No se ha configurado el xml_id en el producto'
+            }
+        else:
+          vals = {
+            'contract': '',
+            'b64_data': '',
+            'msg': 'No existe un contrato con los parámetros enviados'
+          }
+
+        return json.dumps(vals)
+      
+    except Exception as ex:
+      vals = {
+        'contract': '',
+        'b64_data': '',
+        'msg': "{}{}".format('Error: ', ex)
+      }
+
+      return json.dumps(vals)
+    
+  def get_pdf_contract_base64(self, name=False, company_id=False):
+    try:
+      vals = {
+          'contract': '',
+          'b64_data': '',
+          'msg': 'Defina los parámetros de búsqueda'
+        }
+      
+      if name and company_id:
+        contract_id = self.env['pabs.contract'].sudo().search([
+          ('name', '=', name),
           ('company_id', '=', company_id)
         ], limit=1)
 
