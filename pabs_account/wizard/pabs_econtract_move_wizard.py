@@ -55,12 +55,19 @@ class PabsAccountMove(models.TransientModel):
 
         if not id_compania:
             raise ValidationError("No está asignada una compañia")
+        
+        local = pytz.timezone("Mexico/General")
+        local_start_datetime = local.localize(fields.Datetime.to_datetime("{} 00:00:00".format(self.fecha_inicio)))
+        local_end_datetime = local.localize(fields.Datetime.to_datetime("{} 23:59:59".format(self.fecha_fin)))
+        
+        local_start_datetime = local_start_datetime.astimezone(pytz.utc)
+        local_end_datetime = local_end_datetime.astimezone(pytz.utc)
 
         ### Buscar contratos de la oficina en el cierre que no tenga la póliza generada ###
         cierres_digitales = self.env['pabs.econtract.move'].search([
             ('company_id', '=', id_compania),
-            ('fecha_hora_cierre', '>=', '{} 00:00:00'.format(self.fecha_inicio) ),
-            ('fecha_hora_cierre', '<=', '{} 23:59:59'.format(self.fecha_fin) ),
+            ('fecha_hora_cierre', '>=', local_start_datetime),
+            ('fecha_hora_cierre', '<=', local_end_datetime),
             ('estatus', '=', 'cerrado'),
             ('id_poliza_caja_transito', '!=', False),
             ('id_poliza_caja_electronicos', '=', False),
