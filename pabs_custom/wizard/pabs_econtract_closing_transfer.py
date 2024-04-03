@@ -3,6 +3,7 @@
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
 from datetime import datetime
+import pytz
 
 class PabsEcontractClosingTransfer(models.TransientModel):
   _name = 'pabs.econtract.closing.transfer'
@@ -14,14 +15,21 @@ class PabsEcontractClosingTransfer(models.TransientModel):
   def ImprimirCierre(self):
     if not self.warehouse_id:
       raise ValidationError("Elige una oficina")
+    
+    local = pytz.timezone("Mexico/General")
+    local_start_datetime = local.localize(fields.Datetime.to_datetime("{} 00:00:00".format(self.date_closing)))
+    local_end_datetime = local.localize(fields.Datetime.to_datetime("{} 23:59:59".format(self.date_closing)))
+    
+    local_start_datetime = local_start_datetime.astimezone(pytz.utc)
+    local_end_datetime = local_end_datetime.astimezone(pytz.utc)
 
     ### Consultar registros de corte ###
     cierres = self.env['pabs.econtract.move'].search([
       ('company_id', '=', self.env.company.id),
       ('id_contrato.lot_id.warehouse_id.id', '=', self.warehouse_id.id),
       ('estatus', '=', 'cerrado'),
-      ('fecha_hora_cierre', '>=', datetime(self.date_closing.year, self.date_closing.month, self.date_closing.day, 0, 0, 0) ), 
-      ('fecha_hora_cierre', '<=', datetime(self.date_closing.year, self.date_closing.month, self.date_closing.day, 23, 59, 59) )
+      ('fecha_hora_cierre', '>=', local_start_datetime), 
+      ('fecha_hora_cierre', '<=', local_end_datetime)
     ])
 
     if not cierres:
