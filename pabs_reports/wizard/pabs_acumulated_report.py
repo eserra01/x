@@ -188,10 +188,10 @@ class PabsAcumulatedReportXLSX(models.AbstractModel):
       sheet.write(count, 9, 0, money_format)
       sheet.write(count, 10, afi.id_contrato.initial_investment or 0, money_format)
       sheet.write(count, 11, afi.id_contrato.product_price or 0, money_format)
-      sheet.write(count, 12, "")
-      sheet.write(count, 13, "")
-      sheet.write(count, 14, "")
-      sheet.write(count, 15, "")
+      sheet.write(count, 12, "")  # Forma pago
+      sheet.write(count, 13, "")  # Referencia
+      sheet.write(count, 14, dict(afi.id_contrato._fields['origen_solicitud'].selection).get(afi.id_contrato.origen_solicitud) or "")  # Origen
+      sheet.write(count, 15, afi.id_contrato.payment_scheme_id.name or "")  # Esquema de pago
       sheet.write(count, 16, afi.id_contrato.street_name or "")
       sheet.write(count, 17, afi.id_contrato.street_number or "")
       sheet.write(count, 18, afi.id_contrato.neighborhood_id.name or "")
