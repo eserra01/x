@@ -34,56 +34,45 @@ CUENTA_AFILIACIONES = "110.01.002"
 CUENTA_TRANSITO = "101.01.005"
 NOMBRE_CUENTA = "Caja transito"
 
+ECOBRO_DATABASES = {
+    15: 'ecobroaca',
+    7: 'ecobrocue',
+    13: 'ecobromva',
+    14: 'ecobronld',
+    12: 'ecobrosalt',
+    16: 'ecobrotam',
+    6: 'ecobrotgz',
+    8: 'ecobrovsa'
+}
+
 class PABSElectronicContracts(models.TransientModel):
     _name = 'pabs.electronic.contract'
     _description = 'Afiliaciones electrónicas'
 
     ### Obtener web service de afiliaciones electrónicas ###
-    # tipo 1 = consultar solicitudes
-    # tipo 2 = confirmar creación de solicitudes
     def get_url(self, company_id, tipo):
         try:
-            # Validar IP
-            direccion_ip = self.env['res.company'].browse(company_id).ecobro_ip
+            # Validar configuracion
+            company = self.env['res.company'].browse(company_id)
 
+            if not company:
+                raise ValidationError("No existe la compañia {}".format(company_id))
+            
+            direccion_ip = company.ecobro_ip
+            plaza_ecobro = company.extension_path
+
+            
+            if tipo in (7, 8):
+                plaza_ecobro = ECOBRO_DATABASES.get(company_id)
+
+                if not plaza_ecobro:
+                    raise ValidationError("No se encontró la llave {} en el diccionario DATABASE_NAMES".format(company_id))
+                
             if not direccion_ip:
                 raise ValidationError("No se ha asignado una IP en la compañia")
             
-            #Asignar plaza #Actualizar al agregar otra plaza
-            plaza_ecobro = ""
-            if company_id == 12:
-                if tipo in (5,6):
-                    plaza_ecobro = "ecobroSAP_SALT"
-                elif tipo in (7,8):
-                    plaza_ecobro = "ecobrosalt"
-                else:
-                    plaza_ecobro = "asistencia_social_SLW"
-
-            if company_id == 16:
-                if tipo in (5,6):
-                    plaza_ecobro = "ecobroSAP_TAM"
-                elif tipo in (7,8):
-                    plaza_ecobro = ""
-                else:
-                    plaza_ecobro = ""
-
-            if company_id == 8:
-                if tipo in (5,6):
-                    plaza_ecobro = "ecobroSAP_VSA"
-                elif tipo in (7,8):
-                    plaza_ecobro = ""
-                else:
-                    plaza_ecobro = ""
-
-            if company_id == 13:                
-                plaza_ecobro = "ecobroSAP_MVA"
-            
-            if company_id == 7:                
-                plaza_ecobro = "ecobroSAP_CUE"
-                                   
             if not plaza_ecobro:
-                ValidationError("No se ha definido la plaza de ecobro")
-                return ""
+                raise ValidationError("No se ha la extension de eCobro")
 
             ### Asignar función ###
             metodo = ""
