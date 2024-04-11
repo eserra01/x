@@ -1085,7 +1085,48 @@ class PABSElectronicContracts(models.TransientModel):
         if len(respuesta['success']) > 0:
             _logger.info("Actualizada en eCobro!!")
         else:
-            _logger.error("No actualizada en eCobro") 
+            _logger.error("No actualizada en eCobro")
+
+    def cancelar_contrato_digital(self, company_id, solicitud):
+        try:
+            _logger.info("Comienza cancelación de solicitud {}".format(solicitud))
+
+            con = self.env['pabs.contract'].search([
+                ('company_id', '=', company_id),
+                ('lot_id.name', '=', solicitud)
+            ])
+
+            if not con:
+                return {'error': "No se encontró el contrato con solicitud {}".format(solicitud)}
+            
+            if con.sale_type not in ('digital', 'digital_reafiliation'):
+                return {'error': "El contrato {} no es digital".format(con.name)}
+
+            if con.refund_ids:
+                return {'error': "El contrato {} ya tiene documentos".format(solicitud)}
+            
+            # Buscar corte
+            cor = self.env['pabs.econtract.move'].search([
+                ('id_contrato', '=', con.id)
+            ])
+
+            if not cor:
+                return {'error': "No se encontró el registro de corte del contrato {}".format(con.name)}
+            
+            if con.state == 'cancel' and cor.estatus == 'cancel':
+                return {'correcto': "El contrato {} de la solicitud {} fue previamente cancelado".format(con.name, solicitud)}
+
+            # Cancelar contrato y corte
+            con.write({'state': 'cancel'})
+            cor.write({
+                'fecha_hora_cierre': fields.Datetime.now(),
+                'estatus': 'cancel'
+            })
+
+            _logger.info("Contrato digital cancelado {}".format(con.name))
+            return {'correcto': "{},{}".format(con.name, solicitud)}
+        except Exception as ex:
+            return {'error': "otro:{}".format(ex)}
 
 #################################################################################################################################################
 ######################################                SINCRONIZADOR DE CORTES             #######################################################
