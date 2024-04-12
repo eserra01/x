@@ -64,6 +64,7 @@
                     <td>Contrato</td>
                     <td>Inversión inicial</td>
                     <td>Tipo</td>
+                    <td>Origen</td>
                 </thead>
                 <tbody style="color:#000000; font-weight:normal; text-align: center;">
                   <tr t-foreach="detalle_contratos" t-as="det">
@@ -74,6 +75,7 @@
                     <td><span t-esc="det['contrato']"/></td>
                     <td><span t-esc="det['inversion_inicial']"/></td>
                     <td><span t-esc="det['tipo_digital']"/></td>
+                    <td><span t-esc="det['origen']"/></td>
                   </tr>
                 </tbody>
               </table>
