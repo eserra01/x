@@ -6,7 +6,6 @@ from datetime import datetime, date
 import logging
 import requests
 from dateutil import tz
-#import threading
 import json
 
 _logger = logging.getLogger(__name__)
@@ -432,7 +431,7 @@ class PABSEcobroSync(models.Model):
       return
     try:
       company = company_obj.browse(company_id)
-       # Se agrega un 2 para elegir el endpoint correcto para la empresa con 2 viejo y nuevo esquema
+      # Se agrega un 2 para elegir el endpoint correcto para la empresa con 2 viejo y nuevo esquema
       if company.id in [15,16,18,19,20]:
         url_pending += "2"
 
@@ -459,6 +458,27 @@ class PABSEcobroSync(models.Model):
     len_payments = len(response['result'])
     if len_payments > 0:
       log = 'Sincronización de Pagos \n'
+    
+    # Se obtiene la fecha de bloqueo: period_lock_date
+    open_period = False
+    company_row = self.env['res.company'].browse(company_id)
+    if company_row:
+      # Se respaldan las fechas de bloqueo
+      period_lock_date = company_row.period_lock_date
+      fiscalyear_lock_date = company_row.fiscalyear_lock_date
+      tax_lock_date = company_row.tax_lock_date
+
+      # Se revisan las fechas de cada pago 
+      for rec in enumerate(response['result']):
+        #
+        fecha_oficina = datetime.strptime(rec['fecha_oficina'], '%Y-%m-%d')
+        if period_lock_date:
+          if fecha_oficina < period_lock_date:
+            open_period = True
+            # Se quitan las fechas de bloqueo
+            company_row.write({'period_lock_date':False,'fiscalyear_lock_date':False,'tax_lock_date':False})
+            break
+      
 
     ### Iteracion en lista de pagos
     _logger.info("Registros a procesar: {}".format(len_payments))
@@ -740,6 +760,10 @@ class PABSEcobroSync(models.Model):
         _logger.warning("Algunos de los recibos no pudieron ser actualizados: {}".format(fails))
       else:
         _logger.info("Todos los recibos fueron afectados correctamente, esta totalmente actualizado!!")
+        # Se restauran las fechas de bloqueo
+        if open_period:          
+            company_row.write({'period_lock_date':period_lock_date,'fiscalyear_lock_date':fiscalyear_lock_date,'tax_lock_date':tax_lock_date})
+            
     except Exception as e:
       _logger.warning("Hubo un problema con la petición al webservice, mensaje: {}".format(e))
     
