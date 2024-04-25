@@ -469,7 +469,7 @@ class PABSEcobroSync(models.Model):
       tax_lock_date = company_row.tax_lock_date
 
       # Se revisan las fechas de cada pago 
-      for rec in enumerate(response['result']):
+      for rec in response['result']:
         #
         fecha_oficina = datetime.strptime(rec['fecha_oficina'], '%Y-%m-%d')
         if period_lock_date:
