@@ -471,7 +471,7 @@ class PABSEcobroSync(models.Model):
       # Se revisan las fechas de cada pago 
       for rec in response['result']:
         #
-        fecha_oficina = datetime.strptime(rec['fecha_oficina'], '%Y-%m-%d')
+        fecha_oficina = datetime.strptime(rec['fecha_oficina'], '%Y-%m-%d').date()
         if period_lock_date:
           if fecha_oficina < period_lock_date:
             open_period = True
