@@ -61,6 +61,7 @@
                     <td>Código</td>
                     <td>Promotor</td>
                     <td>Plan</td>
+                    <td>Esquema de pago</td>
                     <td>Contrato</td>
                     <td>Inversión inicial</td>
                     <td>Tipo</td>
@@ -72,6 +73,7 @@
                     <td><span t-esc="det['codigo']"/></td>
                     <td><span t-esc="det['asistente']"/></td>
                     <td><span t-esc="det['plan']"/></td>
+                    <td><span t-esc="det['esquema_pago']"/></td>
                     <td><span t-esc="det['contrato']"/></td>
                     <td><span t-esc="det['inversion_inicial']"/></td>
                     <td><span t-esc="det['tipo_digital']"/></td>

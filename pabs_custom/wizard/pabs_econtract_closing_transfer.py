@@ -30,12 +30,12 @@ class PabsEcontractClosingTransfer(models.TransientModel):
       ('estatus', '=', 'cerrado'),
       ('fecha_hora_cierre', '>=', local_start_datetime), 
       ('fecha_hora_cierre', '<=', local_end_datetime)
-    ])
+    ],order='fecha_hora_cierre asc')
 
     if not cierres:
       raise ValidationError("No hay afiliaciones")
 
-    cierres = cierres.sorted(key=lambda x: x.id_asistente.name and x.id_contrato.name)
+    # cierres = cierres.sorted(key=lambda x: x.id_asistente.name and x.id_contrato.name)
 
     ### Llenar datos que se enviarán al reporte ###
     detalle_contratos = []
@@ -47,6 +47,7 @@ class PabsEcontractClosingTransfer(models.TransientModel):
         'asistente': con.id_asistente.name,
         'plan': con.id_contrato.name_service.name,
         'contrato': con.id_contrato.name,
+        'esquema_pago': con.id_contrato.payment_scheme_id.name,
         'inversion_inicial': con.id_contrato.initial_investment,
         'tipo_digital': dict(con.id_contrato._fields['digital_type'].selection).get(con.id_contrato.digital_type),
         'origen': dict(con.id_contrato._fields['origen_solicitud'].selection).get(con.id_contrato.origen_solicitud)
