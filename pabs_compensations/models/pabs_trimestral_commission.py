@@ -18,24 +18,31 @@ class PabsTrimestralCommission(models.Model):
     trimester_id = fields.Many2one(string="Trimestre", comodel_name="pabs.trimester", required =True,tracking=True)    
     line_ids = fields.One2many(comodel_name='pabs.trimestral.commission.line', inverse_name='commission_id', string="Comisión", tracking=True)    
     company_id = fields.Many2one(comodel_name="res.company",string="Compañia",default=lambda self: self.env.company, copy=True, required=True,tracking=True) 
-               
-  
+            
     
-    def get_commissions(self,start=False):
+    def get_commissions(self,start=False,company_id=False):
         #################################################### CALCULO COMISIONES: GERENTES Y COORDINADORES ###################################################
         template_obj = self.env['pabs.comission.template']
         pricelist_obj = self.env['product.pricelist.item']         
         # Si corresponde evaluar el trismetre en base a la fecha dada 
-        trimester_id = self.trimester_flag(start=start)       
+        trimester_id = self.trimester_flag(start=start,company_id=company_id)       
         if trimester_id:
             # Se buscan los puestos de GERENTE DE OFICIN Y COORDINADOR
-            manager_job_id = self.env['hr.job'].search([('name','=','GERENTE DE OFICINA')], limit=1)
+            manager_job_id = self.env['hr.job'].search(
+            [
+                ('name','=','GERENTE DE OFICINA'),
+                ('company_id','=',company_id)
+            ], limit=1)
             if not manager_job_id:
                 raise UserError("No se encuentra el puesto de GERENTE DE OFICINA")
-            coordinator_job_id = self.env['hr.job'].search([('name','=','COORDINADOR')], limit=1)
+            coordinator_job_id = self.env['hr.job'].search(
+            [
+                ('name','=','COORDINADOR'),
+                ('company_id','=',company_id)
+            ], limit=1)
             if not coordinator_job_id:
                 raise UserError("No se encuentra el puesto de COORDINADOR")
-           
+        
             # Obtenemos las fechas del trimestre
             if start:
                 today = datetime.strptime(start, "%Y-%m-%d")
@@ -51,14 +58,14 @@ class PabsTrimestralCommission(models.Model):
                 last_month_date = datetime(today.year, trimester_id.last_month, 1)
                 end_date = last_month_date.replace(day=1) + relativedelta(months=1) - relativedelta(days=1)
             
-             # Se obtienen las oficinas de la lista de gerentes y oficinas
-            office_manager_ids = self.env['pabs.office.manager'].search([('company_id','=',self.env.company.id)])
+            # Se obtienen las oficinas de la lista de gerentes y oficinas
+            office_manager_ids = self.env['pabs.office.manager'].search([('company_id','=',company_id)])
             office_ids = office_manager_ids.mapped('warehouse_id')
 
             # Se obtiene la producción trimestral de las oficinas especificadas en la tabla
             contract_ids = self.env['pabs.contract'].search(
             [
-                ('company_id','=',self.env.company.id),
+                ('company_id','=',company_id),
                 ('invoice_date','>=',start_date),
                 ('invoice_date','<=',end_date),
                 ('state','=','contract'),
@@ -76,14 +83,23 @@ class PabsTrimestralCommission(models.Model):
                 # Se obtienen los AS's a partir de los contratos
                 as_ids = trimester_contract_ids.mapped('sale_employee_id')               
                 # Se obtienen los planes a partir de los contratos
-                plan_ids = pricelist_obj.search([('product_id','in',trimester_contract_ids.mapped('name_service').ids)])                         
+                plan_ids = pricelist_obj.search(
+                [
+                    ('product_id','in',trimester_contract_ids.mapped('name_service').ids),
+                    ('company_id','=',company_id)
+                ])                         
                 # Se obtienen las plantillas de los AS's
-                template_ids = template_obj.search([('employee_id','in',as_ids.ids),('plan_id','in',plan_ids.ids)])                   
+                template_ids = template_obj.search(
+                [
+                    ('employee_id','in',as_ids.ids),
+                    ('plan_id','in',plan_ids.ids),
+                    ('company_id','=',company_id)
+                ])                   
                 # Se obtienen los: GERENTES DE OFICINA (activos) a partir de los AS de los contratos y de las plantillas                
                 manager_ids = template_ids.filtered(lambda r: r.job_id.id == manager_job_id.id and r.comission_agent_id.employee_status.name == 'ACTIVO').mapped('comission_agent_id')            
                 # Se obtienen los: COORDINADORES (activos) a partir de los AS de los contratos y de las plantillas
                 coordinator_ids = template_ids.filtered(lambda r: r.job_id.id == coordinator_job_id.id and r.comission_agent_id.employee_status.name == 'ACTIVO').mapped('comission_agent_id')               
-               
+        
                 # GERENTES                
                 # Se obtienen los contratos del gerente
                 for manager_id in manager_ids:
@@ -96,7 +112,7 @@ class PabsTrimestralCommission(models.Model):
                                 break
 
                     # Comisión Gerente                       
-                    commission_manager_amount = self.get_compensation_amount('manager','commission',int(len(manager_contract_ids)/3))
+                    commission_manager_amount = self.get_compensation_amount('manager','commission',int(len(manager_contract_ids)/3),company_id)
                     vals = {                  
                         'employee_id':manager_id.id,
                         'type':'manager',
@@ -124,7 +140,7 @@ class PabsTrimestralCommission(models.Model):
                                 break
 
                     # Comisión coordinador                       
-                    commission_coordinator_amount = self.get_compensation_amount('coordinator','commission',int(len(coordinator_contract_ids)/3))
+                    commission_coordinator_amount = self.get_compensation_amount('coordinator','commission',int(len(coordinator_contract_ids)/3),company_id)
                     vals = {                  
                         'employee_id':coordinator_id.id,
                         'type':'coordinator',
@@ -138,7 +154,7 @@ class PabsTrimestralCommission(models.Model):
                     line_ids.append((0,0,vals))
                     # Se actualizan las plantillas de los AS de los contratos
                     if warehouse_id.id in office_ids.ids:
-                        self.update_templates(warehouse_id=warehouse_id,job_id=coordinator_job_id,comission_agent_id=coordinator_id,amount=commission_coordinator_amount)
+                        self.update_templates(warehouse_id=warehouse_id,job_id=coordinator_job_id,comission_agent_id=coordinator_id,amount=commission_coordinator_amount,company_id=company_id)
                 
                 # Se crea la comisión        
                 if line_ids and warehouse_id.id in office_ids.ids:
@@ -155,8 +171,8 @@ class PabsTrimestralCommission(models.Model):
             # Se actualiza el trimestre
             trimester_id.write({'last_done_date':datetime.today()})    
         return
-      
-    def trimester_flag(self,start=False):        
+    
+    def trimester_flag(self,start=False,company_id=False):        
         #
         if start:
             today = datetime.strptime(start, "%Y-%m-%d")
@@ -166,16 +182,16 @@ class PabsTrimestralCommission(models.Model):
         trimester_id = self.env['pabs.trimester'].search(
         [
             ('month','=',today.month),          
-            ('company_id','=',self.env.company.id),
+            ('company_id','=',company_id),
         ])      
         #
         return trimester_id
 
-    def get_compensation_amount(self,type,compensation_type,production):
+    def get_compensation_amount(self,type,compensation_type,production,company_id):
         amount = 0
         amount_id = self.env['pabs.compensation.amount'].search(
         [
-            ('company_id','=',self.env.company.id),
+            ('company_id','=',company_id),
             ('type','=',type),
             ('compensation_type','=',compensation_type),
             ('min_production','<=',production),
@@ -187,13 +203,13 @@ class PabsTrimestralCommission(models.Model):
         #
         return amount
 
-    def update_templates(self,warehouse_id=False,job_id=False,comission_agent_id=False,amount=0):
+    def update_templates(self,warehouse_id=False,job_id=False,comission_agent_id=False,amount=0,company_id=False):
         # Si está activa la configuración para actualizar plantillas de AS
         if self.env.company.update_templates:                          
             # Se obtienen los AS's activos de la oficina
             employee_ids =self.env['hr.employee'].search(
             [
-                ('company_id','=',self.env.company.id),
+                ('company_id','=',company_id),
                 ('warehouse_id','=',warehouse_id.id),
                 ('employee_status.name','=','ACTIVO'),
                 ('job_id.name','=','ASISTENTE SOCIAL'),                
@@ -203,7 +219,7 @@ class PabsTrimestralCommission(models.Model):
             temp_ids = self.env['pabs.comission.template'].search(
             [
                 ('employee_id','in',employee_ids.ids),
-                ('company_id','=',self.env.company.id),
+                ('company_id','=',company_id),
             ])  
             # Se filtran los templates a actualizar
             template_ids = temp_ids.filtered(lambda rec: rec.job_id.id == job_id.id and rec.comission_agent_id.id == comission_agent_id.id)
@@ -220,30 +236,6 @@ class PabsTrimestralCommission(models.Model):
                 """            
                 self._cr.execute(qry)
             
-        return
-    
-    def update_templates_old(self,contract_ids=False,job_id=False,comission_agent_id=False,amount=0):
-        # Si está activa la configuración para actualizar plantillas de AS
-        if self.env.company.update_templates:                          
-            # Se obtienen los AS's a partir de los contratos
-            as_ids = contract_ids.mapped('sale_employee_id')               
-            # Se obtienen los planes a partir de los contratos
-            plan_ids = self.env['product.pricelist.item'].search([('product_id','in',contract_ids.mapped('name_service').ids)])                         
-            # Se obtienen las plantillas de los AS's
-            temp_ids = self.env['pabs.comission.template'].search([('employee_id','in',as_ids.ids),('plan_id','in',plan_ids.ids)])  
-            # Se filtran los templates a actualizar
-            template_ids = temp_ids.filtered(lambda rec: rec.job_id.id == job_id.id and rec.comission_agent_id.id == comission_agent_id.id)                
-            # 
-            if template_ids:
-                ids = ""
-                for id in template_ids:
-                    ids += str(id.id) + ','
-                ids = ids[:-1]
-                qry = f"""
-                UPDATE pabs_comission_template SET comission_amount = {amount} 
-                WHERE id IN ({ids});
-                """            
-                self._cr.execute(qry)
         return
     
 class PabsTrimestralCommisionLine(models.Model):

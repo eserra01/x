@@ -17,20 +17,28 @@ class PabsCompensation(models.Model):
     end_date = fields.Date(string="Fecha final",tracking=True)
     line_ids = fields.One2many(comodel_name='pabs.compensation.line', inverse_name='compensation_id', string="Compensación", tracking=True)    
     company_id = fields.Many2one(comodel_name="res.company",string="Compañia",default=lambda self: self.env.company, copy=True, required=True,tracking=True) 
-               
-    def get_compensations(self,start=False):
+            
+    def get_compensations(self,start=False,company_id=False):
         #         
         template_obj = self.env['pabs.comission.template']
         pricelist_obj = self.env['product.pricelist.item']
         
         # 0.- Se buscan los puestos de GERENTE DE OFICINA,COORDINADOR, BONO GERENTE Y BONO COORDINADOR
-        manager_job_id = self.env['hr.job'].search([('name','=','GERENTE DE OFICINA')], limit=1)
+        manager_job_id = self.env['hr.job'].search(
+        [
+            ('name','=','GERENTE DE OFICINA'),
+            ('company_id','=',company_id)
+        ], limit=1)
         if not manager_job_id:
             raise UserError("No se encuentra el puesto de GERENTE DE OFICINA")
-        coordinator_job_id = self.env['hr.job'].search([('name','=','COORDINADOR')], limit=1)
+        coordinator_job_id = self.env['hr.job'].search(
+        [
+            ('name','=','COORDINADOR'),
+            ('company_id','=',company_id)
+        ], limit=1)
         if not coordinator_job_id:
             raise UserError("No se encuentra el puesto de COORDINADOR")       
-                       
+                    
         # 1.- Se toman los contratos del mes previo a la fecha en que se ejecuta el método
         if start:
             today = datetime.strptime(start, "%Y-%m-%d")
@@ -42,13 +50,13 @@ class PabsCompensation(models.Model):
         end_date = last_month_date.replace(day=1) + relativedelta(months=1) - relativedelta(days=1)
         
         # Se obtienen las oficinas de la lista de gerentes y oficinas
-        office_manager_ids = self.env['pabs.office.manager'].search([('company_id','=',self.env.company.id)])
+        office_manager_ids = self.env['pabs.office.manager'].search([('company_id','=',company_id)])
         office_ids = office_manager_ids.mapped('warehouse_id')
         
         # Se obtiene la producción mensual de las oficinas especificadas en la tabla
         contract_ids = self.env['pabs.contract'].search(
         [
-            ('company_id','=',self.env.company.id),
+            ('company_id','=',company_id),
             ('invoice_date','>=',start_date),
             ('invoice_date','<=',end_date),
             ('state','=','contract'), 
@@ -56,12 +64,12 @@ class PabsCompensation(models.Model):
         ])
         # 2.- Se obtienen las oficinas a partir de los contratos       
         warehouse_ids = contract_ids.mapped('lot_id.warehouse_id')
-               
+            
         # Para cada oficina
         for warehouse_id in warehouse_ids:
             line_ids = []
             # Se obtienen datos por oficina: Eficiencia, Producción, Cancelados            
-            office_data = self.get_office_data(months=4,warehouse_id=warehouse_id,start=start)
+            office_data = self.get_office_data(months=4,warehouse_id=warehouse_id,start=start,company_id=company_id)
             
             # Se obtienen los AS's a partir de los contratos
             as_ids = office_data.get('period_contract_ids').mapped('sale_employee_id')               
@@ -69,14 +77,19 @@ class PabsCompensation(models.Model):
             plan_ids = pricelist_obj.search([('product_id','in',office_data.get('period_contract_ids').mapped('name_service').ids)])         
             
             # Se obtienen las plantillas de los AS's
-            template_ids = template_obj.search([('employee_id','in',as_ids.ids),('plan_id','in',plan_ids.ids)])   
+            template_ids = template_obj.search(
+            [
+                ('employee_id','in',as_ids.ids),
+                ('plan_id','in',plan_ids.ids),
+                ('company_id','=',company_id)
+            ])   
             
             # Se obtienen los: GERENTES DE OFICINA (activos) a partir de los AS de los contratos y de las plantillas                
             manager_ids = template_ids.filtered(lambda r: r.job_id.id == manager_job_id.id and r.comission_agent_id.employee_status.name == 'ACTIVO').mapped('comission_agent_id')
-         
+        
             # Se obtienen los: COORDINADORES (activos) a partir de los AS de los contratos y de las plantillas
             coordinator_ids = template_ids.filtered(lambda r: r.job_id.id == coordinator_job_id.id and r.comission_agent_id.employee_status.name == 'ACTIVO').mapped('comission_agent_id')
-                                  
+                                
             
             #################################################### CALCULO DEL BONO: GERENTES Y COORDINADORES ###################################################
             
@@ -92,7 +105,7 @@ class PabsCompensation(models.Model):
                             break
                 
                 # Bono Gerente                       
-                bonus_manager_amount = self.get_compensation_amount('manager','bonus',office_data.get('period_production'))              
+                bonus_manager_amount = self.get_compensation_amount('manager','bonus',office_data.get('period_production'),company_id)              
                 
                 # Se calcula el monto del bono si el gerente está en la tabla de gerente y oficina
                 amount = 0
@@ -100,7 +113,7 @@ class PabsCompensation(models.Model):
                 [
                     ('warehouse_id','=',warehouse_id.id),
                     ('employee_id','=',manager_id.id),
-                    ('company_id','=',self.env.company.id),
+                    ('company_id','=',company_id),
                 ],limit=1)
                 #
                 if office_manager_id:                    
@@ -142,7 +155,7 @@ class PabsCompensation(models.Model):
                 #                        
                 month_team_production = len(coordinator_contract_ids)
                 # Bono Coordinador                       
-                bonus_coordinator_amount = self.get_compensation_amount('coordinator','bonus',len(coordinator_contract_ids))
+                bonus_coordinator_amount = self.get_compensation_amount('coordinator','bonus',len(coordinator_contract_ids),company_id)
                 vals = {
                     'employee_id': coordinator_id.id,
                     'type':'coordinator',
@@ -159,7 +172,7 @@ class PabsCompensation(models.Model):
                 }
                 #
                 line_ids.append((0,0,vals))                          
-           
+        
             # Se crea la compensación        
             if line_ids and warehouse_id.id in office_ids.ids:
                 compensation_vals = {
@@ -172,12 +185,12 @@ class PabsCompensation(models.Model):
                 compensation_id = self.create(compensation_vals)
         #
         return True
-              
-    def get_compensation_amount(self,type,compensation_type,production):
+            
+    def get_compensation_amount(self,type,compensation_type,production,company_id):
         amount = 0
         amount_id = self.env['pabs.compensation.amount'].search(
         [
-            ('company_id','=',self.env.company.id),
+            ('company_id','=',company_id),
             ('type','=',type),
             ('compensation_type','=',compensation_type),
             ('min_production','<=',production),
@@ -189,7 +202,7 @@ class PabsCompensation(models.Model):
         #
         return amount
     
-    def get_office_data(self,months=0,warehouse_id=False,start=False):        
+    def get_office_data(self,months=0,warehouse_id=False,start=False,company_id=False):        
         # Se obtienen las fechas inicial y final 
         if start:
             today = datetime.strptime(start, "%Y-%m-%d")
@@ -199,11 +212,11 @@ class PabsCompensation(models.Model):
         prev_month_date = today - relativedelta(months=months)        
         start_date = prev_month_date.replace(day=1)
         end_date = today.replace(day=1) - relativedelta(days=1)   
-      
+    
         # Producción para la eficiencia
         efficiency_contract_ids = self.env['pabs.contract'].search(
         [
-            ('company_id','=',self.env.company.id),
+            ('company_id','=',company_id),
             ('invoice_date','>=',start_date),
             ('invoice_date','<=',end_date),
             ('lot_id.warehouse_id','=',warehouse_id.id),          
@@ -218,11 +231,11 @@ class PabsCompensation(models.Model):
         last_month_date = today - relativedelta(months=1)
         start_date = last_month_date.replace(day=1)
         end_date = last_month_date.replace(day=1) + relativedelta(months=1) - relativedelta(days=1)
-       
+    
         # Producción mensual
         period_contract_ids = self.env['pabs.contract'].search(
         [
-            ('company_id','=',self.env.company.id),
+            ('company_id','=',company_id),
             ('invoice_date','>=',start_date),
             ('invoice_date','<=',end_date),
             ('lot_id.warehouse_id','=',warehouse_id.id),          
@@ -245,7 +258,7 @@ class PabsCompensation(models.Model):
         })
         return office_data
         
-    def get_team_data(self,months=0,warehouse_id=False,coordinator_id=False,job_id=False,start=False):      
+    def get_team_data(self,months=0,warehouse_id=False,coordinator_id=False,job_id=False,start=False,company_id=False):      
         # Se obtienen las fechas inicial y final 
         if start:
             today = datetime.strptime(start, "%Y-%m-%d")
@@ -259,20 +272,12 @@ class PabsCompensation(models.Model):
         #       
         contract_ids = self.env['pabs.contract'].search(
         [
-            ('company_id','=',self.env.company.id),
+            ('company_id','=',company_id),
             ('invoice_date','>=',start_date),
             ('invoice_date','<=',end_date),
             ('lot_id.warehouse_id','=',warehouse_id.id),          
             ('state','=','contract')
         ])
-        
-        # team_contract_ids = self.env['pabs.contract']
-        # # Se obtienen los contratos del equipo del coordinador
-        # for contract_id in contract_ids:
-        #     template_ids = template_obj.search([('employee_id','=',contract_id.sale_employee_id.id)])          
-        #     coordinator_ids = template_ids.filtered(lambda rec: rec.job_id.id == job_id.id and rec.comission_agent_id.id == coordinator_id.id).mapped('comission_agent_id')            
-        #     if coordinator_id.id in coordinator_ids.ids:
-        #         team_contract_ids += contract_id
         
         team_contract_ids = self.env['pabs.contract']
         # Se obtienen los contratos del equipo del coordinador
@@ -298,7 +303,7 @@ class PabsCompensation(models.Model):
         }        
         return data
     
-   
+
 class PabsCompensationLine(models.Model):
     _name = 'pabs.compensation.line'
     _decription = 'Detalle de Compesaciones PABS'

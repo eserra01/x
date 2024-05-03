@@ -10,7 +10,7 @@ from dateutil.relativedelta import relativedelta
 class BonusXlsxReportWizard(models.TransientModel):
     _name = "bonus.report.xlsx.wizard"
     _description = "Asistente reporte de bonos"
-       
+    
     start_date =fields.Date(string="Fecha inicial")
     end_date = fields.Date(string="Fecha final")
     company_id = fields.Many2one(comodel_name='res.company', string='Compañia', required=True, default=lambda s: s.env.company.id)
