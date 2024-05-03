@@ -4,7 +4,7 @@
   <menuitem id="service_menu_root" name="PABS" web_icon="pabs_custom,static/description/icon.png" sequence="6"/>
 
   <!-- Submenú de activaciones en servicios -->
-  <menuitem id="activation_main_menu" name="Activaciones" parent="service_menu_root" action="activation_action" sequence="1"/>
+  <menuitem id="activation_main_menu" name="Activaciones" parent="service_menu_root" action="activation_action" sequence="0"/>
 
   <!-- Submenú de precontrato en servicios -->
   <menuitem id="precontract_menu" name="Pre-Contratos" parent="service_menu_root" groups="pabs_custom.admin_profile,pabs_custom.contract_profile" action="precontract_action" sequence="2"/>

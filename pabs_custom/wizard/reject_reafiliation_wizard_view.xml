@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>    
+    <!-- Form view -->
+    <record model="ir.ui.view" id="reject_reafiliation_wizard_form_view">
+        <field name="name">reject.reafiliation.wizard.form.view</field>
+        <field name="model">reject.reafiliation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Comentar reafiliación rechazada">                                                      
+                <group>
+                    <group>                       
+                        <field name="lot_id" options="{'no_create':True,'no_open':True}"/>                                            
+                    </group>                                                                                                
+                </group>
+                <group> 
+                    <field name="comments" widget="text" attrs="{'invisible':[('lot_id','=',False)]}"/>                                                
+                </group>                                                                                         
+                <separator/>                                                                                                                   
+                <footer>                                        
+                    <button name="add_comment" string="Agregar comentario" type="object" />   
+                    <button special="cancel" string="Cerrar" />                    
+                </footer>
+            </form>
+        </field>
+    </record>   
+
+    <!-- action -->
+    <record id="reject_reafiliation_wizard_action" model="ir.actions.act_window">
+        <field name="name">Agregar comentario solicitud</field>
+        <field name="res_model">reject.reafiliation.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="reject_reafiliation_wizard_form_view"/>
+        <field name="target">new</field>
+        <!-- <field name="context">{'create':True}</field> -->
+    </record> 
+    
+    <!-- menu -->
+    <menuitem 
+    id="reject_reafiliation_main_menu" 
+    name="Reaf. Rechazada" 
+    parent="service_menu_root" 
+    action="reject_reafiliation_wizard_action" 
+    sequence="1" 
+    /> 
+
+</odoo>

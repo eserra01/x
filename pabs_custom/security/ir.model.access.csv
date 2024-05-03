@@ -53,3 +53,4 @@ access_pabs_comission_template_user,pabs.comission.template.user,pabs_custom.mod
 access_pabs_arching,pabs.arching,pabs_custom.model_pabs_arching,base.group_user,1,1,1,1
 access_pabs_comments,pabs.contract.comments,pabs_custom.model_pabs_contract_comments,base.group_user,1,0,1,0
 access_pabs_bonus_log,pabs.bonus.log,pabs_custom.model_pabs_bonus_log,base.group_user,1,1,1,1
+access_reject_reafiliation_wizard,access.reject.reafiliation.wizard,model_reject_reafiliation_wizard,,1,1,1,1

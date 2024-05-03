@@ -69,6 +69,7 @@
     'security/groups.xml',
     'views/menu_views.xml',
     'security/ir.model.access.csv',
+    'wizard/reject_reafiliation_wizard_view.xml',
     ],
   'installable': True,
   'auto_install': False,

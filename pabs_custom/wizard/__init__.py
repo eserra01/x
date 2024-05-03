@@ -10,3 +10,4 @@ from . import pabs_econtract_closing_transfer
 from . import pabs_econtract_wizard
 from . import add_balance_wizard
 from . import show_digital_images_wizard
+from . import reject_reafiliation_wizard
