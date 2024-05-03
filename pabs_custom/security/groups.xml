@@ -5,9 +5,14 @@
             <field name="name">Cancelar movimientos contables</field>
             <field name="category_id" ref="base.module_category_usability"/>
         </record>
-      
+    
         <record id="group_reverse_account_move" model="res.groups">
             <field name="name">Crear nota de crédito</field>
+            <field name="category_id" ref="base.module_category_usability"/>
+        </record>
+
+        <record id="group_reverse_account_move2" model="res.groups">
+            <field name="name">Reversar pólizas contables</field>
             <field name="category_id" ref="base.module_category_usability"/>
         </record>
 

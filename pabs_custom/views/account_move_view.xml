@@ -23,7 +23,7 @@
       <xpath expr="//button[@name='button_draft']" position="attributes">
         <attribute name="groups">pabs_custom.group_cancel_account_move</attribute>
       </xpath>
-     
+    
       <xpath expr="//button[@name='button_cancel']" position="attributes">
         <attribute name="groups">pabs_custom.group_cancel_account_move</attribute>
       </xpath>
@@ -36,6 +36,10 @@
         <field name="contract_id" options="{'no_create': True, 'no_open':True}" groups="pabs_custom.show_contract_in_account_move"/>        
       </xpath>
 
+      <xpath expr="//button[@name='%(account.action_view_account_move_reversal)d']" position="attributes">
+        <attribute name="groups">pabs_custom.group_reverse_account_move2</attribute>
+      </xpath> 
+
     </field>
-   </record>
+  </record>
 </odoo>
