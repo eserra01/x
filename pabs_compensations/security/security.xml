@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Recode Rules -->   
+    <record model="ir.rule" id="pabs_compenstion_by_company_rule">
+        <field name="name">Compensaciones PABS por compañia</field>
+        <field name="model_id" ref="model_pabs_compensation"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record> 
+    
+    <record model="ir.rule" id="pabs_compenstion_line_by_company_rule">
+        <field name="name">Líneas Compensaciones PABS por compañia</field>
+        <field name="model_id" ref="model_pabs_compensation_line"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>   
+
+    <record model="ir.rule" id="pabs_compenstion_amount_by_company_rule">
+        <field name="name">Montos Compensaciones PABS por compañia</field>
+        <field name="model_id" ref="model_pabs_compensation_amount"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record> 
+    
+</odoo>

@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pabs_compensation,access.pabs.compesation,model_pabs_compensation,,1,1,1,1
+access_pabs_compensation_line,access.pabs.compesation_line,model_pabs_compensation_line,,1,1,1,1
+access_pabs_compensation_amount,access.pabs.compensation.amount,model_pabs_compensation_amount,,1,1,1,1
+access_pabs_trimester,access.pabs.trimester,model_pabs_trimester,,1,1,1,1
+access_pabs_trimestral_commission,access.pabs.trimestral.commission,model_pabs_trimestral_commission,,1,1,1,1
+access_pabs_trimestral_commission_line,access.pabs.trimestral.commission.line,model_pabs_trimestral_commission_line,,1,1,1,1
+access_pabs_office_manager,access.pabs.office.manager,model_pabs_office_manager,,1,1,1,1
+access_bonus_report_xlsx_wizard,access.bonus.report.xlsx.wizard,model_bonus_report_xlsx_wizard,,1,1,1,1

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+   <!-- Categoría Compensaciones -->
+    <record id="pabs_compensations_category" model="ir.module.category">
+        <field name="name">Compensaciones</field>
+    </record>
+   
+    <record id="compesations_manager_group" model="res.groups">
+      <field name="name">Administrar compensaciones</field>
+      <field name="category_id" ref="pabs_compensations_category"/>      
+    </record>
+  </data>
+</odoo>

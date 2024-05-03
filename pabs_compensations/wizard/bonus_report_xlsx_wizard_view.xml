@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>    
+    <!-- Form view -->
+    <record model="ir.ui.view" id="bonus_report_xlsx_wizard_form">
+        <field name="name">bonus.report.xlsx.wizard.form</field>
+        <field name="model">bonus.report.xlsx.wizard</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <group>
+                    <group>                                                                                                           
+                        <field name="start_date"/>
+                        <field name="end_date"/>                        
+                    </group>                        
+                </group>                 
+                <footer>                                       
+                    <button name="get_bonus_report_xlsx" type="object" string="Descargar" class="fa fa-file-excel-o"/>
+                    <button special="cancel" string="Cerrar" class="oe_link"/>
+                </footer>
+            </form>
+        </field>
+    </record>   
+
+    <record id="bonus_report_xlsx_wizard_action" model="ir.actions.act_window">
+        <field name="name">Reporte de bonos mensuales</field>
+        <field name="res_model">bonus.report.xlsx.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="bonus_report_xlsx_wizard_form"/>
+        <field name="target">new</field>               
+    </record>   
+
+    <menuitem id="bonus_xlsx_report_wizard_menu" 
+    parent="pabs_compensation_main_menu" 
+    sequence="50" 
+    action="bonus_report_xlsx_wizard_action"/>
+     
+</odoo>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="pabs_trimester_tree_view">
+        <field name="name">pabs.trimester.tree.view</field>
+        <field name="model">pabs.trimester</field>
+        <field name="arch" type="xml">
+            <tree create="0" delete="0" >                
+                <field name="name" />                              
+                <field name="month" />
+                <field name="first_month" />
+                <field name="last_month" />                 
+                <field name="last_done_date" />                                               
+                <field name="company_id" options="{'no_open': True, 'no_create':True}" invisible="1"/>              
+            </tree>
+        </field>
+    </record>
+
+    <record id="pabs_trimester_action" model="ir.actions.act_window">
+        <field name="name">Trimestres PABS</field>
+        <field name="res_model">pabs.trimester</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="pabs_trimester_menu" 
+    name="Trimestres" 
+    parent="pabs_compensation_main_menu" 
+    action="pabs_trimester_action" 
+    sequence="20" />
+
+</odoo>

@@ -1,0 +1,5 @@
+id,name,month,first_month,last_month
+trimester_1,Diciembre * Enero * Febrero,3,12,2
+trimester_2,Marzo * Abril * Mayo,6,3,5
+trimester_3,Junio * Julio * Agosto,9,6,8
+trimester_4,Septiembre * Octubre * Noviembre,12,9,11

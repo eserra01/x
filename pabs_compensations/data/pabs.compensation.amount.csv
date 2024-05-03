@@ -1,0 +1,13 @@
+id,min_production,max_production,amount,type,compensation_type
+cmp_1,1,149,100,manager,commission
+cmp_2,150,499,200,manager,commission
+cmp_3,500,100000,250,manager,commission
+cmp_4,1,199,0,manager,bonus
+cmp_5,200,299,20,manager,bonus
+cmp_6,300,399,30,manager,bonus
+cmp_7,400,100000,35,manager,bonus
+cmp_8,1,449,150,coordinator,commission
+cmp_9,500,100000,200,coordinator,commission
+cmp_10,1,299,15,coordinator,bonus
+cmp_11,300,399,25,coordinator,bonus
+cmp_12,400,100000,30,coordinator,bonus

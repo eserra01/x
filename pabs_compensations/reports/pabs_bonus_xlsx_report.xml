@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo> 
+    <report
+        id="bonus_xlsx_report_id"
+        model="pabs.compensation"
+        string="Reporte de bonos mensuales"
+        report_type="xlsx"
+        name="pabs_compensations.bonus_xlsx_report"
+        file="bonus_xlsx_report"
+        attachment_use="False" 
+    />   
+</odoo>

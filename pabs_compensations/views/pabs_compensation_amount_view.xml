@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="pabs_compensation_amount_tree_view">
+        <field name="name">pabs.compensation.amount.tree.view</field>
+        <field name="model">pabs.compensation.amount</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" >                
+                <field name="type" />                              
+                <field name="compensation_type" />                 
+                <field name="min_production" />              
+                <field name="max_production" />    
+                <field name="amount" />                          
+                <field name="company_id" options="{'no_open': True, 'no_create':True}" invisible="1"/>              
+            </tree>
+        </field>
+    </record>
+
+    <record id="pabs_compensation_amount_action" model="ir.actions.act_window">
+        <field name="name">Montos de compensaciones PABS</field>
+        <field name="res_model">pabs.compensation.amount</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="pabs_compensation_main_menu" 
+    name="Compensaciones PABS" 
+    parent="pabs_custom.service_menu_root" 
+    groups= "compesations_manager_group"
+    sequence="3000" />
+
+    <menuitem id="pabs_compensation_amount_menu" 
+    name="Montos" 
+    parent="pabs_compensation_main_menu" 
+    action="pabs_compensation_amount_action" 
+    sequence="10" />
+
+</odoo>
