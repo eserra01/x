@@ -9,8 +9,7 @@
                 <field name="month" />
                 <field name="first_month" />
                 <field name="last_month" />                 
-                <field name="last_done_date" />                                               
-                <field name="company_id" options="{'no_open': True, 'no_create':True}" invisible="1"/>              
+                <field name="last_done_date" />                             
             </tree>
         </field>
     </record>

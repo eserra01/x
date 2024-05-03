@@ -11,5 +11,4 @@ class PabsTrimester(models.Model):
     first_month = fields.Integer(string="Primer mes",readonly=True)
     last_month = fields.Integer(string="Último mes",readonly=True)
     last_done_date = fields.Datetime(string="Última evaluación",readonly=True)
-    done = fields.Boolean(string="Evaluado",readonly=True)
-    company_id = fields.Many2one(comodel_name="res.company",string="Compañia",default=lambda self: self.env.company, copy=True, required=True) 
+    done = fields.Boolean(string="Evaluado",readonly=True)    

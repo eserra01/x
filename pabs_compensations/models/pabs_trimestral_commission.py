@@ -25,7 +25,7 @@ class PabsTrimestralCommission(models.Model):
         template_obj = self.env['pabs.comission.template']
         pricelist_obj = self.env['product.pricelist.item']         
         # Si corresponde evaluar el trismetre en base a la fecha dada 
-        trimester_id = self.trimester_flag(start=start,company_id=company_id)       
+        trimester_id = self.trimester_flag(start=start)       
         if trimester_id:
             # Se buscan los puestos de GERENTE DE OFICIN Y COORDINADOR
             manager_job_id = self.env['hr.job'].search(
@@ -172,7 +172,7 @@ class PabsTrimestralCommission(models.Model):
             trimester_id.write({'last_done_date':datetime.today()})    
         return
     
-    def trimester_flag(self,start=False,company_id=False):        
+    def trimester_flag(self,start=False):        
         #
         if start:
             today = datetime.strptime(start, "%Y-%m-%d")
@@ -181,8 +181,7 @@ class PabsTrimestralCommission(models.Model):
         # Se busca un trimestre que corresponda al mes a evaluar y que no esté calculado        
         trimester_id = self.env['pabs.trimester'].search(
         [
-            ('month','=',today.month),          
-            ('company_id','=',company_id),
+            ('month','=',today.month),
         ])      
         #
         return trimester_id

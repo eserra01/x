@@ -8,7 +8,6 @@ class PackXlsxReport(models.AbstractModel):
     _inherit = 'report.report_xlsx.abstract'
 
     def generate_xlsx_report(self, workbook, data, recs):
-                  
         # Se define estilos
         sheet = workbook.add_worksheet("Bonos mensuales")
         bold = workbook.add_format({'bold': True,'fg_color':'#4285F4'})
