@@ -10,7 +10,7 @@
                 <field name="min_production" />              
                 <field name="max_production" />    
                 <field name="amount" />                          
-                <field name="company_id" options="{'no_open': True, 'no_create':True}" invisible="1"/>              
+                <field name="company_id" options="{'no_open': True, 'no_create':True}" readonly="1"/> 
             </tree>
         </field>
     </record>

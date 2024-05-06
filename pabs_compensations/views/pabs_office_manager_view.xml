@@ -7,7 +7,7 @@
             <tree editable="bottom" >                
                 <field name="warehouse_id" options="{'no_open': True, 'no_create':True}" />
                 <field name="employee_id" options="{'no_open': True, 'no_create':True}" />
-                <field name="company_id" options="{'no_open': True, 'no_create':True}" invisible="1"/>
+                <field name="company_id" options="{'no_open': True, 'no_create':True}" readonly="1"/>
             </tree>
         </field>
     </record>
