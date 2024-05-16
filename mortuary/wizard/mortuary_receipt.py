@@ -69,6 +69,14 @@ class MortuaryReceipt(models.AbstractModel):
             encabezado.append("RFC SFS210721LP4")
             encabezado.append("")
             encabezado.append("TEL. 833 569 4148")
+        if self.env.company.id in [13,19]: #MONCLOVA
+            encabezado.append("BOULEVARD NAZARIO ORTIZ GARZA #1265")
+            encabezado.append("COL. ALPES, ENTRE MARIANO NARVAEZ Y BLVD JOSE MUSA DE LEON")
+            encabezado.append("SALTILLO, COAHUILA DE ZARAGOZA")
+            encabezado.append("SERVICIOS FUNERARIOS SALTILLO S.A. DE C.V.")
+            encabezado.append("RFC. SFS210721LP4")
+            encabezado.append("")
+            encabezado.append("TEL. 866 278 8792")
 
         cuerpo = {
             'bitacora': mortuary_obj.name,
