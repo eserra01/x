@@ -93,7 +93,7 @@ class MortuaryReceipt(models.AbstractModel):
             'autor': self.env.user.name,
             'cajera': payment_obj.user_create_payment.name
         }
-        #
+        
         return {
             'encabezado': encabezado,
             'cuerpo': cuerpo
