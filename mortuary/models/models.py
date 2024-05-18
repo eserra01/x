@@ -824,7 +824,7 @@ class Mortuary(models.Model):
             nota = account_obj.create(datos_de_encabezado)
 
             if nota:
-                # Llenar datos de linea de débito
+                # Llenar datos de linea de débito #
                 datos_de_debito = {
                     'move_id' : nota.id,
                     'account_id' : producto.property_account_income_id.id or producto.categ_id.property_account_income_categ_id.id,
