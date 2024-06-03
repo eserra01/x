@@ -1,0 +1,356 @@
+<odoo>
+  <data>
+    <record id="pabs_changes_format_form_view" model="ir.ui.view">
+      <field name="name">pabs.changes.format.form.view</field>
+      <field name="model">pabs.changes.format</field>
+      <field name="arch" type="xml">
+        <form duplicate="0">
+          <sheet>
+            <header>
+                <field name="state" widget="statusbar" nolabel="1" options="{'clickable': 0}"/>                                            
+                <button name="password_action" states="draft" string="Aprobar" type="object" help="Cambia a estatus Aprobado el registro actual." 
+                groups="pabs_custom.changes_format_approver"/>                        
+                <button name="done_action" states="approved" string="Realizado" type="object" help="Cambia a estatus Realizado el registro actual." 
+                groups="pabs_custom.changes_format_doner"/>
+                <button name="rejected_action" states="approved" string="Rechazar" type="object" help="Cambia a estatus Borrador el registro actual." 
+                groups="pabs_custom.changes_format_approver"/>  
+                <button name="cancel_action" states="draft,approved" string="Cancelar" type="object" help="Cambia a estatus Cancelado el registro actual." 
+                groups="pabs_custom.changes_format_canceler"/>                 
+              </header>  
+            <div class="oe_title mb24">                     
+                <h1>
+                    <field class="text-break" name="name"/>  
+                </h1>
+            </div>
+            <group>
+              <group>                
+                <field name="operation" invisible="1"/>
+                <field name="readonly" invisible="1"/>
+                <field name="operation_id" widget="selection"/>
+                <field name="promoter_id" options="{'no_create':True, 'no_open':True}" 
+                attrs="{'invisible': [('operation','in',['scop','srbas','scat'])], 'required': [('operation','not in',['scop','srbas','scat'])]}"/>                
+                <field name="company_type_id" attrs="{'invisible': [('promoter_id','=',False)]}"/>
+                <field name="approver_id" options="{'no_create':True, 'no_open':True}"/>                
+                <field name="company_id" invisible="1"/>
+              </group>
+              <group>                               
+                <field name="approve_date"/>
+                <field name="done_date"/>
+                <field name="cancel_date"/>
+                <field name="password" groups="pabs_custom.changes_format_password"/>                   
+              </group>
+            </group>            
+            <notebook>
+              <!-- OPERACIONES -->
+              <page string="Cambios de oficina" attrs="{'invisible':[('operation','!=','scao')]}">                                
+                <group col="2">
+                  <group colspan="1">
+                    <field name="office_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','scao')], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="coordinator_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','scao'),('manager_id','=',False)], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="coordinator_amount" 
+                    attrs="{'required':[('coordinator_id','!=',False),('state','=','approved')],
+                    'invisible':[('state','in',['draft'])], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="manager_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','scao'),('coordinator_id','=',False)], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="manager_amount" attrs="{'required':[('manager_id','!=',False),('state','=','approved')],
+                    'invisible':[('state','in',['draft'])], 'readonly': [('readonly','=',True)]}"/>                    
+                  </group>
+                </group>
+              </page>
+              
+              <page string="Eliminar coordinador actual" attrs="{'invisible':[('operation','!=','squca')]}">                                
+                <group col="2">
+                  <group colspan="1">                   
+                    <field name="coordinator_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','squca')], 'readonly': [('readonly','=',True)]}"/>                                      
+                  </group>
+                </group>
+              </page>
+              
+              <page string="Agregar coordinador" attrs="{'invisible':[('operation','!=','sagc')]}">                                
+                <group col="2">
+                  <group colspan="1">                   
+                    <field name="coordinator_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','sagc')], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="coordinator_amount" 
+                    attrs="{'required':[('coordinator_id','!=',False),('state','=','approved')],
+                    'invisible':[('state','in',['draft'])], 'readonly': [('readonly','=',True)]}"/>
+                  </group>
+                </group>
+              </page>
+
+              <page string="Cambio de coordinador" attrs="{'invisible':[('operation','!=','scac')]}">
+                <group col="2">
+                  <group colspan="1">                   
+                    <field name="coordinator_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','sagc')], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="coordinator_amount" 
+                    attrs="{'required':[('coordinator_id','!=',False),('state','=','approved')],
+                    'invisible':[('state','in',['draft'])], 'readonly': [('readonly','=',True)]}"/>                                      
+                  </group>
+                </group>
+              </page>
+
+              <page string="Agregar persona que recomienda" attrs="{'invisible':[('operation','!=','sagpr')]}">
+                <group col="2">
+                  <group colspan="1">                   
+                    <field name="recommender_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','sagpr')], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="recommender_amount" 
+                    attrs="{'required':[('recommender_id','!=',False),('state','=','approved')],
+                    'invisible':[('state','in',['draft'])], 'readonly': [('readonly','=',True)]}"/>                              
+                  </group>
+                </group>
+              </page>
+
+              <page string="Reingreso de Asistente Social" attrs="{'invisible':[('operation','!=','sreas')]}">                                
+                <group col="2">
+                  <group col="2">
+                    <field name="office_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','sreas')], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="coordinator_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','sreas'),('manager_id','=',False)], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="coordinator_amount" 
+                    attrs="{'required':[('coordinator_id','!=',False),('state','=','approved')],
+                    'invisible':[('state','in',['draft'])], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="manager_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','sreas'),('coordinator_id','=',False)], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="manager_amount" attrs="{'required':[('manager_id','!=',False),('state','=','approved')],
+                    'invisible':[('state','in',['draft'])], 'readonly': [('readonly','=',True)]}"/>                    
+                  </group>
+                  <group col="2" string="Montos del Asistente social" attrs="{'invisible':[('state','in',['draft'])]}">
+                    <field name="amount_ids" nolabel="1">
+                      <tree editable="top" delete="0" create="0">
+                          <field name="format_id" readonly="1" invisible="1"/>  
+                          <field name="promoter_id" invisible="1" readonly="1"/>  
+                          <field name="plan_id" readonly="1"/>  
+                          <field name="amount" required="1" attrs="{'readonly':[('parent.state','!=','approved')]}"/>  
+                      </tree>
+                      <form>
+                         <field name="format_id" readonly="1" />
+                      </form>
+                    </field>                               
+                  </group>                
+                </group>
+              </page>
+
+              <page string="Alta de comisiones" attrs="{'invisible':[('operation','not in',['salc','salcs'])]}">                              
+                <group col="2">
+                  <group col="2">
+                    <field name="office_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','in',['salc','salcs'])], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="coordinator_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','in',['salc','salcs']),('manager_id','=',False)], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="coordinator_amount" 
+                    attrs="{'required':[('coordinator_id','!=',False),('state','=','approved')],
+                    'invisible':[('state','in',['draft'])], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="manager_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','in',['salc','salcs']),('coordinator_id','=',False)], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="manager_amount" attrs="{'required':[('manager_id','!=',False),('state','=','approved')],
+                    'invisible':[('state','in',['draft'])], 'readonly': [('readonly','=',True)]}"/>
+                    <field name="recommender_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'readonly': [('readonly','=',True)]}"/>
+                    <field name="recommender_amount" 
+                    attrs="{'required':[('recommender_id','!=',False),('state','=','approved')],
+                    'invisible':[('state','in',['draft'])], 'readonly': [('readonly','=',True)]}"/>                      
+                  </group>
+                  <group col="2" string="Montos del Asistente social" 
+                    attrs="{'invisible':[('state','in',['draft'])]}">
+                    <field name="amount_ids" nolabel="1" attrs="{'readonly': [('readonly','=',True)]}">
+                      <tree editable="top" delete="0" create="0">
+                          <field name="format_id" readonly="1" invisible="1"/>  
+                          <field name="promoter_id" invisible="1" readonly="1"/>  
+                          <field name="plan_id" readonly="1"/>  
+                          <field name="amount" required="1" attrs="{'readonly':[('parent.state','!=','approved')]}"/>  
+                      </tree>
+                      <form>
+                         <field name="format_id" readonly="1" />
+                      </form>
+                    </field>                               
+                  </group>                
+                </group>
+              </page>
+
+              <page string="Aumento de comisiones" attrs="{'invisible':[('operation','!=','sauc')]}">                                
+                <group col="2">                  
+                  <group col="2" string="Montos del Asistente social" attrs="{'invisible':[('state','in',['draft'])]}">
+                    <field name="amount_ids" nolabel="1" attrs="{'readonly': [('readonly','=',True)]}">
+                      <tree editable="top" delete="0" create="0">
+                          <field name="format_id" readonly="1" invisible="1"/>  
+                          <field name="promoter_id" invisible="1" readonly="1"/>  
+                          <field name="plan_id" readonly="1"/>  
+                          <field name="amount" required="1" attrs="{'readonly':[('parent.state','!=','approved')]}"/>  
+                      </tree>
+                      <form>
+                        <field name="format_id" readonly="1" />
+                      </form>
+                    </field>                               
+                  </group>                
+                </group>
+              </page>
+
+              <page string="Cambios de esquema de Sueldo a Comisión" attrs="{'invisible':[('operation','!=','scaesc')]}">                                
+                <group col="2">                  
+                  <group col="2" string="Montos del Asistente social" attrs="{'invisible':[('state','in',['draft'])]}">
+                    <field name="amount_ids" nolabel="1" attrs="{'readonly': [('readonly','=',True)]}">
+                      <tree editable="top" delete="0" create="0">
+                          <field name="format_id" readonly="1" invisible="1"/>  
+                          <field name="promoter_id" invisible="1" readonly="1"/>  
+                          <field name="plan_id" readonly="1"/>  
+                          <field name="amount" required="1" attrs="{'readonly':[('parent.state','!=','approved')]}"/>  
+                      </tree>
+                      <form>
+                        <field name="format_id" readonly="1" />
+                      </form>
+                    </field>                               
+                  </group>                
+                </group>
+              </page>
+
+              <page string="Cambios de esquema de Comisión a Sueldo" attrs="{'invisible':[('operation','!=','scaecs')]}">                                
+                <group col="2">                  
+                  <group col="2" string="Montos del Asistente social" attrs="{'invisible':[('state','in',['draft'])]}">
+                    <field name="amount_ids" nolabel="1" attrs="{'readonly': [('readonly','=',True)]}">
+                      <tree editable="top" delete="0" create="0">
+                          <field name="format_id" readonly="1" invisible="1"/>  
+                          <field name="promoter_id" invisible="1" readonly="1"/>  
+                          <field name="plan_id" readonly="1"/>  
+                          <field name="amount" required="1" attrs="{'readonly':[('parent.state','!=','approved')]}"/>  
+                      </tree>
+                      <form>
+                        <field name="format_id" readonly="1" />
+                      </form>
+                    </field>                               
+                  </group>                
+                </group>
+              </page>
+
+              <page string="Coordinador a prueba" attrs="{'invisible':[('operation','!=','scop')]}">                                
+                <group col="2">
+                  <group colspan="1">
+                    <field name="coordinator_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','scop')], 'readonly':[('readonly','=',True)]}"/>
+                    <field name="coordinator_amount" 
+                    attrs="{'required':[('operation','=','scop')],
+                    'invisible':[('state','in',['draft'])], 'readonly':[('readonly','=',True)]}"/>
+                  </group>
+                  <group col="2" string="Asistentes sociales" >                    
+                      <field name="promoter_ids" nolabel="1" attrs="{'readonly': [('readonly','=',True)]}">
+                        <tree editable="bottom" delete="1" create="1">
+                            <field name="format_id" readonly="1" invisible="1"/>  
+                            <field name="promoter_id"  options="{'no_create':True, 'no_open':True}"
+                            attrs="{'readonly':[('parent.state','in',['cancel','done'])]}" />                             
+                        </tree>
+                        <form>
+                          <field name="format_id" readonly="1" />
+                        </form>
+                      </field>                        
+                  </group>                
+                </group>
+              </page>
+
+              <page string="Reemplazar bono de Asistente social" attrs="{'invisible':[('operation','!=','srbas')]}">
+                <button string="Cargar CSV" name="import_xls_action" type="object" />
+                <group col="2" string="Bonos de Asistente social">
+                      <field name="bonusas_ids" nolabel="1" attrs="{'readonly': [('readonly','=',True)]}">
+                        <tree delete="0" create="0">
+                            <field name="format_id" readonly="1" invisible="1"/>  
+                            <field name="promoter_id"  options="{'no_create':True, 'no_open':True}"
+                            attrs="{'readonly':[('parent.state','in',['cancel','done'])]}" /> 
+                            <field name="amount" attrs="{'readonly':[('parent.state','in',['cancel','done'])]}"/>                             
+                        </tree>
+                        <form>
+                          <field name="format_id" readonly="1" />
+                        </form>
+                      </field>                        
+                  </group>   
+              </page>
+
+              <page string="Cambio de titular" attrs="{'invisible':[('operation','!=','scat')]}">               
+                <group col="2">
+                  <group colspan="1">
+                    <field name="contract_id" options="{'no_create':True, 'no_open':True}" 
+                    attrs="{'required':[('operation','=','scat')]}"/>
+                    <field name="last_full_name" force_save="1"/>
+                    <field name="partner_name" attrs="{'required':[('operation','=','scat')]}"/>
+                    <field name="partner_fname" attrs="{'required':[('operation','=','scat')]}"/>
+                    <field name="partner_mname" attrs="{'required':[('operation','=','scat')]}"/>
+                    <field name="full_name" force_save="1"/>                                
+                  </group>
+                </group>
+              </page>
+
+            </notebook>
+            <separator/>
+            <group>                                              
+                <field name="notes"/>                                
+            </group>
+          </sheet>
+          <div class="oe_chatter">
+              <field name="message_follower_ids"/>
+              <field name="activity_ids"/>
+              <field name="message_ids"/>
+          </div>
+        </form>
+      </field>
+    </record>
+
+    <record id="pabs_changes_format_tree_view" model="ir.ui.view">
+      <field name="name">abs.changes.format.tree.view</field>
+      <field name="model">pabs.changes.format</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="operation" />
+          <field name="company_type_id" />
+          <field name="contract_id"/>
+          <field name="full_name"/>
+          <field name="last_full_name"/>
+          <field name="approve_date"/>
+          <field name="done_date"/>
+          <field name="cancel_date"/>
+          <field name="state"/>
+          <field name="company_id" invisible="1"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="pabs_changes_format_serach_view" model="ir.ui.view">
+        <field name="name">pabs.changes.format.search.view</field>
+        <field name="model">pabs.changes.format</field>
+        <field name="arch" type="xml">
+            <search string="">                                                
+                <field name="contract_id" string="Contrato" filter_domain="[('contract_id.name', 'ilike', self)]"/> 
+                <field name="last_full_name" string="Último titular" filter_domain="[('last_full_name', 'ilike', self)]"/>
+                <field name="full_name" string="Titular" filter_domain="[('full_name', 'ilike', self)]"/>
+                <group expand="0" string="Agrupado por">                                                                
+                    <filter string="Estatus" name="by_state" context="{'group_by':'state'}"/>
+                </group>
+                <group expand="0" string="Agrupado por">                                                                
+                    <filter string="Tipo de operación" name="by_operation_type" context="{'group_by':'operation'}"/>
+                </group>                  
+            </search>
+        </field>
+    </record>
+
+    <record id="pabs_changes_format_action" model="ir.actions.act_window">
+      <field name="name">Formato de cambios</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">pabs.changes.format</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="pabs_changes_format_serach_view"/>
+    </record>
+
+    <menuitem
+      id="pabs_changes_format_menu"
+      name="Formato de cambios"
+      action="pabs_changes_format_action"
+      parent="pabs_custom.menu_action_request" 
+      groups="pabs_custom.changes_format_writer"
+      sequence="1000"
+    />
+
+  </data>
+</odoo>

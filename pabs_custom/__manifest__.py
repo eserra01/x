@@ -19,6 +19,7 @@
   'data': [
     'data/ir_sequence.xml',
     'data/data.xml',
+    'data/pabs.changes.format.operation.csv',
     'security/groups.xml',
     'reports/closing_transfer_report.xml',
     'reports/pabs_econtract_closing_transfer_report.xml',
@@ -70,6 +71,10 @@
     'views/menu_views.xml',
     'security/ir.model.access.csv',
     'wizard/reject_reafiliation_wizard_view.xml',
+    'views/pabs_changes_format_view.xml',    
+    'views/pabs_changes_format_approver_view.xml',
+    'views/pabs_changes_format_operation_view.xml',
+    'views/res_users_view.xml',
     ],
   'installable': True,
   'auto_install': False,

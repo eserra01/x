@@ -1,0 +1,17 @@
+id,name,code,active
+operation_1,Alta de comisiones - Comisión,salc,1
+operation_2,Aumento de comisión,sauc,1
+operation_3,Cambios de oficina,scao,1
+operation_4,Cambios de esquema de Sueldo a Comisión,scaesc,1
+operation_5,Cambios de esquema de Comisión a Sueldo,scaecs,1
+operation_6,Eliminar coordinador actual,squca,1
+operation_7,Agregar coordinador,sagc,1
+operation_8,Cambio de coordinador,scac,1
+operation_9,Reingreso de Asistente social,sreas,1
+operation_10,Coordinador a prueba,scop,1
+operation_11,Cambio de gerente,scag,0
+operation_12,Agregar persona que recomienda,sagpr,1
+operation_13,Baja a persona que recomienda,sbapr,0
+operation_14,Alta de comisiones - Sueldo,salcs,1
+operation_15,Reemplazar bono de Asistente social,srbas,1
+operation_16,Cambio de titular,scat,1
