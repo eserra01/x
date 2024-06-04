@@ -53,7 +53,7 @@ class PabsChangesFormat(models.Model):
   @api.depends('partner_name','partner_fname','partner_mname')
   def _get_full_name(self):
     for rec in self:
-      rec.full_name = f"{self.partner_name or ''} {self.partner_fname or ''} {self.partner_mname or ''}"
+      rec.full_name = f"{rec.partner_name or ''} {rec.partner_fname or ''} {rec.partner_mname or ''}"
 
 
   name = fields.Char(string="Número", default="/",readonly=True,)
