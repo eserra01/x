@@ -23,6 +23,33 @@
         <attribute name="attrs">{'required' : [('analytic_account_required','=',True)]}</attribute>
       </xpath>
 
+      <!-- Mover etiqueta analítica despues de columna de crédito -->
+      <xpath expr="//field[@name='line_ids']/tree/field[@name='credit']" position="after">
+        <xpath expr="//field[@name='line_ids']/tree/field[@name='analytic_tag_ids']" position="move"/>
+      </xpath>
+
+      <!-- Etiqueta analítica obligatoria si el diario y la cuenta estan configurados -->
+      <xpath expr="//field[@name='line_ids']/tree/field[@name='country_id']" position="after">
+        <field name="is_a_cash_flow_journal" invisible="1"/>
+        <field name="is_a_cash_flow_account" invisible="1"/>
+        <field name="cash_flow_type" invisible="1"/>
+      </xpath>
+
+      <xpath expr="//field[@name='line_ids']/tree/field[@name='analytic_tag_ids']" position="attributes">
+        <attribute name="options">{'no_create': 1}</attribute>
+        <attribute name="attrs">
+          {
+            'invisible': [('display_type', 'in', ('line_section', 'line_note'))],
+            'required' : [('is_a_cash_flow_journal', '=', True), ('is_a_cash_flow_account', '=', True)]
+          }
+        </attribute>
+        <attribute name="domain">
+          [
+            ('cash_flow_type', '=', cash_flow_type)
+          ]
+        </attribute>
+      </xpath>
+
     </field>
   </record>
 

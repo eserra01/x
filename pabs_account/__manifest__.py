@@ -28,6 +28,8 @@
   'views/account_account_view.xml',
   'views/account_move_view.xml',
   'views/account_tax_view.xml',
+  'views/account_analytic_tag_view.xml',
+  'views/account_journal_view.xml',
   'views/pabs_companies_view.xml',
   'security/security.xml',
   ],
