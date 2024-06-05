@@ -2597,3 +2597,87 @@ class PABSContracts(models.Model):
     
     except Exception as ex:
       return {'correcto': 0, 'msj': 'Error de Odoo {}'.format(ex)}
+    
+  @api.model
+  def update_contract_data(self, company_id, contract_name, dict):
+    con = self.search([
+      ('company_id', '=', company_id),
+      ('name', '=', contract_name)
+    ])
+
+    if not con:
+      return {"status": 0, "msj": "No se encontró el contrato {}".format(contract_name)}
+    
+    try:
+      update_data = {}
+      result = []  #1 = correcto, 0 = error
+
+      ### Fachada domicilio
+      if 'url_fachada_domicilio' in dict.keys():
+        if str(dict['url_fachada_domicilio']) != con.url_fachada_domicilio:
+          update_data.update({'url_fachada_domicilio': str(dict['url_fachada_domicilio'])})
+          result.append({'status': 1, 'msj': 'actualizado'})
+        else:
+          result.append({'status': 1, 'msj': 'mismos datos'})
+      ### Estatus Verificacion suspendido por cancelar
+      elif 'vsxc' in dict.keys():
+        status_vsxc = self.env['pabs.contract.status'].search([
+          ('status', '=', 'VERIFICACION SC')
+        ])
+        
+        if not status_vsxc:
+          result.append({'status': 0, 'msj': 'No se encontró el estatus VERIFICACION SC'})
+        else:
+          if status_vsxc.id == con.contract_status_item.id:
+            result.append({'status': 1, 'msj': 'mismos datos'})
+          else:
+            if con.contract_status_item.status in ['CANCELADO','PAGADO','REALIZADO','REALIZADO PERCAPITA', 'SUSP. PARA CANCELAR', 'VERIFICACION SC', 'TRASPASO']:
+              result.append({'status': 0, 'msj': 'Estatus no permitido: {}'.format(con.contract_status_item.status)})
+            else:
+              reason_vsxc = self.env['pabs.contract.status.reason'].search([
+                ('status_id', '=', status_vsxc.id),
+                ('reason', '=', str(dict['vsxc']))
+              ])
+
+              if not reason_vsxc:
+                reason_vsxc = self.env['pabs.contract.status.reason'].search([
+                  ('status_id', '=', status_vsxc.id)
+                ], limit=1)
+              
+              update_data.update({'contract_status_item': status_vsxc.id, 'contract_status_reason': reason_vsxc.id})
+              result.append({'status': 1, 'msj': 'actualizado'})
+
+              comentario = ""
+              if 'comentario' in dict.keys():
+                comentario = dict['comentario']
+
+              if comentario:
+                val = {
+                  'user_id' : self.env.user.id,
+                  'date' : fields.Datetime.now(),
+                  'comment' : comentario,
+                  'contract_id' : con.id
+                }
+
+                self.env['pabs.contract.comments'].create(val)
+
+                values = {
+                  'body': "<p>" + comentario + "</p>",
+                  'model': 'pabs.contract',
+                  'message_type': 'comment',
+                  'no_auto_thread': False,
+                  'res_id': con.id
+                }
+                
+                self.env['mail.message'].create(values)
+
+      if update_data:
+        con.write(update_data)
+        return result
+      elif result:
+        return result
+      else:
+        return {'status': 0, 'msj': 'No se actualizó ningún dato'}
+      
+    except Exception as ex:
+      return {'status': 0, 'msj': '{}'.format(ex)}
