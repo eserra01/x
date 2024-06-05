@@ -52,7 +52,7 @@ class PabsCashFlow(models.Model):
                 ids.append(int(res[0]))
                
         action_id = self.env["ir.actions.act_window"].for_xml_id("account", "action_move_journal_line")
-        action_id.update({'domain':"[('id','=',%s)]"%(str(ids)),'target':'self','context':{}})
+        action_id.update({'domain':"[('id','=',%s)]"%(str(ids)), 'target':'self','context':{}})
         return action_id
              
     ### Mostrar Apuntes contables
@@ -80,7 +80,7 @@ class PabsCashFlow(models.Model):
         for res in self.env.cr.fetchall():
             ids.append(int(res[0]))
         
-        action_id = self.env["ir.actions.actions"].for_xml_id("account.action_account_moves_all")
+        action_id = self.env["ir.actions.act_windows"].for_xml_id("account", "action_account_moves_all")
         action_id.update({'domain':"[('id','=',%s)]"%(str(ids)),'target':'self','context':{}})
         return action_id
     
