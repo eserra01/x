@@ -12,6 +12,7 @@
                     <group col="4">
                         <field name="start_date" required="1" />
                         <field name="end_date" required="1" />
+                        <field name="account_id" colspan="4" options="{'no_create': True, 'no_open': True}"/>
                     </group>
 
                     <footer>

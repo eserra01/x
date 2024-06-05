@@ -11,7 +11,7 @@ class PabsCashFlowWizard(models.TransientModel):
   
     start_date = fields.Date(string="Fecha inicial", default=_default_date, required=True)
     end_date = fields.Date(string="Fecha final", default=_default_date, required=True)
-    info = fields.Char(string="", default="")
+    account_id = fields.Many2one(string="Cuenta", comodel_name="account.account", domain=[('cash_flow_analytic_tag_required', '=', True)])
     company_id = fields.Many2one(comodel_name="res.company",string="Compañia",default=lambda self: self.env.company, copy=True, required=True,) 
     
     def get_cash_flow(self):
@@ -27,15 +27,19 @@ class PabsCashFlowWizard(models.TransientModel):
             INNER JOIN account_journal AS jou ON mov.journal_id = jou.id
             INNER JOIN account_move_line AS line ON mov.id = line.move_id
             INNER JOIN account_account AS acc ON line.account_id = acc.id
-            LEFT JOIN account_analytic_tag_account_move_line_rel AS tag_by_line ON line.id = tag_by_line.account_move_line_id
-            LEFT JOIN account_analytic_tag AS tag ON tag_by_line.account_analytic_tag_id = tag.id AND tag.cash_flow_type IS NOT NULL
                 WHERE mov.state = 'posted'
                 AND jou.is_a_cash_flow_journal = TRUE
                 AND acc.cash_flow_analytic_tag_required = TRUE
                 AND mov.date BETWEEN '{}' AND '{}'
                 AND mov.company_id = {}
+                zzaccount_idzz
                     GROUP BY mov.name, mov.ref, line.id HAVING COUNT(*) > 1
         """.format(self.start_date, self.end_date, company_id)
+
+        if self.account_id:
+            query = query.replace("zzaccount_idzz", "AND line.account_id = {}".format(self.account_id.id))
+        else:
+            query = query.replace("zzaccount_idzz", "")
 
         self.env.cr.execute(query)
 
@@ -52,6 +56,7 @@ class PabsCashFlowWizard(models.TransientModel):
 
         ### Consultar asientos
         query = """
+            /* Balance inicial de cuentas de flujo de efectivo */
             SELECT
                 'balance' as cash_flow_type,
                 '' as tag,
@@ -59,16 +64,14 @@ class PabsCashFlowWizard(models.TransientModel):
                 0 as credit,
                 0 as tag_id
             FROM account_move AS mov
-            INNER JOIN account_journal AS jou ON mov.journal_id = jou.id
             INNER JOIN account_move_line AS line ON mov.id = line.move_id
             INNER JOIN account_account AS acc ON line.account_id = acc.id
-            LEFT JOIN account_analytic_tag_account_move_line_rel AS tag_by_line ON line.id = tag_by_line.account_move_line_id
-            LEFT JOIN account_analytic_tag AS tag ON tag_by_line.account_analytic_tag_id = tag.id AND tag.cash_flow_type IS NOT NULL
                 WHERE mov.state = 'posted'
-                AND jou.is_a_cash_flow_journal = TRUE
                 AND acc.cash_flow_analytic_tag_required = TRUE
                 AND mov.date < '{}'
                 AND mov.company_id = {}
+                zzaccount_idzz
+            /* Asientos con etiqueta analitica de flujo de efectivo*/
             UNION SELECT
                 tag.cash_flow_type, 
                 tag.name as tag,
@@ -79,16 +82,22 @@ class PabsCashFlowWizard(models.TransientModel):
             INNER JOIN account_journal AS jou ON mov.journal_id = jou.id
             INNER JOIN account_move_line AS line ON mov.id = line.move_id
             INNER JOIN account_account AS acc ON line.account_id = acc.id
-            LEFT JOIN account_analytic_tag_account_move_line_rel AS tag_by_line ON line.id = tag_by_line.account_move_line_id
-            LEFT JOIN account_analytic_tag AS tag ON tag_by_line.account_analytic_tag_id = tag.id AND tag.cash_flow_type IS NOT NULL
+            INNER JOIN account_analytic_tag_account_move_line_rel AS tag_by_line ON line.id = tag_by_line.account_move_line_id
+            INNER JOIN account_analytic_tag AS tag ON tag_by_line.account_analytic_tag_id = tag.id AND tag.cash_flow_type IS NOT NULL
                 WHERE mov.state = 'posted'
                 AND jou.is_a_cash_flow_journal = TRUE
                 AND acc.cash_flow_analytic_tag_required = TRUE
                 AND mov.date BETWEEN '{}' AND '{}'
                 AND mov.company_id = {}
+                zzaccount_idzz
                     GROUP BY tag.cash_flow_type, tag.id, tag.name
                         ORDER BY cash_flow_type, tag
         """.format(self.start_date, company_id, self.start_date, self.end_date, company_id)
+
+        if self.account_id:
+            query = query.replace("zzaccount_idzz", "AND line.account_id = {}".format(self.account_id.id))
+        else:
+            query = query.replace("zzaccount_idzz", "")
 
         self.env.cr.execute(query)
         
@@ -127,7 +136,7 @@ class PabsCashFlowWizard(models.TransientModel):
             'end_date': self.end_date,
             'type': 'x1_initial_balance',
             'account_analytic_tag': None,
-            'amount': initial_balance
+            'amount': initial_balance,
         })
 
         # 2.1 Ingresos
@@ -138,7 +147,8 @@ class PabsCashFlowWizard(models.TransientModel):
                 'end_date': self.end_date,
                 'type': 'x21_income',
                 'account_analytic_tag': inc['tag_id'],
-                'amount': inc['amount']
+                'amount': inc['amount'],
+                'account_id': self.account_id.id
             })
 
             total_income = total_income + inc['amount']
@@ -169,7 +179,8 @@ class PabsCashFlowWizard(models.TransientModel):
                 'end_date': self.end_date,
                 'type': 'x41_expenses',
                 'account_analytic_tag': exp['tag_id'],
-                'amount': exp['amount']
+                'amount': exp['amount'],
+                'account_id': self.account_id.id
             })
 
             total_expenses = total_expenses + exp['amount']
@@ -193,9 +204,14 @@ class PabsCashFlowWizard(models.TransientModel):
         })
 
         ### Mostrar vista de lista
+        name = "Flujo de efectivo del {} al {}".format(self.start_date,self.end_date)
+        
+        if self.account_id:
+            name = name + " Cta. {} - {}".format(self.account_id.code, self.account_id.name)
+
         return {
             'type': 'ir.actions.act_window',
-            'name': "Flujo de efectivo del {} al {}".format(self.start_date,self.end_date),
+            'name': name,
             'res_model': 'pabs.cash.flow',
             'view_type': 'form',
             'view_mode': 'tree',

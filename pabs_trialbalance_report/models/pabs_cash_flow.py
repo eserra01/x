@@ -23,9 +23,10 @@ class PabsCashFlow(models.Model):
     end_date = fields.Date(string="Fecha final")
     type = fields.Selection(string="Categoria", selection=TYPES, required=True)
     account_analytic_tag = fields.Many2one(string="Etiqueta analítica", comodel_name='account.analytic.tag')
+    account_id = fields.Many2one(string="Cuenta", comodel_name="account.account")
     amount = fields.Float(string="Movimientos y Saldos")
 
-    ### Mostrar Asientos contables
+    ### Mostrar Asientos de diario
     def general_ledger_action(self):
         query = """
             SELECT
@@ -34,15 +35,21 @@ class PabsCashFlow(models.Model):
             INNER JOIN account_journal AS jou ON mov.journal_id = jou.id
             INNER JOIN account_move_line AS line ON mov.id = line.move_id
             INNER JOIN account_account AS acc ON line.account_id = acc.id
-            LEFT JOIN account_analytic_tag_account_move_line_rel AS tag_by_line ON line.id = tag_by_line.account_move_line_id
-            LEFT JOIN account_analytic_tag AS tag ON tag_by_line.account_analytic_tag_id = tag.id AND tag.cash_flow_type IS NOT NULL
+            INNER JOIN account_analytic_tag_account_move_line_rel AS tag_by_line ON line.id = tag_by_line.account_move_line_id
+            INNER JOIN account_analytic_tag AS tag ON tag_by_line.account_analytic_tag_id = tag.id AND tag.cash_flow_type IS NOT NULL
                 WHERE mov.state = 'posted'
                 AND jou.is_a_cash_flow_journal = TRUE
                 AND acc.cash_flow_analytic_tag_required = TRUE
                 AND tag.id = {}
                 AND mov.date BETWEEN '{}' AND '{}'
                 AND mov.company_id = {}
+                zzaccount_idzz
         """.format(self.account_analytic_tag.id, self.start_date, self.end_date, self.company_id.id)
+
+        if self.account_id:
+            query = query.replace("zzaccount_idzz", "AND line.account_id = {}".format(self.account_id.id))
+        else:
+            query = query.replace("zzaccount_idzz", "")
 
         self.env.cr.execute(query)
         
@@ -64,15 +71,21 @@ class PabsCashFlow(models.Model):
             INNER JOIN account_journal AS jou ON mov.journal_id = jou.id
             INNER JOIN account_move_line AS line ON mov.id = line.move_id
             INNER JOIN account_account AS acc ON line.account_id = acc.id
-            LEFT JOIN account_analytic_tag_account_move_line_rel AS tag_by_line ON line.id = tag_by_line.account_move_line_id
-            LEFT JOIN account_analytic_tag AS tag ON tag_by_line.account_analytic_tag_id = tag.id AND tag.cash_flow_type IS NOT NULL
+            INNER JOIN account_analytic_tag_account_move_line_rel AS tag_by_line ON line.id = tag_by_line.account_move_line_id
+            INNER JOIN account_analytic_tag AS tag ON tag_by_line.account_analytic_tag_id = tag.id AND tag.cash_flow_type IS NOT NULL
                 WHERE mov.state = 'posted'
                 AND jou.is_a_cash_flow_journal = TRUE
                 AND acc.cash_flow_analytic_tag_required = TRUE
                 AND tag.id = {}
                 AND mov.date BETWEEN '{}' AND '{}'
                 AND mov.company_id = {}
+                zzaccount_idzz
         """.format(self.account_analytic_tag.id, self.start_date, self.end_date, self.company_id.id)
+
+        if self.account_id:
+            query = query.replace("zzaccount_idzz", "AND line.account_id = {}".format(self.account_id.id))
+        else:
+            query = query.replace("zzaccount_idzz", "")
         
         self.env.cr.execute(query)
         
