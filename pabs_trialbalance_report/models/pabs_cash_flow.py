@@ -51,7 +51,7 @@ class PabsCashFlow(models.Model):
             if int(res[0]) not in ids:
                 ids.append(int(res[0]))
                
-        action_id = self.env["ir.actions.actions"].for_xml_id("account", "action_move_journal_line")
+        action_id = self.env["ir.actions.act_window"].for_xml_id("account", "action_move_journal_line")
         action_id.update({'domain':"[('id','=',%s)]"%(str(ids)),'target':'self','context':{}})
         return action_id
              
