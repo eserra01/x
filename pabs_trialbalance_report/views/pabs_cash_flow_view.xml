@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="pabs_cash_flow_tree_view" model="ir.ui.view">
+        <field name="name">pabs_cash_flow_tree_view</field>
+        <field name="model">pabs.cash.flow</field>
+        <field name="arch" type="xml">
+            <tree create="0" delete="0" default_order="type" expand="1" decoration-bf="account_analytic_tag == False">
+
+                <field name="company_id" invisible="1"/>
+
+                <field name="type"/>
+                <field name="account_analytic_tag" options="{'no_create': True, 'no_open': True}"/>
+
+                <field name="amount" string="Movimientos"
+                    attrs="{'invisible': [('type', 'in', ['x1_initial_balance', 'x3_available', 'x5_final_balance'])]}"/>
+
+                <field name="amount" string="Saldos"
+                    attrs="{'invisible': [('type', 'not in', ['x1_initial_balance', 'x3_available', 'x5_final_balance'])]}"/>
+
+                <button name="general_ledger_action" type="object" class="fa fa-book" title='Libro mayor'
+                    attrs="{'invisible': [('account_analytic_tag', '=', False)]}"/>
+
+                <button name="move_lines_action" type="object" class="fa fa-bars" title='Apuntes contables'
+                    attrs="{'invisible': [('account_analytic_tag', '=', False)]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="pabs_cash_flow_view_search" model="ir.ui.view">
+        <field name="name">pabs.cash.flow.view.search</field>
+        <field name="model">pabs.cash.flow</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="account_analytic_tag"/>
+                <field name="type"/>
+
+                <group string="Group By">
+                    <filter name="group_by_type" string="Categoria" context="{'group_by': ('type')}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <record id="pabs_trialbalance_wizard_form" model="ir.ui.view">
+            <field name="name">pabs.trialbalance.wizard.form</field>
+            <field name="model">pabs.trialbalance.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Balanza de comprobación" >
+                    <group>                       
+                        <group colspan="2">                            
+                            <field name="start_date" required="1" />
+                            <field name="end_date" required="1" />
+                            <field name="account_ids" widget="many2many_tags"  options="{'no_create': True, 'no_open': True}"/>
+                            <field name="account_analytic_account_ids" widget="many2many_tags"  options="{'no_create': True, 'no_open': True}"/>
+                            <field name="account_analytic_tag_ids" widget="many2many_tags"  options="{'no_create': True, 'no_open': True}"/>                           
+                        </group>
+                        <field name="info" widget="html" readonly="1" nolabel="1" attrs="{'invisible': [('info','=','')]}" style="color: blue;"/>                           
+                        <field name="company_id" invisible="1" />
+                    </group>                                 
+                    <newline/>                                                   
+                    <footer>                                                                        
+                        <button string="Generar balanza" class="oe_highlight" name="get_trialbalance" type="object" />                        
+                        <button string="Cerrar" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="pabs_trialbalance_wizard_action" model="ir.actions.act_window">
+            <field name="name">Generar balanza de comprobación</field>
+            <field name="res_model">pabs.trialbalance.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="pabs_trialbalance_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <!-- <menuitem 
+            id="pabs_trialbalance_wizard_menu" 
+            name="Generar balanza de comprobación" 
+            parent="account_reports.account_reports_audit_reports_menu" 
+            action="pabs_trialbalance_wizard_action" 
+            sequence="2500"         
+        /> -->
+
+    </data>
+
+</odoo>

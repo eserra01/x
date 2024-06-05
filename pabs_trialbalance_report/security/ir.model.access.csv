@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pabs_trialbalance_wizard_id,access_pabs_trialbalance_wizard,model_pabs_trialbalance_wizard,,1,1,1,1
+access_pabs_trialbalance_id,access_pabs_trialbalance,model_pabs_trialbalance,,1,1,1,1
+access_pabs_cash_flow_wizard_id,access_pabs_cash_flow_wizard,model_pabs_cash_flow_wizard,,1,1,1,1
+access_pabs_cash_flow_id,access_pabs_cash_flow,model_pabs_cash_flow,,1,1,1,1

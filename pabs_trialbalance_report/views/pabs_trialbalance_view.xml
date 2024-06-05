@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="pabs_trialbalance_tree_view">
+        <field name="name">pabs_trialbalance_tree_view</field>
+        <field name="model">pabs.trialbalance</field>
+        <field name="arch" type="xml">
+            <tree create="0">
+                <field name="account_id"/>                                
+                <field name="account_analytic_account_ids" widget="many2many_tags"/> 
+                <field name="account_analytic_tag_ids" widget="many2many_tags"/> 
+                <field name="idebit" sum="Total"/>
+                <field name="icredit" sum="Total"/>
+                <field name="debit" sum="Total"/>                
+                <field name="credit" sum="Total"/>                
+                <field name="tdebit" sum="Total"/>
+                <field name="tcredit" sum="Total"/>                
+                <field name="company_id" invisible="1"/>
+                <button name="general_ledger_action" type="object" class="fa fa-book" title='Libro mayor' />
+                <button name="move_lines_action" type="object" class="fa fa-bars" title='Apuntes contables' />                              
+            </tree>
+        </field>
+    </record>
+</odoo>
