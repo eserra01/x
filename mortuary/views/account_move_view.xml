@@ -16,8 +16,9 @@
       </xpath>
 
       <xpath expr="//field[@name='ref']" position="after">        
-        <field name="create_person_id" options="{'no_create':True, 'no_open':True}" 
-        attrs="{'required':[('type','=','out_invoice')],'invisible':[('type','!=','out_invoice')]}"/>        
+        <field name="create_person_id" domain="[('company_id', '=', company_id)]"
+          options="{'no_create':True, 'no_open':True}" 
+          attrs="{'required':[('type','=','out_invoice')],'invisible':[('type','!=','out_invoice')]}"/>        
       </xpath>
 
     </field>
