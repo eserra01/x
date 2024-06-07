@@ -54,10 +54,3 @@ access_pabs_arching,pabs.arching,pabs_custom.model_pabs_arching,base.group_user,
 access_pabs_comments,pabs.contract.comments,pabs_custom.model_pabs_contract_comments,base.group_user,1,0,1,0
 access_pabs_bonus_log,pabs.bonus.log,pabs_custom.model_pabs_bonus_log,base.group_user,1,1,1,1
 access_reject_reafiliation_wizard,access.reject.reafiliation.wizard,model_reject_reafiliation_wizard,,1,1,1,1
-access_pabs_changes_format,pabs.changes.format,pabs_custom.model_pabs_changes_format,,1,1,1,0
-access_pabs_changes_format_approve_wizard,pabs.changes.format.approve.wizard,pabs_custom.model_pabs_changes_format_approve_wizard,,1,1,1,1
-access_pabs_changes_format_approver,pabs.changes.format.approver,pabs_custom.model_pabs_changes_format_approver,,1,1,1,0
-access_pabs_changes_format_operation,pabs.changes.format.operation,pabs_custom.model_pabs_changes_format_operation,,1,1,1,0
-access_pabs_changes_format_amount,pabs.changes.format.amount,pabs_custom.model_pabs_changes_format_amount,,1,1,1,1
-access_pabs_changes_format_promoter,pabs.changes.format.promoter,pabs_custom.model_pabs_changes_format_promoter,,1,1,1,1
-access_pabs_changes_format_bonusas,pabs.changes.format.bonusas,pabs_custom.model_pabs_changes_format_bonusas,,1,1,1,1
