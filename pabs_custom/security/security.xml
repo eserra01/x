@@ -196,45 +196,5 @@
       <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
     </record>
 
-    <!-- Categoría Formato de cambios -->
-    <record id="changes_format_category" model="ir.module.category">
-      <field name="name">Formato de cambios</field>
-    </record>
-
-    <record id="changes_format_writer" model="res.groups">
-      <field name="name">Crear formato de cambios</field>
-      <field name="category_id" ref="pabs_custom.changes_format_category"/>
-    </record>
-
-    <record id="changes_format_approver" model="res.groups">
-      <field name="name">Aprobador de cambios</field>
-      <field name="category_id" ref="pabs_custom.changes_format_category"/>
-    </record>
-
-    <record id="changes_format_doner" model="res.groups">
-      <field name="name">Marcar como realizado</field>
-      <field name="category_id" ref="pabs_custom.changes_format_category"/>
-    </record>
-
-    <record id="changes_format_canceler" model="res.groups">
-      <field name="name">Cancelar cambios</field>
-      <field name="category_id" ref="pabs_custom.changes_format_category"/>
-    </record>
-
-    <record id="changes_format_password" model="res.groups">
-      <field name="name">Ver contraseña en formatos</field>
-      <field name="category_id" ref="pabs_custom.changes_format_category"/>
-    </record>
-
-    <record id="changes_format_approvers_manager" model="res.groups">
-      <field name="name">Adminsitrar aprobadores</field>
-      <field name="category_id" ref="pabs_custom.changes_format_category"/>
-    </record>
-
-    <record id="edit_only_at_draft" model="res.groups">
-      <field name="name">Editar solo en borrador</field>
-      <field name="category_id" ref="pabs_custom.changes_format_category"/>
-    </record>
-
 </data>
 </odoo>
