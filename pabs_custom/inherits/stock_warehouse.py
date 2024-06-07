@@ -16,7 +16,6 @@ class StockWarehouse(models.Model):
     string='Ubicación de Recibidos')
   
   type_company = fields.Many2one(comodel_name='type.company', string="Tipo de empresa")
-  office_active = fields.Boolean(string="Oficina activa")
 
   def _get_locations_values(self, vals, code=False):
     res = super(StockWarehouse, self)._get_locations_values(vals, code)
