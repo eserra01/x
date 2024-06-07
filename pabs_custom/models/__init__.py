@@ -28,7 +28,3 @@ from . import pabs_econtract
 ### Adaptaciones por xmarts
 from . import transf_operaciones
 from . import det_operaciones
-
-from . import pabs_changes_format
-from . import pabs_changes_format_approver
-from . import pabs_changes_format_operation
