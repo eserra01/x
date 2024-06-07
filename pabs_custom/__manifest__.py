@@ -74,7 +74,6 @@
     'views/pabs_changes_format_view.xml',    
     'views/pabs_changes_format_approver_view.xml',
     'views/pabs_changes_format_operation_view.xml',
-    'views/stock_warehuose_view.xml',
     'views/res_users_view.xml',
     ],
   'installable': True,

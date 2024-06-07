@@ -67,8 +67,6 @@ class HrEmployee(models.Model):
   warehouse_id = fields.Many2one(comodel_name='stock.warehouse',
     string='Oficina',
     tracking=True)
-  
-  company_type_id = fields.Many2one(comodel_name='type.company',string="Tipo de compañía",related='warehouse_id.type_company')
 
   view_location_id = fields.Many2one(comodel_name='stock.location',
     string='Ubicación de vista',
