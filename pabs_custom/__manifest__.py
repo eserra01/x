@@ -71,7 +71,6 @@
     'views/menu_views.xml',
     'security/ir.model.access.csv',
     'wizard/reject_reafiliation_wizard_view.xml',
-    'wizard/pabs_changes_format_approve_wizard_view.xml',
     'views/pabs_changes_format_view.xml',    
     'views/pabs_changes_format_approver_view.xml',
     'views/pabs_changes_format_operation_view.xml',
