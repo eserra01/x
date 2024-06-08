@@ -139,7 +139,7 @@ class PabsCompensation(models.Model):
             # COORDINADORES
             for coordinator_id in coordinator_ids:
                 #
-                team_data = self.get_team_data(4,warehouse_id,coordinator_id,coordinator_job_id,start)
+                team_data = self.get_team_data(4,warehouse_id,coordinator_id,coordinator_job_id,start,company_id)
                 team_efficiency = team_data.get('team_efficiency')
                 team_production = team_data.get('team_production')
                 team_cancelled = team_data.get('team_cancelled')
