@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="1"> 
+    <!-- Categoría Cambio de titular-->
+    <record id="change_owner_category" model="ir.module.category">
+      <field name="name">Cambios de titular</field>
+    </record>
+
+    <record id="change_owner_create" model="res.groups">
+      <field name="name">Crear solicitud de cambio de titular</field>
+      <field name="category_id" ref="change_owner_category"/>
+    </record>
+
+    <record id="change_owner_approve" model="res.groups">
+      <field name="name">Aprobar solicitud de cambio de titular</field>
+      <field name="category_id" ref="change_owner_category"/>
+    </record>
+
+    <record id="change_owner_doner" model="res.groups">
+      <field name="name">Realizar solicitud de cambio de titular</field>
+      <field name="category_id" ref="change_owner_category"/>
+    </record>
+
+    <record id="change_owner_cancel" model="res.groups">
+      <field name="name">Cancelar solicitud de cambio de titular</field>
+      <field name="category_id" ref="change_owner_category"/>
+    </record>
+
+</data>
+</odoo>

@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pabs_change_owner_request,access.pabs.change.owner.request,model_pabs_change_owner_request,,1,1,1,1

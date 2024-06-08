@@ -1,0 +1,113 @@
+<odoo>
+  <data>
+    <record id="pabs_change_owner_request_form_view" model="ir.ui.view">
+      <field name="name">pabs.change.owner.request.form.view</field>
+      <field name="model">pabs.change.owner.request</field>
+      <field name="arch" type="xml">
+        <form duplicate="0">
+          <sheet>
+            <header>
+                <field name="state" widget="statusbar" nolabel="1" options="{'clickable': 0}"/>                                            
+                <button name="approve_action" states="draft" string="Aprobar" type="object" groups="pabs_change_owner.change_owner_approve"/>
+                <button name="done_action" states="approved" string="Realizar" type="object" groups="pabs_change_owner.change_owner_doner"/>
+                <button name="cancel_action" states="draft,approved" string="Cancelar" type="object" groups="pabs_change_owner.change_owner_cancel"/>
+              </header>  
+            <div class="oe_title mb24">                     
+                <h1>
+                    <field class="text-break" name="name" readonly="1" force_save="1"/>  
+                </h1>
+            </div>
+            <group>
+              <group>
+                <field name="contract_id" options="{'no_create':True, 'no_open':True}"/>                                                
+                <field name="last_full_name" force_save="1"/>
+                <separator />
+                <field name="partner_name" />
+                <field name="partner_fname" />
+                <field name="partner_mname" />
+                <field name="full_name" />                
+              </group>
+              <group>                               
+                <field name="approve_date" readonly="1"/>
+                <field name="done_date" readonly="1"/>
+                <field name="cancel_date" readonly="1"/>
+                <separator />
+                <field name="create_uid" string="Solicita" options="{'no_create':True, 'no_open':True}" readonly="1" force_save="1"/>                
+                <field name="approve_user_id" options="{'no_create':True, 'no_open':True}" readonly="1" force_save="1"/>
+                <field name="done_user_id" options="{'no_create':True, 'no_open':True}" readonly="1" force_save="1"/>                
+                <field name="company_id" invisible="1"/>
+              </group>
+            </group>                       
+            <separator/>
+            <group>                                              
+                <field name="notes"/>                                
+            </group>
+          </sheet>         
+          <div class="oe_chatter">
+            <field name="message_follower_ids" widget="mail_followers"/>
+            <field name="activity_ids" widget="mail_activity"/>
+            <field name="message_ids" widget="mail_thread"/>
+          </div>
+        </form>
+      </field>
+    </record>
+
+    <record id="pabs_change_owner_request_tree_view" model="ir.ui.view">
+      <field name="name">pabs.change.owner.request.tree.view</field>
+      <field name="model">pabs.change.owner.request</field>
+      <field name="arch" type="xml">
+        <tree delete="0">
+          <field name="name" readonly="1"/>
+          <field name="contract_id" readonly="1"/>
+          <field name="full_name" readonly="1"/>
+          <field name="last_full_name" readonly="1"/>
+          <field name="create_uid" string="Solicita" readonly="1"/>                
+          <field name="done_user_id" readonly="1"/>
+          <field name="approve_user_id" readonly="1"/>
+          <field name="approve_date" readonly="1"/>
+          <field name="done_date" readonly="1"/>
+          <field name="cancel_date" readonly="1"/>
+          <field name="state" readonly="1"/>
+          <field name="company_id" readonly="1"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="pabs_change_owner_request_search_view" model="ir.ui.view">
+        <field name="name">pabs.change.owner.request.search.view</field>
+        <field name="model">pabs.change.owner.request</field>
+        <field name="arch" type="xml">
+            <search string="">                                                
+                <field name="contract_id" string="Contrato" filter_domain="[('contract_id.name', 'ilike', self)]"/> 
+                <field name="last_full_name" string="Último titular" filter_domain="[('last_full_name', 'ilike', self)]"/>
+                <field name="full_name" string="Titular" filter_domain="[('full_name', 'ilike', self)]"/>
+                <group expand="0" string="Agrupado por">                                                                
+                    <filter string="Estatus" name="by_state" context="{'group_by':'state'}"/>
+                </group>                            
+            </search>
+        </field>
+    </record>
+
+    <record id="pabs_change_owner_request_action" model="ir.actions.act_window">
+      <field name="name">Solicitudes de cambio de titular</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">pabs.change.owner.request</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="pabs_change_owner_request_search_view"/>
+    </record>
+
+    <menuitem id="pabs_change_owner_request_main_menu" 
+    name="Cambios de titular" 
+    parent="pabs_custom.service_menu_root" 
+    groups= "change_owner_create,change_owner_approve,change_owner_doner"
+    sequence="4000" />
+
+    <menuitem id="pabs_change_owner_request_menu" 
+    name="Solicitudes de cambio de titular" 
+    parent="pabs_change_owner_request_main_menu" 
+    action="pabs_change_owner_request_action" 
+    groups= "change_owner_create,change_owner_approve,change_owner_doner"
+    sequence="10" />
+
+  </data>
+</odoo>

@@ -1,0 +1,29 @@
+<odoo>
+  <data>
+    <record id="pabs_contract_change_owner_form_view" model="ir.ui.view">
+      <field name="name">pabs.contract.change.owner.form.view</field>
+      <field name="model">pabs.contract</field>
+      <field name="inherit_id" ref="pabs_custom.contract_form_view_contratos"/>
+      <field name="arch" type="xml">
+        <xpath expr="//label[@for='partner_name']" position="attributes">
+          <attribute name='invisible'>1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='partner_name']" position="attributes">
+          <attribute name='invisible'>1</attribute>
+        </xpath>
+        <xpath expr="//label[@for='partner_fname']" position="attributes">
+          <attribute name='invisible'>1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='partner_fname']" position="attributes">
+          <attribute name='invisible'>1</attribute>
+        </xpath>
+        <xpath expr="//label[@for='partner_mname']" position="attributes">
+          <attribute name='invisible'>1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='partner_mname']" position="attributes">
+          <attribute name='invisible'>1</attribute>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>
