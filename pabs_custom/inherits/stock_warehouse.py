@@ -14,6 +14,8 @@ class StockWarehouse(models.Model):
 
   wh_receipt_stock_id = fields.Many2one(comodel_name='stock.location',
     string='Ubicación de Recibidos')
+  
+  type_company = fields.Many2one(comodel_name='type.company', string="Tipo de empresa")
 
   def _get_locations_values(self, vals, code=False):
     res = super(StockWarehouse, self)._get_locations_values(vals, code)
