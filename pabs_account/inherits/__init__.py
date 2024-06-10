@@ -8,3 +8,4 @@ from . import account_move_line
 from . import account_tax
 from . import account_analytic_tag
 from . import account_journal
+from . import account_payment_register

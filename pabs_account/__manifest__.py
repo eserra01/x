@@ -10,6 +10,7 @@
     'base',
     'account',
     'account_accountant',
+    'hr_expense',
     'pabs_sync_ecobro',
     'pabs_custom'],
   'data': [
@@ -30,6 +31,7 @@
   'views/account_tax_view.xml',
   'views/account_analytic_tag_view.xml',
   'views/account_journal_view.xml',
+  'views/account_payment_register_form_view.xml',
   'views/pabs_companies_view.xml',
   'security/security.xml',
   ],
