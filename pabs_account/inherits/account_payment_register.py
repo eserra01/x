@@ -57,7 +57,7 @@ class HrExpenseSheetRegisterPaymentWizard(models.TransientModel):
 
     ### Añadido al método original: Actualizar linea de crédito con la etiqueta analítica
     if self.account_analytic_tag_required:
-      credit_lines = payment.move_id.line_ids.filtered(lambda x: x.credit > 0 and x.account_id.id == self.journal_id.payment_credit_account_id.id)
+      credit_lines = payment.move_line_ids.filtered(lambda x: x.credit > 0 and x.account_id.id == self.journal_id.payment_credit_account_id.id)
 
       for line in credit_lines:
         line.write({'analytic_tag_ids': [(4, self.account_analytic_tag_id.id, 0)]})
