@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="pabs_hr_expense_res_partner_view" model="ir.ui.view">
+    <field name="name">pabs.hr.expense.res.partner.view</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
+
+       <xpath expr="//field[@name='category_id']" position="after">
+          <field name="is_supplier"/>
+      </xpath>
+
+    </field>
+  </record>
+</odoo>

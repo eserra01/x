@@ -19,6 +19,7 @@
     'views/user_product_expense_view.xml',
     'views/product_product_view.xml',
     'views/report_expense_sheet.xml',
+    'views/res_partner_view.xml',
     'security/security.xml',
     'security/ir.model.access.csv',
   ],

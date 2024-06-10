@@ -68,6 +68,12 @@
       <xpath expr="//field[@name='analytic_tag_ids']" position="attributes">
         <attribute name="attrs">{'readonly':[('state','in',('refused','approved'))]}</attribute>
       </xpath>       
+
+      <xpath expr="//field[@name='employee_id']" position="after">
+        <field name="supplier_id" options="{'no_create':True, 'no_open':True}" 
+          attrs="{'readonly':[('state', 'in', ('refused','approved'))]}"/>
+      </xpath>
+
     </field>
   </record>
 
@@ -78,6 +84,9 @@
     <field name="arch" type="xml">
        <xpath expr="//field[@name='date']" position="before">
         <field name="number" />
+
+        <xpath expr="//field[@name='payment_mode']" position="after">
+         <field name="supplier_id" options="{'no_create':True, 'no_open':True}" optional="show"/>
       </xpath>
     </field>
   </record>
@@ -117,6 +126,10 @@
       </xpath>      
       <xpath expr="//field[@name='accounting_date']" position="attributes">
         <attribute name="attrs">{'readonly':[('state','in',('cancel','post','approve','done'))]}</attribute>
+      </xpath>      
+
+      <xpath expr="//field[@name='expense_line_ids']/tree/field[@name='name']" position="after">
+        <field name="supplier_id" options="{'no_create':True, 'no_open':True}" optional="show"/>
       </xpath>    
     </field>
   </record>
@@ -131,4 +144,26 @@
       </xpath>     
     </field>
   </record>
+
+  <!-- Vista de búsqueda -->
+  <record id="pabs_hr_expense_custom_search_view" model="ir.ui.view">
+    <field name="name">pabs.hr.expense.custom.search.view</field>
+    <field name="model">hr.expense</field>
+    <field name="inherit_id" ref="hr_expense.hr_expense_view_search"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='analytic_account_id']" position="after">
+        <field name="supplier_id"/>
+      </xpath>
+
+      <xpath expr="//filter[@name='refused']" position="after">
+        <filter string="Por pagar" name="to_be_paid" domain="[('state', '=', 'approved')]"/>
+      </xpath>
+
+      <xpath expr="//filter[@name='status']" position="after">
+        <filter string="Proveedor" name="group_by_supplier" context="{'group_by': 'supplier_id'}"/>
+      </xpath>
+
+    </field>
+  </record>
+
 </odoo>

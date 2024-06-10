@@ -15,6 +15,7 @@ class HrExpense(models.Model):
   number = fields.Char(string=u"Número", default='/', required=True, readonly=True, copy=False)
   requires_plate = fields.Boolean(string="Requiere placa", related='product_id.requires_plate') 
   plate = fields.Char(string=u"Placas", )
+  supplier_id = fields.Many2one(string="Proveedor", comodel_name="res.partner", domain=[('is_supplier', '=', True)])
 
   @api.model
   def create(self, vals):
