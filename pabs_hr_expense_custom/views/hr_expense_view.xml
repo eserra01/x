@@ -82,11 +82,12 @@
     <field name="model">hr.expense</field>
     <field name="inherit_id" ref="hr_expense.view_expenses_tree"/>
     <field name="arch" type="xml">
-       <xpath expr="//field[@name='date']" position="before">
+      <xpath expr="//field[@name='date']" position="before">
         <field name="number" />
+      </xpath>
 
-        <xpath expr="//field[@name='payment_mode']" position="after">
-         <field name="supplier_id" options="{'no_create':True, 'no_open':True}" optional="show"/>
+      <xpath expr="//field[@name='payment_mode']" position="after">
+        <field name="supplier_id" options="{'no_create':True, 'no_open':True}" optional="show"/>
       </xpath>
     </field>
   </record>
