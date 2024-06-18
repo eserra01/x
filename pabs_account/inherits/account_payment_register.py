@@ -62,8 +62,9 @@ class HrExpenseSheetRegisterPaymentWizard(models.TransientModel):
       for line in credit_lines:
         line.write({'analytic_tag_ids': [(4, self.account_analytic_tag_id.id, 0)]})
     
-    ### Pasar el reporte de gastos a pagado
+    ### Pasar el reporte de gastos a pagado y ligar reporte de gastos con pago
     expense_sheet.write({'state': 'done'})
+    payment.write({'expense_sheet_id': expense_sheet.id})
 
     # Log the payment in the chatter
     body = (_("A payment of %s %s with the reference <a href='/mail/view?%s'>%s</a> related to your expense %s has been made.") % (payment.amount, payment.currency_id.symbol, url_encode({'model': 'account.payment', 'res_id': payment.id}), payment.name, expense_sheet.name))
