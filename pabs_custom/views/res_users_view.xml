@@ -11,6 +11,11 @@
                         <group>
                             <field name="operation_ids" widget="many2many_tags" options="{'no_open': True, 'no_create':True}"/>                            
                         </group>                        
+                    </page>
+                    <page string="OTROS" > 
+                        <group>
+                            <field name="exclude_pass_reset" />                           
+                        </group>                        
                     </page>                   
                 </xpath>              
             </field>

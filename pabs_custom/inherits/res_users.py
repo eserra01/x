@@ -10,4 +10,5 @@ class ResUsers(models.Model):
         relation='user_operation_rel',
         column1='user_id',
         column2='operation_id'
-    )   
+    )  
+    exclude_pass_reset = fields.Boolean(string="Excluir reseteo password") 
