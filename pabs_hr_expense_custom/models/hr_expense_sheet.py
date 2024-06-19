@@ -146,7 +146,7 @@ class HrExpenseSheetRegisterPaymentWizard(models.TransientModel):
           expense_id.state = 'done'
 
       ### Actualizar linea de crédito con la etiqueta analítica
-      if hr_expense_sheet_id.account_analytic_tag_required:
+      if self.account_analytic_tag_required:
         payment = self.env['account.payment'].search([
           ('expense_sheet_id', '=', hr_expense_sheet_id.id)
         ])
@@ -154,8 +154,8 @@ class HrExpenseSheetRegisterPaymentWizard(models.TransientModel):
         if not payment:
           raise UserError('No se encontró el pago ligado al reporte de gastos con id {}'.format(hr_expense_sheet_id.id))
         
-        credit_lines = payment.move_line_ids.filtered(lambda x: x.credit > 0 and x.account_id.id == hr_expense_sheet_id.journal_id.default_debit_account_id.id)
+        credit_lines = payment.move_line_ids.filtered(lambda x: x.credit > 0 and x.account_id.id == self.journal_id.default_debit_account_id.id)
 
         for line in credit_lines:
-          line.write({'analytic_tag_ids': [(4, hr_expense_sheet_id.account_analytic_tag_id.id, 0)]})
+          line.write({'analytic_tag_ids': [(4, self.account_analytic_tag_id.id, 0)]})
     return res
