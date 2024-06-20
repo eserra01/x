@@ -1298,10 +1298,10 @@ class PABSEcobroSync(models.Model):
     emp_obj = self.env['hr.employee']
 
     for upd in updates:
-      _logger.info("{} {} {}".format(upd['company'], upd['barcode'], upd['ecobro_id']))
+      _logger.info("{} {} {} {}".format(upd['company'], upd['barcode'], upd['ecobro_id'], upd['collector_id']))
       emp = emp_obj.sudo().browse(upd['collector_id'])
 
       if emp:
         emp.write({'ecobro_id': upd['ecobro_id']})
 
-    _logger.info("Comienza actualizacion de ecobro_id")
+    _logger.info("Termina actualizacion de ecobro_id")
