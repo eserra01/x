@@ -1206,3 +1206,102 @@ class PABSEcobroSync(models.Model):
       indice = indice + 1
 
     _logger.warning("Se terminó proceso Mover contratos a estatus final")
+
+  @api.model
+  def update_ecobro_id_in_collectors(self):
+    _logger.info("Comienza actualizacion de ecobro_id")
+
+    query = """
+      SELECT /* SALTILLO PABS */
+          comp.name as company,
+          emp.barcode,
+          emp.ecobro_id,
+          emp2.id as collector_id,
+          CONCAT('model.browse(', emp2.id ,').write({''ecobro_id'': ''', emp.ecobro_id ,'''})') as x
+      FROM hr_employee AS emp
+      INNER JOIN pabs_comission_debt_collector AS com ON emp.id = debt_collector_id
+      INNER JOIN res_company AS comp ON emp.company_id = comp.id
+      INNER JOIN hr_employee AS emp2 ON emp.barcode = emp2.barcode AND emp2.company_id = 12
+          WHERE emp.ecobro_id != COALESCE(emp2.ecobro_id, '')
+          AND emp.company_id = 18
+              
+      UNION SELECT /* MONCLOVA NE */
+          comp.name as company,
+          emp.barcode,
+          emp.ecobro_id,
+          emp2.id as collector_id,
+          CONCAT('model.browse(', emp2.id ,').write({''ecobro_id'': ''', emp.ecobro_id ,'''})') as x
+      FROM hr_employee AS emp
+      INNER JOIN pabs_comission_debt_collector AS com ON emp.id = debt_collector_id
+      INNER JOIN res_company AS comp ON emp.company_id = comp.id
+      INNER JOIN hr_employee AS emp2 ON emp.barcode = emp2.barcode AND emp2.company_id = 19
+          WHERE emp.ecobro_id != COALESCE(emp2.ecobro_id, '')
+          AND emp.company_id = 13
+              
+      UNION SELECT /* ACAPULCO PABS */
+          comp.name as company,
+          emp.barcode,
+          emp.ecobro_id,
+          emp2.id as collector_id,
+          CONCAT('model.browse(', emp2.id ,').write({''ecobro_id'': ''', emp.ecobro_id ,'''})') as x
+      FROM hr_employee AS emp
+      INNER JOIN pabs_comission_debt_collector AS com ON emp.id = debt_collector_id
+      INNER JOIN res_company AS comp ON emp.company_id = comp.id
+      INNER JOIN hr_employee AS emp2 ON emp.barcode = emp2.barcode AND emp2.company_id = 15
+          WHERE emp.ecobro_id != COALESCE(emp2.ecobro_id, '')
+          AND emp.company_id = 1
+              
+      UNION SELECT /* TAMPICO NE */
+          comp.name as company,
+          emp.barcode,
+          emp.ecobro_id,
+          emp2.id as collector_id,
+          CONCAT('model.browse(', emp2.id ,').write({''ecobro_id'': ''', emp.ecobro_id ,'''})') as x
+      FROM hr_employee AS emp
+      INNER JOIN pabs_comission_debt_collector AS com ON emp.id = debt_collector_id
+      INNER JOIN res_company AS comp ON emp.company_id = comp.id
+      INNER JOIN hr_employee AS emp2 ON emp.barcode = emp2.barcode AND emp2.company_id = 17
+          WHERE emp.ecobro_id != COALESCE(emp2.ecobro_id, '')
+          AND emp.company_id = 16
+              
+      UNION SELECT /* CUERNAVACA PABS */
+          comp.name as company,
+          emp.barcode,
+          emp.ecobro_id,
+          emp2.id as collector_id,
+          CONCAT('model.browse(', emp2.id ,').write({''ecobro_id'': ''', emp.ecobro_id ,'''})') as x
+      FROM hr_employee AS emp
+      INNER JOIN pabs_comission_debt_collector AS com ON emp.id = debt_collector_id
+      INNER JOIN res_company AS comp ON emp.company_id = comp.id
+      INNER JOIN hr_employee AS emp2 ON emp.barcode = emp2.barcode AND emp2.company_id = 21
+          WHERE emp.ecobro_id != COALESCE(emp2.ecobro_id, '')
+          AND emp.company_id = 7
+              
+      ORDER BY company, barcode
+    """
+
+    self.env.cr.execute(query)
+
+    updates = []
+    for res in self.env.cr.fetchall():
+      updates.append({
+        'company': res[0],
+        'barcode': res[1],
+        'ecobro_id': res[2],
+        'collector_id': int(res[3])
+      })
+
+    if not updates:
+      _logger.info("No hay cobradores por actualizar")
+      return
+    
+    emp_obj = self.env['hr_employee']
+
+    for upd in updates:
+      _logger.info("{} {} {}".format(upd['company'], upd['barcode'], upd['ecobro_id']))
+      emp = emp_obj.browse(upd['collector_id'])
+
+      if emp:
+        emp.write({'ecobro_id': upd['ecobro_id']})
+
+    _logger.info("Comienza actualizacion de ecobro_id")
