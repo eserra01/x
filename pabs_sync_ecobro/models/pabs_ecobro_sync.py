@@ -1299,7 +1299,7 @@ class PABSEcobroSync(models.Model):
 
     for upd in updates:
       _logger.info("{} {} {}".format(upd['company'], upd['barcode'], upd['ecobro_id']))
-      emp = emp_obj.browse(upd['collector_id'])
+      emp = emp_obj.sudo().browse(upd['collector_id'])
 
       if emp:
         emp.write({'ecobro_id': upd['ecobro_id']})
