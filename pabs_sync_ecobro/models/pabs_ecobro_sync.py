@@ -1295,7 +1295,7 @@ class PABSEcobroSync(models.Model):
       _logger.info("No hay cobradores por actualizar")
       return
     
-    emp_obj = self.env['hr_employee']
+    emp_obj = self.env['hr.employee']
 
     for upd in updates:
       _logger.info("{} {} {}".format(upd['company'], upd['barcode'], upd['ecobro_id']))
