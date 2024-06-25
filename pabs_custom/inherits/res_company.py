@@ -20,7 +20,7 @@ class ResCompany(models.Model):
     for user in user_ids:
       if user.login != 'admin':        
         try:
-          user.password = False
+          user.password = "!#$%&/_"
           user.action_reset_password()
         except:       
           user.password = False     
