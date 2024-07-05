@@ -111,7 +111,7 @@ class PabsInvoicingXLSX(models.AbstractModel):
                   GROUP BY contract_dest_id
       ) AS tras ON con.id = tras.id_contrato_destino
           WHERE con.state = 'contract'
-          AND est.status IN ('ACTIVO', 'SUSP. TEMPORAL')
+          AND est.status IN ('ACTIVO', 'SUSP. TEMPORAL', 'PAGADO')
           AND con.invoice_date >= '{}' /*Fecha minima de creacion del contrato*/
           AND con.invoice_date BETWEEN '{}' AND '{}' /*Fecha de contratos de la nueva empresa*/
           AND con.company_id = {} /*Compañia*/
@@ -195,7 +195,7 @@ class PabsInvoicingXLSX(models.AbstractModel):
       INNER JOIN account_payment_method AS met ON abo.payment_method_id = met.id
       INNER JOIN account_journal AS dia ON abo.journal_id = dia.id
           WHERE con.state = 'contract'
-          AND est.status IN ('ACTIVO', 'SUSP. TEMPORAL')
+          AND est.status IN ('ACTIVO', 'SUSP. TEMPORAL', 'PAGADO')
           AND con.invoice_date >= '{}' /*Fecha minima de creacion del contrato*/
           AND abo.reference IN ('stationary', 'surplus', 'payment')
           AND abo.state IN ('posted', 'sent', 'reconciled')
