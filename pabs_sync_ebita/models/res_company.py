@@ -260,7 +260,7 @@ class ResCompany(models.Model):
                   ('company_id','=',company_id.id),
                   ('location_id','=',warehouse_id.lot_stock_id.id),
                   ('lot_id','=',lot_id.id),
-                  ('available_quantity','>',0)
+                  ('quantity','>',0)
                 ])
                 if quant_id:                  
                   #
