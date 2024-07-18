@@ -20,8 +20,10 @@
               <field name="journal_id_ebita" options="{'no_create':True, 'no_open': True}" />
               <field name="coffin_cost_account_ebita" options="{'no_create':True, 'no_open': True}" />
               <field name="urn_cost_account_ebita" options="{'no_create':True, 'no_open': True}" />
+               <field name="kit_cost_account_ebita" options="{'no_create':True, 'no_open': True}" />
               <field name="coffin_stock_account_ebita" options="{'no_create':True, 'no_open': True}" />
               <field name="urn_stock_account_ebita" options="{'no_create':True, 'no_open': True}" />
+              <field name="kit_stock_account_ebita" options="{'no_create':True, 'no_open': True}" />
               <field name="analytic_cost_account_id" options="{'no_create':True, 'no_open': True}" />
               <field name="set_date" />
               <field name="sync_date" attrs="{'invisible': [('set_date','=',False)], 'required': [('set_date','=',True)]}"/>
