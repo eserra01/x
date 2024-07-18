@@ -95,6 +95,20 @@ class ResCompany(models.Model):
         self.env['sync.ebita.log'].create(vals)   
         return True
       
+      #
+      if company_id.set_date or sync_date:
+        #
+        if company_id.set_date:
+          start_date = str(company_id.sync_date) + ' 00:00:00'
+          end_date = str(company_id.sync_date) + ' 23:59:59'
+        if sync_date:
+          start_date = str(sync_date) + ' 00:00:00'
+          end_date = str(sync_date) + ' 23:59:59'
+      else:
+        today = datetime.today() - timedelta(hours=6)
+        start_date = (today - timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')
+        end_date = (today - timedelta(days=1)).strftime('%Y-%m-%d 23:59:59') 
+
       if test_data:
         rows = test_data
       else:
@@ -102,21 +116,7 @@ class ResCompany(models.Model):
         db = pymysql.connect(host=company_id.mysql_ip_ebita, port=int(company_id.mysql_port_ebita), db=company_id.mysql_db_ebita, 
         user=company_id.mysql_user_ebita, password=company_id.mysql_pass_ebita, autocommit=True)
         cursor = db.cursor()
-        #
-        if company_id.set_date or sync_date:
-          #
-          if company_id.set_date:
-            start_date = str(company_id.sync_date) + ' 00:00:00'
-            end_date = str(company_id.sync_date) + ' 23:59:59'
-          if sync_date:
-            start_date = str(sync_date) + ' 00:00:00'
-            end_date = str(sync_date) + ' 23:59:59'
-        else:
-          today = datetime.today() - timedelta(hours=6)
-          start_date = (today - timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')
-          end_date = (today - timedelta(days=1)).strftime('%Y-%m-%d 23:59:59')  
-    
-        #                  
+                          
         # qry = """
         # SELECT * FROM salidas_de_articulos_de_inventario_odoo 
         # WHERE fecha_de_captura BETWEEN '{}' AND '{}'   
