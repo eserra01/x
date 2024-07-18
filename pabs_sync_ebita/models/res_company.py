@@ -57,18 +57,18 @@ class ResCompany(models.Model):
 
   # test_data:
   # [
-  #   {
-  #     'id_documento': 0,
-  #     'id_bitacora': 0,
-  #     'bitacora': 'CUE24MAY027',
-  #     'codigo': 'UR-00018', #URNA LATINOAMERICANA
-  #     'serie': 'UR18-00010',
-  #     'fecha_de_captura': '',
-  #     'codigo_almacen_de_consumo': '',
-  #     'almacen_de_consumo': 'BODEGA GENERAL',
-  #     'almacen_salida_id': 0,
-  #     'tipo_de_servicio': ''
-  #   }
+  #   [
+  #     0,              #'id_documento'
+  #     0,              #'id_bitacora'
+  #     'CUE24MAY027',  #'bitacora'
+  #     'UR-00018',     #'codigo' #URNA LATINOAMERICANA
+  #     'UR18-00010',   #'serie'
+  #     '',             #'fecha_de_captura'
+  #     '',             #'codigo_almacen_de_consumo'
+  #     'BODEGA GENERAL', #'almacen_de_consumo'
+  #     0,              #'almacen_salida_id'
+  #     ''              #'tipo_de_servicio'
+  #   ]
   # ]
 
   def create_account_move_ebita(self, company_id=False, sync_date=False, test_data = []):
