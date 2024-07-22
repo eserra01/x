@@ -26,6 +26,7 @@
               <field name="kit_stock_account_ebita" options="{'no_create':True, 'no_open': True}" />
               <field name="analytic_cost_account_id" options="{'no_create':True, 'no_open': True}" />
               <field name="set_date" />
+              <field name="apply_inventory_adjustment"/>
               <field name="sync_date" attrs="{'invisible': [('set_date','=',False)], 'required': [('set_date','=',True)]}"/>
               <button string="Sincronizar" name="create_account_move_ebita" class="oe_highlight" type="object" />
             </group>
