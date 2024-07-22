@@ -39,7 +39,7 @@
     name="Reaf. Rechazada" 
     parent="service_menu_root" 
     action="reject_reafiliation_wizard_action" 
-    sequence="1" 
+    sequence="4" 
     /> 
 
 </odoo>
