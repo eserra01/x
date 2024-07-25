@@ -48,7 +48,7 @@ class ProductTemplate(models.Model):
         if not config_id:                    
             raise ValidationError('No existe una configuración para el control de almacén.')
         if not config_id.kits_sequence_id:
-            raise ValidationError('No se ha especificado la sequencia para la serie de los kits en la configuración primaria.')                  
+            raise ValidationError('No se ha especificado la secuencia para la serie de los kits en la configuración primaria.')                  
 
         # Se valida  que todos los productos tengan existencia en el ORIGEN
         for line in self.kit_line_ids:            
@@ -106,7 +106,7 @@ class ProductTemplate(models.Model):
         #
         for i in range(self.virtual_stock_qty):          
             # Se crea el lote 
-            lot_id = spl_obj.create({'name':config_id.kits_sequence_id._next(),'product_id':prod_id.id})
+            lot_id = spl_obj.create({'name':config_id.kits_sequence_id._next(),'product_id':prod_id.id,'company_id': self.env.company.id})
             self.env['stock.inventory.line'].create(
             {
                 'inventory_id': inventory_id.id, 
