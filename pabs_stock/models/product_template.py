@@ -40,6 +40,9 @@ class ProductTemplate(models.Model):
         if self.virtual_stock_qty <= 0:
             raise ValidationError("Especifique una cantidad mayor que 0 para hacer la conversión del kit.")
         #
+        if self.virtual_stock_qty > self.virtual_stock:
+            raise ValidationError("Especifique una cantidad menor a la cantidad virtual para hacer la conversión del kit.")
+        #
         config_id = self.env['pabs.stock.config'].search(
             [
                 ('company_id','=',self.env.company.id),
@@ -118,6 +121,7 @@ class ProductTemplate(models.Model):
         # Se valida el inventario ORIGEN
         inventory_id.action_start()
         inventory_id.action_validate()
+        self.virtual_stock_qty = 0
         return True
 
     pabs_stock_product = fields.Boolean(string='Control del almacén PABS')
