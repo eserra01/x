@@ -36,13 +36,19 @@ class ProductTemplate(models.Model):
                 rec.virtual_stock = 0
     
     def virtual2stock(self):  
+        #
+        if self.virtual_stock_qty <= 0:
+            raise ValidationError("Especifique una cantidad mayor que 0 para hacer la conversión del kit.")
+        #
         config_id = self.env['pabs.stock.config'].search(
             [
                 ('company_id','=',self.env.company.id),
                 ('config_type','=','primary')
             ], limit=1)
         if not config_id:                    
-            raise ValidationError('No existe una configuración para el control de almacén.')                  
+            raise ValidationError('No existe una configuración para el control de almacén.')
+        if not config_id.kits_sequence_id:
+            raise ValidationError('No se ha especificado la sequencia para la serie de los kits en la configuración primaria.')                  
 
         # Se valida  que todos los productos tengan existencia en el ORIGEN
         for line in self.kit_line_ids:            
@@ -91,18 +97,24 @@ class ProductTemplate(models.Model):
             'product_ids': [(6,0,prod_ids)],
             'company_id': self.env.company.id
         }   
+
+        # Se crea el inventario   
         inventory_id = self.env['stock.inventory'].create(vals)  
         #  Se agregan los productos con las cantidades     
+        spl_obj = self.env['stock.production.lot']       
         prod_id = self.env['product.product'].search([('product_tmpl_id','=',self.id)])
-        prod_ids.append(prod_id.id)      
-        self.env['stock.inventory.line'].create(
-        {
-            'inventory_id': inventory_id.id, 
-            'product_id':   prod_id.id, 
-            'product_qty': self.with_context({'location': config_id.central_location_id.id}).qty_available + self.virtual_stock_qty,
-            'prod_lot_id': False,
-            'location_id': config_id.central_location_id.id
-        })   
+        #
+        for i in range(self.virtual_stock_qty):          
+            # Se crea el lote 
+            lot_id = spl_obj.create({'name':config_id.kits_sequence_id._next(),'product_id':prod_id.id})
+            self.env['stock.inventory.line'].create(
+            {
+                'inventory_id': inventory_id.id, 
+                'product_id':   prod_id.id, 
+                'product_qty': 1,
+                'prod_lot_id': lot_id.id,
+                'location_id': config_id.central_location_id.id
+            })   
         # Se valida el inventario ORIGEN
         inventory_id.action_start()
         inventory_id.action_validate()

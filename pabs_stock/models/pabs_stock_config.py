@@ -15,6 +15,7 @@ class PabsStockConfig(models.Model):
     transit_location_id = fields.Many2one(string="Ubicación de tránsito", comodel_name='stock.location', )      
     config_type = fields.Selection([('primary','Primaria'),('secondary','Secundaria')], required=True)    
     consumable_journal_id = fields.Many2one(string="Diario pólizas consumibles", comodel_name="account.journal")
+    kits_sequence_id = fields.Many2one(comodel_name='ir.sequence',string="Secuencia serie kits")
     company_id = fields.Many2one(comodel_name="res.company",string="Compañia",default=lambda self: self.env.company, copy=True, required=True)
     
 

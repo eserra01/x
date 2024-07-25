@@ -12,6 +12,7 @@
                 <field name="scrap_location_id" options="{'no_open': True, 'no_create':True}" attrs="{'required':[('config_type','in',['primary'])]}"/>
                 <field name="transit_location_id" options="{'no_open': True, 'no_create':True}" attrs="{'required':[('config_type','in',['primary'])]}"/>                
                 <field name="consumable_journal_id" options="{'no_open': True, 'no_create':True}"/>
+                <field name="kits_sequence_id" options="{'no_open': True, 'no_create':True}"/>
             </tree>
         </field>
     </record>
