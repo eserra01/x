@@ -39,7 +39,8 @@ class EtiquetasQR(models.TransientModel):
       FROM product_product AS x_prod
       INNER JOIN product_template AS prod ON x_prod.product_tmpl_id = prod.id
       INNER JOIN stock_production_lot AS lot ON x_prod.id = lot.product_id
-        WHERE prod.company_id = {}
+        WHERE lot.active = TRUE
+        AND prod.company_id = {}
         AND x_prod.id = {}
         AND CAST(lot.name AS INTEGER) BETWEEN {} AND {}
           ORDER BY CAST(lot.name AS INTEGER)
