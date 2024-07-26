@@ -17,3 +17,4 @@ from . import pabs_difference_between_amount_contracts_wizard
 from . import pabs_commissions_as
 from . import pabs_contratos_pagados
 from . import pabs_employee_effectiveness
+from . import etiquetas_qr

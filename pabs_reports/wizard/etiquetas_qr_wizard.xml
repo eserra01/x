@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="etiquetas_qr_wizard_view" model="ir.ui.view">
+		<field name="name">etiquetas.qr.wizard.view</field>
+		<field name="model">etiquetas.qr</field>
+		<field name="arch" type="xml">
+			<form>
+
+        <group string="Elige el producto, la serie inicial y la serie final" col="4">
+            <field name="id_producto" options="{'no_create':True, 'no_open':True}" colspan="4"
+              domain="['|', ('default_code', 'like', 'AT%'), '|', ('default_code', 'like', 'UR%'), ('default_code', 'like', 'RL%')]"/>
+            <field name="serie_inicial"/>
+            <field name="serie_final"/>
+        </group>
+
+        <separator/>
+        
+        <group string="Formato de la imagen" col="4">
+          <field name="qr_border"/>   
+          <field name="qr_box_size"/> 
+          <field name="x_imagen"/>     
+          <field name="y_imagen"/>     
+          <field name="x_texto"/>     
+          <field name="y_texto"/>     
+          <field name="font_size"/>   
+        </group>
+
+        <footer>
+          <button name="imprimir" string="Generar etiquetas" type="object" class="btn-primary"/>
+          ó
+          <button string="Cancelar" class="btn-secondary" special="cancel" />
+        </footer>
+			</form>
+		</field>
+	</record>
+
+  <record id="etiquetas_qr_report_action" model="ir.actions.act_window">
+    <field name="name">Imprimir etiquetas QR</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">etiquetas.qr</field>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="etiquetas_qr_wizard_view"/>
+    <field name="target">new</field>
+  </record>
+  
+  <menuitem 
+    action="etiquetas_qr_report_action" 
+    id="etiquetas_qr_menu"
+    name="Impresion de etiquetas" 
+    parent="xmarts_funeraria.report_root_menu"
+    sequence="24"/>
+    
+</odoo>
