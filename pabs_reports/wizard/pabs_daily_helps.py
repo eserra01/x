@@ -49,7 +49,11 @@ HEADERS = [
   'Importe',
   'Estatus',
   'Días sin Abonar',
-  'Monto Atrasado']
+  'Monto Atrasado',
+  'Esquema contrato',
+  'Esquema empleado',
+  'Forma de pago solicitud'
+  ]
 
 _logger = logging.getLogger(__name__)
 
@@ -61,7 +65,7 @@ class DailyHelps(models.TransientModel):
     default=fields.Datetime.now().replace(tzinfo=tz.gettz('Mexico/General')),
     required=True)
 
-  end_date = fields.Date(string='Fecha de Fin')
+  end_date = fields.Date(string='Fecha de Fin', required=True)
 
   def print_xls_report(self):
     ### ARMANDO LOS PARAMETROS
@@ -78,37 +82,59 @@ class PabsReportXLSX(models.AbstractModel):
   _inherit = 'report.report_xlsx.abstract'
 
   def generate_xlsx_report(self, workbook, data, lines):
-    ### DECLARACIÓN DE OBJETOS
     contract_obj = self.env['pabs.contract'].sudo()
-
-    ### GUARDAMOS LOS PARAMETROS
     start_date = data.get('start_date')
     end_date = data.get('end_date')
 
-    ### SI AGREGARON FECHA FINAL
-    if end_date:
-      contract_ids = contract_obj.search([
-        ('company_id','in',self.env.company.ids),
-        ('state','=','contract'),
-        ('invoice_date','>=',start_date),
-        ('invoice_date','<=',end_date)],order="invoice_date")
-      report_name = "Ayudas Diarias de {} - {}".format(start_date,end_date)
-    ### SI SOLAMENTE AGREGA UNA FECHA
-    else:
-      contract_ids = contract_obj.search([
-        ('company_id','in',self.env.company.ids),
-        ('state','=','contract'),
-        ('invoice_date','=',start_date)], order="invoice_date")
-      report_name = "Ayudas Diarias de {}".format(start_date)
-    ### SI NO SE ENCONTRARÓN CONTRATOS
+    contract_ids = contract_obj.search([
+      ('company_id','in',self.env.company.ids),
+      ('state','=','contract'),
+      ('invoice_date','>=',start_date),
+      ('invoice_date','<=',end_date)],order="invoice_date")
+    report_name = "Ayudas Diarias de {} - {}".format(start_date,end_date)
 
     ### Quitar afiliaciones electrónicas que no se han generado documentos ###
-    contract_ids = contract_ids.filtered(lambda x: len(x.refund_ids) > 0) # Quitar afiliaciones de contratos digitales
+    contract_ids = contract_ids.filtered(lambda x: len(x.refund_ids) > 0)
 
     if not contract_ids:
-      ### MENSAJE DE ERROR
-      raise ValidationError((
-        "No hay contratos para el día: {}".format(start_date)))
+      raise ValidationError(("No hay contratos para el día: {}".format(start_date)))
+    
+    ### Buscar forma de pago en transferencias
+    query = """
+      SELECT
+        contract_id,
+        lot_id,
+        payment_scheme
+      FROM
+      (
+        SELECT
+          ROW_NUMBER() OVER(PARTITION BY lot.id ORDER BY pick.create_date DESC) as order,
+          con.id as contract_id,
+          lot.id as lot_id,
+          sch.name as payment_scheme
+        FROM pabs_contract AS con
+        INNER JOIN stock_production_lot AS lot ON con.lot_id = lot.id
+        INNER JOIN stock_move AS tra ON lot.name = tra.series
+        INNER JOIN stock_picking AS pick ON tra.picking_id = pick.id
+        INNER JOIN pabs_payment_scheme AS sch ON tra.payment_scheme = sch.id
+          WHERE con.state = 'contract'
+          AND pick.type_transfer = 'as-ov'
+          AND con.company_id = {}
+          AND con.invoice_date BETWEEN '{}' AND '{}'
+      ) AS x
+        WHERE x.order = 1
+    """.format(self.env.company.id, start_date, end_date)
+
+    self.env.cr.execute(query)
+
+    transferencias = []
+    for res in self.env.cr.fetchall():
+      transferencias.append([{
+        'contract_id': int(res[0]),
+        'lot_id': int(res[1]),
+        'payment_scheme': res[2]
+      }])
+
     ### GENERAMOS LA HOJA
     sheet = workbook.add_worksheet(report_name[:31])
     ### AGREGAMOS FORMATOS
@@ -268,6 +294,18 @@ class PabsReportXLSX(models.AbstractModel):
       count+=1
       sheet.write(rec_index,count,contract_id.late_amount or "",money)
       count+=1
+      sheet.write(rec_index, count, contract_id.payment_scheme_id.name or "")
+      count+=1
+      sheet.write(rec_index, count, contract_id.sale_employee_id.payment_scheme.name or "")
+      count+=1
+
+      # Buscar transferencia
+      trans = next((x for x in transferencias if x['contract_id'] == contract_id.id and x['lot_id'] == contract_id.lot_id.id), 0)
+      
+      if trans:
+        sheet.write(rec_index, count, trans['payment_scheme'])
+        count+=1
+
     #_logger.warning("lista recibida: {}".format(data))
     ### RECORRER LA INFORMACIÓN RECOPILADA
     """for row_index, row_data in enumerate(data):
