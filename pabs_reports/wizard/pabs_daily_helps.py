@@ -7,7 +7,7 @@ import logging
 
 HEADERS = [
   'Oficina',
-  'Feche de Contrato',
+  'Fecha de Contrato',
   'Contrato',
   'N. Solicitud',
   'Cliente',
@@ -104,19 +104,27 @@ class PabsReportXLSX(models.AbstractModel):
       SELECT
         contract_id,
         lot_id,
-        payment_scheme
+        forma_pago_sol
       FROM
       (
         SELECT
           ROW_NUMBER() OVER(PARTITION BY lot.id ORDER BY pick.create_date DESC) as order,
           con.id as contract_id,
           lot.id as lot_id,
-          sch.name as payment_scheme
+          CASE
+            WHEN tra.forma_pago = 'efectivo' THEN 'Efectivo'
+            WHEN tra.forma_pago = 'deposito' THEN 'Deposito'
+            WHEN tra.forma_pago = 'tarjeta_bancaria' THEN 'Tarjeta bancaria'
+            WHEN tra.forma_pago = 'transferencia' THEN 'Transferencia'
+            WHEN tra.forma_pago = 'pagare' THEN 'Pagaré'
+            WHEN tra.forma_pago = 'cheque' THEN 'Cheque'
+            WHEN tra.forma_pago = 'bono_pabs' THEN 'Bono PABS'
+            ELSE tra.forma_pago
+          END as forma_pago_sol
         FROM pabs_contract AS con
         INNER JOIN stock_production_lot AS lot ON con.lot_id = lot.id
         INNER JOIN stock_move AS tra ON lot.name = tra.series
         INNER JOIN stock_picking AS pick ON tra.picking_id = pick.id
-        INNER JOIN pabs_payment_scheme AS sch ON tra.payment_scheme = sch.id
           WHERE con.state = 'contract'
           AND pick.type_transfer = 'as-ov'
           AND con.company_id = {}
@@ -132,7 +140,7 @@ class PabsReportXLSX(models.AbstractModel):
       transferencias.append({
         'contract_id': int(res[0]),
         'lot_id': int(res[1]),
-        'payment_scheme': res[2]
+        'forma_pago_sol': res[2]
       })
 
     ### GENERAMOS LA HOJA
@@ -303,7 +311,7 @@ class PabsReportXLSX(models.AbstractModel):
       trans = next((x for x in transferencias if x['contract_id'] == contract_id.id and x['lot_id'] == contract_id.lot_id.id), 0)
       
       if trans:
-        sheet.write(rec_index, count, trans['payment_scheme'])
+        sheet.write(rec_index, count, trans['forma_pago_sol'])
         count+=1
 
     #_logger.warning("lista recibida: {}".format(data))
