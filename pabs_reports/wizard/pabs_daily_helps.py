@@ -129,11 +129,11 @@ class PabsReportXLSX(models.AbstractModel):
 
     transferencias = []
     for res in self.env.cr.fetchall():
-      transferencias.append([{
+      transferencias.append({
         'contract_id': int(res[0]),
         'lot_id': int(res[1]),
         'payment_scheme': res[2]
-      }])
+      })
 
     ### GENERAMOS LA HOJA
     sheet = workbook.add_worksheet(report_name[:31])
