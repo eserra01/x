@@ -49,7 +49,7 @@ class FixStockMove(models.TransientModel):
             "No se encontró el número de serie: {}".format(lot)))
         quant_id = quant_obj.search([
           ('lot_id','=',lot_id.id),
-          ('inventory_quantity','>',0)], order="id desc",limit=1)
+          ('quantity','>',0)], order="id desc",limit=1)
         if not quant_id:
           raise ValidationError((
             "No se encontró ningún movimiento referente al número de serie: {}".format(lot)))

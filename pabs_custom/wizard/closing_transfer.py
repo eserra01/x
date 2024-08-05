@@ -139,7 +139,7 @@ class ClosingTransfers(models.TransientModel):
     ### BUSCAR TODOS LOS MOVIMIENTOS QUE SE GENERARON EN ESAS FECHAS Y PERTENEZCAN AL ALMACÉN DE RECIBIDOS
     quant_ids = quant_obj.search([
       ('location_id','=',child_id.id),
-      ('inventory_quantity','>',0)])
+      ('quantity','>',0)])
     ### SI NO ENCUENTRA NADA QUE PROCESAR
     if not quant_ids:
       raise ValidationError((
