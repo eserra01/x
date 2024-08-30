@@ -22,7 +22,7 @@
                             <field name="codigo" readonly="1"/>
                             <field name="serie" readonly="1"/>
                             <field name="fecha" readonly="1"/>
-                            <field name="cod_almacen" readonly="1"/>
+                            <field name="almacen" readonly="1"/>
                             <field name="servicio" readonly="1"/>
                             <field name="wizard_id" invisible="1" readonly="1"/>
                         </tree>

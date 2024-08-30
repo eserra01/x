@@ -319,13 +319,10 @@ class ResCompany(models.Model):
               continue   
             # Si es un ataúd
             if 'AT-' in row[3]:            
-              # Se busca el almacén
-              if company_id.name == 'GUADALAJARA':
-                warehouse_id = wh_obj.search([('name','=','BUNKER'),('company_id','=',company_id.id)])
-              elif company_id.name == 'TOLUCA' and 'DOMICILIO' in str(row[7]):
-                warehouse_id = wh_obj.search([('name','=','BODEGA GENERAL'),('company_id','=',company_id.id)])             
-              else: 
-                warehouse_id = wh_obj.search([('name','=',row[7]),('company_id','=',company_id.id)])
+              #2024-08-13: Todos los artículos se manejarán desde bodega general
+              warehouse_id = wh_obj.search([('name','=','BODEGA GENERAL'),('company_id','=',company_id.id)])             
+              #warehouse_id = wh_obj.search([('name','=',row[7]),('company_id','=',company_id.id)])
+
               if warehouse_id:              
                 # Se busca la serie
                 lot_id = lot_obj.search([('product_id', '=', product_id.id), ('name','=',row[4])])
@@ -374,12 +371,10 @@ class ResCompany(models.Model):
                   warehouse_not_found.append(row[7])
             # Si es una urna
             if 'UR-' in row[3]:            
-              # Se busca el almacén
-              if company_id.name == 'GUADALAJARA':
-                warehouse_id = wh_obj.search([('name','=','BUNKER'),('company_id','=',company_id.id)])
-              else:
-                warehouse_id = wh_obj.search([('name','=',row[7])])
-              #  
+              #2024-08-13: Todos los artículos se manejarán desde bodega general
+              warehouse_id = wh_obj.search([('name','=','BODEGA GENERAL'),('company_id','=',company_id.id)])             
+              #warehouse_id = wh_obj.search([('name','=',row[7]),('company_id','=',company_id.id)])
+
               if warehouse_id:
                 # Se busca la serie
                 lot_id = lot_obj.search([('product_id', '=', product_id.id), ('name','=',row[4])])

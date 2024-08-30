@@ -886,9 +886,13 @@ class PABSContracts(models.Model):
           ])
 
           if cancelado_fiscalmente == 0:
-            saldo = saldo + sum(traspasos.mapped('debit'))
+            ### 2024-08-03: no agregar saldo por traspaso a contratos liquidados (no deberian de ingresar pagos a contratos que traspasan importe... pero lo hacen)
+            if round(saldo, 0) > 0:
+              saldo = saldo + sum(traspasos.mapped('debit'))
         else:
-          saldo = saldo + sum(traspasos.mapped('debit'))
+          ### 2024-08-03: no agregar saldo por traspaso a contratos liquidados (no deberian de ingresar pagos a contratos que traspasan importe... pero lo hacen. ej 2CJ033943 Saltillo)
+          if round(saldo, 0) > 0:
+            saldo = saldo + sum(traspasos.mapped('debit'))
 
       rec.balance = saldo
 

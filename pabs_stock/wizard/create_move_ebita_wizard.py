@@ -69,6 +69,10 @@ class CreateMoveEbitaWizard(models.TransientModel):
                     'servicio': row[9],
                     'wizard_id': self.id,
                 }    
+
+                #2024-08-13: Todos los artículos se manejarán desde bodega general
+                vals.update({'almacen': 'BODEGA GENERAL'})
+                
                 self.env['create.move.ebita.wizard.line'].create(vals)
      
         except OperationalError as e:
