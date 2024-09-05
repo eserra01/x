@@ -128,6 +128,7 @@ class PABSContracts(models.Model):
   reactivation_date = fields.Date(tracking=True, string="Fecha reactivación")
 
   name_service = fields.Many2one(tracking=True, comodel_name = 'product.product', related="lot_id.product_id", string='Servicio')
+  warehouse_id = fields.Many2one(string="Oficina", related="lot_id.warehouse_id")
   product_code = fields.Char(tracking=True, string='Código de plan previsor', related="name_service.default_code")
 
   initial_investment = fields.Float(tracking=True, string ='Inversión inicial')
