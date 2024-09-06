@@ -456,8 +456,12 @@ class PABSEcobroSync(models.Model):
       ('code','=','manual')],limit=1)
     
     len_payments = len(response['result'])
+    _logger.info("Registros a procesar: {}".format(len_payments))
+
     if len_payments > 0:
       log = 'Sincronización de Pagos \n'
+    else:
+      return
     
     # Se obtiene la fecha de bloqueo: period_lock_date
     open_period = False
@@ -481,7 +485,6 @@ class PABSEcobroSync(models.Model):
       
 
     ### Iteracion en lista de pagos
-    _logger.info("Registros a procesar: {}".format(len_payments))
     for index, rec in enumerate(response['result']):
       log += 'Pago {} de {} \n'.format((index + 1), len_payments)
       contract_name = "{}{}".format(rec['serie'],rec['no_contrato'])
