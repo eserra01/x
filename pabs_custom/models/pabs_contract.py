@@ -850,6 +850,7 @@ class PABSContracts(models.Model):
   #Costo: Es la suma de las facturas, de no existir facturas será el costo del plan registrado en la tabla de tarifas.
   def calc_price(self):
     for rec in self:
+      rec.product_price = 99999
       invoice_ids = rec.refund_ids.filtered(lambda r: r.type == 'out_invoice' and r.state == 'posted')
       if len(invoice_ids) > 0:
         rec.product_price = sum(invoice_ids.mapped('amount_total'))
@@ -858,10 +859,10 @@ class PABSContracts(models.Model):
           pricelist_id = self.env['product.pricelist.item'].search([('product_id','=',rec.name_service.id)], limit=1)
           if pricelist_id:
             rec.product_price = pricelist_id.fixed_price
-          else:
-            raise ValidationError("calc_price: No se encontró la tarifa del producto")
-        else:
-            raise ValidationError("calc_price: No se encontró el producto del contrato")
+        #   else:
+        #     raise ValidationError("calc_price: No se encontró la tarifa del producto")
+        # else:
+        #     raise ValidationError("calc_price: No se encontró el producto del contrato")
 
   # Saldo: Es la suma del monto pendiente de las facturas mas el monto entregado por traspasos
   def _calc_balance(self):
