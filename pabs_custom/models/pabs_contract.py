@@ -184,7 +184,7 @@ class PABSContracts(models.Model):
   between_streets = fields.Char(tracking=True, string='Entre calles')
   municipality_id = fields.Many2one(tracking=True, comodel_name='res.locality', required=True, string='Municipio')
   neighborhood_id = fields.Many2one(tracking=True, comodel_name='colonias', string='Colonia')
-  phone = fields.Char(tracking=True, string='Teléfono', required=True)
+  phone = fields.Char(tracking=True, string='Teléfono', size=10, required=True)
   zip_code = fields.Char(tracking=True, string='C.P.', required=True, default='00000')
   
 # Domicilio de cobro
@@ -193,7 +193,7 @@ class PABSContracts(models.Model):
   between_streets_toll = fields.Char(tracking=True, string ='Entre calles')
   toll_municipallity_id = fields.Many2one(tracking=True, comodel_name='res.locality',string='Municipio')
   toll_colony_id = fields.Many2one(tracking=True, comodel_name='colonias',string='Colonia')
-  phone_toll = fields.Char(tracking=True, string='Teléfono')
+  phone_toll = fields.Char(tracking=True, string='Teléfono', size=10)
   zip_code_toll = fields.Char(tracking=True, string='C.P.', required=True, default='00000')
 
   latitude = fields.Char(tracking=False, string = 'Latitud')

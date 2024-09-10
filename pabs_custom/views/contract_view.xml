@@ -83,6 +83,8 @@
           <field name="activity_ids" widget="mail_activity"/>
           <field name="message_ids" widget="mail_thread"/>
         </div>
+
+        <script src="/pabs_custom/static/src/js/field_validation.js"/>
       </form>
     </field>
   </record>
@@ -241,6 +243,8 @@
         </div>
         <footer>
         </footer>
+
+        <script src="/pabs_custom/static/src/js/field_validation.js"/>
       </form>
     </field>
   </record>
@@ -482,6 +486,8 @@
           <field name="activity_ids" widget="mail_activity"/>
           <field name="message_ids" widget="mail_thread"/>
         </div>
+
+        <script src="/pabs_custom/static/src/js/field_validation.js"/>
       </form>
     </field>
   </record>
@@ -689,6 +695,8 @@
           <field name="activity_ids" widget="mail_activity"/>
           <field name="message_ids" widget="mail_thread"/>
         </div>
+
+        <script src="/pabs_custom/static/src/js/field_validation.js"/>
       </form>
     </field>
   </record>
@@ -876,6 +884,8 @@
           <field name="activity_ids" widget="mail_activity"/>
           <field name="message_ids" widget="mail_thread"/>
         </div>
+
+        <script src="/pabs_custom/static/src/js/field_validation.js"/>
       </form>
     </field>
   </record>
@@ -1095,6 +1105,8 @@
           <field name="activity_ids" widget="mail_activity"/>
           <field name="message_ids" widget="mail_thread"/>
         </div>
+
+        <script src="/pabs_custom/static/src/js/field_validation.js"/>
       </form>
     </field>
   </record>
@@ -1300,6 +1312,8 @@
           <field name="activity_ids" widget="mail_activity"/>
           <field name="message_ids" widget="mail_thread"/>
         </div>
+
+        <script src="/pabs_custom/static/src/js/field_validation.js"/>
       </form>
     </field>
   </record>
@@ -1506,6 +1520,8 @@
           <field name="activity_ids" widget="mail_activity"/>
           <field name="message_ids" widget="mail_thread"/>
         </div>
+
+        <script src="/pabs_custom/static/src/js/field_validation.js"/>
       </form>
     </field>
   </record>
@@ -1712,6 +1728,8 @@
           <field name="activity_ids" widget="mail_activity"/>
           <field name="message_ids" widget="mail_thread"/>
         </div>
+
+        <script src="/pabs_custom/static/src/js/field_validation.js"/>
       </form>
     </field>
   </record>
@@ -1930,6 +1948,8 @@
           <field name="activity_ids" widget="mail_activity"/>
           <field name="message_ids" widget="mail_thread"/>
         </div>
+
+        <script src="/pabs_custom/static/src/js/field_validation.js"/>
       </form>
     </field>
   </record>
