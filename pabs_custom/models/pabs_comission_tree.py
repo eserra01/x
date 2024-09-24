@@ -90,8 +90,8 @@ class ComissionTree(models.Model):
             if arbol_papeleria.remaining_commission <= 0:
                 raise ValidationError("La comisión restante de Papeleria ya se encuentra en cero")
             
-             # FISCAL
-            if contrato.company_id.apply_taxes:
+            # FISCAL # 2024-09-09 Si el iva se maneja como un comisionista pagar todo a papeleria
+            if contrato.company_id.apply_taxes and not contrato.company_id.is_iva_a_commission_agent:
                 
                 # Buscar impuesto IVA
                 impuesto_IVA = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', contrato.company_id.id)]) # Buscar impuesto de IVA
@@ -278,7 +278,7 @@ class ComissionTree(models.Model):
             salida_comisiones_obj.create([{"payment_id": IdPago, "job_id": id_cargo_cobrador, "comission_agent_id": empleado.id, "actual_commission_paid": MontoComisionCobrador, "company_id" : contrato.company_id.id}])
 
         ##### CÁLCULO PARA EMPLEADOS DEL ARBOL #####
-        if contrato.company_id.apply_taxes: # FISCAL
+        if contrato.company_id.apply_taxes and not contrato.company_id.is_iva_a_commission_agent: # FISCAL # 2024-09-09 Si el iva se maneja como un comisionista no generar salida para IVA
 
             # Buscar impuesto IVA
             impuesto_IVA = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', contrato.company_id.id)]) # Buscar impuesto de IVA

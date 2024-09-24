@@ -36,6 +36,8 @@ class ResCompany(models.Model):
   legal_signature = fields.Binary(string='Firma Apoderado Legal')
 
   apply_taxes = fields.Boolean(string = "Aplicar impuestos", default = False)
+  is_iva_a_commission_agent = fields.Boolean(string = "IVA es un comisionista más", default = False, 
+    help="Si se activa, el IVA se manejará como un comisionista más en el árbol, su prioridad será antes de fideicomiso")
 
 class PabsBankAccount(models.Model):
   _name = 'pabs.bank.account'

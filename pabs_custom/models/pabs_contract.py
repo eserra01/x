@@ -1329,12 +1329,13 @@ class PABSContracts(models.Model):
     comission_template_obj = self.env['pabs.comission.template']
     comission_tree_obj = self.env['pabs.comission.tree']
     pricelist_obj = self.env['product.pricelist.item']
+    job_obj = self.env['hr.job']
 
     if self.employee_id and self.name_service:
       
       pricelist_id = pricelist_obj.search([('product_id','=',self.name_service.id)])
       if not pricelist_id:
-        raise ValidationError(("No se encontró la tarifa del plan {}".format(self.product_id.name)))
+        raise ValidationError(("No se encontró la tarifa del plan {}".format(self.name_service.name)))
       
       ### Para planes digitales de Cuernavaca se utilizará la plantilla del plan físico.
       # Se buscará la coincidencia de acuerdo a la referencia interna: Fisico = PL-00006, Digital PL-00096
@@ -1382,7 +1383,9 @@ class PABSContracts(models.Model):
       #ultima_prioridad = max(comission_template_id.mapped('pay_order'))
 
       ### RECORRER TODAS LAS LINEAS DEL DETALLE DE LA PLANTILLA e insertar el registro
+      next_pay_order = 0
       for line in comission_template_id:
+        next_pay_order = next_pay_order + 1
         monto_comision = line.comission_amount
 
         if line.job_id.name != "FIDEICOMISO":
@@ -1397,7 +1400,7 @@ class PABSContracts(models.Model):
 
         data = {
           'contract_id' : self.id,
-          'pay_order' : line.pay_order,
+          'pay_order' : next_pay_order,
           'job_id' : line.job_id.id,
           'comission_agent_id' : line.comission_agent_id.id,
           'corresponding_commission' : monto_comision,
@@ -1405,12 +1408,39 @@ class PABSContracts(models.Model):
           'commission_paid' : 0,
           'actual_commission_paid' : 0,
         }
+
+        ### 2024-08-09: se agrega línea extra para comisionistas ('IVA + Cargo' y (comision * 0.16'))
+        if self.company_id.apply_taxes and self.company_id.is_iva_a_commission_agent and line.job_id.name not in ('IVA', 'PAPELERIA', 'RECOMENDADO', 'FIDEICOMISO', 'COBRADOR') and line.comission_amount > 0:
+          # Buscar cargo
+          iva_job = job_obj.search([
+            ('company_id', '=', self.company_id.id),
+            ('name', '=', "IVA {}".format(line.job_id.name))
+          ])
+          
+          if not iva_job:
+            raise ValidationError("{} No se encontró el cargo IVA {}".format(self.name, line.job_id.name))
+          
+          # Guardar información de linea de comisión y agregar linea de comision de iva
+          data = [data]
+
+          iva_monto_comision = monto_comision * 0.16
+          monto_acumulado = monto_acumulado + iva_monto_comision
+
+          next_pay_order = next_pay_order + 1
+          data.append({
+            'contract_id' : self.id,
+            'pay_order' : next_pay_order,
+            'job_id' : iva_job.id,
+            'comission_agent_id' : line.comission_agent_id.id,
+            'corresponding_commission' : iva_monto_comision,
+            'remaining_commission' : iva_monto_comision,
+            'commission_paid' : 0,
+            'actual_commission_paid' : 0,
+          })
         
         if line.job_id.name == "FIDEICOMISO":
-          es_fiscal = self.company_id.apply_taxes
-
           ### Cálculo de comisión de fideicomiso e iva para empresa fiscal ###
-          if es_fiscal:             
+          if self.company_id.apply_taxes:             
             impuesto_IVA = self.env['account.tax'].search([('name','=','IVA'), ('company_id','=', self.company_id.id)]) # Buscar impuesto de IVA
             if not impuesto_IVA:
               raise ValidationError("No se encontró el impuesto con nombre IVA")
@@ -1439,8 +1469,15 @@ class PABSContracts(models.Model):
               'commission_paid' : 0,
               'actual_commission_paid' : 0,
             }
+
             # Almacenar datos de fideicomiso (En una sola lista se enviará la creación de la linea de fideicomiso y de IVA)
             linea_fideicomiso = data
+
+            # 2024-09-09 Si el iva se maneja como un comisionista
+            if self.company_id.is_iva_a_commission_agent:
+              linea_iva.update({'pay_order': linea_fideicomiso['pay_order']})
+              linea_fideicomiso.update({'pay_order': linea_iva['pay_order'] + 1})
+
             # Actualizar el monto del fideicomiso
             monto_fideicomiso = round(pricelist_id.fixed_price - monto_acumulado - monto_para_iva ,2)
             linea_fideicomiso.update({'corresponding_commission': monto_fideicomiso, 'remaining_commission': monto_fideicomiso})
@@ -1616,10 +1653,12 @@ class PABSContracts(models.Model):
         # Para modificar el árbol de contratos dependiendo de las opciones del tipo de traspaso            
         amount_fide = sum(previous.commission_tree.filtered(lambda x: x.job_id.name in ['FIDEICOMISO']).mapped('corresponding_commission'))
         amount_as = sum(previous.commission_tree.filtered(lambda x: x.job_id.name in ['ASISTENTE SOCIAL']).mapped('corresponding_commission'))
-        plus_amount_fide = sum(previous.commission_tree.filtered(lambda x: x.job_id.name not in ['PAPELERIA','FIDEICOMISO','ASISTENTE SOCIAL']).mapped('corresponding_commission'))
+        plus_amount_fide = sum(previous.commission_tree.filtered(lambda x: x.job_id.name not in ['PAPELERIA','FIDEICOMISO','ASISTENTE SOCIAL','IVA']).mapped('corresponding_commission'))
         fide_line_id = previous.commission_tree.filtered(lambda x: x.job_id.name in ['FIDEICOMISO'])
         as_line_id = previous.commission_tree.filtered(lambda x: x.job_id.name in ['ASISTENTE SOCIAL'])
         line_ids = previous.commission_tree.filtered(lambda x: x.job_id.name not in ['PAPELERIA','FIDEICOMISO','IVA'])       
+        
+        transfer_amount = 0
         # Traspaso sin comisión
         if previous.trasnsfer_type == 'without_commission':        
           # 
@@ -1651,6 +1690,25 @@ class PABSContracts(models.Model):
           # Comisión correspondientes
           as_line_id.corresponding_commission = as_line_id.remaining_commission = transfer_amount
           fide_line_id.corresponding_commission = fide_line_id.remaining_commission = amount_fide + amount_as - transfer_amount          
+
+        # Modificar linea de IVA asistente social para ajustar al nuevo monto y iva de fideicomiso
+        if previous.company_id.apply_taxes and previous.company_id.is_iva_a_commission_agent and previous.trasnsfer_type != 'without':
+          # Modificar la línea de IVA ASISTENTE SOCIAL
+          iva_as_line = previous.commission_tree.filtered(lambda x: x.job_id.name in ['IVA ASISTENTE SOCIAL'])
+          iva_as_line_corresponding_commission = iva_as_line.corresponding_commission
+
+          if not iva_as_line:
+            raise ValidationError("Error al modificar árbol con traspaso: No se encontró la rama IVA ASISTENTE SOCIAL")
+          iva_as_commission = round(transfer_amount * 0.16, 2)
+          iva_as_line.write({'corresponding_commission': iva_as_commission, 'remaining_commission': iva_as_commission})
+
+          # Actualizar el monto de fideicomiso
+          if previous.trasnsfer_type == 'commission_rest':
+            new_fide_commission = fide_line_id.corresponding_commission + iva_as_line_corresponding_commission - iva_as_commission
+            fide_line_id.write({'corresponding_commission': new_fide_commission, 'remaining_commission': new_fide_commission})
+          else:
+            new_fide_commission = fide_line_id.corresponding_commission - iva_as_commission
+            fide_line_id.write({'corresponding_commission': new_fide_commission, 'remaining_commission': new_fide_commission})
 
         # lines = []
         # for line in previous.commission_tree:
