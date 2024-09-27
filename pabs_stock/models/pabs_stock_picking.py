@@ -718,7 +718,7 @@ class PabsStockPickingLine(models.Model):
                             ('type','=','product'),
                             ('pabs_stock_product','=',True),
                             ('tracking','=','serial'),
-                            ('categ_id.name','in',['ATAUDES','URNAS','ROSARIOS'])],
+                            ('categ_id.name','in',['ATAUDES','URNAS','ROSARIOS','PAQUETES'])],
                         'start_serie': [('id','=',0)],
                         'end_serie': [('id','=',0)],                     
                     }
