@@ -193,7 +193,7 @@ class PABSEcobroSync(models.Model):
     ### TRAEMOS EL OBJETO DE LA COMPAÑIA
     company = company_obj.browse(company_id)
     # Se agrega un 2 para elegir el endpoint correcto para la empresa con id 15 (ACAPULCO NE)
-    if company.id in [15,16,18,19,20]:
+    if company.id in [15,16,18,19,20,21]:
       url += "2"   
     ### BUSCAMOS SI SE PUEDE SINCRONIZAR ALGO CON COOPERATIVA O APOYO
     cont_comp = company.contract_companies.filtered(lambda r: r.type_company in ('support','cooperative'))
@@ -432,7 +432,7 @@ class PABSEcobroSync(models.Model):
     try:
       company = company_obj.browse(company_id)
       # Se agrega un 2 para elegir el endpoint correcto para la empresa con 2 viejo y nuevo esquema
-      if company.id in [15,16,18,19,20]:
+      if company.id in [15,16,18,19,20,21]:
         url_pending += "2"
 
       req = requests.post(url_pending)
