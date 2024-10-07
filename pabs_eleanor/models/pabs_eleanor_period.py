@@ -85,10 +85,11 @@ class PabsEleanorPeriod(models.Model):
                 'id_compania_viejo_esquema': 18
             },
             {
+                # En esta empresa la prenomina se maneja en la de viejo esquema
                 'empresa': 'CUERNAVACA',
                 'version': 13,
                 'id_compania': 7,
-                'id_compania_viejo_esquema': 0
+                'id_compania_viejo_esquema': 21
             },
             {
                 'empresa': 'TAMPICO NUEVO E',
@@ -461,8 +462,16 @@ class PabsEleanorPeriod(models.Model):
 
                 if not warehouse_id and not department_id:
                     raise ValidationError("El empleado {} no tiene ni oficina ni departamento".format(codigo))
+                
+                # En CUERNAVACA la prenomina se maneja en la de viejo esquema (7):
+                columna_comisiones = 6
+                columna_transferencia = 7
 
-                if res[6] > 0:
+                if company.id == 7:
+                    columna_comisiones = 7
+                    columna_transferencia = 6
+
+                if res[columna_comisiones] > 0:
                     comisiones.append({
                         'period_id':        periodo.id,
                         'move_type':        'perception',
@@ -472,11 +481,11 @@ class PabsEleanorPeriod(models.Model):
                         'job_id':           job_id,
                         'warehouse_id':     warehouse_id if warehouse_id else None,
                         'department_id':    department_id if department_id else None,
-                        'amount':           res[6],
+                        'amount':           res[columna_comisiones],
                         'company_id':       company.id
                     })
 
-                if res[7] > 0:
+                if res[columna_transferencia] > 0:
                     comisiones.append({
                         'period_id':        periodo.id,
                         'move_type':        'perception',
@@ -486,7 +495,7 @@ class PabsEleanorPeriod(models.Model):
                         'job_id':           job_id,
                         'warehouse_id':     warehouse_id if warehouse_id else None,
                         'department_id':    department_id if department_id else None,
-                        'amount':           res[7],
+                        'amount':           res[columna_transferencia],
                         'company_id':       company.id
                     })
 
