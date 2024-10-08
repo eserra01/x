@@ -37,6 +37,14 @@ class MortuaryReceipt(models.AbstractModel):
             encabezado.append("RFC DEGB-820517-3T5")
             encabezado.append("CURP. DEGB820317MNTLLT07")
             encabezado.append("TEL. 777 170 4870")
+        if self.env.company.id == 21: #CUERNAVACA NE
+            encabezado.append("CALLE: FRANCISCO I. MADERO No. 719, COL.")
+            encabezado.append("MIRAVAL, CP. 62270, DELEGACION BENITO")
+            encabezado.append("JUAREZ, CUERNAVACA, MORELOS")
+            encabezado.append("SERVICIOS A FUTURO CENTRAL S.A. de C.V.")
+            encabezado.append("RFC DEGB-820517-3T5")
+            encabezado.append("CURP. DEGB820317MNTLLT07")
+            encabezado.append("TEL. 777 170 4870")
         if self.env.company.id == 1 or self.env.company.id == 15: #ACAPULCO
             encabezado.append("Calle Vasco Núñez de Balboa, ")
             encabezado.append("Fracc: Hornos No 3. CP: 39350")
