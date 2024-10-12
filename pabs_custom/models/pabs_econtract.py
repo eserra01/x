@@ -1240,7 +1240,7 @@ class PABSElectronicContracts(models.TransientModel):
                     msj = "El registro de corte ya fue previamente cancelado"
 
                     if solicitud:
-                        return {"error": msj}
+                        return {"correcto": msj}
                     else:
                         _logger.warning(msj)
                         self.ActualizarCorteEnEcobro(url_actualizar_corte, cor['id'])
