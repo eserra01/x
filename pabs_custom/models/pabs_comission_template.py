@@ -184,6 +184,53 @@ class ComissionTemplate(models.Model):
             if row.comission_amount != 0 and not row.comission_agent_id:
                 _logger.warning("agente: {}\nmonto:{}".format(row.comission_agent_id.name,row.comission_amount))
                 raise ValidationError("Elija un empleado antes de asignar un monto")
+    
+    def BloquearComisionRecomendadores(self, company_id):
+        print('Comienza proceso de Bloqueo de comisión de recomendadores')
+
+        consulta = """
+            SELECT 
+                plant.id as id_plantilla,
+                tar.prefix_contract as servicio,
+                asi.barcode as codigo_asistente,
+                asi.name as asistente,
+                rec.name as recomendado,
+                plant.start_date as fecha_alta_recomendado
+            FROM pabs_comission_template AS plant
+            INNER JOIN hr_job AS car ON plant.job_id = car.id AND car.name = 'RECOMENDADO'
+            INNER JOIN hr_employee AS asi ON plant.employee_id = asi.id
+            INNER JOIN hr_employee AS rec ON plant.comission_agent_id = rec.id
+            INNER JOIN product_pricelist_item AS tar ON plant.plan_id = tar.id
+                WHERE plant.comission_amount > 0
+                AND (plant.start_date + INTERVAL '6 month') < CAST(NOW() AS DATE)
+                AND plant.company_id = {}
+                    ORDER BY plant.start_date DESC, asi.barcode
+        """.format(company_id)
+
+        self.env.cr.execute(consulta)
+
+        plantillas = []
+
+        for res in self.env.cr.fetchall():
+            plantillas.append({
+                'id_plantilla': int(res[0]),
+                'servicio': res[1],
+                'codigo_asistente': res[2],
+                'asistente': res[3],
+                'recomendado': res[4],
+                'fecha_alta_recomendado': res[5]
+            })
+
+        if not plantillas:
+            print("No hay plantillas")
+
+        templ_obj = self.env['pabs.comission.template']
+
+        cantidad_plantillas = len(plantillas)        
+        for index, plant in enumerate(plantillas, 1):
+            print("{} de {}. {} {} {} -> {}".format(index, cantidad_plantillas, plant['fecha_alta_recomendado'], plant['servicio'], plant['codigo_asistente'], plant['recomendado'] ))
+
+            templ_obj.browse(plant['id_plantilla']).write({'comission_amount': 0})
             
     # 50/100% Solamente crear plantillas de los empleados con X CONDICIONES ||| 50% se creó condición ||| Falta definir quienes (X)
     # 0% No permitir agregar líneas
